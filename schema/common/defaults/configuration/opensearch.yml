@@ -2,9 +2,7 @@ kind: configuration/opensearch
 title: OpenSearch Config
 name: default
 specification:
-  cluster_name: EpiphanyOpensearch
-  odfe_migration: false
-  clustered: true
+  cluster_name: EpiphanyOpenSearch
   opensearch_os_user: opensearch
   opensearch_os_group: opensearch
   admin_password: PASSWORD_TO_CHANGE
@@ -13,11 +11,11 @@ specification:
   logstash_password: PASSWORD_TO_CHANGE
   logstash_user_active: false
   demo_users_to_remove:
-  - kibanaro
-  - readall
-  - snapshotrestore
-  - logstash
-  - kibanaserver
+    - kibanaro
+    - readall
+    - snapshotrestore
+    - logstash
+    - kibanaserver
   paths:
     opensearch_home: /usr/share/opensearch
     opensearch_conf_dir: /usr/share/opensearch/config
@@ -26,9 +24,6 @@ specification:
     opensearch_data: /var/lib/opensearch
     opensearch_logs: /var/log/opensearch
     opensearch_perftop_home: /usr/share/opensearch/perftop
-    opensearchdash_plugin_bin_path: /usr/share/opensearch-dashboards/bin/opensearch-dashboards-plugin
-    opensearchdash_home: /usr/share/opensearch-dashboards
-    opensearchdash_conf_dir: /usr/share/opensearch-dashboards/config
   jvm_options:
     Xmx: 1g
   opensearch_security:

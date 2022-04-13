@@ -4,7 +4,7 @@ require 'spec_helper'
 es_admin_password = readDataYaml('configuration/logging')['specification']['admin_password'] || 'admin'
 es_rest_api_port  = 9200
 es_transport_port = 9300
-describe 'Check if Opensearch service is running' do
+describe 'Check if OpenSearch service is running' do
   describe service('opensearch') do
     it { should be_enabled }
     it { should be_running }

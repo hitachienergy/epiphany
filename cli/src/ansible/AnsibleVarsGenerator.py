@@ -73,7 +73,7 @@ class AnsibleVarsGenerator(Step):
             # are not compatible with the new ones, defaults are used for template processing
             roles_with_defaults = [
                 'grafana', 'haproxy', 'image_registry', 'jmx_exporter', 'kafka', 'kafka_exporter',
-                'kibana', 'logging', 'node_exporter', 'postgres_exporter',
+                'logging', 'node_exporter', 'opensearch', 'opensearch_dashboards', 'postgres_exporter',
                 'postgresql', 'prometheus', 'rabbitmq', 'repository'
                 ]
             # now lets add any external configs we want to load
