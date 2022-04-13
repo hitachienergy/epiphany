@@ -149,6 +149,9 @@
         msg: Reboot initiated by Ansible due to update
         connect_timeout: "{{ reboot.connect_timeout }}"
         reboot_timeout: "{{ reboot.update_timeout }}"
+      vars:
+        # disable connection sharing to avoid random warning on stderr: Failed to reset connection
+        ansible_control_path: none
 
     - &REFRESH_ANSIBLE_FACTS
       name: Refresh Ansible facts
@@ -251,6 +254,9 @@
         msg: Reboot initiated by Ansible due to major release upgrade
         connect_timeout: "{{ reboot.connect_timeout }}"
         reboot_timeout: "{{ reboot.upgrade_timeout }}"
+      vars:
+        # disable connection sharing to avoid random warning on stderr: Failed to reset connection
+        ansible_control_path: none
 
     # Upgrade removes python2 but Ansible wants to use it after the reboot.
     # Refreshing Ansible facts does not solve this issue.
