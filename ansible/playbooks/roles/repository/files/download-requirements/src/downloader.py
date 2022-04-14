@@ -64,7 +64,7 @@ class Downloader:
         :raises:
             :class:`ChecksumMismatch`: can be raised on failed checksum
         """
-        req = requirement[sub_key] if sub_key else requirement
+        req = self.__requirements[requirement][sub_key] if sub_key else requirement
 
         if requirement_file.exists():
 
