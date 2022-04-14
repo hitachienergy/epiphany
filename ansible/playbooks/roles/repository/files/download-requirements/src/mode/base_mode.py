@@ -134,11 +134,8 @@ class BaseMode:
         """
         downloader: Downloader = Downloader(files, 'sha256', self._download_file)
         for req_file in files:
-            try:
-                filepath = dest / req_file.split('/')[-1]
-                downloader.download(req_file, filepath)
-            except CriticalError:
-                logging.warning(f'Could not download file: {req_file}')
+            filepath = dest / req_file.split('/')[-1]
+            downloader.download(req_file, filepath)
 
     def __download_grafana_dashboards(self):
         """
@@ -147,11 +144,8 @@ class BaseMode:
         dashboards: Dict[str, Dict] = self._requirements['grafana-dashboards']
         downloader: Downloader = Downloader(dashboards, 'sha256', self._download_grafana_dashboard)
         for dashboard in dashboards:
-            try:
-                output_file = self._cfg.dest_grafana_dashboards / f'{dashboard}.json'
-                downloader.download(dashboard, output_file)
-            except CriticalError:
-                logging.warning(f'Could not download grafana dashboard: {dashboard}')
+            output_file = self._cfg.dest_grafana_dashboards / f'{dashboard}.json'
+            downloader.download(dashboard, output_file, 'url')
 
     def __download_crane(self):
         """
@@ -186,14 +180,11 @@ class BaseMode:
                                             {'platform': platform})
 
         for image in self._requirements['images']:
-            try:
-                url, version = image.split(':')
-                filename = Path(f'{url.split("/")[-1]}-{version}.tar')  # format: image_version.tar
+            url, version = image.split(':')
+            filename = Path(f'{url.split("/")[-1]}-{version}.tar')  # format: image_version.tar
 
-                image_file = self._cfg.dest_images / filename
-                downloader.download(image, image_file)
-            except CriticalError:
-                logging.warning(f'Could not download image: `{image}`')
+            image_file = self._cfg.dest_images / filename
+            downloader.download(image, image_file)
 
     def _cleanup(self):
         """

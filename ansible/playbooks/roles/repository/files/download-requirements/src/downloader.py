@@ -54,16 +54,20 @@ class Downloader:
 
         return True
 
-    def download(self, requirement: str, requirement_file: Path):
+    def download(self, requirement: str, requirement_file: Path, sub_key: str = None):
         """
         Download `requirement` as `requirement_file` and compare checksums.
 
         :param requirement: an entry from the requirements corresponding to the downloaded file
         :param requirement_file: existing requirement file
+        :param sub_key: optional key for the `requirement` such as `url`
         :raises:
             :class:`ChecksumMismatch`: can be raised on failed checksum
         """
+        req = requirement[sub_key] if sub_key else requirement
+
         if requirement_file.exists():
+
             if self.__is_checksum_valid(requirement, requirement_file):
                 logging.debug(f'- {requirement} - checksum ok, skipped')
                 return
@@ -73,7 +77,7 @@ class Downloader:
                 tmpfile = Path(mkstemp()[1])
                 chmod(tmpfile, 0o0644)
 
-                self.__download(requirement, tmpfile, **self.__download_args)
+                self.__download(req, tmpfile, **self.__download_args)
 
                 if not self.__is_checksum_valid(requirement, tmpfile):
                     tmpfile.unlink()
@@ -83,7 +87,7 @@ class Downloader:
                 return
 
         logging.info(f'- {requirement}')
-        self.__download(requirement, requirement_file, **self.__download_args)
+        self.__download(req, requirement_file, **self.__download_args)
 
         if not self.__is_checksum_valid(requirement, requirement_file):
             requirement_file.unlink()
