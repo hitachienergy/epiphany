@@ -1,0 +1,7 @@
+# In version 2.0.0 we switched from RHEL 7 to 8 but only 'epicli apply' is supported so far.
+- name: Check whether OS family is supported
+  assert:
+    that: ansible_os_family != 'RedHat'
+    fail_msg: >-
+      In this version 'epicli upgrade' is supported only for Ubuntu
+    success_msg: OS family check passed
