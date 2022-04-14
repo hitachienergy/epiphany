@@ -1,4 +1,7 @@
 ---
+- include_tasks: upgrade-pre-common.yml
+  when: is_upgrade_run
+
 - include_tasks: common/main.yml
 
 - include_tasks: apply.yml
