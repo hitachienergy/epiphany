@@ -13,6 +13,9 @@
 # Limitations:
 # - Ansible connection as root is not supported (PermitRootLogin)
 
+# TODO:
+# Fix issue when running on AWS on repository host deployed with epicli 1.0.2 (VM crash)
+
 - name: In-place RHEL release upgrade
   hosts: "{{ target | default('all') }}"
   become: true
