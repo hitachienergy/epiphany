@@ -2,8 +2,6 @@ import logging
 from collections import defaultdict
 from os import chmod
 from pathlib import Path
-from shutil import move
-from tempfile import mkstemp
 from typing import Any, Dict
 
 from poyo import parse_string, PoyoException
@@ -11,6 +9,7 @@ from poyo import parse_string, PoyoException
 from src.command.toolchain import Toolchain, TOOLCHAINS
 from src.config import Config, OSArch
 from src.crypt import SHA_ALGORITHMS
+from src.downloader import Downloader
 from src.error import CriticalError, ChecksumMismatch
 
 
@@ -93,34 +92,6 @@ class BaseMode:
         """
         raise NotImplementedError
 
-    def __is_checksum_valid(self, requirements: Dict[str, Dict],
-                            requirement: str,
-                            requirement_file: Path,
-                            sha_algorithm: str) -> bool:
-        """
-        Check if checksum matches with `requirement` and downloaded file `requirement_file`.
-
-        :param requirements: data from parsed requirements file
-        :param requirement: an entry from the requirements corresponding to the downloaded file
-        :param requirement_file: existing requirement file
-        :param sha_algorithm: which algorithm will be used in validating the requirement
-        :returns: True - checksum ok, False - otherwise
-        :raises:
-            :class:`ChecksumMismatch`: can be raised on failed checksum and missing allow_mismatch flag
-        """
-        req = requirements[requirement]
-        if req[sha_algorithm] != SHA_ALGORITHMS[sha_algorithm](requirement_file):
-            try:
-                if req['allow_mismatch']:
-                    logging.warning(f'{requirement} - allow_mismatch flag used')
-                    return True
-
-                return False
-            except KeyError:
-                return False
-
-        return True
-
     def _download_packages(self):
         """
         Download packages `self._requirements['packages']['from_repo']` using target OS's package manager.
@@ -161,66 +132,26 @@ class BaseMode:
         :param files: to be downloaded
         :param dest: where to save the files
         """
+        downloader: Downloader = Downloader(files, 'sha256', self._download_file)
         for req_file in files:
             try:
                 filepath = dest / req_file.split('/')[-1]
-
-                if filepath.exists():
-                    if self.__is_checksum_valid(files, req_file, filepath, 'sha256'):
-                        logging.debug(f'- {req_file} - checksum ok, skipped')
-                        continue
-
-                logging.info(f'- {req_file}')
-
-                tmpfile = Path(mkstemp()[1])
-                chmod(tmpfile, 0o0644)
-
-                self._download_file(req_file, tmpfile)
-
-                if not self.__is_checksum_valid(files, req_file, tmpfile, 'sha256'):
-                    tmpfile.unlink()
-                    raise ChecksumMismatch(f'- {req_file}')
-
-                move(str(tmpfile), str(filepath))
-
+                downloader.download(req_file, filepath)
             except CriticalError:
                 logging.warning(f'Could not download file: {req_file}')
-
-    def __is_dashboard_checksum_valid(self, dashboard: str, dashboard_file: Path) -> bool:
-        return self.__is_checksum_valid(self._requirements['grafana-dashboards'], dashboard, dashboard_file, 'sha256')
 
     def __download_grafana_dashboards(self):
         """
         Download grafana dashboards under `self._requirements['grafana-dashboards']`.
         """
         dashboards: Dict[str, Dict] = self._requirements['grafana-dashboards']
+        downloader: Downloader = Downloader(dashboards, 'sha256', self._download_grafana_dashboard)
         for dashboard in dashboards:
             try:
                 output_file = self._cfg.dest_grafana_dashboards / f'{dashboard}.json'
-
-                if output_file.exists():
-                    if self.__is_dashboard_checksum_valid(dashboard, output_file):
-                        logging.debug(f'- {dashboard} - checksum ok, skipped')
-                        continue
-
-                logging.info(f'- {dashboard}')
-
-                tmpdashboard = Path(mkstemp()[1])
-                chmod(tmpdashboard, 0o0644)
-
-                self._download_grafana_dashboard(dashboards[dashboard]['url'], tmpdashboard)
-
-                if not self.__is_dashboard_checksum_valid(dashboard, tmpdashboard):
-                    tmpdashboard.unlink()
-                    raise ChecksumMismatch(f'- {dashboard}')
-
-                move(str(tmpdashboard), str(output_file))
-
+                downloader.download(dashboard, output_file)
             except CriticalError:
                 logging.warning(f'Could not download grafana dashboard: {dashboard}')
-
-    def __is_crane_checksum_valid(self, crane: str, crane_file: Path) -> bool:
-        return self.__is_checksum_valid(self._requirements['cranes'], crane, crane_file, 'sha256')
 
     def __download_crane(self):
         """
@@ -228,24 +159,13 @@ class BaseMode:
         """
         crane_path = self._cfg.dest_dir / 'crane'
         crane_package_path = Path(f'{crane_path}.tar.gz')
-
         cranes = self._requirements['cranes']
         first_crane = next(iter(cranes))  # right now we use only single crane source
-        if crane_package_path.exists():
-            if self.__is_crane_checksum_valid(first_crane, crane_package_path):
-                logging.debug('crane - checksum ok, skipped')
-        else:
-            tmpcrane = Path(mkstemp()[1])
-            chmod(tmpcrane, 0o0644)
 
-            self._download_crane_binary(first_crane, tmpcrane)
+        downloader: Downloader = Downloader(cranes, 'sha256', self._download_crane_binary)
+        downloader.download(first_crane, crane_package_path)
 
-            if not self.__is_crane_checksum_valid(first_crane, tmpcrane):
-                tmpcrane.unlink()
-                raise ChecksumMismatch(f'- {first_crane}')
-
-            move(str(tmpcrane), str(crane_package_path))
-
+        if not crane_path.exists():
             self._tools.tar.unpack(crane_package_path, Path('crane'), directory=self._cfg.dest_dir)
             chmod(crane_path, 0o0755)
 
@@ -255,38 +175,23 @@ class BaseMode:
             crane_symlink.symlink_to(crane_path)
             self._cfg.dest_crane_symlink = crane_symlink
 
-    def __is_image_checksum_valid(self, image: str, image_file: Path) -> bool:
-        return self.__is_checksum_valid(self._requirements['images'], image, image_file, 'sha1')
-
     def _download_images(self):
         """
         Download images under `self._requirements['images']` using Crane.
         """
         platform: str = 'linux/amd64' if self._cfg.os_arch == OSArch.X86_64 else 'linux/arm64'
+        downloader: Downloader = Downloader(self._requirements['images'],
+                                            'sha1',
+                                            self._tools.crane.pull,
+                                            {'platform': platform})
+
         for image in self._requirements['images']:
             try:
                 url, version = image.split(':')
                 filename = Path(f'{url.split("/")[-1]}-{version}.tar')  # format: image_version.tar
 
                 image_file = self._cfg.dest_images / filename
-                if image_file.exists():
-                    if self.__is_image_checksum_valid(image, image_file):
-                        logging.debug(f'- {image} - checksum ok, skipped')
-                        continue
-
-                logging.info(f'- {image}')
-
-                tmpimage = Path(mkstemp()[1])
-                chmod(tmpimage, 0o0644)
-
-                self._tools.crane.pull(image, tmpimage, platform)
-
-                if not self.__is_image_checksum_valid(image, tmpimage):
-                    tmpimage.unlink()
-                    raise ChecksumMismatch(f'- {image}')
-
-                move(str(tmpimage), str(image_file))
-
+                downloader.download(image, image_file)
             except CriticalError:
                 logging.warning(f'Could not download image: `{image}`')
 
