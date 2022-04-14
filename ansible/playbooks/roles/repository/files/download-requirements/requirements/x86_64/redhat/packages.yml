@@ -152,7 +152,7 @@ packages:
   from_url:
     # Github repository for erlang rpm is used since packagecloud repository is limited to a certain number of versions and erlang package from erlang-solutions repository is much more complex and bigger
     'https://github.com/rabbitmq/erlang-rpm/releases/download/v23.1.5/erlang-23.1.5-1.el8.x86_64.rpm':
-      sha256: e545ad7b2387f398b1618d62a41c3f5af9ded531f0be028d66ab75501625a0bd
+      sha256: 4680540d6ba20d7ebbc0558b5309b1312b59aba539635ca546eae0492901f2a7
     # Grafana package is not downloaded from repository since it was not reliable (issue #2449)
     'https://dl.grafana.com/oss/release/grafana-8.3.2-1.x86_64.rpm':
       sha256: 5ad3cc7137bb8599f21eca40d08d671f3c508d856aea01b5a29576fda7f3c827
