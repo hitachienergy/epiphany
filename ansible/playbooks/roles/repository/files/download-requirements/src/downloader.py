@@ -6,7 +6,7 @@ from tempfile import mkstemp
 from typing import Callable, Dict
 
 from src.command.toolchain import Toolchain, TOOLCHAINS
-from src.config import Config, OSArch
+from src.config.config import Config, OSArch
 from src.crypt import SHA_ALGORITHMS
 from src.error import CriticalError, ChecksumMismatch
 
