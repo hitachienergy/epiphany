@@ -23,7 +23,7 @@ specification:
         - name: bitnami/pgbouncer:1.16.0
           file_name: pgbouncer-1.16.0.tar
         # ceph
-        - name: "docker.io/rook/ceph:v1.8.8"
+        - name: "rook/ceph:v1.8.8"
           file_name: ceph-v1.8.8.tar
       current:
         - name: "haproxy:2.2.2-alpine"

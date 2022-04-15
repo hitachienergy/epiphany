@@ -1,0 +1,8 @@
+image:
+  repository: {{ image_registry_address }}/{{ data.image.repository }}
+  tag: {{ data.image.tag }}
+csi:
+{% for name, value in data.csi.items() %}
+  {{ name }}:
+    image: {{ image_registry_address }}/{{ value.image }}
+{% endfor %}
