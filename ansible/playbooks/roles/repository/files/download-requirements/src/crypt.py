@@ -1,6 +1,6 @@
 from hashlib import sha1, sha256
 from pathlib import Path
-from typing import Callable
+from typing import Callable, Dict
 
 
 def get_hash(req_path: Path, algorithm: Callable) -> str:
@@ -27,3 +27,9 @@ def get_sha256(req_path: Path) -> str:
 def get_sha1(req_path: Path) -> str:
     """ For larger files sha1 algorithm is significantly faster than sha256 """
     return get_hash(req_path, sha1)
+
+
+SHA_ALGORITHMS: Dict[str, Callable] = {
+    'sha1': get_sha1,
+    'sha256': get_sha256
+}

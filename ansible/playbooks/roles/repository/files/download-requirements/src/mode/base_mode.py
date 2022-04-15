@@ -7,8 +7,9 @@ from typing import Any, Dict
 from poyo import parse_string, PoyoException
 
 from src.command.toolchain import Toolchain, TOOLCHAINS
-from src.config import Config
-from src.crypt import get_sha1, get_sha256
+from src.config import Config, OSArch
+from src.crypt import SHA_ALGORITHMS
+from src.downloader import Downloader
 from src.error import CriticalError, ChecksumMismatch
 
 
@@ -131,43 +132,20 @@ class BaseMode:
         :param files: to be downloaded
         :param dest: where to save the files
         """
-        for file in files:
-            try:
-                filepath = dest / file.split('/')[-1]
-                if files[file]['sha256'] == get_sha256(filepath):
-                    logging.debug(f'- {file} - checksum ok, skipped')
-                    continue
-
-                logging.info(f'- {file}')
-                self._download_file(file, filepath)
-
-                if files[file]['sha256'] != get_sha256(filepath):
-                    raise ChecksumMismatch(f'- {file}')
-
-            except CriticalError:
-                logging.warning(f'Could not download file: {file}')
+        downloader: Downloader = Downloader(files, 'sha256', self._download_file)
+        for req_file in files:
+            filepath = dest / req_file.split('/')[-1]
+            downloader.download(req_file, filepath)
 
     def __download_grafana_dashboards(self):
         """
         Download grafana dashboards under `self._requirements['grafana-dashboards']`.
         """
         dashboards: Dict[str, Dict] = self._requirements['grafana-dashboards']
+        downloader: Downloader = Downloader(dashboards, 'sha256', self._download_grafana_dashboard)
         for dashboard in dashboards:
-            try:
-                output_file = self._cfg.dest_grafana_dashboards / f'{dashboard}.json'
-
-                if dashboards[dashboard]['sha256'] == get_sha256(output_file):
-                    logging.debug(f'- {dashboard} - checksum ok, skipped')
-                    continue
-
-                logging.info(f'- {dashboard}')
-                self._download_grafana_dashboard(dashboards[dashboard]['url'], output_file)
-
-                if dashboards[dashboard]['sha256'] != get_sha256(output_file):
-                    raise ChecksumMismatch(f'- {dashboard}')
-
-            except CriticalError:
-                logging.warning(f'Could not download grafana dashboard: {dashboard}')
+            output_file = self._cfg.dest_grafana_dashboards / f'{dashboard}.json'
+            downloader.download(dashboard, output_file, 'url')
 
     def __download_crane(self):
         """
@@ -175,17 +153,13 @@ class BaseMode:
         """
         crane_path = self._cfg.dest_dir / 'crane'
         crane_package_path = Path(f'{crane_path}.tar.gz')
-
         cranes = self._requirements['cranes']
         first_crane = next(iter(cranes))  # right now we use only single crane source
-        if cranes[first_crane]['sha256'] == get_sha256(crane_package_path):
-            logging.debug('crane - checksum ok, skipped')
-        else:
-            self._download_crane_binary(first_crane, crane_package_path)
 
-            if cranes[first_crane]['sha256'] != get_sha256(crane_package_path):
-                raise ChecksumMismatch('crane')
+        downloader: Downloader = Downloader(cranes, 'sha256', self._download_crane_binary)
+        downloader.download(first_crane, crane_package_path)
 
+        if not crane_path.exists():
             self._tools.tar.unpack(crane_package_path, Path('crane'), directory=self._cfg.dest_dir)
             chmod(crane_path, 0o0755)
 
@@ -199,31 +173,18 @@ class BaseMode:
         """
         Download images under `self._requirements['images']` using Crane.
         """
-        platform: str = 'linux/amd64' if self._cfg.os_arch.X86_64 else 'linux/arm64'
-        images = self._requirements['images']
-        for image in images:
-            try:
-                url, version = image.split(':')
-                filename = Path(f'{url.split("/")[-1]}-{version}.tar')  # format: image_version.tar
+        platform: str = 'linux/amd64' if self._cfg.os_arch == OSArch.X86_64 else 'linux/arm64'
+        downloader: Downloader = Downloader(self._requirements['images'],
+                                            'sha1',
+                                            self._tools.crane.pull,
+                                            {'platform': platform})
 
-                image_file = self._cfg.dest_images / filename
-                if images[image]['sha1'] == get_sha1(image_file):
-                    logging.debug(f'- {image} - checksum ok, skipped')
-                    continue
+        for image in self._requirements['images']:
+            url, version = image.split(':')
+            filename = Path(f'{url.split("/")[-1]}-{version}.tar')  # format: image_version.tar
 
-                logging.info(f'- {image}')
-                self._tools.crane.pull(image, image_file, platform)
-
-                if images[image]['sha1'] != get_sha1(image_file):
-                    try:
-                        if images[image]['allow_mismatch']:
-                            logging.warning(f'- {image} - allow_mismatch flag used, continue downloading')
-                            continue
-                    except KeyError:
-                        raise ChecksumMismatch(f'- {image}')
-
-            except CriticalError:
-                logging.warning(f'Could not download image: `{image}`')
+            image_file = self._cfg.dest_images / filename
+            downloader.download(image, image_file)
 
     def _cleanup(self):
         """
