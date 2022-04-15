@@ -36,7 +36,7 @@ files:
   'https://charts.bitnami.com/bitnami/node-exporter-2.3.17.tgz':
     sha256: ec586fabb775a4f05510386899cf348391523c89ff5a1d4097b0592e675ade7f
 
-  'https://helm.elastic.co/helm/filebeat/filebeat-7.9.2.tgz':
+  'https://helm.elastic.co/helm/filebeat/filebeat-7.12.1.tgz':
     sha256: 5140b4c4473ca33a0af4c3f70545dcc89735c0a179d974ebc150f1f28ac229ab
 
   'https://charts.rook.io/release/rook-ceph-v1.8.8.tgz':

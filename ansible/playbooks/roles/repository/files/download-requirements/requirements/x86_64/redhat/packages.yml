@@ -38,7 +38,7 @@ packages:
     - 'elasticsearch-curator-5.8.3'
     - 'elasticsearch-oss-7.10.2'  # for opendistroforelasticsearch & logging roles
     - 'ethtool'
-    - 'filebeat-7.9.2'
+    - 'filebeat-7.12.1'
     - 'firewalld'
     - 'fontconfig'  # for grafana
     - 'fping'
