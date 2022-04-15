@@ -3,8 +3,8 @@ from typing import Any, Dict, List
 import logging
 import os
 
-from src.config.config import Config
-from src.mode.base_mode import BaseMode, get_sha256, load_yaml_file
+from src.config import Config
+from src.mode.base_mode import BaseMode, SHA_ALGORITHMS
 
 
 class DebianFamilyMode(BaseMode):
@@ -95,7 +95,7 @@ class DebianFamilyMode(BaseMode):
                                    pkg_file.name.startswith(f'{package_info["Package"]}_') and
                                    version in pkg_file.name][0]
 
-                if get_sha256(found_pkg) == package_info['SHA256']:
+                if SHA_ALGORITHMS['sha256'](found_pkg) == package_info['SHA256']:
                     logging.debug(f'- {package} - checksum ok, skipped')
                     continue
 

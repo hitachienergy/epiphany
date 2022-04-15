@@ -1,7 +1,4 @@
-from os import chmod
 from pathlib import Path
-from shutil import move
-from tempfile import mkstemp
 from typing import List
 
 from src.command.command import Command
@@ -40,13 +37,6 @@ class Crane(Command):
             crane_params.append('--format=legacy')
 
         crane_params.append(image_name)
-
-        tmpfile = mkstemp()
-
-        crane_params.append(tmpfile[1])
+        crane_params.append(str(destination))
 
         self.run(crane_params)
-
-        chmod(tmpfile[1], 0o0644)
-
-        move(tmpfile[1], str(destination))
