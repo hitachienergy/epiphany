@@ -179,5 +179,11 @@ images:
   'quay.io/cephcsi/cephcsi:v3.5.1':
     sha1: 51dee9ea8ad76fb95ebd16f951e8ffaaaba95eb6
 
+  'quay.io/csiaddons/k8s-sidecar:v0.2.1':
+    sha1: f0fd757436ac5075910c460c1991ff67c4774d09
+
+  'quay.io/csiaddons/volumereplication-operator:v0.3.0':
+    sha1: d3cd17f14fcbf09fc6c8c2c5c0419f098f87a70f
+
   'rook/ceph:v1.8.8':
     sha1: f34039b17b18f5a855b096d48ff787b4013615e4

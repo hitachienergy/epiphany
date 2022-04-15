@@ -63,6 +63,10 @@ specification:
           file_name: ceph-v16.2.7.tar
         - name: "quay.io/cephcsi/cephcsi:v3.5.1"
           file_name: cephcsi-v3.5.1.tar
+        - name: "quay.io/csiaddons/k8s-sidecar:v0.2.1"
+          file_name: k8s-sidecar-v0.2.1.tar
+        - name: "quay.io/csiaddons/volumereplication-operator:v0.3.0"
+          file_name: volumereplication-operator-v0.3.0.tar
         # canal & calico
         - name: "calico/cni:v3.20.3"
           file_name: cni-v3.20.3.tar
