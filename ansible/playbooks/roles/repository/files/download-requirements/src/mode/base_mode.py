@@ -8,7 +8,6 @@ import yaml
 
 from src.command.toolchain import Toolchain, TOOLCHAINS
 from src.config.config import Config, OSArch
-from src.config.os_type import OSFamily
 from src.crypt import SHA_ALGORITHMS
 from src.downloader import Downloader
 from src.error import CriticalError, ChecksumMismatch
