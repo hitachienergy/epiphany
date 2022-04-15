@@ -3,9 +3,8 @@ from typing import Any, Dict, List
 import logging
 import os
 
-from src.config import Config
+from src.config.config import Config
 from src.mode.base_mode import BaseMode, SHA_ALGORITHMS
-
 
 class DebianFamilyMode(BaseMode):
     """
