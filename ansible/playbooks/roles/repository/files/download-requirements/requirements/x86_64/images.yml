@@ -21,7 +21,7 @@ images:
     sha1: f2e37eecbf9aed44d5566f06dcc101c1ba9edff9
 
   'epiphanyplatform/keycloak:17.0.1':
-    sha1: 65e84684e77496bf603a5866a8e648a26146d3a9
+    sha1: af27bac61da8c28778b6515bf023450b86462289
 
   'rabbitmq:3.8.9':
     sha1: c64408bf5bb522f47d5323652dd5e60560dcb5bc
