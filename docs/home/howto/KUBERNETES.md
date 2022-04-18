@@ -175,7 +175,7 @@ specification:
   applications:
     - name: auth-service
       enabled: true
-      image_path: epiphanyplatform/keycloak:14.0.0
+      image_path: epiphanyplatform/keycloak:17.0.1
       use_local_image_registry: true
       service:
         name: as-testauthdb
