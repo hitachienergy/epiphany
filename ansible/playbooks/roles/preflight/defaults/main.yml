@@ -2,16 +2,16 @@
 supported_oses:
   - name: AlmaLinux
     version:
-      min: 8.5
-      max: 8.10
+      min: '8.5'
+      max: '8.10'
   - name: RedHat
     version:
-      min: 8.5
-      max: 8.10  # based on https://access.redhat.com/support/policy/updates/errata#RHEL8_Life_Cycle
+      min: '8.5'
+      max: '8.10'  # based on https://access.redhat.com/support/policy/updates/errata#RHEL8_Life_Cycle
   - name: Ubuntu
     version:
-      min: 20.04
-      max: 20.04
+      min: '20.04'
+      max: '20.04'
 
 # The list of unsupported K8s applications per architecture
 unsupported_apps:
