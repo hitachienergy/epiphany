@@ -70,6 +70,7 @@
   - Ansible 2.10.15 to 5.2.0
   - Python 3.7 to 3.10
 - [#2871](https://github.com/epiphany-platform/epiphany/issues/2871) - Upgrade Kafka to 2.8.1
+- [#3090](https://github.com/epiphany-platform/epiphany/issues/3090) - Update cloud OS images to the latest
 
 ### Removed
 
