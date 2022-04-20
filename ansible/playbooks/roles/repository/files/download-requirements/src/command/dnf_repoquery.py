@@ -51,8 +51,8 @@ class DnfRepoquery(Command):
 
         args.extend(packages)
 
+        # dnf repoquery doesn't set error code on empty results
         output = self.run(args).stdout
-        # dnf download doesn't set error code if repoquery returns empty output TODO: verify this
         output_handler(output)
 
         packages: List[str] = []

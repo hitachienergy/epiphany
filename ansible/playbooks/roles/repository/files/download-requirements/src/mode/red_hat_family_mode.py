@@ -153,7 +153,7 @@ class RedHatFamilyMode(BaseMode):
                                                                    queryformat='%{name}-%{version}-%{release}.%{arch}',
                                                                    archlist=self.__archs)
 
-        logging.info('- prereq-packages to download: %s', collected_prereqs)
+        logging.info(f'- prereq-packages to download: {collected_prereqs}')
 
         self._tools.dnf_download.download_packages(collected_prereqs,
                                                    archlist=self.__archs,
@@ -173,14 +173,14 @@ class RedHatFamilyMode(BaseMode):
 
         packages_to_download: List[str] = sorted(set(queried_packages) - set(downloaded_prereq_packages))
 
-        logging.info('- packages to download: %s', packages_to_download)
+        logging.info(f'- packages to download: {packages_to_download}')
 
         # dependencies
         dependencies: List[str] = self._tools.repoquery.get_dependencies(packages_to_download,
                                                                          queryformat='%{name}.%{arch}',
                                                                          archlist=self.__archs)
 
-        logging.info('- dependencies to download: %s', dependencies)
+        logging.info(f'- dependencies to download: {dependencies}')
 
         packages_to_download = sorted(packages_to_download + dependencies)
 

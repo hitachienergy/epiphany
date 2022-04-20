@@ -36,6 +36,7 @@ def rerun_download_requirements(config: Config):
     if config.pyyaml_installed:
         additional_args.append('--pyyaml-installed')
 
+    # sys.executable is used to preserve python interpreter in CMD column of ps command (/proc/<PID>/cmdline)
     cmd: List[str] = [sys.executable, __file__] + sys.argv[1:] + additional_args
     quoted_cmd: str = " ".join([shlex.quote(i) for i in cmd])
     logging.debug(f'Rerunning as: `{quoted_cmd}`')

@@ -14,7 +14,7 @@
 # - Ansible connection as root is not supported (PermitRootLogin)
 
 # TODO:
-# Fix issue when running on AWS on repository host deployed with epicli 1.0.2 (VM crash)
+# Fix issue when running on AWS on repository host deployed with epicli 1.0.2 (instance auto-recovery)
 
 - name: In-place RHEL release upgrade
   hosts: "{{ target | default('all') }}"
@@ -184,7 +184,8 @@
         remote_src: true
 
     # Address upgrade inhibitors
-    # PermitRootLogin option is required in sshd_config file
+    # PermitRootLogin option is required to be defined explicitly
+    # PermitRootLogin defaults to 'yes' but 'no' is more secure so it's preferred
     - name: Ensure PermitRootLogin is defined
       block:
         - name: Get sshd settings

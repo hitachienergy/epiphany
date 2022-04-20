@@ -6,7 +6,7 @@ specification:
     publisher: almalinux
     offer: almalinux
     sku: 8_5-gen2
-    version: "8.5.20211118"
+    version: '8.5.20220311'
     plan:
       name: 8_5-gen2
       product: almalinux
@@ -15,7 +15,7 @@ specification:
     publisher: RedHat
     offer: rhel-raw
     sku: 8-raw-gen2
-    version: "8.5.2022031406"
+    version: '8.5.2022032202'
   ubuntu-20.04-x86_64:
     publisher: Canonical
     offer: 0001-com-ubuntu-server-focal

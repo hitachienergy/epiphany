@@ -56,7 +56,7 @@ For more information, refer to [AWS Systems Manager User Guide](https://docs.aws
 
 For Epiphany >= v2.0 we recommend the following image (urn):
 
-- RHEL: `RedHat:rhel-raw:8-raw-gen2:8.5.2022031406` (kernel 4.18.0-348.el8.x86_64),
+- RHEL: `RedHat:rhel-raw:8-raw-gen2:8.5.2022032202` (kernel 4.18.0-348.20.1.el8_5.x86_64),
 - Ubuntu: `Canonical:0001-com-ubuntu-server-focal:20_04-lts-gen2:20.04.202204190` (kernel 5.13.0-1022-azure).
 
 Note: For different supported OS versions this guide may be useful as well.

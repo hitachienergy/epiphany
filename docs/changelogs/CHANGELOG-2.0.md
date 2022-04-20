@@ -4,8 +4,7 @@
 
 ### Added
 
-- [#1332](https://github.com/epiphany-platform/epiphany/issues/1332) - Support for RHEL 8.5
-- Support for AlmaLinux 8.5
+- [#1332](https://github.com/epiphany-platform/epiphany/issues/1332) - Support for RHEL 8.5 and AlmaLinux 8.5
 - [#959](https://github.com/epiphany-platform/epiphany/issues/959) - Add usage of use_network_security_groups to disable NSG on AWS
 - [#2701](https://github.com/epiphany-platform/epiphany/issues/2701) - Epicli prepare - generate files in separate directory
 - [#2812](https://github.com/epiphany-platform/epiphany/issues/2812) - Extend K8s config validation
@@ -98,4 +97,4 @@ Support for CentOS has been replaced by AlmaLinux (migration is not handled by E
 
 ### Known issues
 
-- `epicli upgrade` is not supported for RHEL or AlmaLinux
+- `epicli upgrade` is not supported yet for RHEL or AlmaLinux
