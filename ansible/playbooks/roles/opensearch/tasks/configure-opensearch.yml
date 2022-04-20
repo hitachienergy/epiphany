@@ -22,7 +22,7 @@
     xmx: "{{ specification.jvm_options.Xmx }}"
 
 - name: Generate certificates
-  when: not is_upgrade_run  # in upgrade mode certs are required at early stage and should be already generated
+  when: not is_upgrade_run # in upgrade mode certs are required at early stage and should be already generated
   block:
     - name: Install requirements for Ansible certificate modules
       include_role:
@@ -93,7 +93,6 @@
       {{ existing_es_config['opensearch_security.nodes_dn'] if (is_upgrade_run) else
          _epiphany_nodes_dn }}
     opensearch_security_allow_unsafe_democertificates: "{{ certificates.files.demo.opensearch_security.allow_unsafe_democertificates }}"
-
     http_port: "{{ is_upgrade_run | ternary(existing_es_config['http.port'],      ports.http) }}"
     transport_port: "{{ is_upgrade_run | ternary(existing_es_config['transport.port'], ports.transport) }}"
 
@@ -148,6 +147,25 @@
       delay: 1
       run_once: true
 
+    - name: Create OpenSearch admin user
+      uri:
+        <<: *uri
+        url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/admin"
+        method: PUT
+        status_code: [200]
+        body:
+          password: "{{ specification.admin_password }}"
+          reserved: "true"
+          backend_roles:
+            - "admin"
+          description: "Admin user"
+      register: uri_response
+      until: uri_response is success
+      retries: 5
+      delay: 1
+      run_once: true
+      when: admin_check_response.status == 404
+
     - name: Set OpenSearch admin password
       uri:
         <<: *uri
@@ -175,15 +193,30 @@
         <<: *uri
         url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/kibanaserver"
         method: GET
-        status_code: [200]
+        status_code: [200, 404]
       register: kibanaserver_check_response
-      until: kibanaserver_check_response is success
-      retries: 60
-      delay: 1
-      run_once: true
       when: specification.kibanaserver_user_active
 
-    - name: Set OpenSearch kibanaserver password
+    - name: Create default kibanaserver user
+      uri:
+        <<: *uri
+        url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/kibanaserver"
+        method: PUT
+        status_code: [200]
+        body:
+          password: "{{ specification.kibanaserver_password }}"
+          reserved: "true"
+          description: "Demo OpenSearch Dashboards user"
+      register: uri_response
+      until: uri_response is success
+      retries: 5
+      delay: 1
+      run_once: true
+      when:
+        - kibanaserver_check_response is defined
+        - kibanaserver_check_response.status == 404
+
+    - name: Set kibanaserver user password
       uri:
         <<: *uri
         url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/"
@@ -195,28 +228,45 @@
             value:
               password: "{{ specification.kibanaserver_password }}"
               reserved: "true"
-              description: "Kibana server user"
+              description: "Demo OpenSearch Dashboards user"
       register: uri_response
       until: uri_response is success
       retries: 15
       delay: 1
       run_once: true
-      when: specification.kibanaserver_user_active
+      when:
+        - kibanaserver_check_response is defined
+        - kibanaserver_check_response.status == 200
 
     - name: Check if default logstash user exists
       uri:
         <<: *uri
         url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/logstash"
         method: GET
-        status_code: [200]
+        status_code: [200, 404]
       register: logstash_check_response
-      until: logstash_check_response is success
-      retries: 60
-      delay: 1
-      run_once: true
       when: specification.logstash_user_active
 
-    - name: Set OpenSearch logstash password
+    - name: Create default logstash user
+      uri:
+        <<: *uri
+        url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/logstash"
+        method: PUT
+        status_code: [200]
+        body:
+          password: "{{ specification.logstash_password }}"
+          reserved: "true"
+          description: "OpenSearch logstash user"
+      register: uri_response
+      until: uri_response is success
+      retries: 5
+      delay: 1
+      run_once: true
+      when:
+        - logstash_check_response is defined
+        - logstash_check_response.status == 404
+
+    - name: Set OpenSearch logstash user password
       uri:
         <<: *uri
         url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/"
@@ -230,13 +280,15 @@
               reserved: "true"
               backend_roles:
                 - "logstash"
-              description: "Logstash user"
+              description: "OpenSearch logstash user"
       register: uri_response
       until: uri_response is success
       retries: 3
       delay: 5
       run_once: true
-      when: specification.logstash_user_active
+      when:
+        - logstash_check_response is defined
+        - kibanaserver_check_response.status == 200
 
     - name: Remove OpenSearch demo users
       uri:

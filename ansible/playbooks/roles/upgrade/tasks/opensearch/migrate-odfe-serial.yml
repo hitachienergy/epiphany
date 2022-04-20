@@ -20,8 +20,14 @@
     mode: u=rw,go=r
     directory_mode: true
   with_items:
-  - { 1: "/var/lib/elasticsearch-snapshots/", 2: "{{ specification.paths.opensearch_repo }}/" }
-  - { 1: "/var/lib/elasticsearch", 2: "{{ specification.paths.opensearch_data }}" }
+    - {
+        1: "/var/lib/elasticsearch-snapshots/",
+        2: "{{ specification.paths.opensearch_repo }}/",
+      }
+    - {
+        1: "/var/lib/elasticsearch",
+        2: "{{ specification.paths.opensearch_data }}",
+      }
 
 - name: ODFE migration | Prepare a list of Elasticsearch certs and keys
   find:
@@ -52,8 +58,8 @@
     regexp: "{{ item.1 }}"
     replace: "{{ item.2 }}"
   with_items:
-  - { 1: 'elasticsearch', 2: 'opensearch' }
-  - { 1: '\${ES_TMPDIR}', 2: '${OPENSEARCH_TMPDIR}' }
+    - { 1: 'elasticsearch', 2: 'opensearch' }
+    - { 1: '\${ES_TMPDIR}', 2: '${OPENSEARCH_TMPDIR}' }
 
 - name: ODFE migration | Clone main configuration file
   copy:
@@ -71,9 +77,9 @@
     regexp: "{{ item.1 }}"
     replace: "{{ item.2 }}"
   with_items:
-    - { 1: 'elasticsearch', 2: 'opensearch' }
-    - { 1: 'EpiphanyElastic', 2: 'EpiphanyOpensearch' }
-    - { 1: 'opendistro_security.', 2: 'plugins.security.' }
+    - { 1: "elasticsearch", 2: "opensearch" }
+    - { 1: "EpiphanyElastic", 2: "EpiphanyOpensearch" }
+    - { 1: "opendistro_security.", 2: "plugins.security." }
 
 - name: ODFE migration | Start OpenSearch service
   systemd:

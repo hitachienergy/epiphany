@@ -28,6 +28,8 @@
     es_transport_port: "{{ existing_config.main['transport.port'] | default(ports.transport) }}"
     es_clustered: "{{ (existing_config.main['discovery.seed_hosts'] | length > 1) | ternary(True, False) }}"
     es_node_name: "{{ existing_config.main['node.name'] }}"
+    override_main_response_version_exist:
+      - "{{ existing_config.main['compatibility.override_main_response_version'] | default(false) }}"
 
 - name: ODFE migration | Assure Elasticsearch files location will be used in following tasks
   set_fact:
@@ -39,7 +41,7 @@
       files:
         admin:
           cert: "epiphany-admin.pem"
-          key:  "epiphany-admin-key.pem"
+          key: "epiphany-admin-key.pem"
 
 - name: ODFE migration | Prepare ODFE to OpenSearch migration
   include_tasks:
@@ -54,7 +56,7 @@
     es_api:
       cert_type: Epiphany
       cert_path: "{{ (certificates.dirs.certs, certificates.files.admin.cert) | path_join }}"
-      key_path:  "{{ (certificates.dirs.certs, certificates.files.admin.key)  | path_join }}"
+      key_path: "{{ (certificates.dirs.certs, certificates.files.admin.key) | path_join }}"
       url: https://{{ es_host }}:{{ es_http_port }}
     fail_msg: API access test failed
 
@@ -62,8 +64,8 @@
   include_tasks:
     file: opensearch/migrate-odfe-serial.yml
     apply:
-          delegate_to: "{{ target_hostname }}"
-          delegate_facts: true
+      delegate_to: "{{ target_hostname }}"
+      delegate_facts: true
   loop: "{{ groups.logging | default([]) }}"
   loop_control:
     loop_var: target_hostname
@@ -77,7 +79,7 @@
     status_code: [200, 404]
     validate_certs: false
     client_cert: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert }}"
-    client_key:  "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key }}"
+    client_key: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key }}"
   register: admin_check_response
   until: admin_check_response is success
   retries: 60
@@ -99,7 +101,7 @@
             - "admin"
           description: "Admin user"
     client_cert: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert }}"
-    client_key:  "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key }}"
+    client_key: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key }}"
     body_format: json
     validate_certs: false
   register: uri_response
@@ -117,7 +119,7 @@
     status_code: [200, 404]
     validate_certs: false
     client_cert: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert }}"
-    client_key:  "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key }}"
+    client_key: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key }}"
   register: kibanaserver_check_response
   until: kibanaserver_check_response is success
   retries: 60
@@ -137,7 +139,7 @@
           reserved: "true"
           description: "kibanaserver user"
     client_cert: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert }}"
-    client_key:  "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key }}"
+    client_key: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key }}"
     body_format: json
     validate_certs: false
   register: uri_response
@@ -155,7 +157,7 @@
     status_code: [200, 404]
     validate_certs: false
     client_cert: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert }}"
-    client_key:  "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key }}"
+    client_key: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key }}"
   register: logstash_check_response
   until: logstash_check_response is success
   retries: 60
@@ -175,9 +177,9 @@
           reserved: "true"
           backend_roles:
             - "logstash"
-          description: "logstash user"
+          description: "Logstash user"
     client_cert: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert }}"
-    client_key:  "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key }}"
+    client_key: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key }}"
     body_format: json
     validate_certs: false
   register: uri_response
@@ -209,6 +211,6 @@
     es_api:
       cert_type: Epiphany
       cert_path: "{{ (certificates.dirs.certs, certificates.files.admin.cert) | path_join }}"
-      key_path:  "{{ (certificates.dirs.certs, certificates.files.admin.key)  | path_join }}"
+      key_path: "{{ (certificates.dirs.certs, certificates.files.admin.key)  | path_join }}"
       url: https://{{ es_host }}:{{ es_http_port }}
     fail_msg: API access test failed.

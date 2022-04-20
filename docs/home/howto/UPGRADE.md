@@ -1,4 +1,5 @@
 # Upgrade
+
 - [Upgrade](#upgrade)
   - [Introduction](#introduction)
   - [Online upgrade](#online-upgrade)
@@ -38,6 +39,7 @@
       - [v0.13.x => v0.14.x](#v013x--v014x-1)
       - [v0.14.x => v1.0.x](#v014x--v10x-1)
       - [v1.0.x => v1.1.3](#v10x--v113-1)
+
 ## Introduction
 
 From Epicli 0.4.2 and up the CLI has the ability to perform upgrades on certain components on a cluster. The components
@@ -89,10 +91,10 @@ Your airgapped existing cluster should meet the following requirements:
 3. The cluster machines/vm`s should be accessible through SSH with a set of SSH keys you provided and configured on each
    machine yourself.
 4. A provisioning machine that:
-  - Has access to the SSH keys
-  - Has access to the build output from when the cluster was first created.
-  - Is on the same network as your cluster machines
-  - Has Epicli 0.4.2 or up running.
+- Has access to the SSH keys
+- Has access to the build output from when the cluster was first created.
+- Is on the same network as your cluster machines
+- Has Epicli 0.4.2 or up running.
     *Note. To run Epicli check the [Prerequisites](./PREREQUISITES.md)*
 
 ### Start the online upgrade
@@ -124,10 +126,10 @@ Your airgapped existing cluster should meet the following requirements:
   - Runs the same distribution as the airgapped cluster machines/vm`s (AlmaLinux 8, RedHat 8, Ubuntu 20.04)
   - Has access to the internet.
 5. A provisioning machine that:
-  - Has access to the SSH keys
-  - Has access to the build output from when the cluster was first created.
-  - Is on the same network as your cluster machines
-  - Has Epicli 0.4.2 or up running.
+- Has access to the SSH keys
+- Has access to the build output from when the cluster was first created.
+- Is on the same network as your cluster machines
+- Has Epicli 0.4.2 or up running.
 
 ---
 **NOTE**
@@ -303,34 +305,15 @@ in  [ZooKeeper documentation](https://cwiki.apache.org/confluence/display/ZOOKEE
 ---
 **NOTE**
 
-Make sure you have a backup before proceeding to migration steps described below !
+Make sure you have a backup before proceeding to migration steps described below!
 
 ---
-Following the decision of Elastic NV<sup>[1]</sup> on ceasing open source options available for Elasticsearch and Kibana and releasing them under the Elastic license (more info [here](https://github.com/epiphany-platform/epiphany/issues/2870)) Epiphany team decided to implement a mechanism of automatic migration from  ElasticSearch 7.10.2 to OpenSearch 1.2.4.
+Following the decision of Elastic NV<sup>[1]</sup> on ceasing open source options available for Elasticsearch and Kibana and releasing them under the Elastic license (more info [here](https://github.com/epiphany-platform/epiphany/issues/2870)) Epiphany team decided to implement a mechanism of automatic migration from ElasticSearch 7.10.2 to OpenSearch 1.2.4.
 
-It is important to remember that while the new platform makes an effort to continue to support a broad set of third party tools (ie. Beats tools) however there can be some drawbacks or even malfunctions came across all over the way as not everything have been tested or have explicitly been added to OpenSearch compatibility scope<sup>[2]</sup>.
-Additionally some of the components (ie. ElasticSearch Curator) or some embedded service accounts ( ie. _kibanaserver_) can be still found in OpenSearch environment but they will be successfully phased out.
+It is important to remember, that while the new platform makes an effort to continue to support a broad set of third party tools (ie. Beats) there can be some drawbacks or even malfunctions came across all over the way as not everything has been tested or has explicitly been added to OpenSearch compatibility scope<sup>[2]</sup>.
+Additionally some of the components (ie. ElasticSearch Curator) or some embedded service accounts ( ie. *kibanaserver*) can be still found in OpenSearch environment but they will be successfully phased out.
 
-The migration can be fired by placing `odfe_migration` switch in your manifest file:
-```yaml
-[..]
----
-kind: configuration/logging
-title: Logging Config
-[..]
-specification:
-  [..]
-  odfe_migration: true  # <<-------
-  [..]
-```
-and running the `upgrade` command against the logging component of your Epiphany installation, together with a `-f` option:
-```
-epicli upgrade -b <path-to>/<your-build-folder> --upgrade-components "logging,filebeat" -f <path-to>/<your-manifest>.yml
-```
-Keep in mind, that for the current version of OPS/OPSD it is necessary to include the `filebeat` component along with the loggging  one in order to implement the workaround for _Kibana API not available_ [bug](https://github.com/opensearch-project/OpenSearch-Dashboards/issues/656#issuecomment-978036236).
-The default value of the  `odfe_migration` parameter is set to _false_.
-
-All described below remarks related to TLS certificates of the  Open Distro upgrade stay valid. You should plan and test all your upgrade activities before proceeding on the production.
+Keep in mind, that for the current version of OpenSearch and OpenSearch Dashboards it is necessary to include the `filebeat` component along with the loggging one in order to implement the workaround for *Kibana API not available* [bug](https://github.com/opensearch-project/OpenSearch-Dashboards/issues/656#issuecomment-978036236).
 
 Upgrade of the ESS/ODFE versions not shipped with the previous Epiphany releases is not supported. If your environment is customized it needs to be standardized ( as described in [this](https://opensearch.org/docs/latest/upgrade-to/upgrade-to/#upgrade-paths) table ) prior to running the subject migration.
 
@@ -340,21 +323,7 @@ Migration of Elasticsearch Curator is not supported. More info on use of Curator
 
 <sup>[2]</sup> https://opensearch.org/docs/latest/clients/agents-and-ingestion-tools/index/
 
-
-<br>
-
-## Open Distro for Elasticsearch upgrade
-
----
-**NOTE**
-
-Before upgrade procedure make sure you have a data backup!
-
----
-
-Since Epiphany v1.0.0 we provide upgrade elasticsearch-oss package to v7.10.2 and opensearch-\* plugins package to
-v1.13.\*. Upgrade will be performed automatically when the upgrade procedure detects your `logging`
-, `opensearch` or `kibana` hosts.
+Upgrade will be performed automatically when the upgrade procedure detects your `logging`, `opensearch` or `kibana` hosts.
 
 Upgrade of Elasticsearch uses API calls (GET, PUT, POST) which requires an admin TLS certificate. By default, Epiphany
 generates self-signed certificates for this purpose but if you use your own, you have to provide the admin certificate's
