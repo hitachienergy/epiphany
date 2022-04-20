@@ -1,0 +1,38 @@
+---
+kind: configuration/rook
+title: "Kubernetes Rook Config"
+name: default
+specification:
+  rook_namespace: rook-ceph
+  enabled: false
+  use_local_image_registry: true
+  operator_chart_values:
+    image:
+      repository: rook/ceph
+      tag: v1.8.8
+    csi:
+      volumeReplication:
+        enabled: false
+        image: quay.io/csiaddons/volumereplication-operator:v0.3.0
+      csiAddons:
+        enabled: false
+        image: quay.io/csiaddons/k8s-sidecar:v0.2.1
+      cephcsi:
+        image: quay.io/cephcsi/cephcsi:v3.5.1
+      registrar:
+        image: k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.5.0
+      provisioner:
+        image: k8s.gcr.io/sig-storage/csi-provisioner:v3.1.0
+      snapshotter:
+        image: k8s.gcr.io/sig-storage/csi-snapshotter:v5.0.1
+      attacher:
+        image: k8s.gcr.io/sig-storage/csi-attacher:v3.4.0
+      resizer:
+        image: k8s.gcr.io/sig-storage/csi-resizer:v1.4.0
+  cluster_chart_values:
+    toolbox:
+      enabled: false
+      image: rook/ceph:v1.8.8
+    cephClusterSpec:
+      cephVersion:
+        image: quay.io/ceph/ceph:v16.2.7

@@ -1,0 +1,5 @@
+---
+rook_helm_chart_file_name: rook-ceph-v1.8.8.tgz
+rook_helm_cluster_chart_file_name: rook-ceph-cluster-v1.8.8.tgz
+rook_helm_chart_name: rook-ceph
+rook_helm_cluster_chart_name: rook-ceph-cluster

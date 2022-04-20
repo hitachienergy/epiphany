@@ -49,6 +49,8 @@ specification:
       enabled: true
     - name: applications
       enabled: true
+    - name: rook
+      enabled: true
 
   roles_mapping:
     kafka:
@@ -100,6 +102,7 @@ specification:
       - node-exporter
       - logging
       - firewall
+      - rook
     single_machine:
       - repository
       - image-registry
@@ -109,10 +112,12 @@ specification:
       - rabbitmq
       - postgresql
       - firewall
+      - rook
     kubernetes_master:
       - kubernetes-master
       - helm
       - applications
+      - rook
       - node-exporter
       - filebeat
       - firewall

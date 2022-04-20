@@ -55,6 +55,15 @@ properties:
         type: integer
       managed_disk_type:
         type: string
+  additional_disks:
+    type: array
+    items:
+      type: object
+      properties:
+        storage_account_type:
+          type: string
+        disk_size_gb:
+          type: integer
   network_interface:
     type: object
     properties:
