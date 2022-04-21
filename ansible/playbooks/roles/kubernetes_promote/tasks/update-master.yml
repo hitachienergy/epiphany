@@ -47,6 +47,8 @@
         | kubectl apply \
           --namespace kube-system \
           -f-
+      args:
+        executable: /bin/bash
       vars:
         server: https://localhost:3446
 
