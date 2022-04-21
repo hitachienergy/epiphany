@@ -1,10 +1,10 @@
 from pathlib import Path
-from typing import Dict, List
+from typing import Any, Dict, List
 import logging
 import os
 
-from src.config import Config
-from src.mode.base_mode import BaseMode, SHA_ALGORITHMS
+from src.config.config import Config
+from src.mode.base_mode import BaseMode, load_yaml_file, SHA_ALGORITHMS
 
 
 class DebianFamilyMode(BaseMode):
@@ -60,6 +60,16 @@ class DebianFamilyMode(BaseMode):
                 repo_handler.write(data['content'])
 
         self._tools.apt.update()
+
+    def _parse_packages(self) -> Dict[str, Any]:
+        distro_level_file: Path = self._cfg.reqs_path / self._cfg.distro_subdir / 'packages.yml'
+        distro_doc = load_yaml_file(distro_level_file)
+
+        reqs: Dict = {
+            'packages': distro_doc['packages']
+        }
+
+        return reqs
 
     def _download_packages(self):
         # path needs to be changed since `apt download` does not allow to set target dir

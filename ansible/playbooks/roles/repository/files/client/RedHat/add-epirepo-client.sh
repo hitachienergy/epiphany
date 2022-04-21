@@ -13,7 +13,8 @@ name=epirepo
 baseurl=$REPOSITORY_URL/packages/
 enabled=1
 gpgcheck=0
+module_hotfixes=true
 EOF
 
-yum makecache fast
-yum repolist
+dnf makecache timer
+dnf repolist

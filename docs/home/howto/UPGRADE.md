@@ -45,8 +45,8 @@ Your airgapped existing cluster should meet the following requirements:
 1. The cluster machines/vm`s are connected by a network or virtual network of some sorts and can communicate which each
    other and have access to the internet:
 2. The cluster machines/vm`s are **upgraded** to the following versions:
+  - AlmaLinux 8.5+
   - RedHat 7.6
-  - CentOS 7.6
   - Ubuntu 20.04
 3. The cluster machines/vm`s should be accessible through SSH with a set of SSH keys you provided and configured on each
    machine yourself.
@@ -77,13 +77,13 @@ Your airgapped existing cluster should meet the following requirements:
 1. The airgapped cluster machines/vm`s are connected by a network or virtual network of some sorts and can communicate
    with each other:
 2. The airgapped cluster machines/vm`s are **upgraded** to the following versions:
+  - AlmaLinux 8.5+
   - RedHat 7.6
-  - CentOS 7.6
   - Ubuntu 20.04
 3. The airgapped cluster machines/vm`s should be accessible through SSH with a set of SSH keys you provided and
    configured on each machine yourself.
 4. A requirements machine that:
-  - Runs the same distribution as the airgapped cluster machines/vm`s (RedHat 7, CentOS 7, Ubuntu 20.04)
+  - Runs the same distribution as the airgapped cluster machines/vm`s (AlmaLinux 8, RedHat 7, Ubuntu 20.04)
   - Has access to the internet.
 5. A provisioning machine that:
   - Has access to the SSH keys
@@ -109,7 +109,7 @@ To upgrade the cluster components run the following steps:
     ```
 
     Where:
-    - OS should be `redhat-7`, `ubuntu-20.04`
+    - OS should be `almalinux-8`, `rhel-8`, `ubuntu-20.04`
     - ARCH should be `x86_64`, `arm64`
 
    This will create a directory called `prepare_scripts` with the needed files inside.
@@ -122,7 +122,7 @@ To upgrade the cluster components run the following steps:
     ```
 
     Where:
-    - OS should be `redhat-7`, `ubuntu-20.04`, `detect`
+    - OS should be `almalinux-8`, `rhel-8`, `ubuntu-20.04`, `detect`
     - /requirementsoutput/ where to output downloaded requirements
 
     This will run the download-requirements script for target OS type and save requirements under /requirementsoutput/. Once run successfully the `/requirementsoutput/` needs to be copied to the provisioning machine to be used later on.
@@ -403,7 +403,7 @@ limitations related to specifying parameters for upgrade:
 ### Manual actions
 
 Epiphany runs `pg_upgrade` (on primary node only) from a dedicated location (`pg_upgrade_working_dir`). For Ubuntu, this
-is `/var/lib/postgresql/upgrade/$PG_VERSION` and for RHEL/CentOS `/var/lib/pgsql/upgrade/$PG_VERSION`. Epiphany saves
+is `/var/lib/postgresql/upgrade/$PG_VERSION` and for RHEL `/var/lib/pgsql/upgrade/$PG_VERSION`. Epiphany saves
 there output from `pg_upgrade` as logs which should be checked after the upgrade.
 
 #### Post-upgrade processing

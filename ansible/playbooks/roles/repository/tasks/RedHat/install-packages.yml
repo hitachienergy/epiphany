@@ -1,28 +1,26 @@
 ---
-- include_vars:
-    file: roles/common/vars/main.yml
-    name: common_vars
+- name: Get information on installed packages
+  package_facts:
+    manager: rpm
+  when: ansible_facts.packages is undefined
 
-# Fix to solve issues with expiring certificates on Azure
+# Update RHUI client certificate
 # https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/redhat/redhat-rhui#update-expired-rhui-client-certificate-on-a-vm
-# TODO: Needs to be updated for RHEL 8
-- name: Update repository certificates
+- name: Update RHUI client package
   yum:
-    enablerepo: "*microsoft*"
-    disablerepo: "*"
-    state: "latest"
+    enablerepo: 'rhui-microsoft-azure*'
+    disablerepo: '*'
+    state: latest  # noqa: package-latest
     update_only: true
-    name: "*"
-  when:
-    - common_vars.provider == "azure"
-    - ansible_distribution == "RedHat"
-    - ansible_distribution_major_version == "7"
+    name: '*'
+  when: ansible_facts.packages.keys() | select('search', 'rhui-azure')
 
 - name: Install RedHat family packages for repository to work
   yum:
     name:
-      - python3  # python3.6 by default on RHEL7
-      - python3-pip
+      - python36
+      - python3-pyyaml
+      - rsync  # for Ansible (synchronize module)
     state: present
   register: result
   retries: 3

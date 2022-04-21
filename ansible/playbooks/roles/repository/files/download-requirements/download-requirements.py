@@ -1,13 +1,14 @@
 #!/usr/bin/python3
 import datetime
 import logging
+import shlex
+import sys
+
 from os import execv, getuid
 from typing import List
 
-import sys
-
 from src.command.toolchain import TOOLCHAINS
-from src.config import Config
+from src.config.config import Config
 from src.error import DownloadRequirementsError
 
 
@@ -16,12 +17,11 @@ def install_missing_modules(config: Config):
     Install 3rd party missing modules.
     Used for offline mode.
     """
-    tools = TOOLCHAINS[config.os_type](config.retries)
-    config.pip_installed = tools.ensure_pip()
-    config.poyo_installed = tools.pip.install('poyo', '==0.5.0', user=True)
+    tools = TOOLCHAINS[config.os_type.os_family](config.retries)
+    config.pyyaml_installed = tools.ensure_pyyaml()
 
-    if config.poyo_installed:
-        logging.debug('Installed `poyo==0.5.0` library')
+    if config.pyyaml_installed:
+        logging.debug(f'Installed {tools.pyyaml_package} package')
 
 
 def rerun_download_requirements(config: Config):
@@ -32,31 +32,28 @@ def rerun_download_requirements(config: Config):
     """
     additional_args: List[str] = ['--rerun']
 
-    # carry over info about installed 3rd party tools and modules:
-    if config.pip_installed:
-        additional_args.append('--pip-installed')
+    # carry over info about installed 3rd party modules:
+    if config.pyyaml_installed:
+        additional_args.append('--pyyaml-installed')
 
-    if config.poyo_installed:
-        additional_args.append('--poyo-installed')
+    # sys.executable is used to preserve python interpreter in CMD column of ps command (/proc/<PID>/cmdline)
+    cmd: List[str] = [sys.executable, __file__] + sys.argv[1:] + additional_args
+    quoted_cmd: str = " ".join([shlex.quote(i) for i in cmd])
+    logging.debug(f'Rerunning as: `{quoted_cmd}`')
 
-    execv(__file__, sys.argv + additional_args)
+    execv(sys.executable, cmd)
 
 
 def cleanup(config: Config):
     """
-    Remove any 3rd party modules and tools.
+    Remove any 3rd party modules.
     Used for offline mode.
     """
-    tools = TOOLCHAINS[config.os_type](config.retries)
+    tools = TOOLCHAINS[config.os_type.os_family](config.retries)
 
-    if config.poyo_installed:
-        logging.info('Uninstalling 3rd party python modules:')
-        tools.pip.uninstall('poyo', '==0.5.0')
-        logging.info('Done.')
-
-    if config.pip_installed:
-        logging.info('Uninstalling pip3...')
-        tools.uninstall_pip()
+    if config.pyyaml_installed:
+        logging.info(f'Uninstalling {tools.pyyaml_package} package...')
+        tools.uninstall_pyyaml()
         logging.info('Done.')
 
 

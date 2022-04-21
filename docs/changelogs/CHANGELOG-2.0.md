@@ -4,6 +4,7 @@
 
 ### Added
 
+- [#1332](https://github.com/epiphany-platform/epiphany/issues/1332) - Support for RHEL 8.5 and AlmaLinux 8.5
 - [#959](https://github.com/epiphany-platform/epiphany/issues/959) - Add usage of use_network_security_groups to disable NSG on AWS
 - [#2701](https://github.com/epiphany-platform/epiphany/issues/2701) - Epicli prepare - generate files in separate directory
 - [#2812](https://github.com/epiphany-platform/epiphany/issues/2812) - Extend K8s config validation
@@ -74,6 +75,8 @@
 
 ### Removed
 
+- Support for RHEL 7
+- Support for CentOS
 - [#2834](https://github.com/epiphany-platform/epiphany/issues/2834) - Removal of Hashicorp Vault component
 - [#2833](https://github.com/epiphany-platform/epiphany/issues/2833) - Removal of Logstash component
 - [#2836](https://github.com/epiphany-platform/epiphany/issues/2836) - Removal of Istio component
@@ -85,8 +88,13 @@
 
 ### Breaking changes
 
+- **RHEL 7 and CentOS are not supported**. For RHEL, release 8.5 is required and upgrade from version 7 is not handled by Epiphany.
+Support for CentOS has been replaced by AlmaLinux (migration is not handled by Epiphany).
+- Support for ARM architecture has been removed (together with CentOS), planned to be added for AlmaLinux in the next release.
 - Upgrade of Terraform components in issue [#2825](https://github.com/epiphany-platform/epiphany/issues/2825) and [#2853](https://github.com/epiphany-platform/epiphany/issues/2853) will make running re-apply with infrastructure break on existing 1.x clusters. The advice is to deploy a new cluster and migrate data. If needed a manual upgrade path is described [here.](../home/howto/UPGRADE.md#terraform-upgrade-from-epiphany-1.x-to-2.x)
 - Kubernetes container runtime changed. Dockershim and Docker are no longer on Kubernetes hosts.
 - Filebeat `docker` input replaced by `container` input. New field provided for Filebeat as system service installation: `container.id`. Field `kubernetes.container.name` is no longer valid.
 
 ### Known issues
+
+- `epicli upgrade` is not supported yet for RHEL or AlmaLinux

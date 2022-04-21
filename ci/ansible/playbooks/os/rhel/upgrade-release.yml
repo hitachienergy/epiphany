@@ -1,0 +1,559 @@
+---
+# Based on https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/upgrading_from_rhel_7_to_rhel_8/index
+# and partially on https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/redhat/redhat-in-place-upgrade
+
+# This play requires a Leapp metadata archive from the Red Hat portal which cannot be shared publicly.
+# Local path to this archive must be provided via 'leapp_archive' variable, for example:
+
+# ansible-playbook -e leapp_archive=/absolute/path/leapp-data15.tar.gz
+
+# Requirements:
+# - System attached to RHUI repositories or Red Hat subscription ('non_cloud' provider)
+
+# Limitations:
+# - Ansible connection as root is not supported (PermitRootLogin)
+
+# TODO:
+# Fix issue when running on AWS on repository host deployed with epicli 1.0.2 (instance auto-recovery)
+
+- name: In-place RHEL release upgrade
+  hosts: "{{ target | default('all') }}"
+  become: true
+  vars:
+    versions:
+      required: {major: '7', full: '7.9'}  # minimal version from which upgrade is supported
+      target: {major: '8', full: '8.5'}
+
+    leapp_dependencies:
+      packages:
+        aws:
+          - leapp-rhui-aws
+          - rh-amazon-rhui-client
+        azure:
+          - leapp-rhui-azure
+          - rhui-azure-rhel7
+        non_cloud:
+          - leapp-upgrade
+      repos:
+        aws:
+          - name: rhui-client-config-server-7
+            repo_file: /etc/yum.repos.d/redhat-rhui-client-config.repo
+          - name: rhel-7-server-rhui-extras-rpms
+            repo_file: /etc/yum.repos.d/redhat-rhui.repo
+        azure:
+          - name: rhui-microsoft-azure-rhel7
+            repo_file: /etc/yum.repos.d/rh-cloud.repo
+          - name: rhui-rhel-7-server-rhui-extras-rpms
+            repo_file: /etc/yum.repos.d/rh-cloud.repo
+        non_cloud:
+          - name: rhel-7-server-extras-rpms
+            repo_file: /etc/yum.repos.d/redhat.repo
+
+    reboot:
+      connect_timeout: 5  # maximum seconds to wait for a successful connection to the managed hosts before next trial
+      update_timeout: 500
+      upgrade_timeout: 3600  # long wait required by Leapp utility service
+
+  tasks:
+    - name: End the play for already upgraded hosts
+      meta: end_host
+      when: ansible_distribution_version is version(versions.target.full, '>=')
+
+    ### PRE-UPGRADE ###
+
+    - name: Assert required major version
+      assert:
+        that: ansible_distribution_major_version == versions.required.major
+        fail_msg: Upgrade from current major version is not supported
+        quiet: true
+
+    - name: Validate Leapp metadata file
+      block:
+        - name: Assert leapp_archive variable
+          assert:
+            that:
+              - leapp_archive is defined
+              - leapp_archive | length > 0
+            quiet: true
+
+        - name: Check if Leapp metadata file exists
+          stat:
+            path: "{{ leapp_archive }}"
+            get_attributes: false
+            get_checksum: false
+            get_mime: false
+          delegate_to: localhost
+          register: stat_leapp_archive
+
+        - name: Assert Leapp metadata file exists
+          assert:
+            that: stat_leapp_archive.stat.exists
+            fail_msg: "File not found: {{ leapp_archive }}"
+            quiet: true
+
+    - name: Detect and set provider type
+      block:
+        - name: Get information on repository files
+          find:
+            path: /etc/yum.repos.d
+            patterns: '*.repo'
+          register: find_repo_files
+
+        - name: Set provider
+          set_fact:
+            provider: >-
+              {{ 'aws' if _repo_file_paths | select('search', leapp_dependencies.repos.aws.0.repo_file) else
+                 'azure' if _repo_file_paths | select('search', leapp_dependencies.repos.azure.0.repo_file) else
+                 'non_cloud' }}
+          vars:
+            _repo_file_paths: "{{ find_repo_files.files | map(attribute='path') }}"
+
+        - name: Print detected provider
+          debug:
+            var: provider
+
+    - name: Register SELinux state
+      set_fact:
+        pre_upgrade_selinux_facts: "{{ ansible_facts.selinux }}"
+
+    - name: Register enabled repositories
+      command: yum repolist --quiet
+      register: pre_upgrade_enabled_repositories
+      changed_when: false
+
+    - name: Ensure repositories that provide leapp utility are enabled
+      ini_file:
+        path: "{{ item.repo_file }}"
+        section: "{{ item.name }}"
+        option: enabled
+        value: 1
+        mode: u=rw,go=r
+      loop: "{{ leapp_dependencies.repos[provider] }}"
+
+    - name: Update repository certificates
+      when: provider == "azure"
+      yum:
+        enablerepo: rhui-microsoft-azure-rhel7
+        disablerepo: "*"
+        state: latest
+        update_only: true
+        name: "*"
+
+    - &UPDATE_ALL_PACKAGES
+      name: Update all packages in current major version
+      yum:
+        update_cache: true
+        name: "*"
+        state: latest  # noqa: package-latest
+
+    - &REBOOT_SYSTEM_AFTER_UPDATE
+      name: Reboot system after update  # to load kernel from latest minor version if any
+      reboot:
+        msg: Reboot initiated by Ansible due to update
+        connect_timeout: "{{ reboot.connect_timeout }}"
+        reboot_timeout: "{{ reboot.update_timeout }}"
+      vars:
+        # disable connection sharing to avoid random warning on stderr: Failed to reset connection
+        ansible_control_path: none
+
+    - &REFRESH_ANSIBLE_FACTS
+      name: Refresh Ansible facts
+      setup:
+        gather_subset: min
+
+    - name: Assert latest minor version
+      assert:
+        that: ansible_distribution_version is version(versions.required.full, '>=')
+        quiet: true
+
+    - name: Install packages that provide the leapp utility
+      package:
+        name: "{{ leapp_dependencies.packages[provider] }}"
+        state: present
+
+    - name: Copy leapp metadata archive
+      copy:
+        src: "{{ leapp_archive }}"
+        dest: /etc/leapp/files/leapp-data15.tar.gz
+        mode: preserve
+
+    - name: Unarchive leapp metadata
+      unarchive:
+        src: /etc/leapp/files/leapp-data15.tar.gz
+        dest: /etc/leapp/files/
+        remote_src: true
+
+    # Address upgrade inhibitors
+    # PermitRootLogin option is required to be defined explicitly
+    # PermitRootLogin defaults to 'yes' but 'no' is more secure so it's preferred
+    - name: Ensure PermitRootLogin is defined
+      block:
+        - name: Get sshd settings
+          command: sshd -T
+          changed_when: false
+          register: pre_upgrade_sshd_settings
+
+        - name: Check if PermitRootLogin is defined
+          command: grep -i '^PermitRootLogin' /etc/ssh/sshd_config
+          changed_when: false
+          register: grep_permit_root_login
+          failed_when: grep_permit_root_login.rc > 1
+
+        - name: Define PermitRootLogin
+          when:
+            - "'permitrootlogin no' not in pre_upgrade_sshd_settings.stdout_lines"
+            - grep_permit_root_login.rc == 1
+          lineinfile:
+            dest: /etc/ssh/sshd_config
+            regexp: '^#PermitRootLogin'
+            line: 'PermitRootLogin no'
+            state: present
+            backup: true
+          register: sshd_config
+
+    - &RESTART_SSHD
+      name: Restart sshd service
+      when: sshd_config.changed
+      systemd:
+        name: sshd
+        state: restarted
+
+    - name: Disable kernel modules that are not supported in RHEL 8
+      modprobe:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - floppy
+        - pata_acpi
+
+    - name: Keep only one kernel-devel package when multiple are present
+      block:
+        - name: Get list of all installed packages
+          yum:  # we need envra format thus yum module is used
+            list: installed
+          register: installed_packages
+
+        - name: Register installed versions of kernel-devel package
+          set_fact:
+            installed_kernel_devel_packages: "{{ installed_packages | json_query(_query) }}"
+          vars:
+            _query: results[?name=='kernel-devel'].envra
+
+        - name: Remove old versions of kernel-devel package
+          when: installed_kernel_devel_packages | count > 1
+          yum:
+            name: "{{ installed_kernel_devel_packages[:-1] }}"  # keep the last item
+            state: absent
+
+    ### UPGRADE ###
+
+    - name: Provide leapp answer about pam_pkcs11_module removal
+      command: leapp answer --add --section remove_pam_pkcs11_module_check.confirm=True
+
+    - name: Start leapp upgrade
+      command: leapp upgrade {{ '--no-rhsm' if provider != 'non_cloud' }}
+
+    - name: Reboot system to complete leapp upgrade procedure
+      reboot:
+        msg: Reboot initiated by Ansible due to major release upgrade
+        connect_timeout: "{{ reboot.connect_timeout }}"
+        reboot_timeout: "{{ reboot.upgrade_timeout }}"
+      vars:
+        # disable connection sharing to avoid random warning on stderr: Failed to reset connection
+        ansible_control_path: none
+
+    # Upgrade removes python2 but Ansible wants to use it after the reboot.
+    # Refreshing Ansible facts does not solve this issue.
+    - name: Switch ansible_python_interpreter
+      set_fact:
+        ansible_python_interpreter: /usr/libexec/platform-python
+
+    # leapp_resume is temporary service which resumes execution after reboot (it is removed automatically)
+    - name: Wait until /etc/systemd/system/leapp_resume.service is removed
+      wait_for:
+        path: /etc/systemd/system/leapp_resume.service
+        state: absent
+
+    ### POST-UPGRADE -- VERIFICATION ###
+
+    - *REFRESH_ANSIBLE_FACTS
+
+    - name: Assert major version
+      assert:
+        that:
+          - ansible_distribution_version is version('8.4','=')
+          - ansible_kernel is version('4.18.0-305','>=')
+        quiet: true
+
+    - name: Verify subscription status for non_cloud machines
+      when: provider == 'non_cloud'
+      block:
+        - name: Register OS version in subscription-maganer
+          shell: "subscription-manager list --installed | awk '/Version:/ { print $2 }'"
+          register: subscription_version
+
+        - name: Register subscription status
+          shell: "subscription-manager list --installed | awk '/Status:/ { print $2 }'"
+          register: subscription_status
+
+        - name: Check that upgraded version remains correctly subscribed
+          assert:
+            that:
+              - subscription_version.stdout == "8.4"
+              - subscription_status.stdout == "Subscribed"
+            quiet: true
+
+    ### POST-UPGRADE -- CLEANUP ###
+
+    - name: Remove packages from the dnf exclude list  # populated by leapp during upgrade
+      ini_file:
+        path: /etc/dnf/dnf.conf
+        section: main
+        option: exclude
+        value: ''
+        mode: u=rw,go=r
+
+    ## Remove Leapp
+
+    - name: Remove leapp packages
+      package:
+        name: 'leapp*'  # Leapp packages may have different nomenclature in RHEL 8
+        state: absent
+
+    - name: Remove leapp configuration
+      file:
+        path: /etc/leapp
+        state: absent
+
+    ## Remove RHEL 7 packages
+
+    - name: Remove remaining RHEL 7 packages
+      block:
+        - name: Gather list of remaining RHEL 7 packages
+          shell: rpm -qa | grep -e '\\.el7' | grep -vE '^(gpg-pubkey|libmodulemd|katello-ca-consumer)'
+          register: remaining_rhel7_packages
+          changed_when: false
+          failed_when: remaining_rhel7_packages.rc > 1
+
+        - name: Remove remaining RHEL 7 packages
+          when: remaining_rhel7_packages.stdout_lines | length > 0
+          dnf:
+            name: "{{ remaining_rhel7_packages.stdout_lines }}"
+            state: absent
+
+        - name: Determine RHEL 7 old kernel versions
+          command: ls -1d *.el7*
+          args:
+            chdir: /lib/modules
+          register: old_kernel_versions
+          changed_when: false
+          failed_when: old_kernel_versions.rc not in [0, 2]  # 2 when nothing found
+
+        - name: Remove weak modules from old kernels
+          command: /usr/sbin/weak-modules --remove-kernel {{ item }}
+          loop: "{{ old_kernel_versions.stdout_lines }}"
+
+        - name: Remove old kernels from bootloader entries
+          command: /bin/kernel-install remove {{ item }} /lib/modules/{{ item }}/vmlinuz
+          loop: "{{ old_kernel_versions.stdout_lines }}"
+
+    - name: Update EPEL repo
+      when:
+        - provider == 'non_cloud'
+        - "'Extra Packages for Enterprise Linux 7' in pre_upgrade_enabled_repositories.stdout"
+      block:
+        - name: Remove EPEL 7 repository
+          package:
+            name: epel-release
+            state: absent
+
+        - name: Install GPG key for EPEL 8 package
+          rpm_key:
+            key: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-8
+
+        - name: Install EPEL 8 repository
+          yum:
+            name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+            state: present
+
+    ## Fix failed services
+
+    - name: Azure specific block
+      when: provider == 'azure'
+      block:
+        - name: Gather service facts
+          service_facts: ~
+
+        - &SET_FAILED_SERVICES_FACT
+          name: Set list of failed services
+          set_fact:
+            failed_services: "{{ ansible_facts.services | json_query('*[] | [?(@.status==`failed`)].name') }}"
+
+        - name: Print failed services
+          when: failed_services | count > 0
+          debug:
+            var: failed_services
+
+        - name: Fix cloud-init.service
+          when: "'cloud-init.service' in failed_services"
+          block:
+            - name: Replace old cloud-init config file
+              copy:
+                remote_src: true
+                src: /etc/cloud/cloud.cfg.rpmnew
+                dest: /etc/cloud/cloud.cfg
+                backup: true
+                force: true
+                mode: preserve
+
+            - name: Disable ssh hostkeys deletion  # avoids regeneration of hostkeys after removing cache on service restart
+              lineinfile:
+                dest: /etc/cloud/cloud.cfg
+                regexp: '^ssh_deletekeys: 1'
+                line: 'ssh_deletekeys: 0'
+                state: present
+              register: cloud_init_cfg_ssh_deletekeys
+
+            - name: Remove cloud-init cache  # initially populated with python2 dependencies that are unmet in RHEL 8
+              block:
+                - name: Find files holding the cloud-init service cache
+                  find:
+                    paths: /var/lib/cloud/instances
+                    patterns: 'obj.pkl'
+                    recurse: true
+                  register: cloud_init_cache
+
+                - name: Remove cloud-init cache files
+                  file:
+                    path: "{{ item }}"
+                    state: absent
+                  loop: "{{ cloud_init_cache.files | map(attribute='path') }}"
+
+            - name: Restart cloud-init service  # Azure /mnt mount point is cloud-init dependent
+              systemd:
+                name: cloud-init
+                state: restarted
+
+            - name: Restore cloud-init config file
+              when: cloud_init_cfg_ssh_deletekeys.changed
+              copy:
+                remote_src: true
+                src: /etc/cloud/cloud.cfg.rpmnew
+                dest: /etc/cloud/cloud.cfg
+                force: true
+                mode: preserve
+
+        - name: Fix temp-disk-dataloss-warning.service
+          when: "'temp-disk-dataloss-warning.service' in failed_services"
+          block:
+            - name: Remount Azure specific cloud-init filesystem  # /dev/disk/cloud/azure_resource-part1
+              command: mount -av  # remount all filesystems from /etc/fstab except partitions with noauto option
+              register: result
+              changed_when: "'successfully mounted' in result.stdout"
+
+            - name: Restart temp-disk-dataloss-warning service
+              systemd:
+                name: temp-disk-dataloss-warning
+                state: restarted
+
+        - name: Fix waagent-network-setup.service
+          when: "'waagent-network-setup.service' in failed_services"
+          block:
+            # This file is auto-generated by WALinuxAgent, after upgrade it contains non-existing path to python2
+            - name: Remove old waagent-network-setup.service unit file
+              file:
+                path: /usr/lib/systemd/system/waagent-network-setup.service
+                state: absent
+
+            - name: Restart waagent service  # will re-create waagent-network-setup.service unit
+              systemd:
+                name: waagent
+                state: restarted
+
+            - name: Wait for new waagent-network-setup.service unit file
+              wait_for:
+                path: /usr/lib/systemd/system/waagent-network-setup.service
+                state: present
+
+            - name: Restart waagent-network-setup service
+              systemd:
+                name: waagent-network-setup
+                state: restarted
+                daemon_reload: true
+
+    ## Verify services
+
+    - name: Gather service facts
+      service_facts: ~
+
+    - *SET_FAILED_SERVICES_FACT
+
+    # user@<UID>.service may fail due to bug that is fixed in RHEL 8.5 (https://access.redhat.com/solutions/5931241)
+    - name: Assert there are no failed services
+      assert:
+        that: failed_services | reject('match', 'user@') | count == 0
+        fail_msg: "Failed service(s) found: {{ failed_services | join(', ') }}"
+        quiet: true
+
+    ### POST-UPGRADE -- UPDATE CONFIGURATION ###
+
+    - name: Re-enable SElinux
+      when: pre_upgrade_selinux_facts.status == 'enabled'
+      block:
+        - name: Print pre-upgrade SElinux settings
+          debug:
+            var: pre_upgrade_selinux_facts
+
+        - name: Re-enable SELinux
+          ansible.posix.selinux:
+            policy: "{{ pre_upgrade_selinux_facts.type }}"
+            state: "{{ pre_upgrade_selinux_facts.config_mode }}"
+          register: restore_selinux
+
+    - name: Unset subscription-manager release preference
+      when: provider == 'non_cloud'
+      block:
+        - name: Check if release preference is set
+          command: subscription-manager release --show
+          register: subscription_manager_release
+          changed_when: false
+
+        - name: Unset subscription-manager release preference to consume the latest RHEL content
+          when: "'Release not set' not in subscription_manager_release.stdout"
+          command: subscription-manager release --unset
+          register: result
+          failed_when: result.rc > 1 # May return code 1 even when correctly subscribed if system purpose is not defined
+
+    ### POST-UPGRADE -- UPDATE TO TARGET VERSION ###
+
+    - name: Update release to 8.5
+      block:
+        - name: Determine if 8.5 is the latest version
+          command: dnf --releasever 8.5 list kernel  # will fail when 8.5 is not the latest minor release
+          register: is_8_5_latest_version_available
+          changed_when: false
+          failed_when: is_8_5_latest_version_available.rc > 1
+
+        - name: Unlock release to latest  # mirrors will not point to 8.5 when it is the latest
+          when: is_8_5_latest_version_available.rc == 1
+          file:
+            path: /etc/dnf/vars/releasever
+            state: absent
+
+        - name: Set release to 8.5
+          when: is_8_5_latest_version_available.rc == 0  # 8.5 is not the latest
+          copy:
+            content: '8.5'
+            dest: /etc/dnf/vars/releasever
+            mode: u=rw,go=r
+
+        - *UPDATE_ALL_PACKAGES
+
+        - *REBOOT_SYSTEM_AFTER_UPDATE  # 8.5 brings a new kernel update
+
+        - *REFRESH_ANSIBLE_FACTS
+
+        - name: Assert update to 8.5 succeeded
+          assert:
+            that: ansible_distribution_version is version(versions.target.full, '=')
+            quiet: true

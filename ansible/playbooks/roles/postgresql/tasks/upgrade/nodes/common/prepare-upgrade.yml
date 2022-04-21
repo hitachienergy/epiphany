@@ -4,7 +4,7 @@
 # Ubuntu:
 # - 'main' cluster is created automatically and postgresql services are started
 # - database doesn't initialize automatically on second run
-# RHEL/CentOS:
+# RHEL:
 # - cluster name is empty, service is not started
 
 - name: Install PostgreSQL {{ new_version.pg.version }} package(s)

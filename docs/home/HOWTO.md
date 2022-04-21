@@ -15,7 +15,6 @@
   - [How to create an Epiphany cluster using custom system repository and Docker image registry](./howto/CLUSTER.md#how-to-create-an-epiphany-cluster-using-custom-system-repository-and-docker-image-registry)
   - [How to create an Epiphany cluster on a cloud provider](./howto/CLUSTER.md#how-to-create-an-epiphany-cluster-on-a-cloud-provider)
     - [Note for RHEL Azure images](./howto/CLUSTER.md#note-for-rhel-azure-images)
-    - [Note for CentOS Azure images](./howto/CLUSTER.md#note-for-centos-azure-images)
     - [How to disable merging LVM logical volumes](./howto/CLUSTER.md#how-to-disable-merging-lvm-logical-volumes)
   - [How to delete an Epiphany cluster on a cloud provider](./howto/CLUSTER.md#how-to-delete-an-epiphany-cluster-on-a-cloud-provider)
   - [Single machine cluster](./howto/CLUSTER.md#single-machine-cluster)
