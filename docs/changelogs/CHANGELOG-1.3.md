@@ -5,6 +5,7 @@
 ### Fixed
 
 - [#2997](https://github.com/epiphany-platform/epiphany/issues/2997) - Doubled HAProxy entries in prometheus.yml after upgrade
+- [#2996](https://github.com/epiphany-platform/epiphany/issues/2996) - Introduce the new configuration field to change a component name
 
 ## [1.3.0] 2022-01-19
 

@@ -125,16 +125,6 @@ specification:
         destination_port_range: "5000"
         source_address_prefix: "10.1.0.0/20"
         destination_address_prefix: "0.0.0.0/0"
-  #    - name: node2-subnet-traffic
-  #      description: Allow node subnet traffic
-  #      priority: 102
-  #      direction: Inbound
-  #      access: Allow
-  #      protocol: "*"
-  #      source_port_range: "*"
-  #      destination_port_range: "0"
-  #      source_address_prefix: "10.1.4.0/24"
-  #      destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
 title: "Virtual Machine Infra"
@@ -365,16 +355,6 @@ specification:
         destination_port_range: "0"
         source_address_prefix: "10.1.1.0/24"
         destination_address_prefix: "0.0.0.0/0"
-      #- name: kubernetes-traffic2
-      #  description: Allow Kubernetes subnet traffic
-      #  priority: 102
-      #  direction: Inbound
-      #  access: Allow
-      #  protocol: "*"
-      #  source_port_range: "*"
-      #  destination_port_range: "0"
-      #  source_address_prefix: "10.1.2.0/24"
-      #  destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
 title: "Virtual Machine Infra"
@@ -495,16 +475,6 @@ specification:
         destination_port_range: "5000"
         source_address_prefix: "10.1.0.0/20"
         destination_address_prefix: "0.0.0.0/0"
-  #    - name: node2-subnet-traffic
-  #      description: Allow node subnet traffic
-  #      priority: 102
-  #      direction: Inbound
-  #      access: Allow
-  #      protocol: "*"
-  #      source_port_range: "*"
-  #      destination_port_range: "0"
-  #      source_address_prefix: "10.1.4.0/24"
-  #      destination_address_prefix: "0.0.0.0/0"
 ---
 kind: infrastructure/virtual-machine
 title: "Virtual Machine Infra"

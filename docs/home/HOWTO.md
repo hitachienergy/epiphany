@@ -143,3 +143,8 @@
 
 - [Configuration file](./howto/CONFIGURATION_FILE.md)
   - [Named lists](./howto/CONFIGURATION_FILE.md#named-lists)
+
+- [Hostnames](./howto/HOSTNAMES.md)
+  - [Limitations](./howto/HOSTNAMES.md#limitations)
+  - [Generation rule](./howto/HOSTNAMES.md#generation-rule)
+  - [Changing component name](./howto/HOSTNAMES.md#changing-component-name)
