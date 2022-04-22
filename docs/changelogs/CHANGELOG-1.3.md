@@ -2,10 +2,14 @@
 
 ## [1.3.1] 2022-xx-xx
 
+### Added
+
+- [#2996](https://github.com/epiphany-platform/epiphany/issues/2996) - Introduce the new configuration field to change a component name
+- [#3057](https://github.com/epiphany-platform/epiphany/issues/3057) - Additional AWS authentication option
+
 ### Fixed
 
 - [#2997](https://github.com/epiphany-platform/epiphany/issues/2997) - Doubled HAProxy entries in prometheus.yml after upgrade
-- [#2996](https://github.com/epiphany-platform/epiphany/issues/2996) - Introduce the new configuration field to change a component name
 
 ## [1.3.0] 2022-01-19
 
