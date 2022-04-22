@@ -5,6 +5,7 @@
 ### Added
 
 - [#2996](https://github.com/epiphany-platform/epiphany/issues/2996) - Introduce the new configuration field to change a component name
+- [#3057](https://github.com/epiphany-platform/epiphany/issues/3057) - Additional AWS authentication option
 
 ## [1.0.2] 2022-01-26
 
