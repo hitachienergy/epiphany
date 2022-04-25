@@ -118,6 +118,7 @@
   - [How to export Elasticsearch data to csv format](./howto/LOGGING.md#how-to-export-elasticsearch-data-to-csv-format)
   - [How to add multiline support for Filebeat logs](./howto/LOGGING.md#how-to-add-multiline-support-for-filebeat-logs)
   - [How to deploy Filebeat as Daemonset in K8s](./howto/LOGGING.md#how-to-deploy-filebeat-as-daemonset-in-k8s)
+  - [Audit logs](./howto/LOGGING.md#audit-logs)
 
 - [Maintenance](./howto/MAINTENANCE.md)
   - [Verification of service state](./howto/MAINTENANCE.md#verification-of-service-state)

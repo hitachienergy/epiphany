@@ -2,6 +2,10 @@
 
 ## [1.3.1] 2022-xx-xx
 
+### Added
+
+- [#3060](https://github.com/epiphany-platform/epiphany/issues/3060) - Allow to disable Open Distro audit logs
+
 ### Fixed
 
 - [#2997](https://github.com/epiphany-platform/epiphany/issues/2997) - Doubled HAProxy entries in prometheus.yml after upgrade
