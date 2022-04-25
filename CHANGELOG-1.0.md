@@ -5,6 +5,7 @@
 ### Added
 
 - [#2996](https://github.com/epiphany-platform/epiphany/issues/2996) - Introduce the new configuration field to change a component name
+- [#3060](https://github.com/epiphany-platform/epiphany/issues/3060) - Allow to disable Open Distro audit logs
 
 ## [1.0.2] 2022-01-26
 
