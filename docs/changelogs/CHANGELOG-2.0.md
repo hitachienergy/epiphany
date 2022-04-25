@@ -27,6 +27,7 @@
 - [#1452](https://github.com/epiphany-platform/epiphany/issues/1452) - Create Kubernetes Native Storage Epiphany configuration for Azure provider
 - [#2891](https://github.com/epiphany-platform/epiphany/issues/2891) - Rook/Ceph Kubernetes Native Storage for AWS non-EKS
 - [#2887](https://github.com/epiphany-platform/epiphany/issues/2887) - Create Kubernetes Native Storage Epiphany configuration for AWS provider
+- [#2734](https://github.com/epiphany-platform/epiphany/issues/2734) - Document upgrade Red Hat / CentOS 7 to v 8.x
 
 ### Fixed
 
