@@ -14,6 +14,7 @@
 - [#3004](https://github.com/epiphany-platform/epiphany/issues/3004) - `disk_size_gb` hardcoded in `/usr/local/epicli/data/azure/defaults/infrastructure/virtual-machine.yml`
 - [#2934](https://github.com/epiphany-platform/epiphany/issues/2934) - Duplicated entries in image-registry defaults (LTS)
 - [#3065](https://github.com/epiphany-platform/epiphany/issues/3065) - Flag `delete_os_disk_on_termination` has no effect when removing cluster
+- [#2996](https://github.com/epiphany-platform/epiphany/issues/2996) - Introduce the new configuration field to change a component name
 
 ## [1.0.2] 2022-01-26
 
