@@ -6,6 +6,10 @@
 
 - [#2996](https://github.com/epiphany-platform/epiphany/issues/2996) - Introduce the new configuration field to change a component name
 
+### Fixed
+
+- [#3102](https://github.com/epiphany-platform/epiphany/issues/3102) - Errors in system logs: /var/lib/prometheus/node-exporter: no such file or directory
+
 ## [1.0.2] 2022-01-26
 
 ### NOTE ###
