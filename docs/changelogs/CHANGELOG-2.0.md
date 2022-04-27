@@ -1,5 +1,11 @@
 # Changelog 2.0
 
+## [2.0.1] YYYY-MM-DD
+
+### Updated
+
+- [#3080](https://github.com/epiphany-platform/epiphany/issues/3080) - update Filebeat to the latest compatible version with OpenSearch
+
 ## [2.0.0] YYYY-MM-DD
 
 ### Added
