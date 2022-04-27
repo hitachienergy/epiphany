@@ -10,9 +10,9 @@ class APIProxy:
         self.cluster_model = cluster_model
         self.config_docs = config_docs
         credentials = self.cluster_model.specification.cloud.credentials
-        session_token = credentials.token if credentials.token and credentials.token.strip() else None
-        self.session = boto3.session.Session(aws_access_key_id=credentials.key,
-                                             aws_secret_access_key=credentials.secret,
+        session_token = credentials.session_token if credentials.session_token and credentials.session_token.strip() else None
+        self.session = boto3.session.Session(aws_access_key_id=credentials.access_key_id,
+                                             aws_secret_access_key=credentials.secret_access_key,
                                              aws_session_token=session_token,
                                              region_name=self.cluster_model.specification.cloud.region)
 
@@ -63,7 +63,7 @@ class APIProxy:
 
     def login(self, env=None):
         # Pass to match the interface of the 'aws' provider APIProxy. For 'was' provider we already login with
-        # key and secret when we create the BOTO3 session.
+        # key_id and secret when we create the BOTO3 session.
         pass
 
     def get_image_id(self, os_full_name):

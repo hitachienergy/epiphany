@@ -53,8 +53,8 @@ TEST_CLUSTER_MODEL = {
             'use_service_principal': False,
             'region': 'West Europe',
             'credentials': {
-                'key': '1111-1111-1111',
-                'secret': 'XXXXXXXXXXXXXXX'
+                'access_key_id': '1111-1111-1111',
+                'secret_access_key': 'XXXXXXXXXXXXXXX'
             },
             'default_os_image': 'default'
         },

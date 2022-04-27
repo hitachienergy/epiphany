@@ -19,9 +19,9 @@ name: default
 specification:
   cloud:
     credentials:
-      key: <access_key_id>
-      secret: <secret_access_key>
-      token: <session_token>
+      access_key_id: <access_key_id>
+      secret_access_key: <secret_access_key>
+      session_token: <session_token>
 ```
 
 ## How to enable/disable Epiphany service user

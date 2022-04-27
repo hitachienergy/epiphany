@@ -270,8 +270,8 @@ specification:
     name: centos
   cloud:
     credentials:
-      key: xxxx
-      secret: xxxx
+      access_key_id: xxxx
+      secret_access_key: xxxx
     region: eu-west-1
     use_public_ips: true
   components:

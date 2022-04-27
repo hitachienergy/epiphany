@@ -31,8 +31,8 @@ TEST_MINIMAL_CLUSTER_CONFIG = {
             'use_public_ips': False,
             'credentials':
             {
-                'key': 'XXXX-XXXX-XXXX',
-                'secret': 'XXXXXXXXXXXXXXXX'
+                'access_key_id': 'XXXX-XXXX-XXXX',
+                'secret_access_key': 'XXXXXXXXXXXXXXXX'
             },
             'default_os_image': 'default'
         },

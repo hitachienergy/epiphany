@@ -244,8 +244,8 @@ specification:
   cloud:
     region: eu-central-1
     credentials:
-      key: YOUR_AWS_KEY
-      secret: YOUR_AWS_SECRET
+      access_key_id: YOUR_AWS_KEY
+      secret_access_key: YOUR_AWS_SECRET
     use_public_ips: true
   components:
     repository:

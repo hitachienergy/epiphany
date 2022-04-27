@@ -79,20 +79,20 @@ properties:
         type: object
         title: The Credentials Schema
         required:
-        - key
-        - secret
+        - access_key_id
+        - secret_access_key
         properties:
-          key:
+          access_key_id:
             "$id": "#/properties/specification/properties/cloud/properties/credentials/properties/key"
             type: string
             title: The Key Schema
             pattern: "^(.*)$"
-          secret:
+          secret_access_key:
             "$id": "#/properties/specification/properties/cloud/properties/credentials/properties/secret"
             type: string
             title: The Secret Schema
             pattern: "^(.*)$"
-          token:
+          session_token:
             "$id": "#/properties/specification/properties/cloud/properties/credentials/properties/token"
             type: string
             title: The session token

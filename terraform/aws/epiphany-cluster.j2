@@ -20,10 +20,10 @@ terraform {
 }
 
 provider "aws" {
-  access_key = "{{ specification.cloud.credentials.key }}"
-  secret_key = "{{ specification.cloud.credentials.secret }}"
-{% if specification.cloud.credentials.token is defined and specification.cloud.credentials.token|length %}
-  token = "{{ specification.cloud.credentials.token }}"
+  access_key = "{{ specification.cloud.credentials.access_key_id }}"
+  secret_key = "{{ specification.cloud.credentials.secret_access_key }}"
+{% if specification.cloud.credentials.session_token is defined and specification.cloud.credentials.session_token|length %}
+  token = "{{ specification.cloud.credentials.session_token }}"
 {% endif %}
   region     = "{{ specification.cloud.region }}"
 }
