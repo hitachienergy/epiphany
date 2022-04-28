@@ -1,0 +1,4 @@
+---
+epiphany_registry:
+  container_name: epiphany-registry
+  volume_name: epiphany-registry
