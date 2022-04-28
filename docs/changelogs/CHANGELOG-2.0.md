@@ -6,6 +6,10 @@
 
 - [#3057](https://github.com/epiphany-platform/epiphany/issues/3057) - Additional AWS authentication option
 
+### Breaking changes
+
+- AWS credentials configuration parameters are renamed from `specification.cloud.credentials.key` and `specification.cloud.credentials.secret` to `specification.cloud.credentials.access_key_id` and `specification.cloud.credentials.secret_access_key`.
+
 ## [2.0.0] YYYY-MM-DD
 
 ### Added
@@ -87,6 +91,5 @@
 - Upgrade of Terraform components in issue [#2825](https://github.com/epiphany-platform/epiphany/issues/2825) and [#2853](https://github.com/epiphany-platform/epiphany/issues/2853) will make running re-apply with infrastructure break on existing 1.x clusters. The advice is to deploy a new cluster and migrate data. If needed a manual upgrade path is described [here.](../home/howto/UPGRADE.md#terraform-upgrade-from-epiphany-1.x-to-2.x)
 - Kubernetes container runtime changed. Dockershim and Docker are no longer on Kubernetes hosts.
 - Filebeat `docker` input replaced by `container` input. New field provided for Filebeat as system service installation: `container.id`. Field `kubernetes.container.name` is no longer valid.
-- AWS credentials configuration parameters are renamed from `specification.cloud.credentials.key` and `specification.cloud.credentials.secret` to `specification.cloud.credentials.access_key_id` and `specification.cloud.credentials.secret_access_key`.
 
 ### Known issues
