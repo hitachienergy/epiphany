@@ -6,6 +6,7 @@
 
 - [#2997](https://github.com/epiphany-platform/epiphany/issues/2997) - Doubled HAProxy entries in prometheus.yml after upgrade
 - [#2996](https://github.com/epiphany-platform/epiphany/issues/2996) - Introduce the new configuration field to change a component name
+- [#3034](https://github.com/epiphany-platform/epiphany/issues/3034) - [RHEL/CentOS] GPG signature could not be verified for Kubernetes repository
 - [#3065](https://github.com/epiphany-platform/epiphany/issues/3065) - Flag `delete_os_disk_on_termination` has no effect when removing cluster
 - [#3006](https://github.com/epiphany-platform/epiphany/issues/3006) - install 'containerd.io=1.4.12-*' failed, when upgrade from v1.3.0 to 2.0.0dev
 
