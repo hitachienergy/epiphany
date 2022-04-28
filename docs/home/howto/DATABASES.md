@@ -491,11 +491,11 @@ By default, Kibana is deployed only for `logging` component. If you want to depl
 for `opendistro_for_elasticsearch` you have to modify feature mapping. Use below configuration in your manifest.
 
 ```yaml
-kind: configuration/feature-mapping
-title: "Feature mapping to roles"
+kind: configuration/feature-mappings
+title: "Feature mapping to components"
 name: default
 specification:
-  roles_mapping:
+  mappings:
     opendistro_for_elasticsearch:
       - opendistro-for-elasticsearch
       - node-exporter

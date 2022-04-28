@@ -1,58 +1,9 @@
-kind: configuration/feature-mapping
-title: "Feature mapping to roles"
+---
+kind: configuration/feature-mappings
+title: "Feature mapping to components"
 name: default
 specification:
-  available_roles:
-    - name: repository
-      enabled: true
-    - name: firewall
-      enabled: true
-    - name: image-registry
-      enabled: true
-    - name: kubernetes-master
-      enabled: true
-    - name: kubernetes-node
-      enabled: true
-    - name: helm
-      enabled: true
-    - name: logging
-      enabled: true
-    - name: opendistro-for-elasticsearch
-      enabled: true
-    - name: elasticsearch-curator
-      enabled: true
-    - name: kibana
-      enabled: true
-    - name: filebeat
-      enabled: true
-    - name: prometheus
-      enabled: true
-    - name: grafana
-      enabled: true
-    - name: node-exporter
-      enabled: true
-    - name: jmx-exporter
-      enabled: true
-    - name: zookeeper
-      enabled: true
-    - name: kafka
-      enabled: true
-    - name: rabbitmq
-      enabled: true
-    - name: kafka-exporter
-      enabled: true
-    - name: postgresql
-      enabled: true
-    - name: postgres-exporter
-      enabled: true
-    - name: haproxy
-      enabled: true
-    - name: applications
-      enabled: true
-    - name: rook
-      enabled: true
-
-  roles_mapping:
+  mappings:
     kafka:
       - zookeeper
       - jmx-exporter

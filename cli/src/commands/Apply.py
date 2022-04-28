@@ -1,5 +1,6 @@
 import os
 import sys
+from typing import Dict
 
 from cli.src.ansible.AnsibleRunner import AnsibleRunner
 from cli.src.helpers.build_io import (get_build_path, get_inventory_path,
@@ -213,23 +214,26 @@ class Apply(Step):
                     raise Exception("ControlPlane downscale is not supported yet. Please revert your 'kubernetes_master' count to previous value or increase it to scale up Kubernetes.")
 
 
+    def __load_configuration_doc(self, kind: str) -> Dict:
+        doc = select_first(self.input_docs, lambda x: x.kind == kind)
+        if not doc:
+            return load_schema_obj(schema_types.DEFAULT, 'common', kind)
+
+        with DefaultMerger([doc]) as doc_merger:
+            return doc_merger.run()[0]
+
     def assert_no_postgres_nodes_number_change(self):
-        feature_mapping = select_first(self.input_docs, lambda x: x.kind == 'configuration/feature-mapping')
-        if feature_mapping:
-            with DefaultMerger([feature_mapping]) as doc_merger:
-                feature_mapping = doc_merger.run()
-            feature_mapping = feature_mapping[0]
-        else:
-            feature_mapping = load_schema_obj(schema_types.DEFAULT, 'common', 'configuration/feature-mapping')
+        feature_mappings = self.__load_configuration_doc('configuration/feature-mappings')
+        features = self.__load_configuration_doc('configuration/features')
 
         components = self.cluster_model.specification.components
         if self.inventory:
             next_postgres_node_count = 0
             prev_postgres_node_count = len(self.inventory.list_hosts(pattern='postgresql'))
-            postgres_available = [x for x in feature_mapping.specification.available_roles if x.name == 'postgresql']
+            postgres_available = [x for x in features.specification if x.name == 'postgresql']
             if postgres_available[0].enabled:
-                for key, roles in feature_mapping.specification.roles_mapping.items():
-                    if ('postgresql') in roles and key in components:
+                for key, features in feature_mappings.specification.items():
+                    if ('postgresql') in features and key in components:
                         next_postgres_node_count = next_postgres_node_count + components[key].count
 
             if prev_postgres_node_count > 0 and prev_postgres_node_count != next_postgres_node_count:
