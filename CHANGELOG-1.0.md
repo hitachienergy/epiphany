@@ -10,6 +10,7 @@
 ### Fixed
 
 - [#3034](https://github.com/epiphany-platform/epiphany/issues/3034) - [RHEL/CentOS] GPG signature could not be verified for Kubernetes repository
+- [#3102](https://github.com/epiphany-platform/epiphany/issues/3102) - Errors in system logs: /var/lib/prometheus/node-exporter: no such file or directory
 
 ## [1.0.2] 2022-01-26
 
