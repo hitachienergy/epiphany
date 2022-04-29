@@ -9,7 +9,7 @@ class APIProxy:
         self.cluster_model = cluster_model
         self.config_docs = config_docs
         credentials = self.cluster_model.specification.cloud.credentials
-        session_token = credentials.token if credentials.token and credentials.token.strip() else None
+        session_token = credentials.session_token if credentials.session_token else None
         self.session = boto3.session.Session(aws_access_key_id=credentials.key,
                                              aws_secret_access_key=credentials.secret,
                                              aws_session_token=session_token,
