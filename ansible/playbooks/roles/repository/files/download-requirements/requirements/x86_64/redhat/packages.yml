@@ -92,6 +92,7 @@ packages:
     - 'python3-libselinux'
     - 'python3-lxml'  # for java-1.8.0-openjdk-headless
     - 'python3-nftables'  # for python3-firewall
+    - 'python3-pip'  # for python36
     - 'python3-policycoreutils'  # for container-selinux
     - 'python3-psycopg2'
     - 'python3-pycparser'  # for python3-cryptography
