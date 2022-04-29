@@ -186,26 +186,26 @@ This file has to be modified according to your Elasticsearch configuration and d
 
 `Note: Exporting data is not automated. It has to be invoked manually. Logstash daemon is disabled by default after installation.`
 
-Run Logstash to export data:  
+Run Logstash to export data:
 `/usr/share/logstash/bin/logstash -f /etc/logstash/logstash-export.conf`
 
-More details about configuration of input plugin:  
+More details about configuration of input plugin:
 https://www.elastic.co/guide/en/logstash/current/plugins-inputs-elasticsearch.html
 
-More details about configuration of output plugin:  
+More details about configuration of output plugin:
 https://www.elastic.co/guide/en/logstash/current/plugins-outputs-csv.html
 
 Note: Currently input plugin doesn't officialy support skipping certificate validation for secure connection to Elasticsearch.
 
-For non-production environment you can easly disable it by adding new line:  
-`ssl_options[:verify] = false` right after other ssl_options definitions in file:  
+For non-production environment you can easly disable it by adding new line:
+`ssl_options[:verify] = false` right after other ssl_options definitions in file:
 `/usr/share/logstash/vendor/bundle/jruby/2.5.0/gems/logstash-input-elasticsearch-4.6.2/lib/logstash/inputs/elasticsearch.rb`
 
 ## How to add multiline support for Filebeat logs
 
 In order to properly handle multilines in files harvested by Filebeat you have to provide `multiline` definition in the configuration manifest. Using the following code you will be able to specify which lines are part of a single event.
 
-By default postgresql block is provided, you can use it as example:  
+By default postgresql block is provided, you can use it as example:
 ```yaml
   postgresql_input:
     multiline:
@@ -214,7 +214,7 @@ By default postgresql block is provided, you can use it as example:
       negate: true
       match: after
 ```
-Currently supported inputs: `common_input`,`postgresql_input`,`container_input`  
+Currently supported inputs: `common_input`,`postgresql_input`,`container_input`
 More details about multiline options you can find in the [official documentation](https://www.elastic.co/guide/en/beats/filebeat/current/multiline-examples.html)
 
 ## How to deploy Filebeat as Daemonset in K8s
@@ -227,3 +227,18 @@ specification:
   cloud:
     k8s_as_cloud_service: true
 ```
+
+## Audit logs
+
+There is an [option](https://opendistro.github.io/for-elasticsearch-docs/docs/security/audit-logs/) to enable
+Open Distro audit logs which is switched on in Epiphany by default using the following configuration part:
+
+```yaml
+kind: configuration/logging
+specification:
+  opendistro_security:
+    audit:
+      type: internal_elasticsearch
+```
+
+Use the empty string value to switch audit logging off.
