@@ -1,4 +1,36 @@
 ---
+apiVersion: "v1"
+kind: "PersistentVolume"
+metadata:
+metadata:
+  name: rabbitmq-data
+  labels:
+    name: rabbitmq-data
+spec:
+  storageClassName: azurefile
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - "ReadWriteMany"
+  azureFile:
+    secretName: azure-secret
+    shareName: k8s
+    readOnly: false
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rabbitmq-data
+  namespace: {{ namespace_name }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: azurefile
+  volumeName: rabbitmq-data
+  resources:
+    requests:
+      storage: 20Gi
+---
 kind: Service
 apiVersion: v1
 metadata:
@@ -92,6 +124,10 @@ spec:
         volumeMounts:
           - name: config-volume
             mountPath: /etc/rabbitmq
+          # rabbitmq data directory
+          - name: rabbitmq-data
+            mountPath: "/var/lib/rabbitmq/mnesia"
+
         ports:
           - name: http
             protocol: TCP
@@ -135,6 +171,9 @@ spec:
       - name: {{ data.image_pull_secret_name }}
 {% endif %}
       volumes:
+        - name: rabbitmq-data
+          persistentVolumeClaim:
+            claimName: rabbitmq-data
         - name: config-volume
           configMap:
             name: rabbitmq-config
