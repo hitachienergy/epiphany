@@ -253,7 +253,7 @@ installation.
 
 ---
 
-Run Logstash to export data:  
+Run Logstash to export data:
 `/usr/share/logstash/bin/logstash -f /etc/logstash/logstash-export.conf`
 
 More details about configuration
@@ -310,7 +310,8 @@ When `specification.kibana.dashboards.enabled` is set to `auto`, the correspondi
 Other possible values are `true` and `false`.
 
 Default configuration:
-```
+
+```yaml
 specification:
   kibana:
     dashboards:
@@ -319,3 +320,18 @@ specification:
 ```
 
 Note: Setting `specification.kibana.dashboards.enabled` to `true` not providing Kibana will result in a Filebeat crash.
+
+## Audit logs
+
+There is an [option](https://opendistro.github.io/for-elasticsearch-docs/docs/security/audit-logs/) to enable
+Open Distro audit logs which is switched on in Epiphany by default using the following configuration part:
+
+```yaml
+kind: configuration/logging
+specification:
+  opendistro_security:
+    audit:
+      type: internal_elasticsearch
+```
+
+Use the empty string value to switch audit logging off.
