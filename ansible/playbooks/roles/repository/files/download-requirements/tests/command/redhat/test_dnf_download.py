@@ -2,7 +2,7 @@ from pathlib import Path
 
 from tests.mocks.command_run_mock import CommandRunMock
 
-from src.command.dnf_download import DnfDownload
+from src.command.redhat.dnf_download import DnfDownload
 
 
 def test_interface_download_packages(mocker):

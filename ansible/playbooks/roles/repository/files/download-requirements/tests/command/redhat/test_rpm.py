@@ -1,6 +1,6 @@
 from tests.mocks.command_run_mock import CommandRunMock
 
-from src.command.rpm import Rpm
+from src.command.redhat.rpm import Rpm
 
 
 def test_interface_is_package_installed(mocker):
