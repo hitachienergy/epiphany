@@ -15,7 +15,7 @@ COPY . /epicli
 RUN : INSTALL APT REQUIREMENTS \
     && apt-get update \
     && apt-get install --no-install-recommends -y \
-        autossh wget default-jre curl gcc jq libcap2-bin libc6-dev libffi-dev make musl-dev openssh-client procps psmisc rsync ruby-full sudo tar unzip vim \
+        autossh curl gcc jq libcap2-bin libc6-dev libffi-dev make musl-dev openssh-client procps psmisc rsync ruby-full sudo tar unzip vim \
 \
     && : INSTALL HELM BINARY \
     && curl -fsSLO https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz \
@@ -62,9 +62,6 @@ RUN : INSTALL APT REQUIREMENTS \
     && : SETUP EPICLI COMMAND \
     && mv /epicli/cli/epicli /bin/epicli \
     && chmod +x /bin/epicli
-
-RUN echo "Installing zap scan binary ..." 
-RUN pip3 install zapcli
 
 WORKDIR $EPICLI_DOCKER_SHARED_DIR
 
