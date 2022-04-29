@@ -83,20 +83,21 @@ properties:
         - secret_access_key
         properties:
           access_key_id:
-            "$id": "#/properties/specification/properties/cloud/properties/credentials/properties/key"
+            "$id": "#/properties/specification/properties/cloud/properties/credentials/properties/access_key_id"
             type: string
-            title: The Key Schema
+            title: The Key Id Schema
             pattern: "^(.*)$"
           secret_access_key:
-            "$id": "#/properties/specification/properties/cloud/properties/credentials/properties/secret"
+            "$id": "#/properties/specification/properties/cloud/properties/credentials/properties/secret_access_key"
             type: string
             title: The Secret Schema
             pattern: "^(.*)$"
           session_token:
-            "$id": "#/properties/specification/properties/cloud/properties/credentials/properties/token"
+            "$id": "#/properties/specification/properties/cloud/properties/credentials/properties/session_token"
             type: string
             title: The session token
-            pattern: "^(.*)$"
+            description: "Session token cannot contain whitespaces"
+            pattern: "^[^\\s]*$"
       network:
         "$id": "#/properties/specification/properties/cloud/properties/network"
         type: object
