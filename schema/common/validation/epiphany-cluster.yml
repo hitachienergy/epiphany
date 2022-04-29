@@ -92,11 +92,12 @@ properties:
             type: string
             title: The Secret Schema
             pattern: "^(.*)$"
-          token:
-            "$id": "#/properties/specification/properties/cloud/properties/credentials/properties/token"
+          session_token:
+            "$id": "#/properties/specification/properties/cloud/properties/credentials/properties/session_token"
             type: string
             title: The session token
-            pattern: "^(.*)$"
+            description: "Session token cannot contain whitespaces"
+            pattern: "^[^\\s]*$"
       network:
         "$id": "#/properties/specification/properties/cloud/properties/network"
         type: object

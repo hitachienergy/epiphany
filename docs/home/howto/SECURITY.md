@@ -21,7 +21,7 @@ specification:
     credentials:
       key: <access_key_id>
       secret: <secret_access_key>
-      token: <session_token>
+      session_token: <session_token>
 ```
 
 ## How to enable/disable Epiphany service user
