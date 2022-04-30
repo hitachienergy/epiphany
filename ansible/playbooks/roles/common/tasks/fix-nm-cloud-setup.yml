@@ -1,0 +1,24 @@
+---
+# Workaround for bug in NetworkManager-cloud-setup-1.30.0-10.el8_4 (RHEL 8.4)
+#
+# More info:
+# https://gitlab.freedesktop.org/NetworkManager/NetworkManager/-/issues/740
+# https://bugzilla.redhat.com/show_bug.cgi?id=2007341
+
+- name: Get information on installed packages
+  package_facts:
+    manager: rpm
+  when: ansible_facts.packages is undefined
+
+# "When a user wants a special network configuration, then it seems reasonable and expected
+# that they disable the automatism -- if it doesn't do what they want."
+# Source: https://gitlab.freedesktop.org/NetworkManager/NetworkManager/-/merge_requests/974
+
+- name: Remove NetworkManager-cloud-setup package
+  yum:
+    name: NetworkManager-cloud-setup
+    state: absent
+  when:
+    - ansible_facts.packages['NetworkManager-cloud-setup'] is defined
+    - ansible_facts.packages['NetworkManager-cloud-setup'][0].version is version('1.30.0', '=')
+    - ansible_facts.packages['NetworkManager-cloud-setup'][0].release == '10.el8_4'

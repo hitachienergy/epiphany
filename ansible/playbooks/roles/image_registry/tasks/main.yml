@@ -118,7 +118,7 @@
         # todo run registry with SSL - generate/copy certs, mount it to registry container
         - name: Run registry
           command: >-
-            docker run -d -e REGISTRY_HTTP_ADDR=0.0.0.0:5000 --network host --restart=always
+            docker run -d -e REGISTRY_HTTP_ADDR=0.0.0.0:5000 -p 5000:5000 --restart=always
             --name {{ epiphany_registry.container_name }} -v {{ epiphany_registry.volume_name }}:/var/lib/registry
             {{ specification.registry_image.name }}
 
