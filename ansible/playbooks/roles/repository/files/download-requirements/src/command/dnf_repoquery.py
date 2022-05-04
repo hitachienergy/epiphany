@@ -1,3 +1,4 @@
+import re
 from typing import Callable, List
 
 from src.command.command import Command
@@ -12,7 +13,7 @@ class DnfRepoquery(Command):
     def __init__(self, retries: int):
         super().__init__('dnf', retries)  # repoquery would require yum-utils package
 
-    def __query(self, packages: List[str],
+    def __query(self, defined_packages: List[str],
                 queryformat: str,
                 archlist: List[str],
                 requires: bool,
@@ -22,10 +23,10 @@ class DnfRepoquery(Command):
         """
         Run generic query using `dnf repoquery` command.
 
-        :param packages: data will be returned for those `packages`
+        :param defined_packages: data will be returned for those `defined_packages`
         :param queryformat: specify custom query output format
         :param archlist: limit results to these architectures
-        :param requires: get capabilities that the packages depend on
+        :param requires: get capabilities that the defined_packages depend on
         :param resolve: resolve capabilities to originating package(s)
         :param output_handler: different queries produce different outputs, use specific output handler
         :param only_newest: if there are more than one candidate packages, download only the newest one
@@ -42,7 +43,6 @@ class DnfRepoquery(Command):
         if only_newest:
             args.append('--latest-limit=1')
         args.append(f'--queryformat={queryformat}')
-        args.append('--quiet')
 
         if requires:
             args.append('--requires')
@@ -52,17 +52,28 @@ class DnfRepoquery(Command):
 
         args.append('-y')  # to import GPG keys
 
-        args.extend(packages)
+        args.extend(defined_packages)
 
         # dnf repoquery doesn't set error code on empty results
-        output = self.run(args).stdout
-        output_handler(output)
+        output_stdout = self.run(args).stdout
+        output_stderr = self.run(args).stderr
+
+        output_handler(output_stdout, output_stderr)
 
         packages: List[str] = []
-        for line in output.split('\n'):
+        for line in output_stdout.split('\n'):
             if line:
                 packages.append(line)
 
+        missing_packages : List[str] = []
+        for package in defined_packages:
+            r = re.compile(f'.*{package}')
+            match = list(filter(r.match, packages))
+            if not match:
+                missing_packages.append(package)
+
+        if missing_packages:
+            raise PackageNotfound(f'repoquery failed. Cannot find packages: {missing_packages}')
         return packages
 
     def query(self, packages: List[str], queryformat: str, archlist: List[str], only_newest: bool = True) -> List[str]:
@@ -79,12 +90,17 @@ class DnfRepoquery(Command):
         :returns: query result
         """
 
-        def output_handler(output: str):
+        def output_handler(output_stdout: str, output_stderr: str):
             """ In addition to errors, handle missing packages """
-            if not output:
+            if not output_stdout:
                 raise PackageNotfound(f'repoquery failed for packages `{packages}`, reason: some of package(s) not found')
-            elif 'error' in output:
-                raise CriticalError(f'repoquery failed for packages `{packages}`, reason: `{output}`')
+            if 'error' in output_stdout:
+                raise CriticalError(f'Found an error. repoquery failed for packages `{packages}`, reason: `{output_stdout}`')
+            if "Last metadata expiration check" in output_stderr:
+                pass
+                # https://dnf.readthedocs.io/en/latest/conf_ref.html#metadata-expire-label
+            else:
+                raise CriticalError(f'repoquery failed for packages `{packages}`, reason: `{output_stderr}`')
 
         return self.__query(packages, queryformat, archlist, False, False, output_handler, only_newest)
 
@@ -105,9 +121,16 @@ class DnfRepoquery(Command):
         if not packages:
             raise ValueError('packages: list cannot be empty')
 
-        def output_handler(output: str):
-            """ Handle errors """
-            if 'error' in output:
-                raise CriticalError(f'dnf repoquery failed for packages `{packages}`, reason: `{output}`')
+        def output_handler(output_stdout: str, output_stderr: str):
+            """ In addition to errors, handle missing packages """
+            if not output_stdout:
+                raise PackageNotfound(f'repoquery failed for packages `{packages}`, reason: some of package(s) not found')
+            if 'error' in output_stdout:
+                raise CriticalError(f'Found an error. repoquery failed for packages `{packages}`, reason: `{output_stdout}`')
+            if "Last metadata expiration check" in output_stderr:
+                pass
+                # https://dnf.readthedocs.io/en/latest/conf_ref.html#metadata-expire-label
+            else:
+                raise CriticalError(f'repoquery failed for packages `{packages}`, reason: `{output_stderr}`')
 
         return self.__query(packages, queryformat, archlist, True, True, output_handler, only_newest)
