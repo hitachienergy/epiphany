@@ -45,8 +45,8 @@ Your airgapped existing cluster should meet the following requirements:
 1. The cluster machines/vm`s are connected by a network or virtual network of some sorts and can communicate which each
    other and have access to the internet:
 2. The cluster machines/vm`s are **upgraded** to the following versions:
-  - AlmaLinux 8.5+
-  - RedHat 8.5+
+  - AlmaLinux 8.4+
+  - RedHat 8.4+
   - Ubuntu 20.04
 3. The cluster machines/vm`s should be accessible through SSH with a set of SSH keys you provided and configured on each
    machine yourself.
@@ -77,8 +77,8 @@ Your airgapped existing cluster should meet the following requirements:
 1. The airgapped cluster machines/vm`s are connected by a network or virtual network of some sorts and can communicate
    with each other:
 2. The airgapped cluster machines/vm`s are **upgraded** to the following versions:
-  - AlmaLinux 8.5+
-  - RedHat 8.5+
+  - AlmaLinux 8.4+
+  - RedHat 8.4+
   - Ubuntu 20.04
 3. The airgapped cluster machines/vm`s should be accessible through SSH with a set of SSH keys you provided and
    configured on each machine yourself.

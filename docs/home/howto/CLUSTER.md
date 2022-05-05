@@ -79,8 +79,8 @@ Epicli has the ability to set up a cluster on infrastructure provided by you. Th
 At least one of them (with `repository` role) has Internet access in order to download dependencies.
 If there is no Internet access, you can use [air gap feature (offline mode)](#how-to-create-an-epiphany-cluster-on-existing-air-gapped-infrastructure).
 2. The cluster machines/VMs are running one of the following Linux distributions:
-    - AlmaLinux 8.5+
-    - RedHat 7.6+ and < 8
+    - AlmaLinux 8.4+
+    - RedHat 8.4+
     - Ubuntu 20.04
 3. The cluster machines/VMs are accessible through SSH with a set of SSH keys you provide and configure on each machine yourself (key-based authentication).
 4. The user used for SSH connection (`admin_user`) has passwordless root privileges through `sudo`.

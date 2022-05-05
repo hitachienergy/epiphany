@@ -49,3 +49,7 @@
   lineinfile:
     path: /home/{{ admin_user.name }}/.bash_profile
     line: source /etc/profile.d/operations.sh
+
+- name: Fix NetworkManager-cloud-setup issue
+  include_tasks: fix-nm-cloud-setup.yml
+  when: ansible_distribution_version is version('8.4','=')
