@@ -17,7 +17,8 @@ class DnfRepoquery(Command):
                 archlist: List[str],
                 requires: bool,
                 resolve: bool,
-                output_handler: Callable) -> List[str]:
+                output_handler: Callable,
+                only_newest: bool = True) -> List[str]:
         """
         Run generic query using `dnf repoquery` command.
 
@@ -27,6 +28,7 @@ class DnfRepoquery(Command):
         :param requires: get capabilities that the packages depend on
         :param resolve: resolve capabilities to originating package(s)
         :param output_handler: different queries produce different outputs, use specific output handler
+        :param only_newest: if there are more than one candidate packages, download only the newest one
         :raises:
             :class:`CriticalError`: can be raised on exceeding retries or when error occurred
             :class:`PackageNotfound`: when query did not return any package info
@@ -37,7 +39,8 @@ class DnfRepoquery(Command):
         args.append('repoquery')
         args.append(f'--archlist={",".join(archlist)}')
         args.append('--disableplugin=subscription-manager')  # to speed up querying
-        args.append('--latest-limit=1')
+        if only_newest:
+            args.append('--latest-limit=1')
         args.append(f'--queryformat={queryformat}')
         args.append('--quiet')
 
@@ -62,13 +65,14 @@ class DnfRepoquery(Command):
 
         return packages
 
-    def query(self, packages: List[str], queryformat: str, archlist: List[str]) -> List[str]:
+    def query(self, packages: List[str], queryformat: str, archlist: List[str], only_newest: bool = True) -> List[str]:
         """
         Generic query to dnf database.
 
         :param packages: data will be returned for those `packages`
         :param queryformat: specify custom query output format
         :param archlist: limit results to these architectures
+        :param only_newest: if there are more than one candidate packages, download only the newest one
         :raises:
             :class:`CriticalError`: can be raised on exceeding retries or when error occurred
             :class:`PackageNotfound`: when query did not return any package info
@@ -82,15 +86,16 @@ class DnfRepoquery(Command):
             elif 'error' in output:
                 raise CriticalError(f'repoquery failed for packages `{packages}`, reason: `{output}`')
 
-        return self.__query(packages, queryformat, archlist, False, False, output_handler)
+        return self.__query(packages, queryformat, archlist, False, False, output_handler, only_newest)
 
-    def get_dependencies(self, packages: List[str], queryformat: str, archlist: List[str]) -> List[str]:
+    def get_dependencies(self, packages: List[str], queryformat: str, archlist: List[str], only_newest: bool = True) -> List[str]:
         """
         Get all dependencies for `packages`.
 
         :param packages: data will be returned for those `packages`
         :param queryformat: specify custom query output format
         :param archlist: limit results to these architectures
+        :param only_newest: if there are more than one candidate packages, download only the newest one
         :raises:
             :class:`CriticalError`: can be raised on exceeding retries or when error occurred
             :class:`ValueError`: when `packages` list is empty
@@ -105,4 +110,4 @@ class DnfRepoquery(Command):
             if 'error' in output:
                 raise CriticalError(f'dnf repoquery failed for packages `{packages}`, reason: `{output}`')
 
-        return self.__query(packages, queryformat, archlist, True, True, output_handler)
+        return self.__query(packages, queryformat, archlist, True, True, output_handler, only_newest)
