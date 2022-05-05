@@ -4,6 +4,7 @@ from typing import List
 from src.command.command import Command
 from src.error import CriticalError
 
+
 class DnfDownload(Command):
     """
     Interface for `dnf download`
@@ -21,7 +22,8 @@ class DnfDownload(Command):
 
         args.append(f'--archlist={",".join(archlist)}')
         args.append(f'--destdir={str(destdir)}')
-        args.append('--disableplugin=subscription-manager')  # to speed up download
+        # to speed up download
+        args.append('--disableplugin=subscription-manager')
 
         if exclude:
             args.append(f'--exclude={exclude}')
@@ -35,16 +37,9 @@ class DnfDownload(Command):
         output_stdout = self.run(args).stdout
         output_stderr = self.run(args).stderr
 
-        def output_handler(output_stdout: str, output_stderr: str):
-                    """ In addition to errors, handle missing packages
-                    :raises:
-                        :class:`CriticalError`: raised when error occurred
-                    """
-                    if 'error' in output_stdout:
-                        raise CriticalError(f'Found an error. dnf download failed for packages `{packages}`, reason: `{output_stdout}`')
-                    if output_stderr:
-                        raise CriticalError(f'dnf download failed for packages `{packages}`, reason: `{output_stderr}`')
-
-
-        output_handler(output_stdout, output_stderr)
-
+        if 'error' in output_stdout:
+            raise CriticalError(
+                f'Found an error. dnf download failed for packages `{packages}`, reason: `{output_stdout}`')
+        if output_stderr:
+            raise CriticalError(
+                f'dnf download failed for packages `{packages}`, reason: `{output_stderr}`')
