@@ -99,9 +99,8 @@ class DnfRepoquery(Command):
             if 'error' in output_stdout:
                 raise CriticalError(f'Found an error. repoquery failed for packages `{packages}`, reason: `{output_stdout}`')
             if "Last metadata expiration check" in output_stderr:
-                pass
-                # https://dnf.readthedocs.io/en/latest/conf_ref.html#metadata-expire-label
-            else:
+                pass # https://dnf.readthedocs.io/en/latest/conf_ref.html#metadata-expire-label
+            elif output_stderr:
                 raise CriticalError(f'repoquery failed for packages `{packages}`, reason: `{output_stderr}`')
 
         return self.__query(packages, queryformat, archlist, False, False, output_handler, only_newest, False)
@@ -130,9 +129,8 @@ class DnfRepoquery(Command):
             if 'error' in output_stdout:
                 raise CriticalError(f'Found an error. repoquery failed for packages `{packages}`, reason: `{output_stdout}`')
             if "Last metadata expiration check" in output_stderr:
-                pass
-                # https://dnf.readthedocs.io/en/latest/conf_ref.html#metadata-expire-label
-            else:
+                pass # https://dnf.readthedocs.io/en/latest/conf_ref.html#metadata-expire-label
+            elif output_stderr:
                 raise CriticalError(f'repoquery failed for packages `{packages}`, reason: `{output_stderr}`')
 
         return self.__query(packages, queryformat, archlist, True, True, output_handler, only_newest, True)

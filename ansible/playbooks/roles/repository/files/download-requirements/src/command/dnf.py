@@ -12,9 +12,9 @@ class Dnf(Command):
     def __init__(self, retries: int):
         super().__init__('dnf', retries)
 
-    def update(self, enablerepo: str,
+    def update(self, enablerepo: str = None,
                      package: str = None,
-                     disablerepo: str = '*',
+                     disablerepo: str = None,
                      assume_yes: bool = True):
         """
         Interface for `dnf update`
@@ -32,8 +32,11 @@ class Dnf(Command):
         if package is not None:
             update_parameters.append(package)
 
-        update_parameters.append(f'--disablerepo={disablerepo}')
-        update_parameters.append(f'--enablerepo={enablerepo}')
+        if disablerepo is not None:
+            update_parameters.append(f'--disablerepo={disablerepo}')
+
+        if enablerepo is not None:
+            update_parameters.append(f'--enablerepo={enablerepo}')
 
         self.run(update_parameters)
 
