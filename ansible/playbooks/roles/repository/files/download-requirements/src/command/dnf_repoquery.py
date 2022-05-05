@@ -19,7 +19,8 @@ class DnfRepoquery(Command):
                 requires: bool,
                 resolve: bool,
                 output_handler: Callable,
-                only_newest: bool = True) -> List[str]:
+                only_newest: bool = True,
+                dependencies: bool = False) -> List[str]:
         """
         Run generic query using `dnf repoquery` command.
 
@@ -30,6 +31,7 @@ class DnfRepoquery(Command):
         :param resolve: resolve capabilities to originating package(s)
         :param output_handler: different queries produce different outputs, use specific output handler
         :param only_newest: if there are more than one candidate packages, download only the newest one
+        :param dependencies: if it's only to grab dependencies
         :raises:
             :class:`CriticalError`: can be raised on exceeding retries or when error occurred
             :class:`PackageNotfound`: when query did not return any package info
@@ -65,15 +67,15 @@ class DnfRepoquery(Command):
             if line:
                 packages.append(line)
 
-        missing_packages : List[str] = []
-        for package in defined_packages:
-            r = re.compile(f'.*{package}')
-            match = list(filter(r.match, packages))
-            if not match:
-                missing_packages.append(package)
-
-        if missing_packages:
-            raise PackageNotfound(f'repoquery failed. Cannot find packages: {missing_packages}')
+        if not dependencies:
+            missing_packages : List[str] = []
+            for package in defined_packages:
+                r = re.compile(f'.*{package}')
+                match = list(filter(r.match, packages))
+                if not match:
+                    missing_packages.append(package)
+            if missing_packages:
+                raise PackageNotfound(f'repoquery failed. Cannot find packages: {missing_packages}')
         return packages
 
     def query(self, packages: List[str], queryformat: str, archlist: List[str], only_newest: bool = True) -> List[str]:
@@ -102,7 +104,7 @@ class DnfRepoquery(Command):
             else:
                 raise CriticalError(f'repoquery failed for packages `{packages}`, reason: `{output_stderr}`')
 
-        return self.__query(packages, queryformat, archlist, False, False, output_handler, only_newest)
+        return self.__query(packages, queryformat, archlist, False, False, output_handler, only_newest, False)
 
     def get_dependencies(self, packages: List[str], queryformat: str, archlist: List[str], only_newest: bool = True) -> List[str]:
         """
@@ -115,7 +117,7 @@ class DnfRepoquery(Command):
         :raises:
             :class:`CriticalError`: can be raised on exceeding retries or when error occurred
             :class:`ValueError`: when `packages` list is empty
-        :returns: query result
+        :returns: list of dependencies for `packages`
         """
         # repoquery without KEY argument will query dependencies for all packages
         if not packages:
@@ -133,4 +135,4 @@ class DnfRepoquery(Command):
             else:
                 raise CriticalError(f'repoquery failed for packages `{packages}`, reason: `{output_stderr}`')
 
-        return self.__query(packages, queryformat, archlist, True, True, output_handler, only_newest)
+        return self.__query(packages, queryformat, archlist, True, True, output_handler, only_newest, True)
