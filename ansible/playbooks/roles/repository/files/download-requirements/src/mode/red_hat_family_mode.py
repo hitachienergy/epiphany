@@ -2,7 +2,7 @@ import configparser
 import logging
 import shutil
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Set
 
 from src.command.command import Command
 from src.config.config import Config
@@ -16,6 +16,7 @@ class RedHatFamilyMode(BaseMode):
 
     def __init__(self, config: Config):
         super().__init__(config)
+        self.__all_queried_packages: Set[str] = set()
         self.__archs: List[str] = [config.os_arch.value, 'noarch']
         self.__base_packages: List[str] = ['curl', 'python3-dnf-plugins-core', 'wget']
         self.__installed_packages: List[str] = []
@@ -136,13 +137,14 @@ class RedHatFamilyMode(BaseMode):
         }
 
         reqs['packages']['from_repo'] += family_doc['packages']['from_repo']
+        reqs['packages']['multiple_versioned'] += family_doc['packages']['multiple_versioned']
 
         # distro level has precedence
         reqs['packages']['from_url'] = {**family_doc['packages']['from_url'], **distro_doc['packages']['from_url']}
 
         return reqs
 
-    def __download_prereq_packages(self) -> List[str]:
+    def __download_prereq_packages(self):
         # download requirements (fixed versions)
         prereqs_dir = self._cfg.dest_packages / 'repo-prereqs'
         prereqs_dir.mkdir(exist_ok=True, parents=True)
@@ -159,35 +161,41 @@ class RedHatFamilyMode(BaseMode):
                                                    archlist=self.__archs,
                                                    exclude='*i686',
                                                    destdir=prereqs_dir)
-        return collected_prereqs
 
-    def _download_packages(self):
-        downloaded_prereq_packages: List[str] = self.__download_prereq_packages()
+        self.__all_queried_packages.update(collected_prereqs)
 
-        packages: List[str] = sorted(set(self._requirements['packages']['from_repo']))
-
+    def __download_redhat_packages(self, packages: List[str], only_newest: bool = True):
         # packages
         queried_packages: List[str] = self._tools.repoquery.query(packages,
                                                                   queryformat='%{name}-%{version}-%{release}.%{arch}',
-                                                                  archlist=self.__archs)
+                                                                  archlist=self.__archs,
+                                                                  only_newest=only_newest)
 
-        packages_to_download: List[str] = sorted(set(queried_packages) - set(downloaded_prereq_packages))
+        packages_to_download: List[str] = sorted(set(queried_packages) - self.__all_queried_packages)
 
         logging.info(f'- packages to download: {packages_to_download}')
 
         # dependencies
         dependencies: List[str] = self._tools.repoquery.get_dependencies(packages_to_download,
                                                                          queryformat='%{name}.%{arch}',
-                                                                         archlist=self.__archs)
+                                                                         archlist=self.__archs,
+                                                                         only_newest=only_newest)
 
         logging.info(f'- dependencies to download: {dependencies}')
 
         packages_to_download = sorted(packages_to_download + dependencies)
+        self.__all_queried_packages.update(packages_to_download)
 
         self._tools.dnf_download.download_packages(packages_to_download,
                                                    archlist=self.__archs,
                                                    exclude='*i686',
                                                    destdir=self._cfg.dest_packages)
+
+    def _download_packages(self):
+        self.__download_prereq_packages()
+        self.__download_redhat_packages(sorted(set(self._requirements['packages']['from_repo'])))
+        self.__download_redhat_packages(sorted(set(self._requirements['packages']['multiple_versioned'])),
+                                        False)
 
     def _download_file(self, url: str, dest: Path):
         self._tools.wget.download(url, output_document=dest, additional_params=False)
