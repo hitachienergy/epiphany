@@ -1,0 +1,41 @@
+---
+# Workaround for bug in NetworkManager-cloud-setup-1.30.0-10.el8_4 (RHEL 8.4)
+#
+# More info:
+# https://gitlab.freedesktop.org/NetworkManager/NetworkManager/-/issues/740
+# https://bugzilla.redhat.com/show_bug.cgi?id=2007341
+
+- name: Get information on installed packages
+  package_facts:
+    manager: rpm
+  when: ansible_facts.packages is undefined
+
+# "When a user wants a special network configuration, then it seems reasonable and expected
+# that they disable the automatism -- if it doesn't do what they want."
+# Source: https://gitlab.freedesktop.org/NetworkManager/NetworkManager/-/merge_requests/974
+
+- name: Disable nm-cloud-setup service and remove its routing rule
+  when:
+    - ansible_facts.packages['NetworkManager-cloud-setup'] is defined
+    - ansible_facts.packages['NetworkManager-cloud-setup'][0].version is version('1.30.0', '=')
+    - ansible_facts.packages['NetworkManager-cloud-setup'][0].release == '10.el8_4'
+  block:
+    - name: Disable nm-cloud-setup units
+      systemd:
+        name: "{{ item }}"
+        enabled: false
+      loop:
+        - nm-cloud-setup.timer
+        - nm-cloud-setup.service
+
+    - name: Check if routing rule 30400 exists
+      command: ip rule list
+      changed_when: false
+      register: ip_rule_list
+
+    - name: Remove routing rule 30400
+      command: "{{ item }}"
+      loop:
+        - ip rule delete prio 30400
+        - ip route flush table 30400
+      when: "'30400:' in ip_rule_list.stdout"
