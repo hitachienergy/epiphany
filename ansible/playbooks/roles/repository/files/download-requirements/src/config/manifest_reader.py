@@ -72,7 +72,7 @@ class ManifestReader:
                 pass
 
         if len(parsed_docs) != len(parse_doc.keys()):
-            raise CriticalError(f'{parsed_docs ^ parse_doc.keys()}')
+            raise CriticalError(f'ManifestReader - could not find documents: {parsed_docs ^ parse_doc.keys()}')
 
         return {'detected-components': sorted(list(self.__detected_components)),
                 'detected-services': sorted(list(self.__detected_services))}
