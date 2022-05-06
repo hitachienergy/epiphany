@@ -41,7 +41,8 @@ class DnfRepoquery(Command):
 
         args.append('repoquery')
         args.append(f'--archlist={",".join(archlist)}')
-        args.append('--disableplugin=subscription-manager')  # to speed up querying
+        # to speed up querying
+        args.append('--disableplugin=subscription-manager')
         if only_newest:
             args.append('--latest-limit=1')
         args.append(f'--queryformat={queryformat}')
@@ -52,30 +53,28 @@ class DnfRepoquery(Command):
         if resolve:
             args.append('--resolve')
 
-        args.append('-y')  # to import GPG keys
-
         args.extend(defined_packages)
 
         # dnf repoquery doesn't set error code on empty results
-        output_stdout = self.run(args).stdout
-        output_stderr = self.run(args).stderr
+        process = self.run(args)
 
-        output_handler(output_stdout, output_stderr)
+        output_handler(process.stdout, process.stderr)
 
         packages: List[str] = []
-        for line in output_stdout.split('\n'):
+        for line in process.stdout.split('\n'):
             if line:
                 packages.append(line)
 
         if not dependencies:
-            missing_packages : List[str] = []
+            missing_packages: List[str] = []
             for package in defined_packages:
                 r = re.compile(f'.*{package}')
                 match = list(filter(r.match, packages))
                 if not match:
                     missing_packages.append(package)
             if missing_packages:
-                raise PackageNotfound(f'repoquery failed. Cannot find packages: {missing_packages}')
+                raise PackageNotfound(
+                    f'repoquery failed. Cannot find packages: {missing_packages}')
         return packages
 
     def query(self, packages: List[str], queryformat: str, archlist: List[str], only_newest: bool = True) -> List[str]:
@@ -95,13 +94,18 @@ class DnfRepoquery(Command):
         def output_handler(output_stdout: str, output_stderr: str):
             """ In addition to errors, handle missing packages """
             if not output_stdout:
-                raise PackageNotfound(f'repoquery failed for packages `{packages}`, reason: some of package(s) not found')
+                raise PackageNotfound(
+                    f'repoquery failed for packages `{packages}`, reason: some of package(s) not found')
             if 'error' in output_stdout:
-                raise CriticalError(f'Found an error. repoquery failed for packages `{packages}`, reason: `{output_stdout}`')
+                raise CriticalError(
+                    f'Found an error. repoquery failed for packages `{packages}`, reason: `{output_stdout}`')
             if "Last metadata expiration check" in output_stderr:
-                pass # https://dnf.readthedocs.io/en/latest/conf_ref.html#metadata-expire-label
-            elif output_stderr:
-                raise CriticalError(f'repoquery failed for packages `{packages}`, reason: `{output_stderr}`')
+                pass  # https://dnf.readthedocs.io/en/latest/conf_ref.html#metadata-expire-label
+            elif "No matches found for the following disable plugin patterns: subscription-manager" in output_stderr:
+                pass # no subscription-manager on AlmaLinux
+            else:
+                raise CriticalError(
+                    f'repoquery failed for packages `{packages}`, reason: `{output_stderr}`')
 
         return self.__query(packages, queryformat, archlist, False, False, output_handler, only_newest, False)
 
@@ -125,12 +129,15 @@ class DnfRepoquery(Command):
         def output_handler(output_stdout: str, output_stderr: str):
             """ In addition to errors, handle missing packages """
             if not output_stdout:
-                raise PackageNotfound(f'repoquery failed for packages `{packages}`, reason: some of package(s) not found')
+                raise PackageNotfound(
+                    f'repoquery failed for packages `{packages}`, reason: some of package(s) not found')
             if 'error' in output_stdout:
-                raise CriticalError(f'Found an error. repoquery failed for packages `{packages}`, reason: `{output_stdout}`')
+                raise CriticalError(
+                    f'Found an error. repoquery failed for packages `{packages}`, reason: `{output_stdout}`')
             if "Last metadata expiration check" in output_stderr:
-                pass # https://dnf.readthedocs.io/en/latest/conf_ref.html#metadata-expire-label
+                pass  # https://dnf.readthedocs.io/en/latest/conf_ref.html#metadata-expire-label
             elif output_stderr:
-                raise CriticalError(f'repoquery failed for packages `{packages}`, reason: `{output_stderr}`')
+                raise CriticalError(
+                    f'repoquery failed for packages `{packages}`, reason: `{output_stderr}`')
 
         return self.__query(packages, queryformat, archlist, True, True, output_handler, only_newest, True)

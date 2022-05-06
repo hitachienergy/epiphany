@@ -34,12 +34,10 @@ class DnfDownload(Command):
         args.append('-y')
         args.extend(packages)
 
-        output_stdout = self.run(args).stdout
-        output_stderr = self.run(args).stderr
-
-        if 'error' in output_stdout:
+        process = self.run(args)
+        if 'error' in process.stdout:
             raise CriticalError(
-                f'Found an error. dnf download failed for packages `{packages}`, reason: `{output_stdout}`')
-        if output_stderr:
+                f'Found an error. dnf download failed for packages `{packages}`, reason: `{process.stdout}`')
+        if process.stderr:
             raise CriticalError(
-                f'dnf download failed for packages `{packages}`, reason: `{output_stderr}`')
+                f'dnf download failed for packages `{packages}`, reason: `{process.stderr}`')

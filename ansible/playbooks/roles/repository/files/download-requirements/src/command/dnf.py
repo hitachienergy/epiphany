@@ -38,7 +38,15 @@ class Dnf(Command):
         if enablerepo is not None:
             update_parameters.append(f'--enablerepo={enablerepo}')
 
-        self.run(update_parameters)
+        proc = self.run(update_parameters)
+
+        if 'error' in proc.stdout:
+            raise CriticalError(
+                f'Found an error. dnf update failed for package `{package}`, reason: `{proc.stdout}`')
+        if proc.stderr:
+            raise CriticalError(
+                f'dnf update failed for packages `{package}`, reason: `{proc.stderr}`')
+
 
     def install(self, package: str,
                 assume_yes: bool = True):
@@ -54,6 +62,13 @@ class Dnf(Command):
         if proc.returncode != 0:
             if not 'does not update' in proc.stdout:  # trying to reinstall package with url
                 raise CriticalError(f'dnf install failed for `{package}`, reason `{proc.stdout}`')
+
+        if 'error' in proc.stdout:
+            raise CriticalError(
+                f'Found an error. dnf install failed for package `{package}`, reason: `{proc.stdout}`')
+        if proc.stderr:
+            raise CriticalError(
+                f'dnf install failed for package `{package}`, reason: `{proc.stderr}`')
 
     def remove(self, package: str,
                assume_yes: bool = True):
