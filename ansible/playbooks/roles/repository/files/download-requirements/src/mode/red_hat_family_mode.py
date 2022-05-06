@@ -107,6 +107,8 @@ class RedHatFamilyMode(BaseMode):
                      '2ndquadrant-dl-default-release-pg13-debug']:
             self._tools.dnf_config_manager.disable_repo(repo)
 
+        self._tools.dnf.makecache(False, True)
+
     def __remove_dnf_cache_for_custom_repos(self):
         # clean metadata for upgrades (when the same package can be downloaded from changed repo)
         repocaches: List[str] = list(self.__dnf_cache_path.iterdir())
