@@ -1039,15 +1039,15 @@ sudo chmod +x /home/download-requirements.py # make the requirements script exec
 
 After this you should be able to run the ```download-requirements.py``` from the ```home``` folder.
 
-### RedHat 7.x
+### RedHat 8.x
 
 For RedHat you can use the following command to launch a container:
 
 ```shell
-docker run -v /shared_folder:/home <--platform linux/amd64 or --platform linux/arm64> --rm -it registry.access.redhat.com/ubi7/ubi:7.9
+docker run -v /shared_folder:/home <--platform linux/amd64 or --platform linux/arm64> --rm -it registry.access.redhat.com/ubi8/ubi:8.4
 ```
 
-As the ```registry.access.redhat.com/ubi7/ubi:7.9``` image is multi-arch you can include ```--platform linux/amd64``` or ```--platform linux/arm64``` to run the container as the specified architecture. The ```/shared_folder``` should be a folder on your local machine containing the requirement scripts.
+As the ```registry.access.redhat.com/ubi8/ubi:8.4``` image is multi-arch you can include ```--platform linux/amd64``` or ```--platform linux/arm64``` to run the container as the specified architecture. The ```/shared_folder``` should be a folder on your local machine containing the requirement scripts.
 
 For running the ```download-requirements.py``` script you will need a RedHat developer subscription to register the running container and make sure you can access to official Redhat repos for the packages needed. More information on getting this free subscription [here](https://developers.redhat.com/articles/getting-red-hat-developer-subscription-what-rhel-users-need-know).
 
@@ -1059,7 +1059,43 @@ subscription-manager attach --auto # will enable the RedHat official repositorie
 chmod +x /home/download-requirements.py # make the requirements script executable
 ```
 
-After this you should be able to run the ```download-requirements.py```  from the ```home``` folder.
+After this you should be able to run the ```download-requirements.py```  from the ```home``` folder:
+
+```shell
+/usr/libexec/platform-python /home/download-requirements.py /home/offline_requirements_rhel_8_x86_64 rhel-8
+```
+
+### AlmaLinux 8.x
+
+For AlmaLinux, you can use the following command to launch a container:
+
+```shell
+docker run -v /shared_folder:/home --rm -it almalinux:8.4
+```
+
+The ```almalinux:8.4``` image is amd64 arch only. The ```/shared_folder``` should be a folder on your local machine containing the requirement scripts.
+
+When you are inside the container run the following command to prepare for the running of the ```download-requirements.py``` script:
+
+```shell
+chmod +x /home/download-requirements.py # make the requirements script executable
+```
+
+After this you should be able to run the ```download-requirements.py```  from the ```home``` folder:
+
+```shell
+/usr/libexec/platform-python /home/download-requirements.py /home/offline_requirements_almalinux_8_4_x86_64 almalinux-8
+```
+
+### Known issues
+
+In some local environments (eg. using AlmaLinux image) the following issue could appear:
+
+```sh
+Failed to set locale, defaulting to C.UTF-8
+```
+
+To fix the issue, verify or set your locales. Example: `export LC_ALL=C.UTF-8`
 
 ## How to additional custom Terraform templates
 
