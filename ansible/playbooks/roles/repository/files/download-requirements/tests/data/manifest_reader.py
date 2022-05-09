@@ -1,36 +1,4 @@
-INPUT_MANIFEST_FEATURE_MAPPINGS = """
----
-kind: epiphany-cluster
-title: Epiphany cluster Config
-provider: any
-name: default
-specification:
-  name: new_cluster
-  admin_user:
-    name: operations
-    key_path: /shared/.ssh/epiphany-operations/id_rsa
-  components:
-    repository:
-      count: 1
-    kubernetes_master:
-      count: 0
-    kubernetes_node:
-      count: 0
-    logging:
-      count: 0
-    monitoring:
-      count: 1
-    kafka:
-      count: 2
-    postgresql:
-      count: 0
-    load_balancer:
-      count: 0
-    rabbitmq:
-      count: 0
-    opendistro_for_elasticsearch:
-      count: 0
-version: 2.0.0dev
+FEATURE_MAPPINGS = """
 ---
 kind: configuration/feature-mappings
 title: Feature mapping to roles
@@ -126,17 +94,99 @@ provider: azure
 """
 
 
+INPUT_MANIFEST_FEATURE_MAPPINGS = f"""
+kind: epiphany-cluster
+title: Epiphany cluster Config
+provider: any
+name: default
+specification:
+  name: new_cluster
+  admin_user:
+    name: operations
+    key_path: /shared/.ssh/epiphany-operations/id_rsa
+  components:
+    repository:
+      count: 1
+    kubernetes_master:
+      count: 0
+    kubernetes_node:
+      count: 0
+    logging:
+      count: 0
+    monitoring:
+      count: 0
+    kafka:
+      count: 2
+    postgresql:
+      count: 0
+    load_balancer:
+      count: 0
+    rabbitmq:
+      count: 0
+    opendistro_for_elasticsearch:
+      count: 0
+version: 2.0.0dev
+{FEATURE_MAPPINGS}
+"""
+
+
+INPUT_MANIFEST_WITH_DASHBOARDS = f"""
+kind: epiphany-cluster
+title: Epiphany cluster Config
+provider: any
+name: default
+specification:
+  name: new_cluster
+  admin_user:
+    name: operations
+    key_path: /shared/.ssh/epiphany-operations/id_rsa
+  components:
+    repository:
+      count: 1
+    kubernetes_master:
+      count: 0
+    kubernetes_node:
+      count: 0
+    logging:
+      count: 0
+    monitoring:
+      count: 1
+    kafka:
+      count: 0
+    postgresql:
+      count: 0
+    load_balancer:
+      count: 0
+    rabbitmq:
+      count: 0
+    opendistro_for_elasticsearch:
+      count: 0
+version: 2.0.0dev
+{FEATURE_MAPPINGS}
+"""
+
+
 EXPECTED_FEATURE_MAPPINGS = {
-    'detected-components': ['kafka', 'monitoring', 'repository'],
+    'detected-components': ['kafka', 'repository'],
     'detected-features': ['filebeat',
                           'firewall',
-                          'grafana',
                           'image-registry',
                           'jmx-exporter',
                           'kafka',
                           'kafka-exporter',
                           'node-exporter',
-                          'prometheus',
                           'repository',
                           'zookeeper']
+}
+
+
+EXPECTED_FEATURE_MAPPINGS_WITH_DASHBOARDS = {
+    'detected-components': ['monitoring', 'repository'],
+    'detected-features': ['filebeat',
+                          'firewall',
+                          'grafana',
+                          'image-registry',
+                          'node-exporter',
+                          'prometheus',
+                          'repository']
 }
