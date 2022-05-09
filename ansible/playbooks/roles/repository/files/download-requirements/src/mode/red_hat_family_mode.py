@@ -49,6 +49,10 @@ class RedHatFamilyMode(BaseMode):
             logging.debug('Done.')
 
     def _install_base_packages(self):
+
+        # Bug in RHEL 8.4 https://bugzilla.redhat.com/show_bug.cgi?id=2004853
+        self._tools.dnf.update(package='libmodulemd')
+
         # some packages are from EPEL repo
         # make sure that we reinstall it before proceeding
         if self._tools.rpm.is_package_installed('epel-release'):
@@ -73,7 +77,7 @@ class RedHatFamilyMode(BaseMode):
     def _add_third_party_repositories(self):
         # Fix for RHUI client certificate expiration [#2318]
         if self._tools.dnf.is_repo_enabled('rhui-microsoft-azure-rhel'):
-            self._tools.dnf.update(enablerepo='rhui-microsoft-azure-rhel*')
+            self._tools.dnf.update(disablerepo='*', enablerepo='rhui-microsoft-azure-rhel*')
 
         for repo in self._repositories:
             repo_filepath = Path('/etc/yum.repos.d') / f'{repo}.repo'
@@ -102,6 +106,8 @@ class RedHatFamilyMode(BaseMode):
         for repo in ['2ndquadrant-dl-default-release-pg10-debug',
                      '2ndquadrant-dl-default-release-pg13-debug']:
             self._tools.dnf_config_manager.disable_repo(repo)
+
+        self._tools.dnf.makecache(False, True)
 
     def __remove_dnf_cache_for_custom_repos(self):
         # clean metadata for upgrades (when the same package can be downloaded from changed repo)

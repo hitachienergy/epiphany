@@ -14,8 +14,6 @@ def test_interface_query(mocker):
                              '--disableplugin=subscription-manager',
                              '--latest-limit=1',
                              '--queryformat=some_format',
-                             '--quiet',
-                             '-y',
                              'tar',
                              'vim'
                             ]
@@ -31,10 +29,8 @@ def test_interface_get_dependencies(mocker):
                              '--disableplugin=subscription-manager',
                              '--latest-limit=1',
                              '--queryformat=some_format',
-                             '--quiet',
                              '--requires',
                              '--resolve',
-                             '-y',
                              'tar',
                              'vim'
                             ]
