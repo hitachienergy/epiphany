@@ -175,7 +175,7 @@ images:
     sha1: be1cf43617eea007629c0eb99149a99b6498f889
 
   'quay.io/ceph/ceph:v16.2.7':
-    sha1: 13275be4d347e9b305608f52a544e068a73e949f
+    sha1: fe9b7802c67e19111f83ffe4754ab62df66fd417
     allow_mismatch: true
 
   'quay.io/cephcsi/cephcsi:v3.5.1':
