@@ -62,7 +62,7 @@ section 1.0.x
 section 1.1.x
 1.1.x - 6 months     :a, 2021-06-30, 2021-12-30
 section 1.2.x
-1.2.x - 6 months     :active, 2021-09-30, 2022-03-30
+1.2.x - 6 months     :a, 2021-09-30, 2022-03-30
 section 1.3.x
 1.3.x - 6 months     :active, 2022-01-19, 2022-06-30
 section 2.0.x
