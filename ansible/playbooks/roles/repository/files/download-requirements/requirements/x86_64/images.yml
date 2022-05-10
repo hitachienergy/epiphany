@@ -176,6 +176,7 @@ images:
 
   'quay.io/ceph/ceph:v16.2.7':
     sha1: 13275be4d347e9b305608f52a544e068a73e949f
+    allow_mismatch: true
 
   'quay.io/cephcsi/cephcsi:v3.5.1':
     sha1: 51dee9ea8ad76fb95ebd16f951e8ffaaaba95eb6
