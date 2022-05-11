@@ -86,6 +86,7 @@ packages:
     - 'pgaudit15_13-1.5.0'
     - 'pkgconf'  # for bash-completion
     - 'pkgconf-pkg-config'  # for bash-completion
+    - 'policycoreutils'  # for container-selinux
     - 'python3-cffi'  # for python3-cryptography
     - 'python3-cryptography'
     - 'python3-firewall'  # for firewalld
