@@ -227,7 +227,9 @@ def delete_parser(subparsers):
     sub_parser._action_groups.append(optional)
 
     def run_delete(args):
-        if not query_yes_no('Do you really want to delete your cluster?'):
+        if not query_yes_no('''You are trying to delete your cluster.
+If your configuration does not allow to keep the existing disks used in the cluster, you will lose your data.
+Make sure your data is safe. Do you really want to delete your cluster?'''):
             return 0
         adjust_paths_from_build(args)
         with DeleteEngine(args) as engine:

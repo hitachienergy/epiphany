@@ -4,6 +4,16 @@
 
 ### Added
 
+- [#2976](https://github.com/epiphany-platform/epiphany/issues/2976) - Allow for custom Terraform scripts
+- [#1076](https://github.com/epiphany-platform/epiphany/issues/1076) - Add sorting entries in the inventory file
+
+### Fixed
+
+- [#2989](https://github.com/epiphany-platform/epiphany/issues/2989) - Task `Remove swap from /etc/fstab` does not remove swap entry from file
+- [#2653](https://github.com/epiphany-platform/epiphany/issues/2653) - Epicli is failing in air-gapped infra mode
+- [#3004](https://github.com/epiphany-platform/epiphany/issues/3004) - `disk_size_gb` hardcoded in `/usr/local/epicli/data/azure/defaults/infrastructure/virtual-machine.yml`
+- [#2934](https://github.com/epiphany-platform/epiphany/issues/2934) - Duplicated entries in image-registry defaults (LTS)
+- [#3065](https://github.com/epiphany-platform/epiphany/issues/3065) - Flag `delete_os_disk_on_termination` has no effect when removing cluster
 - [#2996](https://github.com/epiphany-platform/epiphany/issues/2996) - Introduce the new configuration field to change a component name
 - [#3060](https://github.com/epiphany-platform/epiphany/issues/3060) - Allow to disable Open Distro audit logs
 

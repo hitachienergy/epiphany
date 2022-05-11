@@ -1,6 +1,6 @@
 from cli.helpers.doc_list_helpers import select_first
 from cli.helpers.Log import Log
-from cli.models.AnsibleHostModel import AnsibleHostModel
+from cli.models.AnsibleHostModel import AnsibleOrderedHostModel
 
 
 class APIProxy:
@@ -22,5 +22,8 @@ class APIProxy:
             for machine in component_config.machines:
                 machine_doc = select_first(self.config_docs,
                                            lambda x: x.kind == 'infrastructure/machine' and x.name == machine)
-                result.append(AnsibleHostModel(machine_doc.specification.hostname, machine_doc.specification.ip))
+                result.append(AnsibleOrderedHostModel(machine_doc.specification.hostname, machine_doc.specification.ip))
+
+        result.sort()
+
         return result

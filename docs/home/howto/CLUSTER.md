@@ -569,6 +569,11 @@ Epicli has a delete command to remove a cluster from a cloud provider (AWS, Azur
 
 From the defined cluster build folder it will take the information needed to remove the resources from the cloud provider.
 
+### Note for Azure cloud provider
+
+Make sure you can safely remove OS and data disks - Epiphany does not support cluster removal from Azure
+while preserving existing disks.
+
 ## Single machine cluster
 
 *Please read first prerequisites related to [hostname requirements](./PREREQUISITES.md#hostname-requirements).*
@@ -940,6 +945,33 @@ You can read more [here](https://www.confluent.io/blog/how-choose-number-topics-
 ## RabbitMQ installation and setting
 
 To install RabbitMQ in single mode just add rabbitmq role to your data.yaml for your server and in general roles section. All configuration on RabbitMQ - e.g. user other than guest creation should be performed manually.
+
+## How to provide additional custom Terraform templates
+
+For both cloud providers (AWS, Azure) Epicli generates the following terraform components for deploying a cluster:
+
+- VPC (AWS) or VNet (Azure)
+- Subnets inside the VPC or VNet
+- Security rules between the subnets
+- Virtual machines with network interfaces deployed in the different subnets
+
+Sometimes it is required to have additional resources like VPN access or other cloud native resources like EKS or AKS to this infrastructure. Epiphany gives the user the ability to add these additional resources during or after the cluster creation.
+
+The Terraform scripts Epicli generates will have the following naming convention:
+
+```shell
+xxx_resourc-name-nr.tf
+```
+
+And will be placed in the following folder:
+
+```shell
+/shared/build/clustername/terraform
+```
+
+When Epicli is run/re-run any Terraform scripts which will start with the ```xxx_*.tf``` filter  will be removed and regenerated. The user can make custom Terraform scripts and place them allongside the Epicli generated ones and these will be applied/re-applied during the Epicli run.
+
+If you need to define any additional security rules for component subnets for custom infrastructure you can check the documentation [here](./SECURITY_GROUPS.md).
 
 ## How to use Azure availability sets
 

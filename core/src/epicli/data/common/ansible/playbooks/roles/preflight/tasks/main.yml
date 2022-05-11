@@ -3,6 +3,8 @@
 
 - include_tasks: check-os.yml
 
+- include_tasks: check-routing.yml
+
 - name: Check if existing PostgreSQL needs to be migrated to distribution installed from PostgreSQL repository
   block:
 

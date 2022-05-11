@@ -27,6 +27,7 @@
   - [Build artifacts](./howto/CLUSTER.md#build-artifacts)
   - [Kafka replication and partition setting](./howto/CLUSTER.md#kafka-replication-and-partition-setting)
   - [RabbitMQ installation and setting](./howto/CLUSTER.md#rabbitmq-installation-and-setting)
+  - [How to provide additional custom Terraform templates](./howto/CLUSTER.md#how-to-provide-additional-custom-terraform-templates)
 
 - [Monitoring](./howto/MONITORING.md)
   - [How to configure Prometheus alerts](./howto/MONITORING.md#how-to-configure-prometheus-alerts)
