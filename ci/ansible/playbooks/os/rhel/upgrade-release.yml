@@ -22,7 +22,7 @@
   vars:
     versions:
       required: {major: '7', full: '7.9'}  # minimal version from which upgrade is supported
-      target: {major: '8', full: '8.5'}
+      target: {major: '8', full: '8.4'}
 
     leapp_dependencies:
       packages:
@@ -278,11 +278,11 @@
 
     - *REFRESH_ANSIBLE_FACTS
 
-    - name: Assert major version
+    - name: Assert target version
       assert:
         that:
-          - ansible_distribution_version is version('8.4','=')
-          - ansible_kernel is version('4.18.0-305','>=')
+          - ansible_distribution_version is version(versions.target.full, '=')
+          - ansible_kernel is version('4.18.0-305', '>=')
         quiet: true
 
     - name: Verify subscription status for non_cloud machines
@@ -523,37 +523,3 @@
           command: subscription-manager release --unset
           register: result
           failed_when: result.rc > 1 # May return code 1 even when correctly subscribed if system purpose is not defined
-
-    ### POST-UPGRADE -- UPDATE TO TARGET VERSION ###
-
-    - name: Update release to 8.5
-      block:
-        - name: Determine if 8.5 is the latest version
-          command: dnf --releasever 8.5 list kernel  # will fail when 8.5 is not the latest minor release
-          register: is_8_5_latest_version_available
-          changed_when: false
-          failed_when: is_8_5_latest_version_available.rc > 1
-
-        - name: Unlock release to latest  # mirrors will not point to 8.5 when it is the latest
-          when: is_8_5_latest_version_available.rc == 1
-          file:
-            path: /etc/dnf/vars/releasever
-            state: absent
-
-        - name: Set release to 8.5
-          when: is_8_5_latest_version_available.rc == 0  # 8.5 is not the latest
-          copy:
-            content: '8.5'
-            dest: /etc/dnf/vars/releasever
-            mode: u=rw,go=r
-
-        - *UPDATE_ALL_PACKAGES
-
-        - *REBOOT_SYSTEM_AFTER_UPDATE  # 8.5 brings a new kernel update
-
-        - *REFRESH_ANSIBLE_FACTS
-
-        - name: Assert update to 8.5 succeeded
-          assert:
-            that: ansible_distribution_version is version(versions.target.full, '=')
-            quiet: true
