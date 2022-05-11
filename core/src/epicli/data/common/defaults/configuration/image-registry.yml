@@ -139,8 +139,8 @@ specification:
       #   file_name: etcd-3.4.3-0.tar
       # - name: "k8s.gcr.io/coredns:1.6.5"
       #   file_name: coredns-1.6.5.tar
-      - name: "k8s.gcr.io/pause:3.1"
-        file_name: pause-3.1.tar
+      # - name: "k8s.gcr.io/pause:3.1"
+      #   file_name: pause-3.1.tar
       # flannel
       - name: "quay.io/coreos/flannel:v0.11.0-amd64"
         file_name: flannel-v0.11.0-amd64.tar
