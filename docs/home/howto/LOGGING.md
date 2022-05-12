@@ -327,6 +327,14 @@ There is an [option](https://opendistro.github.io/for-elasticsearch-docs/docs/se
 Open Distro audit logs which is switched on in Epiphany by default using the following configuration part:
 
 ```yaml
+kind: configuration/opendistro-for-elasticsearch
+specification:
+  opendistro_security:
+    audit:
+      type: internal_elasticsearch
+```
+
+```yaml
 kind: configuration/logging
 specification:
   opendistro_security:
