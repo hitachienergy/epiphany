@@ -13,8 +13,6 @@
 # Limitations:
 # - Ansible connection as root is not supported (PermitRootLogin)
 
-# TODO:
-# Fix issue when running on AWS on repository host deployed with epicli 1.0.2 (instance auto-recovery)
 
 - name: In-place RHEL release upgrade
   hosts: "{{ target | default('all') }}"
@@ -138,6 +136,55 @@
         state: latest
         update_only: true
         name: "*"
+
+    # Disable legacy containerd plugin to avoid instance auto-recovery on AWS (modprobe: FATAL: Module aufs not found)
+
+    - name: Check if /etc/containerd/config.toml file exists
+      stat:
+        path: /etc/containerd/config.toml
+        get_attributes: false
+        get_checksum: false
+        get_mime: false
+      register: stat_containerd_config
+
+    - name: Disable aufs plugin
+      when: stat_containerd_config.stat.exists
+      block:
+        - name: Get disabled_plugins
+          command: grep -oPz '(?s)^disabled_plugins\s*=\s*\[.*?\]' /etc/containerd/config.toml  # TOML allows line breaks inside arrays
+          changed_when: false
+          register: grep_disabled_plugins
+          failed_when: grep_disabled_plugins.rc > 1
+
+        - name: Set plugins to be disabled
+          set_fact:
+            plugins_to_disable: "{{ _disabled_plugins | union(['aufs']) }}"
+          vars:
+            _disabled_plugins: >-
+              {{ (grep_disabled_plugins.stdout | regex_replace('\s*=', ':') | from_yaml).disabled_plugins | default('[]') }}
+
+        - name: Disable aufs plugin (update array)
+          replace:  # handles multi-line array
+            path: /etc/containerd/config.toml
+            regexp: ^disabled_plugins\s*=\s*\[[^\]]*?\]
+            replace: disabled_plugins = {{ plugins_to_disable | string }}
+            backup: true
+          register: update_containerd_config_option
+
+        - name: Disable aufs plugin (add array)
+          lineinfile:
+            path: /etc/containerd/config.toml
+            line: disabled_plugins = {{ plugins_to_disable | string }}
+            backup: true
+          register: add_containerd_config_option
+          when: grep_disabled_plugins.rc == 1
+
+        - name: Restart containerd service
+          systemd:
+            name: containerd.service
+            state: restarted
+          when: update_containerd_config_option.changed
+             or add_containerd_config_option.changed
 
     - &UPDATE_ALL_PACKAGES
       name: Update all packages in current major version
