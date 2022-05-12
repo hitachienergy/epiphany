@@ -64,10 +64,10 @@ filebeatConfig:
 
       processors:
         - add_kubernetes_metadata:
-          in_cluster: true
-          matchers:
-          - logs_path:
-              logs_path: "/var/log/containers/"
+            in_cluster: true
+            matchers:
+            - logs_path:
+                logs_path: "/var/log/containers/"
 {% endif %}
 
 {# -------------------------- Filebeat modules -------------------------- #}
