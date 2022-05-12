@@ -110,24 +110,6 @@
           debug:
             var: provider
 
-    - name: Register SELinux state
-      set_fact:
-        pre_upgrade_selinux_facts: "{{ ansible_facts.selinux }}"
-
-    - name: Register enabled repositories
-      command: yum repolist --quiet
-      register: pre_upgrade_enabled_repositories
-      changed_when: false
-
-    - name: Ensure repositories that provide leapp utility are enabled
-      ini_file:
-        path: "{{ item.repo_file }}"
-        section: "{{ item.name }}"
-        option: enabled
-        value: 1
-        mode: u=rw,go=r
-      loop: "{{ leapp_dependencies.repos[provider] }}"
-
     - name: Update repository certificates
       when: provider == "azure"
       yum:
@@ -136,6 +118,15 @@
         state: latest
         update_only: true
         name: "*"
+
+    - name: Register SELinux state
+      set_fact:
+        pre_upgrade_selinux_facts: "{{ ansible_facts.selinux }}"
+
+    - name: Register enabled repositories
+      command: yum repolist --quiet
+      register: pre_upgrade_enabled_repositories
+      changed_when: false
 
     # Disable legacy containerd plugin to avoid instance auto-recovery on AWS (modprobe: FATAL: Module aufs not found)
 
@@ -218,6 +209,15 @@
       assert:
         that: ansible_distribution_version is version(versions.required.full, '>=')
         quiet: true
+
+    - name: Ensure repositories that provide leapp utility are enabled
+      community.general.ini_file:
+        path: "{{ item.repo_file }}"
+        section: "{{ item.name }}"
+        option: enabled
+        value: 1
+        mode: u=rw,go=r
+      loop: "{{ leapp_dependencies.repos[provider] }}"
 
     - name: Install packages that provide the leapp utility
       package:
