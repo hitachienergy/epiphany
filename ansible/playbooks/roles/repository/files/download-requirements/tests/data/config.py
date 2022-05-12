@@ -6,7 +6,7 @@ Components detected:
 - monitoring
 - repository
 
-Services detected:
+Features detected:
 - filebeat
 - firewall
 - grafana

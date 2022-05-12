@@ -5,13 +5,13 @@ import yaml
 
 from src.config.config import Config
 from tests.data.config import EXPECTED_VERBOSE_OUTPUT
-from tests.data.manifest_reader import INPUT_MANIFEST_ROLES_MAPPING
+from tests.data.manifest_reader import INPUT_MANIFEST_FEATURE_MAPPINGS
 
 
 def test_manifest_verbose_output(mocker, caplog):
     ''' Check output produced when running download-requirements script with the `-v|--verbose` flag and with provided `-m|--manifest` '''
 
-    mocker.patch('src.config.manifest_reader.load_yaml_file_all', return_value=yaml.safe_load_all(INPUT_MANIFEST_ROLES_MAPPING))
+    mocker.patch('src.config.manifest_reader.load_yaml_file_all', return_value=yaml.safe_load_all(INPUT_MANIFEST_FEATURE_MAPPINGS))
     caplog.set_level(logging.INFO)
 
     # mock Config's init methods:

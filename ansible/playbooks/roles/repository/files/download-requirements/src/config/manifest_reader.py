@@ -29,7 +29,7 @@ class ManifestReader:
     def __init__(self, dest_manifest: Path):
         self.__dest_manifest = dest_manifest
         self.__detected_components: Set = set()
-        self.__detected_services: Set = set()
+        self.__detected_features: Set = set()
 
     def __parse_cluster_info(self, cluster_doc: Dict):
         """
@@ -42,24 +42,24 @@ class ManifestReader:
             if components[component]['count'] > 0:
                 self.__detected_components.add(component)
 
-    def __parse_roles_mapping_info(self, roles_mapping_doc: Dict):
+    def __parse_feature_mappings_info(self, feature_mappings_doc: Dict):
         """
-        Parse `configuration/roles-mapping` document and extract only used services (based on `epiphany-cluster` doc).
+        Parse `configuration/feature-mappings` document and extract only used features (based on `epiphany-cluster` doc).
 
-        :param roles_mapping_doc: handler to a `configuration/roles-mapping` document
+        :param feature_mappings_doc: handler to a `configuration/feature-mappings` document
         """
-        roles = roles_mapping_doc['specification']['roles']
-        for role in roles.keys() & self.__detected_components:
-            for service in roles[role]:
-                self.__detected_services.add(service)
+        mappings = feature_mappings_doc['specification']['mappings']
+        for mapping in mappings.keys() & self.__detected_components:
+            for feature in mappings[mapping]:
+                self.__detected_features.add(feature)
 
     def parse_manifest(self) -> Dict[str, Any]:
         """
         Load the manifest file, call parsers on required docs and return formatted output.
         """
         parse_doc: Dict[str, Callable] = {
-            'epiphany-cluster':            self.__parse_cluster_info,
-            'configuration/roles-mapping': self.__parse_roles_mapping_info
+            'epiphany-cluster':               self.__parse_cluster_info,
+            'configuration/feature-mappings': self.__parse_feature_mappings_info
         }
 
         parsed_docs: Set[str] = set()
@@ -75,4 +75,4 @@ class ManifestReader:
             raise CriticalError(f'ManifestReader - could not find documents: {parsed_docs ^ parse_doc.keys()}')
 
         return {'detected-components': sorted(list(self.__detected_components)),
-                'detected-services': sorted(list(self.__detected_services))}
+                'detected-features': sorted(list(self.__detected_features))}

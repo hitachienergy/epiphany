@@ -227,9 +227,9 @@ class Config:
 
         lines.append('')
 
-        lines.append('Services detected:')
-        for service in output['detected-services']:
-            lines.append(f'- {service}')
+        lines.append('Features detected:')
+        for feature in output['detected-features']:
+            lines.append(f'- {feature}')
 
         lines.append('-' * self.__LINE_SIZE)
 

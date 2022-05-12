@@ -1,4 +1,5 @@
-INPUT_MANIFEST_ROLES_MAPPING = """
+INPUT_MANIFEST_FEATURE_MAPPINGS = """
+---
 kind: epiphany-cluster
 title: Epiphany cluster Config
 provider: any
@@ -31,11 +32,11 @@ specification:
       count: 0
 version: 2.0.0dev
 ---
-kind: configuration/roles-mapping
+kind: configuration/feature-mappings
 title: Feature mapping to roles
 name: default
 specification:
-  roles:
+  mappings:
     kafka:
     - zookeeper
     - jmx-exporter
@@ -125,9 +126,9 @@ provider: azure
 """
 
 
-EXPECTED_ROLES_MAPPING = {
+EXPECTED_FEATURE_MAPPINGS = {
     'detected-components': ['kafka', 'monitoring', 'repository'],
-    'detected-services': ['filebeat',
+    'detected-features': ['filebeat',
                           'firewall',
                           'grafana',
                           'image-registry',
