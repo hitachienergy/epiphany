@@ -193,8 +193,14 @@
         name: "*"
         state: latest  # noqa: package-latest
 
-    - &REBOOT_SYSTEM_AFTER_UPDATE
-      name: Reboot system after update  # to load kernel from latest minor version if any
+    - name: Check if reboot is needed
+      command: needs-restarting --reboothint  # exit code 1 means reboot is required
+      changed_when: false
+      register: needs_restarting
+      failed_when: needs_restarting.rc > 1
+
+    - name: Reboot system after update  # to load kernel from latest minor version if any
+      when: needs_restarting.rc == 1
       reboot:
         msg: Reboot initiated by Ansible due to update
         connect_timeout: "{{ reboot.connect_timeout }}"
