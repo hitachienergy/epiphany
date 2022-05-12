@@ -25,7 +25,7 @@ packages:
     - 'ca-certificates'
     - 'cifs-utils'
     - 'conntrack-tools'  # for kubelet
-    - 'containerd.io-1.4.12'
+    - 'containerd.io-1.5.11'
     - 'container-selinux'
     - 'copy-jdk-configs'  # for java-1.8.0-openjdk-headless
     - 'cri-tools'
@@ -35,7 +35,6 @@ packages:
     - 'docker-ce-20.10.8'
     - 'docker-ce-cli-20.10.8'
     - 'docker-ce-rootless-extras-20.10.8'
-    - 'elasticsearch-curator-5.8.3'
     - 'elasticsearch-oss-7.10.2'  # for opendistroforelasticsearch & logging roles
     - 'ethtool'
     - 'filebeat-7.9.2'
@@ -93,6 +92,7 @@ packages:
     - 'python3-libselinux'
     - 'python3-lxml'  # for java-1.8.0-openjdk-headless
     - 'python3-nftables'  # for python3-firewall
+    - 'python3-pip'  # for python36
     - 'python3-policycoreutils'  # for container-selinux
     - 'python3-psycopg2'
     - 'python3-pycparser'  # for python3-cryptography
@@ -186,6 +186,7 @@ packages:
     - 'wxGTK3'
     - 'wxGTK3-gl'
 
+  multiple_versioned:
     # K8s v1.22.4
     - 'kubeadm-1.22.4'
     - 'kubectl-1.22.4'
