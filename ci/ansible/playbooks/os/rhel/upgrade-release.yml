@@ -304,7 +304,7 @@
       command: leapp answer --add --section remove_pam_pkcs11_module_check.confirm=True
 
     - name: Start leapp upgrade
-      command: leapp upgrade {{ '--no-rhsm' if provider != 'non_cloud' }}
+      command: leapp upgrade --target {{ versions.target.full }} {{ '--no-rhsm' if provider != 'non_cloud' }}
 
     - name: Reboot system to complete leapp upgrade procedure
       reboot:
@@ -352,7 +352,7 @@
         - name: Check that upgraded version remains correctly subscribed
           assert:
             that:
-              - subscription_version.stdout == "8.4"
+              - subscription_version.stdout == versions.target.full
               - subscription_status.stdout == "Subscribed"
             quiet: true
 
