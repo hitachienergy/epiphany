@@ -5,7 +5,7 @@
 # This play requires a Leapp metadata archive from the Red Hat portal which cannot be shared publicly.
 # Local path to this archive must be provided via 'leapp_archive' variable, for example:
 
-# ansible-playbook -e leapp_archive=/absolute/path/leapp-data15.tar.gz
+# ansible-playbook -e leapp_archive=/absolute/path/leapp-data16.tar.gz
 
 # Requirements:
 # - System attached to RHUI repositories or Red Hat subscription ('non_cloud' provider)
@@ -227,12 +227,12 @@
     - name: Copy leapp metadata archive
       copy:
         src: "{{ leapp_archive }}"
-        dest: /etc/leapp/files/leapp-data15.tar.gz
+        dest: /etc/leapp/files/{{ leapp_archive | basename }}
         mode: preserve
 
     - name: Unarchive leapp metadata
       unarchive:
-        src: /etc/leapp/files/leapp-data15.tar.gz
+        src: /etc/leapp/files/{{ leapp_archive | basename }}
         dest: /etc/leapp/files/
         remote_src: true
 
