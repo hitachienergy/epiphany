@@ -260,14 +260,11 @@ There are separate procedures for `logging` and `opensearch` roles since for mos
 #### Logging role
 
 By default Epiphany removes users that are listed in `demo_users_to_remove` section of `configuration/logging` manifest document.
-Additionally, `kibanaserver`<sup>[1]</sup> user (needed by default Epiphany installation of Dashooards) and `logstash` user (needed by default Epiphany
-installation of Filebeat) are not removed. If you want to perform configuration by Epiphany, set `kibanaserver_user_active` to `true`
+Additionally, `kibanaserver`<sup>[1]</sup> user (needed by default Epiphany installation of Dashboards) and `logstash` user (needed by default Epiphany installation of Filebeat) are not removed. If you want to perform configuration by Epiphany, set `kibanaserver_user_active` to `true`
 for `kibanaserver` user and/or `logstash_user_active` to `true` for `logstash` user. For `logging` role, those settings are already set to `true` by default.
 We strongly advice to set different password for each user.
 
-To change `admin` user's password, you need to change the value for `admin_password` key ( see the example below ). For `kibanaserver` and `logstash`, you need to change values
-for `kibanaserver_password` and `logstash_password` keys respectively. Changes from logging role will be propagated to OpenSearch Dashboards 
-and Filebeat configuration accordingly.
+To change `admin` user's password, you need to change the value for `admin_password` key ( see the example below ). For `kibanaserver` and `logstash`, you need to change values for `kibanaserver_password` and `logstash_password` keys respectively. Changes from logging role will be propagated to OpenSearch Dashboards and Filebeat configuration accordingly.
 
 ```yaml
 kind: configuration/logging
@@ -288,23 +285,18 @@ specification:
 
 #### OpenSearch Dashboards ( Kibana ) role
 
-To set password for `kibanaserver` user, which is used by Dashboards for communication with OpenSearch Dashboards backend follow the procedure 
-described in [Logging role](#logging-role).
+To set password for `kibanaserver` user, which is used by Dashboards for communication with OpenSearch Dashboards backend follow the procedure described in [Logging role](#logging-role).
 
 #### Filebeat role
 
-To set password of `logstash` user, which is used by Filebeat for communication with OpenSearch Dashboards backend follow the procedure described 
-in  [Logging role](#-logging-role).
+To set password of `logstash` user, which is used by Filebeat for communication with OpenSearch Dashboards backend follow the procedure described in  [Logging role](#-logging-role).
 
 ### OpenSearch component
 
-By default Epiphany removes all demo users except `admin` user. Those users are listed in `demo_users_to_remove` section
-of `configuration/opensearch` manifest doc ( see example below ). If you want to keep `kibanaserver` user (needed by default Epiphany installation of OpenSearch Dashboards),
-you need to exclude it from `demo_users_to_remove` list and set `kibanaserver_user_active` to `true` in order to change the default password.
+By default Epiphany removes all demo users except `admin` user. Those users are listed in `demo_users_to_remove` section of `configuration/opensearch` manifest doc ( see example below ). If you want to keep `kibanaserver` user (needed by default Epiphany installation of OpenSearch Dashboards), you need to exclude it from `demo_users_to_remove` list and set `kibanaserver_user_active` to `true` in order to change the default password.
 We strongly advice to set different password for each user.
 
-To change `admin` user's password, change value for the `admin_password` key. For `kibanaserver` and `logstash`, change values for `kibanaserver_password`
-and `logstash_password` keys respectively.
+To change `admin` user's password, change value for the `admin_password` key. For `kibanaserver` and `logstash`, change values for `kibanaserver_password` and `logstash_password` keys respectively.
 
 ```yaml
 kind: configuration/opensearch
@@ -327,11 +319,9 @@ specification:
 
 ### Upgrade of OpenSearch, OpenSearch Dashboards and Filebeat
 
-Keep in mind taht during the upgrade process Epiphany takes `kibanaserver` (for Dashboards) and `logstash` (for Filebeat) user passwords and re-applies them to upgraded configuration of Filebeat and Kibana. So if these password phrases differ from what was setup before upgrade, you should reflect these changes upon next login process.
+Keep in mind that during the upgrade process Epiphany takes `kibanaserver` (for Dashboards) and `logstash` (for Filebeat) user passwords and re-applies them to upgraded configuration of Filebeat and Kibana. So if these password phrases differ from what was setup before upgrade, you should reflect these changes upon next login process.
 
- Epiphany upgrade of OpenSearch, OpenSearch Dashboards or Filebeat components will fail if `kibanaserver` or `logstash` usernames were changed in configuration of OpenSearch, OpenSearch Dashboards or Filebeat before.
-
-<br>
+Epiphany upgrade of OpenSearch, OpenSearch Dashboards or Filebeat components will fail if `kibanaserver` or `logstash` usernames were changed in configuration of OpenSearch, OpenSearch Dashboards or Filebeat before.
 
 <sup>[1] For the backward compatibility needs, some naming conventions ( ie. kibanaserver user name ) are still present within the new ( OpenSearch ) platform though they will be suppresed in the future. In aftermath, Epiphany stack is also still using these names.</sup>
 

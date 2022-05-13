@@ -20,10 +20,9 @@ specification:
     opensearch_home: /usr/share/opensearch
     opensearch_conf_dir: /usr/share/opensearch/config
     opensearch_log_dir: /var/log/opensearch
-    opensearch_repo: /var/lib/opensearch-snapshots
-    opensearch_data: /var/lib/opensearch
-    opensearch_logs: /var/log/opensearch
-    opensearch_perftop_home: /usr/share/opensearch/perftop
+    opensearch_snapshots_dir: /var/lib/opensearch-snapshots
+    opensearch_data_dir: /var/lib/opensearch
+    opensearch_perftop_dir: /usr/share/opensearch/perftop
   jvm_options:
     Xmx: 1g
   opensearch_security:

@@ -58,17 +58,13 @@ specification:
 ```
 
 ## How to manage OpenSearch data
-OpenSearch stores data using JSON documents, and an Index is a collection of documents. As in every database, it's
-crucial to correctly maintain data in this one. It's almost impossible to deliver database configuration which will fit
-to every type of project and data stored in. Epiphany deploys preconfigured OpenSearch instance but this
-configuration may not meet any single user requirements. That's why, before going to production, stack configuration should be tailored to the
-project needs. All configuration tips and tricks are available
-in [official documentation](https://opensearch.org/docs/latest).
+
+OpenSearch stores data using JSON documents, and an Index is a collection of documents. As in every database, it's crucial to correctly maintain data in this one. It's almost impossible to deliver database configuration which will fit to every type of project and data stored in. Epiphany deploys preconfigured OpenSearch instance but this configuration may not meet any single user requirements. That's why, before going to production, stack configuration should be tailored to the project needs. All configuration tips and tricks are available in [official documentation](https://opensearch.org/docs/latest).
 
 The main and most important decisions to take before you deploy the cluster are:
 
- - how many nodes are needed
- - how big machines and/or storage data disks need to be used
+- how many nodes are needed
+- how big machines and/or storage data disks need to be used
 
 These parameters can be defined in manifest yaml file. It is important to create a big enough cluster.
 
@@ -89,19 +85,13 @@ specification:
   size: Standard_DS2_v2    #  Choose a VM size that suits your needs
 ```
 
-If it's required to have OpenSearch instance which works in cluster formation configuration, except setting up more than one
-machine in yaml config file please acquaint dedicated
+If it's required to have OpenSearch instance which works in cluster formation configuration, except setting up more than one machine in yaml config file please acquaint dedicated
 support [article](https://opensearch.org/docs/latest/troubleshoot/index/) and adjust
 OpenSearch configuration file.
 
 We also want to strongly encourage you to get familiar with a bunch of plugins and policies available along with OpenSearch with the following ones among them:
 
-`ISM - Index State Management` - is a plugin that allows users and administrative panel to monitor the indices and
-apply policies at different index stages. ISM lets users automate periodic, administrative operations by triggering them
-based on index age, size, or number of documents. Using the ISM plugin, can define policies that automatically handle
-index rollovers or deletions. Official plugin
-documentation is available
-[here](https://opensearch.org/docs/latest/im-plugin/ism/index/).
+`ISM - Index State Management` - is a plugin that allows users and administrative panel to monitor the indices and apply policies at different index stages. ISM lets users automate periodic, administrative operations by triggering them based on index age, size, or number of documents. Using the ISM plugin, can define policies that automatically handle index rollovers or deletions. Official plugin documentation is available [here](https://opensearch.org/docs/latest/im-plugin/ism/index/).
 
 To reduce the consumption of disk resources, every index you created should use
 well-designed [policy](https://opensearch.org/docs/latest/im-plugin/ism/policies/).
@@ -188,16 +178,14 @@ There is an example of such policy below. Be aware that this is only example and
 
 Example above shows configuration with rollover index policy on a daily basis or when the index achieve 1 GB size. Indexes older than 14 days will
 be deleted. States and conditionals could be combined. Please
-see [policies](https://opensearch.org/docs/latest/im-plugin/ism/policies//) documentation for more
+see [policies](https://opensearch.org/docs/latest/im-plugin/ism/policies/) documentation for more
 details.
-
-<br>
 
 #### Apply Policy
 
 To apply a policy you can use similar API request as presented below:
 
-```
+```sh
 PUT _index_template/ism_rollover
 ```
 
@@ -216,7 +204,7 @@ policy to already existing policies by assigning them to policy in dashboard Ind
 
 ## How to export Dashboards reports
 
-Since v1.0 Epiphany provides the possibility to export reports from Kibana to CSV, PNG or PDF using the Open Distro for Elasticsearch Kibana reports feature. And after migrating from Elastic stack to OpenSearch stack you can make use of the OpenSearch Reporting feature a choieve this and more. 
+Since v1.0 Epiphany provides the possibility to export reports from Kibana to CSV, PNG or PDF using the Open Distro for Elasticsearch Kibana reports feature. And after migrating from Elastic stack to OpenSearch stack you can make use of the OpenSearch Reporting feature to achieve this and more.
 
 Check more details about the OpenSearch Reports plugin and how to export reports in the
 [documentation](https://github.com/opensearch-project/dashboards-reports/blob/main/README.md#opensearch-dashboards-reports).

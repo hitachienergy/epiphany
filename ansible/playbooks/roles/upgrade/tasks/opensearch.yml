@@ -38,10 +38,11 @@
         group: "{{ specification.opensearch_os_group }}"
         mode: u=rw,go=r
         recurse: true
-      with_items:
+      loop:
         - "{{ specification.paths.opensearch_home }}"
         - "{{ specification.paths.opensearch_log_dir }}"
         - "{{ specification.paths.opensearch_conf_dir }}"
+        - "{{ specification.paths.opensearch_data_dir }}"
         - "{{ certificates.dirs.certs }}"
 
     - name: OpenSearch | Run ODFE migration tasks

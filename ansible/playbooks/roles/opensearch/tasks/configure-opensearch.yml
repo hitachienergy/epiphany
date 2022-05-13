@@ -3,7 +3,7 @@
 
 - name: Ensure snapshot folder exists
   file:
-    path: "{{ specification.paths.opensearch_repo }}/"
+    path: "{{ specification.paths.opensearch_snapshots_dir }}/"
     state: directory
     owner: "{{ specification.opensearch_os_user }}"
     group: "{{ specification.opensearch_os_group }}"
@@ -93,7 +93,7 @@
       {{ existing_es_config['opensearch_security.nodes_dn'] if (is_upgrade_run) else
          _epiphany_nodes_dn }}
     opensearch_security_allow_unsafe_democertificates: "{{ certificates.files.demo.opensearch_security.allow_unsafe_democertificates }}"
-    http_port: "{{ is_upgrade_run | ternary(existing_es_config['http.port'],      ports.http) }}"
+    http_port: "{{ is_upgrade_run | ternary(existing_es_config['http.port'], ports.http) }}"
     transport_port: "{{ is_upgrade_run | ternary(existing_es_config['transport.port'], ports.transport) }}"
 
 # When 'opensearch_security.allow_unsafe_democertificates' is set to 'false' all demo certificate files must be removed,
@@ -121,12 +121,12 @@
     - name: Wait for opensearch service to start up
       when: restart_opensearch.changed
       wait_for:
-        port: 9200
+        port: "{{ ports.http }}"
         host: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
 
     - name: Set helper facts
       set_fact:
-        opensearch_endpoint: https://{{ ansible_default_ipv4.address }}:9200
+        opensearch_endpoint: https://{{ ansible_default_ipv4.address }}:{{ ports.http }}
       vars:
         uri_template: &uri
           client_cert: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert.filename }}"

@@ -44,6 +44,7 @@ files:
 
   'https://charts.rook.io/release/rook-ceph-cluster-v1.8.8.tgz':
     sha256: df4e1f2125af41fb84c72e4d12aa0cb859dddd4f37b3d5979981bd092040bd16
+
   # --- OpenSearch Bundle ---
   'https://artifacts.opensearch.org/releases/bundle/opensearch/1.2.4/opensearch-1.2.4-linux-x64.tar.gz':
     sha256: d40f2696623b6766aa235997e2847a6c661a226815d4ba173292a219754bd8a8

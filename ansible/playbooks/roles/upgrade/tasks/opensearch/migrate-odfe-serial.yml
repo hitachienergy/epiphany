@@ -7,7 +7,7 @@
     state: stopped
   register: elasticsearch_state
 
-- name: ODFE migration | Inastall OpenSearch binaries
+- name: ODFE migration | Install OpenSearch binaries
   include_tasks: roles/opensearch/tasks/install-opensearch.yml
 
 - name: ODFE migration | Copy Elasticsearch directories to OpenSearch directories
@@ -19,14 +19,14 @@
     group: "{{ specification.opensearch_os_group }}"
     mode: u=rw,go=r
     directory_mode: true
-  with_items:
+  loop:
     - {
         1: "/var/lib/elasticsearch-snapshots/",
-        2: "{{ specification.paths.opensearch_repo }}/",
+        2: "{{ specification.paths.opensearch_snapshots_dir }}/",
       }
     - {
         1: "/var/lib/elasticsearch",
-        2: "{{ specification.paths.opensearch_data }}",
+        2: "{{ specification.paths.opensearch_data_dir }}",
       }
 
 - name: ODFE migration | Prepare a list of Elasticsearch certs and keys

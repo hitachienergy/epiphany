@@ -65,10 +65,10 @@
     snapshot_name: >-
       {{ snapshot_path | basename | regex_replace('^opensearch_snapshot_(.*).tar.gz$', '\1') }}
 
-- debug: var=snapshot_name
+- name: Display snapshot name
+  debug: var=snapshot_name
 
 - name: Ensure all OPSD and filebeat instances are stopped, then restore the snapshot
-
   block:
     - name: Stop allOpenSearch Dashboards instances
       delegate_to: "{{ item }}"

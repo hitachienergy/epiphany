@@ -7,7 +7,8 @@
       - snapshot_name | length > 0
     fail_msg: The snapshot_name fact must be defined and must be a non-empty string.
 
-- debug: var=snapshot_name
+- name: Display snapshot name
+  debug: var=snapshot_name
 
 - name: Include vars from opensearch_dashboards role
   include_vars:

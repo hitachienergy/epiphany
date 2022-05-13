@@ -28,7 +28,7 @@
   retries: 60
   delay: 1
 
-- name: No backup warning
+- name: Show warning when backup is not supported
   when: not cluster_status.json.number_of_nodes == 1
   debug:
     msg: "[WARNING] No snapshot backup created as only single-node cluster backup is supported."
