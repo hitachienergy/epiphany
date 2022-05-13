@@ -16,6 +16,7 @@
 - [#3065](https://github.com/epiphany-platform/epiphany/issues/3065) - Flag `delete_os_disk_on_termination` has no effect when removing cluster
 - [#2996](https://github.com/epiphany-platform/epiphany/issues/2996) - Introduce the new configuration field to change a component name
 - [#3060](https://github.com/epiphany-platform/epiphany/issues/3060) - Allow to disable Open Distro audit logs
+- [#3057](https://github.com/epiphany-platform/epiphany/issues/3057) - Additional AWS authentication option
 
 ### Fixed
 

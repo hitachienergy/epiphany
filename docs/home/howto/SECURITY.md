@@ -1,3 +1,29 @@
+## How to run epicli with temporary AWS credentials
+
+There is a [possibility](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_use-resources.html)
+to generate temporary AWS credentials to manage resources.
+
+To use this feature so, first create temporary credentials:
+
+```shell
+aws sts get-session-token --duration-seconds <duration> --serial-number <mfa_serial_number> --token-code <mfa_token>
+```
+
+Then these credentials can be used in Epiphany config:
+
+```yaml
+kind: epiphany-cluster
+title: Epiphany cluster Config
+provider: aws
+name: default
+specification:
+  cloud:
+    credentials:
+      key: <access_key_id>
+      secret: <secret_access_key>
+      session_token: <session_token>
+```
+
 ## How to enable/disable Epiphany service user
 
 To enable/disable Epiphany service user you can use tool from our repository. You can find this in directory `tools/service_user_disable_enable` under name `service-user-disable-enable.yml`.
