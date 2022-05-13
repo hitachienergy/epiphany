@@ -210,6 +210,10 @@
         that: ansible_distribution_version is version(versions.required.full, '>=')
         quiet: true
 
+    - name: Get information on installed packages
+      package_facts:
+        manager: rpm
+
     - name: Ensure repositories that provide leapp utility are enabled
       community.general.ini_file:
         path: "{{ item.repo_file }}"
@@ -217,10 +221,11 @@
         option: enabled
         value: 1
         mode: u=rw,go=r
+        no_extra_spaces: true
       loop: "{{ leapp_dependencies.repos[provider] }}"
 
     - name: Install packages that provide the leapp utility
-      package:
+      yum:
         name: "{{ leapp_dependencies.packages[provider] }}"
         state: present
 
@@ -298,13 +303,34 @@
             name: "{{ installed_kernel_devel_packages[:-1] }}"  # keep the last item
             state: absent
 
+    - name: Set PostgreSQL version
+      set_fact:
+        postgresql_version: >-
+          {{ '10' if ansible_facts.packages['postgresql10-server'] is defined else
+             '13' if ansible_facts.packages['postgresql13-server'] is defined else
+             'null' }}
+
+    - name: Add PostgreSQL repository
+      when: postgresql_version != 'null'
+      yum_repository:
+        name: pgdg{{ postgresql_version }}
+        file: pgdg{{ postgresql_version }}-rhel-{{ versions.target.full }}
+        description: PostgreSQL {{ postgresql_version }} for RHEL/CentOS {{ versions.target.full }} - $basearch
+        baseurl: https://download.postgresql.org/pub/repos/yum/{{ postgresql_version }}/redhat/rhel-{{ versions.target.full }}-$basearch
+        gpgkey: https://download.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG
+        enabled: false
+        gpgcheck: true
+        module_hotfixes: true
+
     ### UPGRADE ###
 
     - name: Provide leapp answer about pam_pkcs11_module removal
       command: leapp answer --add --section remove_pam_pkcs11_module_check.confirm=True
 
     - name: Start leapp upgrade
-      command: leapp upgrade --target {{ versions.target.full }} {{ '--no-rhsm' if provider != 'non_cloud' }}
+      command: >-
+        leapp upgrade --target {{ versions.target.full }} {{ '--no-rhsm' if provider != 'non_cloud' }}
+        {{ '--enablerepo pgdg' ~ postgresql_version if postgresql_version != 'null' }}
 
     - name: Reboot system to complete leapp upgrade procedure
       reboot:
@@ -359,12 +385,13 @@
     ### POST-UPGRADE -- CLEANUP ###
 
     - name: Remove packages from the dnf exclude list  # populated by leapp during upgrade
-      ini_file:
+      community.general.ini_file:
         path: /etc/dnf/dnf.conf
         section: main
         option: exclude
         value: ''
         mode: u=rw,go=r
+        no_extra_spaces: true
 
     ## Remove Leapp
 
@@ -376,6 +403,13 @@
     - name: Remove leapp configuration
       file:
         path: /etc/leapp
+        state: absent
+
+    - name: Remove PostgreSQL repository
+      when: postgresql_version != 'null'
+      yum_repository:
+        name: pgdg{{ postgresql_version }}
+        file: pgdg{{ postgresql_version }}-rhel-{{ versions.target.full }}
         state: absent
 
     ## Remove RHEL 7 packages
