@@ -310,8 +310,8 @@ Make sure you have a backup before proceeding to migration steps described below
 ---
 Following the decision of Elastic NV<sup>[1]</sup> on ceasing open source options available for Elasticsearch and Kibana and releasing them under the Elastic license (more info [here](https://github.com/epiphany-platform/epiphany/issues/2870)) Epiphany team decided to implement a mechanism of automatic migration from ElasticSearch 7.10.2 to OpenSearch 1.2.4.
 
-It is important to remember, that while the new platform makes an effort to continue to support a broad set of third party tools (ie. Beats) there can be some drawbacks or even malfunctions came across all over the way as not everything has been tested or has explicitly been added to OpenSearch compatibility scope<sup>[2]</sup>.
-Additionally some of the components (ie. ElasticSearch Curator) or some embedded service accounts ( ie. *kibanaserver*) can be still found in OpenSearch environment but they will be successfully phased out.
+It is important to remember, that while the new platform makes an effort to continue to support a broad set of third party tools (ie. Beats) there can be some drawbacks or even malfunctions as not everything has been tested or has explicitly been added to OpenSearch compatibility scope<sup>[2]</sup>.
+Additionally some of the components (ie. ElasticSearch Curator) or some embedded service accounts ( ie. *kibanaserver*) can be still found in OpenSearch environment but they will be phased out.
 
 Keep in mind, that for the current version of OpenSearch and OpenSearch Dashboards it is necessary to include the `filebeat` component along with the loggging one in order to implement the workaround for *Kibana API not available* [bug](https://github.com/opensearch-project/OpenSearch-Dashboards/issues/656#issuecomment-978036236).
 

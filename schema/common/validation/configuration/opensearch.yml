@@ -5,6 +5,10 @@ type: object
 properties:
   cluster_name:
     type: string
+  opensearch_os_user:
+    type: string
+  opensearch_os_group:
+    type: string
   admin_password:
     type: string
   kibanaserver_password:
@@ -22,11 +26,17 @@ properties:
   paths:
     type: object
     properties:
-      data:
+      opensearch_home:
         type: string
-      repo:
+      opensearch_conf_dir:
         type: string
-      logs:
+      opensearch_log_dir:
+        type: string
+      opensearch_snapshots_dir:
+        type: string
+      opensearch_data_dir:
+        type: string
+      opensearch_perftop_dir:
         type: string
   jvm_options:
     type: object

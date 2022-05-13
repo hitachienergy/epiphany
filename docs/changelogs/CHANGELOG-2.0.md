@@ -9,6 +9,9 @@
 ### Updated
 
 - [#3080](https://github.com/epiphany-platform/epiphany/issues/3080) - update Filebeat to the latest compatible version with OpenSearch
+- [#2870](https://github.com/epiphany-platform/epiphany/issues/2870) - Migration of OpenDistro for ElasticSearch
+
+### Added
 
 - [#2982](https://github.com/epiphany-platform/epiphany/issues/2982) - Using AKS and EKS Terraform configuration directly with Epiphany.
 
@@ -104,7 +107,6 @@
 - [#2837](https://github.com/epiphany-platform/epiphany/issues/2837) - Removal of Apache Ignite component
 - [#2927](https://github.com/epiphany-platform/epiphany/issues/2927) - Review Epiphany tools (remove outdated)
 - [#2864](https://github.com/epiphany-platform/epiphany/issues/2864) - Remove unnecessary design docs
-- [#2870](https://github.com/epiphany-platform/epiphany/issues/2870) - Migration of OpenDistro for ElasticSearch
 
 ### Deprecated
 
