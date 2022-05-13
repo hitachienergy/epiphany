@@ -60,6 +60,7 @@
 - [#3049](https://github.com/epiphany-platform/epiphany/issues/3049) - HAProxy upgrade fails on re-run trying to remove haproxy_exporter
 - [#3006](https://github.com/epiphany-platform/epiphany/issues/3006) - install 'containerd.io=1.4.12-*' failed, when upgrade from v1.3.0 to 2.0.0dev
 - [#3065](https://github.com/epiphany-platform/epiphany/issues/3065) - Flag `delete_os_disk_on_termination` has no effect when removing cluster
+- [#2982](https://github.com/epiphany-platform/epiphany/issues/2982) - Using AKS and EKS Terraform configuration directly with Epiphany.
 
 ### Updated
 
@@ -90,6 +91,12 @@
 - [#2864](https://github.com/epiphany-platform/epiphany/issues/2864) - Remove unnecessary design docs
 
 ### Deprecated
+
+- Support for Modules:
+  [Azure Basic Infrastructure](https://github.com/epiphany-platform/m-azure-basic-infrastructure) (AzBI) module
+  [Azure AKS](https://github.com/epiphany-platform/m-azure-kubernetes-service) (AzKS) module
+  [AWS Basic Infrastructure](https://github.com/epiphany-platform/m-aws-basic-infrastructure) (AwsBI) module
+  [AWS EKS](https://github.com/epiphany-platform/m-aws-kubernetes-service) (AwsKS) module
 
 ### Breaking changes
 
