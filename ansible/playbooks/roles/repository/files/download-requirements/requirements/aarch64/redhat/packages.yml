@@ -84,6 +84,7 @@ packages:
     - 'pgaudit15_13-1.5.0'
     - 'pkgconf'  # for bash-completion
     - 'pkgconf-pkg-config'  # for bash-completion
+    - 'policycoreutils'
     - 'postgresql13-server'
     - 'python3-cffi'  # for python3-cryptography
     - 'python3-cryptography'
@@ -129,7 +130,6 @@ packages:
     - 'colord-libs'
     - 'dejavu-fonts-common'
     - 'dejavu-sans-mono-fonts'
-    - 'fontpackages-filesystem'
     - 'fribidi'
     - 'gdk-pixbuf2'
     - 'gdk-pixbuf2-modules'
