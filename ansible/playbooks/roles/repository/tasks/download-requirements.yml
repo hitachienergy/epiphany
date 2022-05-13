@@ -10,10 +10,10 @@
     "{{ download_requirements_script }}" \
         /var/www/html/epirepo \
         "{{ download_requirements_os_name }}" \
-        --repos-backup-file /var/tmp/enabled-system-repos.tar \
-        --verbose \
         --manifest "{{ download_requirements_manifest }}" \
-        --no-logfile |&
+        --no-logfile \
+        --repos-backup-file /var/tmp/enabled-system-repos.tar \
+        --verbose |&
     tee >(systemd-cat --identifier=download-requirements.py)
   args:
     executable: /bin/bash
