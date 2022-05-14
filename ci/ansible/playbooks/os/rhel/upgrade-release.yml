@@ -610,3 +610,9 @@
           command: subscription-manager release --unset
           register: result
           failed_when: result.rc > 1 # May return code 1 even when correctly subscribed if system purpose is not defined
+
+    # download-requirements.py fails if releasever = 8.4 (2ndQuadrant repo)
+    - name: Remove releasever DNF variable
+      file:
+        path: /etc/dnf/vars/releasever  # file created by upgrade
+        state: absent
