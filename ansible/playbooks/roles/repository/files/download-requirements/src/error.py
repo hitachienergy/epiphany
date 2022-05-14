@@ -17,6 +17,12 @@ class CriticalError(DownloadRequirementsError):
     """
 
 
+class DnfVariableNotfound(CriticalError):
+    """
+    Raised when DNF variable was not found.
+    """
+
+
 class PackageNotfound(CriticalError):
     """
     Raised when there was no package found by the query tool.
