@@ -39,7 +39,7 @@ packages:
     - 'erlang-tools=1:23.1.5*'
     - 'erlang-xmerl=1:23.1.5*'
     - 'ethtool'
-    - 'filebeat=7.9.2*'
+    - 'filebeat=7.12.1*'
     - 'firewalld'
     - 'fping'
     - 'gnupg2'

@@ -74,11 +74,13 @@
         dest: /etc/filebeat/filebeat.yml.bak_{{ ansible_facts.packages['filebeat'][0].version }}
         mode: u=rw,go=
 
-    - import_role:
+    - name: Install Filebeat as system service
+      import_role:
         name: filebeat
         tasks_from: install-filebeat-as-system-service
 
-    - import_role:
+    - name: Configure auditd
+      import_role:
         name: filebeat
         tasks_from: configure-auditd
 
@@ -93,7 +95,8 @@
         _filebeat_existing_config: "{{ _filebeat_config_yml.content | b64decode | from_yaml }}"
       no_log: true
 
-    - import_role:
+    - name: Configure Filebeat
+      import_role:
         name: filebeat
         tasks_from: configure-filebeat
       vars:
