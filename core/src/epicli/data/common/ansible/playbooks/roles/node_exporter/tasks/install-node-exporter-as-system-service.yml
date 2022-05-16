@@ -60,6 +60,8 @@
     mode: u=rw,g=r,o=r
   vars:
     exporter_service_description: "{{ exporter.service.description }}"
+  notify:
+    - restart prometheus node exporter service
 
 - name: Configure systemd to use node_exporter service
   systemd:
