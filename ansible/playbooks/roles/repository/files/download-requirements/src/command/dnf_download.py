@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import List
 
 from src.command.command import Command
+from src.error import CriticalError
 
 
 class DnfDownload(Command):
@@ -21,7 +22,8 @@ class DnfDownload(Command):
 
         args.append(f'--archlist={",".join(archlist)}')
         args.append(f'--destdir={str(destdir)}')
-        args.append('--disableplugin=subscription-manager')  # to speed up download
+        # to speed up download
+        args.append('--disableplugin=subscription-manager')
 
         if exclude:
             args.append(f'--exclude={exclude}')
@@ -32,4 +34,10 @@ class DnfDownload(Command):
         args.append('-y')
         args.extend(packages)
 
-        self.run(args)
+        process = self.run(args)
+        if 'error' in process.stdout:
+            raise CriticalError(
+                f'Found an error. dnf download failed for packages `{packages}`, reason: `{process.stdout}`')
+        if process.stderr:
+            raise CriticalError(
+                f'dnf download failed for packages `{packages}`, reason: `{process.stderr}`')

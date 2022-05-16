@@ -61,6 +61,7 @@ packages:
     - 'libXcursor'  # for grafana
     - 'libXt'  # for grafana
     - 'logrotate'
+    - 'lua'  # for java-1.8.0-openjdk-headless
     - 'mcpp'  # for grafana
     - 'net-tools'
     - 'nfs-utils'
@@ -85,6 +86,7 @@ packages:
     - 'pgaudit15_13-1.5.0'
     - 'pkgconf'  # for bash-completion
     - 'pkgconf-pkg-config'  # for bash-completion
+    - 'policycoreutils'  # for container-selinux
     - 'python3-cffi'  # for python3-cryptography
     - 'python3-cryptography'
     - 'python3-firewall'  # for firewalld
@@ -92,6 +94,7 @@ packages:
     - 'python3-libselinux'
     - 'python3-lxml'  # for java-1.8.0-openjdk-headless
     - 'python3-nftables'  # for python3-firewall
+    - 'python3-pip'  # for python36
     - 'python3-policycoreutils'  # for container-selinux
     - 'python3-psycopg2'
     - 'python3-pycparser'  # for python3-cryptography
@@ -120,6 +123,7 @@ packages:
     - 'xorg-x11-font-utils'  # for grafana
     - 'xorg-x11-server-utils'  # for grafana
 
+  multiple_versioned:
     # K8s v1.18.6 (Epiphany >= v0.7.1)
     - 'kubeadm-1.18.6'
     - 'kubectl-1.18.6'
