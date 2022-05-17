@@ -490,11 +490,11 @@ By default, OpenSearch Dashboards ( previously Kibana component )  is deployed o
 for `opensearch` component you have to modify feature mapping. Use below configuration in your manifest:
 
 ```yaml
-kind: configuration/feature-mapping
-title: "Feature mapping to roles"
+kind: configuration/feature-mappings
+title: "Feature mapping to components"
 name: default
 specification:
-  roles_mapping:
+  mappings:
     opensearch:
       - node-exporter
       - filebeat

@@ -143,15 +143,15 @@ specification:
       count: 2
 ```
 
-2. Enable `applications` in feature-mapping in initial configuration manifest.
+2. Enable `applications` in `configuration/features` in initial configuration manifest.
 
 ```yaml
 ---
-kind: configuration/feature-mapping
-title: Feature mapping to roles
+kind: configuration/features
+title: "Features to be enabled/disabled"
 name: default
 specification:
-  available_roles:
+  features:
     - name: applications
       enabled: true
 ```

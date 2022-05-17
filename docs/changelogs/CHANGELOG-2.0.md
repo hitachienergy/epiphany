@@ -31,6 +31,11 @@
   [Azure AKS](https://github.com/epiphany-platform/m-azure-kubernetes-service) (AzKS) module
   [AWS Basic Infrastructure](https://github.com/epiphany-platform/m-aws-basic-infrastructure) (AwsBI) module
   [AWS EKS](https://github.com/epiphany-platform/m-aws-kubernetes-service) (AwsKS) module
+- [#3097](https://github.com/epiphany-platform/epiphany/issues/3097) - Split available_roles and roles_mapping into separate yaml documents
+
+### Breaking changes
+
+- Schema `configuration/feature-mapping` changed. The document was splitted into two separate docs `configuration/features` and `configuration/feature-mappings`.
 
 ### Breaking changes
 
@@ -90,7 +95,7 @@
 - [#2803](https://github.com/epiphany-platform/epiphany/issues/2803) - Refactor: rename 'kafka_var' setting
 - [#2995](https://github.com/epiphany-platform/epiphany/issues/2995) - Update expired RHUI client certificate before installing any RHEL packages
 - [#3049](https://github.com/epiphany-platform/epiphany/issues/3049) - HAProxy upgrade fails on re-run trying to remove haproxy_exporter
-- [#3006](https://github.com/epiphany-platform/epiphany/issues/3006) - install 'containerd.io=1.4.12-*' failed, when upgrade from v1.3.0 to 2.0.0dev
+- [#3006](https://github.com/epiphany-platform/epiphany/issues/3006) - install `containerd.io=1.4.12-*` failed, when upgrade from v1.3.0 to 2.0.0dev
 - [#3065](https://github.com/epiphany-platform/epiphany/issues/3065) - Flag `delete_os_disk_on_termination` has no effect when removing cluster
 - [#3153](https://github.com/epiphany-platform/epiphany/issues/3153) - AlmaLinux 8.5 installation fails resolving dependencies
 
