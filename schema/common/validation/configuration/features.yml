@@ -1,0 +1,15 @@
+---
+"$id": "#/specification"
+title: "Features to be enabled/disabled schema"
+description: "Features to be enabled/disabled schema"
+type: object
+properties:
+  features:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        enabled:
+          type: boolean

@@ -108,12 +108,12 @@ AWS:
       rabbitmq:
         count: 0
   ---
-  kind: configuration/feature-mapping
-  title: Feature mapping to roles
+  kind: configuration/feature-mappings
+  title: "Feature mapping to components"
   name: your-cluster-name # <----- make unified with other places and build directory name
   provider: any
   specification:
-    roles_mapping:
+    mappings:
       repository:
         - repository
         - image-registry

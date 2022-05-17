@@ -57,10 +57,9 @@ Disable:
 2. Prepend `kubernetes_master` mapping (or any other mapping if you don't deploy Kubernetes) with:
 
     ```yaml
-    kind: configuration/feature-mapping
+    kind: configuration/feature-mappings
     specification:
-    ...
-      roles_mapping:
+      mappings:
       ...
         kubernetes_master:
           - repository
@@ -290,12 +289,12 @@ specification:
     kubernetes_node:
       count: 2
 ---
-kind: configuration/feature-mapping
-title: "Feature mapping to roles"
+kind: configuration/feature-mappings
+title: "Feature mapping to components"
 provider: <provider>
 name: default
 specification:
-  roles_mapping:
+  mappings:
     kubernetes_master:
       - repository
       - image-registry
@@ -671,40 +670,44 @@ specification:
 
 Epiphany gives you the ability to define custom components. This allows you to define a custom set of roles for a component you want to use in your cluster. It can be useful when you for example want to maximize usage of the available machines you have at your disposal.
 
-The first thing you will need to do is define it in the `configuration/feature-mapping` configuration. To get this configuration you can run `epicli init ... --full` command. In the `available_roles` roles section you can see all the available roles that Epiphany provides. The `roles_mapping` is where all the Epiphany components are defined and were you need to add your custom components.
+The first thing you will need to do is define it in the `configuration/features` and the `configuration/feature-mappings` configurations. To get these configurations you can run `epicli init ... --full` command. In the `configuration/features` doc you can see all the available features that Epiphany provides. The `configuration/feature-mappings` doc is where all the Epiphany components are defined and where you can add your custom components.
 
-Below are parts of an example `configuration/feature-mapping` were we define a new `single_machine_new` component. We want to use Kafka instead of RabbitMQ and don`t need applications and postgres since we don't want a Keycloak deployment:
+Below are parts of an example `configuration/features` and `configuration/feature-mappings` docs where we define a new `single_machine_new` component. We want to use Kafka instead of RabbitMQ and don't need applications and postgres since we don't want a Keycloak deployment:
 
 ```yaml
-kind: configuration/feature-mapping
-title: Feature mapping to roles
+kind: configuration/features
+title: "Features to be enabled/disabled"
 name: default
 specification:
-  available_roles: # All entries here represent the available roles within Epiphany
-  - name: repository
-    enabled: yes
-  - name: firewall
-    enabled: yes
-  - name: image-registry
-  ...
-  roles_mapping: # All entries here represent the default components provided with Epiphany
-  ...
+  features:  # All entries here represent the available features within Epiphany
+    - name: repository
+      enabled: yes
+    - name: firewall
+      enabled: yes
+    - name: image-registry
+    ...
+---
+kind: configuration/feature-mappings
+title: "Feature mapping to components"
+name: default
+specification:
+  mappings: # All entries here represent the default components provided with Epiphany
     single_machine:
-    - repository
-    - image-registry
-    - kubernetes-master
-    - applications
-    - rabbitmq
-    - postgresql
-    - firewall
+      - repository
+      - image-registry
+      - kubernetes-master
+      - applications
+      - rabbitmq
+      - postgresql
+      - firewall
     # Below is the new single_machine_new definition
     single_machine_new:
-    - repository
-    - image-registry
-    - kubernetes-master
-    - kafka
-    - firewall
-  ...
+      - repository
+      - image-registry
+      - kubernetes-master
+      - kafka
+      - firewall
+    ...
 ```
 
 Once defined the new `single_machine_new` can be used inside the `epiphany-cluster` configuration:
