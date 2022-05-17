@@ -1,18 +1,10 @@
+---
 "$id": "#/specification"
-title: "Feature-mapping specification schema"
-description: "Feature-mapping specification schema"
+title: "Feature-mappings specification schema"
+description: "Feature-mappings specification schema"
 type: object
 properties:
-  available_roles:
-    type: array
-    items:
-      type: object
-      properties:
-        name:
-          type: string
-        enabled:
-          type: boolean
-  roles_mapping:
+  mappings:
     type: object
     properties:
       kafka:
