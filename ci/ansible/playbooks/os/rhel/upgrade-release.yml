@@ -411,6 +411,9 @@
         enabled: false
         gpgcheck: true
         module_hotfixes: true
+        exclude:  # prevent auto-upgrade from 4.0.6-1.el7
+          - repmgr10
+          - repmgr_10
 
     ### UPGRADE ###
 
