@@ -1,6 +1,6 @@
 from tests.mocks.command_run_mock import CommandRunMock
 
-from src.command.dnf_repoquery import DnfRepoquery
+from src.command.redhat.dnf_repoquery import DnfRepoquery
 
 
 def test_interface_query(mocker):

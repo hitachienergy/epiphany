@@ -55,6 +55,11 @@
         dest: "{{ download_requirements_dir }}/{{ item }}"
       loop: "{{ _files }}"
 
+    - name: Copy the manifest file
+      synchronize:
+        src: "{{ inventory_dir }}/manifest.yml"
+        dest: "{{ download_requirements_dir }}/manifest.yml"
+
     - name: Copy RedHat family specific download requirements file
       synchronize:
         src: "download-requirements/{{ _family_packages }}"

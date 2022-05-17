@@ -4,23 +4,12 @@ from os import chmod
 from pathlib import Path
 from typing import Any, Dict
 
-import yaml
-
 from src.command.toolchain import Toolchain, TOOLCHAINS
 from src.config.config import Config, OSArch
+from src.config.manifest_reader import load_yaml_file
 from src.crypt import SHA_ALGORITHMS
 from src.downloader import Downloader
 from src.error import CriticalError, ChecksumMismatch
-
-
-def load_yaml_file(filename: Path) -> Any:
-    try:
-        with open(filename, encoding="utf-8") as req_handler:
-            return yaml.safe_load(req_handler)
-    except yaml.YAMLError as yaml_err:
-        raise CriticalError(f'Failed loading: `{yaml_err}`') from yaml_err
-    except Exception as err:
-        raise CriticalError(f'Failed loading: `{filename}`') from err
 
 
 class BaseMode:
@@ -35,6 +24,7 @@ class BaseMode:
         self._repositories: Dict[str, Dict] = self.__parse_repositories()
         self._requirements: Dict[str, Any] = self.__parse_requirements()
         self._tools: Toolchain = TOOLCHAINS[self._cfg.os_type.os_family](self._cfg.retries)
+        self._cfg.read_manifest(self._requirements)
 
     def __parse_repositories(self) -> Dict[str, Dict]:
         """

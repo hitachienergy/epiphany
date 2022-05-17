@@ -1,4 +1,4 @@
-from src.command.dnf import Dnf
+from src.command.redhat.dnf import Dnf
 
 from tests.mocks.command_run_mock import CommandRunMock
 
