@@ -1,6 +1,6 @@
 from tests.mocks.command_run_mock import CommandRunMock
 
-from src.command.dnf_config_manager import DnfConfigManager
+from src.command.redhat.dnf_config_manager import DnfConfigManager
 
 
 def test_interface_add_repo(mocker):
