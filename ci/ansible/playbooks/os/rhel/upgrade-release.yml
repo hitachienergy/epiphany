@@ -2,13 +2,16 @@
 # Based on https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/upgrading_from_rhel_7_to_rhel_8/index
 # and partially on https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/redhat/redhat-in-place-upgrade
 
-# This play requires a Leapp metadata archive from the Red Hat portal which cannot be shared publicly.
-# Local path to this archive must be provided via 'leapp_archive' variable, for example:
-
-# ansible-playbook -e leapp_archive=/absolute/path/leapp-data16.tar.gz
-
 # Requirements:
-# - System attached to RHUI repositories or Red Hat subscription ('non_cloud' provider)
+# - Leapp metadata archive from the Red Hat portal which cannot be shared publicly.
+# - Epiphany manifest with credentials (for 'aws' provider only).
+# - System attached to RHUI repositories or Red Hat subscription (for 'non_cloud' provider only).
+
+# Usage:
+# ansible-playbook -e leapp_archive=/absolute/path/leapp-data16.tar.gz -e epiphany_manifest=/shared/build/aws/manifest.yml
+
+# Note:
+# For AWS, playbook creates/overwrites with backup '/root/.aws/credentials' file locally.
 
 # Limitations:
 # - Ansible connection as root is not supported (PermitRootLogin)
@@ -128,7 +131,7 @@
       register: pre_upgrade_enabled_repositories
       changed_when: false
 
-    # Disable legacy containerd plugin to avoid instance auto-recovery on AWS (modprobe: FATAL: Module aufs not found)
+    # Disable legacy containerd plugin to avoid error (modprobe: FATAL: Module aufs not found)
 
     - name: Check if /etc/containerd/config.toml file exists
       stat:
@@ -176,6 +179,93 @@
             state: restarted
           when: update_containerd_config_option.changed
              or add_containerd_config_option.changed
+
+    # Suspend HealthCheck process on AWS (required for reboots)
+
+    - name: Suspend HealthCheck process for auto scaling groups
+      when: provider == 'aws'
+      run_once: true
+      delegate_to: localhost
+      block:
+        - name: Load Epiphany manifest
+          slurp:
+            src: "{{ epiphany_manifest }}"
+          register: slurp_epiphany_manifest
+
+        - name: Set cloud properties
+          vars:
+            _cluster_doc: >-
+              {{ slurp_epiphany_manifest['content'] | b64decode | from_yaml_all
+                                                    | selectattr('kind', '==', 'epiphany-cluster')
+                                                    | first }}
+          block:
+            - name: Set cloud facts
+              set_fact:
+                aws_region: "{{ _cluster_doc.specification.cloud.region }}"
+                cluster_name: "{{ _cluster_doc.specification.prefix }}-{{ _cluster_doc.specification.name }}"
+
+            - name: Create AWS configuration directory
+              file:
+                path: "{{ '~root' | expanduser }}/.aws"
+                state: directory
+                mode: u=rwx,go=
+
+            - name: Create credentials file
+              copy:
+                dest: "{{ '~root' | expanduser }}/.aws/credentials"
+                content: |
+                  [default]
+                  aws_access_key_id = {{ _cluster_doc.specification.cloud.credentials.key }}
+                  aws_secret_access_key = {{ _cluster_doc.specification.cloud.credentials.secret }}
+                mode: u=rw,go=
+                backup: true
+
+        - name: Find auto scaling groups
+          community.aws.ec2_asg_info:
+            name: "{{ cluster_name }}"
+            region: "{{ aws_region }}"
+          register: cluster_asgs
+
+        - name: Reconfigure ASGs to suspend EC2 health check
+          when: cluster_asgs.results | count > 0
+          block:
+            - name: Set facts on ASGs
+              set_fact:
+                asg_facts: "{{ cluster_asgs.results | json_query(_query) }}"
+              vars:
+                _query: '[].{name: auto_scaling_group_name, suspended_processes: suspended_processes}'
+
+            - name: Set path to file with original configuration of ASGs
+              set_fact:
+                asg_config_file_path: "{{ playbook_dir }}/{{ cluster_name }}-asg-config.yml"
+
+            - name: Check if file with original configuration of ASGs exists
+              stat:
+                path: "{{ asg_config_file_path }}"
+                get_attributes: false
+                get_checksum: false
+                get_mime: false
+              register: stat_asg_config_yml
+
+            - name: Save original configuration of auto scaling groups
+              when: not stat_asg_config_yml.stat.exists
+              become: false
+              copy:
+                dest: "{{ asg_config_file_path }}"
+                mode: u=rw,g=r,o=
+                content: |
+                  # This file is managed by Ansible and is needed to restore original configuration. DO NOT EDIT.
+                  {{ asg_facts | to_nice_yaml }}
+
+            - name: Suspend HealthCheck process
+              when: not 'HealthCheck' in (item.suspended_processes | map(attribute='process_name'))
+              community.aws.ec2_asg:
+                name: "{{ item.name }}"
+                suspend_processes: "{{ item.suspended_processes | union(['HealthCheck']) }}"
+                region: "{{ aws_region }}"
+              loop_control:
+                label: "{{ item.name }}"
+              loop: "{{ asg_facts }}"
 
     - &UPDATE_ALL_PACKAGES
       name: Update all packages in current major version
@@ -616,3 +706,44 @@
       file:
         path: /etc/dnf/vars/releasever  # file created by upgrade
         state: absent
+
+    # Resume HealthCheck process on AWS
+
+    - name: Resume HealthCheck process for auto scaling groups
+      when: provider == 'aws'
+      run_once: true
+      delegate_to: localhost
+      block:
+        - name: Check if file with original configuration of ASGs exists
+          stat:
+            path: "{{ asg_config_file_path }}"
+            get_attributes: false
+            get_checksum: false
+            get_mime: false
+          register: stat_asg_config_yml
+
+        - name: Restore original configuration
+          when: stat_asg_config_yml.stat.exists
+          block:
+            - name: Load original configuration from file
+              slurp:
+                src: "{{ asg_config_file_path }}"
+              register: slurp_asg_config_yml
+
+            - name: Set ASG settings to restore
+              set_fact:
+                asgs_to_restore: "{{ slurp_asg_config_yml['content'] | b64decode | from_yaml }}"
+
+            - name: Resume HealthCheck process
+              community.aws.ec2_asg:
+                name: "{{ item.name }}"
+                suspend_processes: "{{ item.suspended_processes }}"
+                region: "{{ aws_region }}"
+              loop_control:
+                label: "{{ item.name }}"
+              loop: "{{ asgs_to_restore }}"
+
+            - name: Remove file with original configuration of ASGs
+              file:
+                path: "{{ asg_config_file_path }}"
+                state: absent
