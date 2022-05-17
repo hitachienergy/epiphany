@@ -1,4 +1,5 @@
 ---
 download_requirements_dir: "/var/tmp/epi-download-requirements"
-download_requirements_script: "{{ download_requirements_dir }}/download-requirements.py"
 download_requirements_flag: "{{ download_requirements_dir }}/download-requirements-done.flag"
+download_requirements_manifest: "{{ download_requirements_dir }}/manifest.yml"
+download_requirements_script: "{{ download_requirements_dir }}/download-requirements.py"
