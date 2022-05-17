@@ -69,6 +69,7 @@ packages:
     - 'nss'  # for java-1.8.0-openjdk-headless
     - 'nss-softokn'  # for nss
     # Open Distro for Elasticsearch plugins are installed individually to not download them twice in different versions (as dependencies of opendistroforelasticsearch package)
+    - 'ntsysv'  # for python36
     - 'opendistro-alerting-1.13.1.*'
     - 'opendistro-index-management-1.13.1.*'
     - 'opendistro-job-scheduler-1.13.0.*'
