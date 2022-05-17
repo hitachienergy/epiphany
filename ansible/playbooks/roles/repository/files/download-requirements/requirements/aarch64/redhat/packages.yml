@@ -60,6 +60,7 @@ packages:
     - 'libXcursor'  # for grafana
     - 'libXt'  # for grafana
     - 'logrotate'
+    - 'lua'  # for java-1.8.0-openjdk-headless
     - 'mcpp'  # for grafana
     - 'net-tools'
     - 'nfs-utils'
