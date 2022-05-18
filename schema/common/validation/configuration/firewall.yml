@@ -89,7 +89,7 @@ properties:
             type: array
             items:
               type: string
-      kibana:
+      opensearch_dashboards:
         type: object
         properties:
           enabled:

@@ -262,7 +262,7 @@ Default configuration:
 ```yaml
 specification:
 [..]
-  kibana:
+  opensearch:
     dashboards:
       enabled: auto
       index: filebeat-*

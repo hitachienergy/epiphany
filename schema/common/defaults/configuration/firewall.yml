@@ -45,7 +45,7 @@ specification:
       enabled: true
       ports:
         - 9308/tcp
-    kibana:
+    opensearch_dashboards:
       enabled: true
       ports:
         - 5601/tcp
