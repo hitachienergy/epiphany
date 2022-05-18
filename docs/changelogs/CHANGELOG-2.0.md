@@ -2,6 +2,10 @@
 
 ## [2.0.1] YYYY-MM-DD
 
+### Added
+
+- [#2932](https://github.com/epiphany-platform/epiphany/issues/2932) - Support `epicli upgrade` for RHEL/AlmaLinux 8
+
 ### Updated
 
 - [#3080](https://github.com/epiphany-platform/epiphany/issues/3080) - update Filebeat to the latest compatible version with OpenSearch
