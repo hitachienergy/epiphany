@@ -6,6 +6,16 @@
 
 - [#3080](https://github.com/epiphany-platform/epiphany/issues/3080) - update Filebeat to the latest compatible version with OpenSearch
 
+- [#2982](https://github.com/epiphany-platform/epiphany/issues/2982) - Using AKS and EKS Terraform configuration directly with Epiphany.
+
+### Deprecated
+
+- Support for Modules:
+  [Azure Basic Infrastructure](https://github.com/epiphany-platform/m-azure-basic-infrastructure) (AzBI) module
+  [Azure AKS](https://github.com/epiphany-platform/m-azure-kubernetes-service) (AzKS) module
+  [AWS Basic Infrastructure](https://github.com/epiphany-platform/m-aws-basic-infrastructure) (AwsBI) module
+  [AWS EKS](https://github.com/epiphany-platform/m-aws-kubernetes-service) (AwsKS) module
+
 ## [2.0.0] 2022-05-09
 
 ### Added

@@ -126,7 +126,7 @@
   - [AWS Security groups](./howto/SECURITY_GROUPS.md#aws-security-groups)
   - [AWS Security groups full yaml file](./howto/SECURITY_GROUPS.md#aws-setting-groups-full-yaml-file)
 
-- [Modules](./howto/MODULES.md)
+- [K8S-Modules](./howto/K8S_MODULES.md)
 
 - [Repository](./howto/REPOSITORY.md)
   - [Introduction](./howto/REPOSITORY.md#introduction)
