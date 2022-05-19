@@ -51,7 +51,8 @@ class RedHatFamilyMode(BaseMode):
     def _install_base_packages(self):
 
         # Bug in RHEL 8.4 https://bugzilla.redhat.com/show_bug.cgi?id=2004853
-        self._tools.dnf.update(package='libmodulemd')
+        releasever = '8' if self._tools.dnf_config_manager.get_variable('releasever') == '8.4' else None
+        self._tools.dnf.update(package='libmodulemd', releasever=releasever)
 
         # some packages are from EPEL repo
         # make sure that we reinstall it before proceeding

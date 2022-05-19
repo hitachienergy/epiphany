@@ -2,19 +2,20 @@
 # Based on https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/upgrading_from_rhel_7_to_rhel_8/index
 # and partially on https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/redhat/redhat-in-place-upgrade
 
-# This play requires a Leapp metadata archive from the Red Hat portal which cannot be shared publicly.
-# Local path to this archive must be provided via 'leapp_archive' variable, for example:
-
-# ansible-playbook -e leapp_archive=/absolute/path/leapp-data15.tar.gz
-
 # Requirements:
-# - System attached to RHUI repositories or Red Hat subscription ('non_cloud' provider)
+# - Leapp metadata archive from the Red Hat portal which cannot be shared publicly.
+# - Epiphany manifest with credentials (for 'aws' provider only).
+# - System attached to RHUI repositories or Red Hat subscription (for 'non_cloud' provider only).
+
+# Usage:
+# ansible-playbook -e leapp_archive=/absolute/path/leapp-data16.tar.gz -e epiphany_manifest=/shared/build/aws/manifest.yml
+
+# Note:
+# For AWS, playbook creates/overwrites with backup '/root/.aws/credentials' file locally.
 
 # Limitations:
 # - Ansible connection as root is not supported (PermitRootLogin)
 
-# TODO:
-# Fix issue when running on AWS on repository host deployed with epicli 1.0.2 (instance auto-recovery)
 
 - name: In-place RHEL release upgrade
   hosts: "{{ target | default('all') }}"
@@ -22,7 +23,7 @@
   vars:
     versions:
       required: {major: '7', full: '7.9'}  # minimal version from which upgrade is supported
-      target: {major: '8', full: '8.5'}
+      target: {major: '8', full: '8.4'}
 
     leapp_dependencies:
       packages:
@@ -112,24 +113,6 @@
           debug:
             var: provider
 
-    - name: Register SELinux state
-      set_fact:
-        pre_upgrade_selinux_facts: "{{ ansible_facts.selinux }}"
-
-    - name: Register enabled repositories
-      command: yum repolist --quiet
-      register: pre_upgrade_enabled_repositories
-      changed_when: false
-
-    - name: Ensure repositories that provide leapp utility are enabled
-      ini_file:
-        path: "{{ item.repo_file }}"
-        section: "{{ item.name }}"
-        option: enabled
-        value: 1
-        mode: u=rw,go=r
-      loop: "{{ leapp_dependencies.repos[provider] }}"
-
     - name: Update repository certificates
       when: provider == "azure"
       yum:
@@ -139,6 +122,151 @@
         update_only: true
         name: "*"
 
+    - name: Register SELinux state
+      set_fact:
+        pre_upgrade_selinux_facts: "{{ ansible_facts.selinux }}"
+
+    - name: Register enabled repositories
+      command: yum repolist --quiet
+      register: pre_upgrade_enabled_repositories
+      changed_when: false
+
+    # Disable legacy containerd plugin to avoid error (modprobe: FATAL: Module aufs not found)
+
+    - name: Check if /etc/containerd/config.toml file exists
+      stat:
+        path: /etc/containerd/config.toml
+        get_attributes: false
+        get_checksum: false
+        get_mime: false
+      register: stat_containerd_config
+
+    - name: Disable aufs plugin
+      when: stat_containerd_config.stat.exists
+      block:
+        - name: Get disabled_plugins
+          command: grep -oPz '(?s)^disabled_plugins\s*=\s*\[.*?\]' /etc/containerd/config.toml  # TOML allows line breaks inside arrays
+          changed_when: false
+          register: grep_disabled_plugins
+          failed_when: grep_disabled_plugins.rc > 1
+
+        - name: Set plugins to be disabled
+          set_fact:
+            plugins_to_disable: "{{ _disabled_plugins | union(['aufs']) }}"
+          vars:
+            _disabled_plugins: >-
+              {{ (grep_disabled_plugins.stdout | regex_replace('\s*=', ':') | from_yaml).disabled_plugins | default('[]') }}
+
+        - name: Disable aufs plugin (update array)
+          replace:  # handles multi-line array
+            path: /etc/containerd/config.toml
+            regexp: ^disabled_plugins\s*=\s*\[[^\]]*?\]
+            replace: disabled_plugins = {{ plugins_to_disable | string }}
+            backup: true
+          register: update_containerd_config_option
+
+        - name: Disable aufs plugin (add array)
+          lineinfile:
+            path: /etc/containerd/config.toml
+            line: disabled_plugins = {{ plugins_to_disable | string }}
+            backup: true
+          register: add_containerd_config_option
+          when: grep_disabled_plugins.rc == 1
+
+        - name: Restart containerd service
+          systemd:
+            name: containerd.service
+            state: restarted
+          when: update_containerd_config_option.changed
+             or add_containerd_config_option.changed
+
+    # Suspend HealthCheck process on AWS (required for reboots)
+
+    - name: Suspend HealthCheck process for auto scaling groups
+      when: provider == 'aws'
+      run_once: true
+      delegate_to: localhost
+      block:
+        - name: Load Epiphany manifest
+          slurp:
+            src: "{{ epiphany_manifest }}"
+          register: slurp_epiphany_manifest
+
+        - name: Set cloud properties
+          vars:
+            _cluster_doc: >-
+              {{ slurp_epiphany_manifest['content'] | b64decode | from_yaml_all
+                                                    | selectattr('kind', '==', 'epiphany-cluster')
+                                                    | first }}
+          block:
+            - name: Set cloud facts
+              set_fact:
+                aws_region: "{{ _cluster_doc.specification.cloud.region }}"
+                cluster_name: "{{ _cluster_doc.specification.prefix }}-{{ _cluster_doc.specification.name }}"
+
+            - name: Create AWS configuration directory
+              file:
+                path: "{{ '~root' | expanduser }}/.aws"
+                state: directory
+                mode: u=rwx,go=
+
+            - name: Create credentials file
+              copy:
+                dest: "{{ '~root' | expanduser }}/.aws/credentials"
+                content: |
+                  [default]
+                  aws_access_key_id = {{ _cluster_doc.specification.cloud.credentials.key }}
+                  aws_secret_access_key = {{ _cluster_doc.specification.cloud.credentials.secret }}
+                mode: u=rw,go=
+                backup: true
+
+        - name: Find auto scaling groups
+          community.aws.ec2_asg_info:
+            name: "{{ cluster_name }}"
+            region: "{{ aws_region }}"
+          register: cluster_asgs
+
+        - name: Reconfigure ASGs to suspend EC2 health check
+          when: cluster_asgs.results | count > 0
+          block:
+            - name: Set facts on ASGs
+              set_fact:
+                asg_facts: "{{ cluster_asgs.results | json_query(_query) }}"
+              vars:
+                _query: '[].{name: auto_scaling_group_name, suspended_processes: suspended_processes}'
+
+            - name: Set path to file with original configuration of ASGs
+              set_fact:
+                asg_config_file_path: "{{ playbook_dir }}/{{ cluster_name }}-asg-config.yml"
+
+            - name: Check if file with original configuration of ASGs exists
+              stat:
+                path: "{{ asg_config_file_path }}"
+                get_attributes: false
+                get_checksum: false
+                get_mime: false
+              register: stat_asg_config_yml
+
+            - name: Save original configuration of auto scaling groups
+              when: not stat_asg_config_yml.stat.exists
+              become: false
+              copy:
+                dest: "{{ asg_config_file_path }}"
+                mode: u=rw,g=r,o=
+                content: |
+                  # This file is managed by Ansible and is needed to restore original configuration. DO NOT EDIT.
+                  {{ asg_facts | to_nice_yaml }}
+
+            - name: Suspend HealthCheck process
+              when: not 'HealthCheck' in (item.suspended_processes | map(attribute='process_name'))
+              community.aws.ec2_asg:
+                name: "{{ item.name }}"
+                suspend_processes: "{{ item.suspended_processes | union(['HealthCheck']) }}"
+                region: "{{ aws_region }}"
+              loop_control:
+                label: "{{ item.name }}"
+              loop: "{{ asg_facts }}"
+
     - &UPDATE_ALL_PACKAGES
       name: Update all packages in current major version
       yum:
@@ -146,8 +274,14 @@
         name: "*"
         state: latest  # noqa: package-latest
 
-    - &REBOOT_SYSTEM_AFTER_UPDATE
-      name: Reboot system after update  # to load kernel from latest minor version if any
+    - name: Check if reboot is needed
+      command: needs-restarting --reboothint  # exit code 1 means reboot is required
+      changed_when: false
+      register: needs_restarting
+      failed_when: needs_restarting.rc > 1
+
+    - name: Reboot system after update  # to load kernel from latest minor version if any
+      when: needs_restarting.rc == 1
       reboot:
         msg: Reboot initiated by Ansible due to update
         connect_timeout: "{{ reboot.connect_timeout }}"
@@ -166,20 +300,34 @@
         that: ansible_distribution_version is version(versions.required.full, '>=')
         quiet: true
 
+    - name: Get information on installed packages
+      package_facts:
+        manager: rpm
+
+    - name: Ensure repositories that provide leapp utility are enabled
+      community.general.ini_file:
+        path: "{{ item.repo_file }}"
+        section: "{{ item.name }}"
+        option: enabled
+        value: 1
+        mode: u=rw,go=r
+        no_extra_spaces: true
+      loop: "{{ leapp_dependencies.repos[provider] }}"
+
     - name: Install packages that provide the leapp utility
-      package:
+      yum:
         name: "{{ leapp_dependencies.packages[provider] }}"
         state: present
 
     - name: Copy leapp metadata archive
       copy:
         src: "{{ leapp_archive }}"
-        dest: /etc/leapp/files/leapp-data15.tar.gz
+        dest: /etc/leapp/files/{{ leapp_archive | basename }}
         mode: preserve
 
     - name: Unarchive leapp metadata
       unarchive:
-        src: /etc/leapp/files/leapp-data15.tar.gz
+        src: /etc/leapp/files/{{ leapp_archive | basename }}
         dest: /etc/leapp/files/
         remote_src: true
 
@@ -245,13 +393,37 @@
             name: "{{ installed_kernel_devel_packages[:-1] }}"  # keep the last item
             state: absent
 
+    - name: Set PostgreSQL version
+      set_fact:
+        postgresql_version: >-
+          {{ '10' if ansible_facts.packages['postgresql10-server'] is defined else
+             '13' if ansible_facts.packages['postgresql13-server'] is defined else
+             'null' }}
+
+    - name: Add PostgreSQL repository
+      when: postgresql_version != 'null'
+      yum_repository:
+        name: pgdg{{ postgresql_version }}
+        file: pgdg{{ postgresql_version }}-rhel-{{ versions.target.full }}
+        description: PostgreSQL {{ postgresql_version }} for RHEL/CentOS {{ versions.target.full }} - $basearch
+        baseurl: https://download.postgresql.org/pub/repos/yum/{{ postgresql_version }}/redhat/rhel-{{ versions.target.full }}-$basearch
+        gpgkey: https://download.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG
+        enabled: false
+        gpgcheck: true
+        module_hotfixes: true
+        exclude:  # prevent auto-upgrade from 4.0.6-1.el7
+          - repmgr10
+          - repmgr_10
+
     ### UPGRADE ###
 
     - name: Provide leapp answer about pam_pkcs11_module removal
       command: leapp answer --add --section remove_pam_pkcs11_module_check.confirm=True
 
     - name: Start leapp upgrade
-      command: leapp upgrade {{ '--no-rhsm' if provider != 'non_cloud' }}
+      command: >-
+        leapp upgrade --target {{ versions.target.full }} {{ '--no-rhsm' if provider != 'non_cloud' }}
+        {{ '--enablerepo pgdg' ~ postgresql_version if postgresql_version != 'null' }}
 
     - name: Reboot system to complete leapp upgrade procedure
       reboot:
@@ -278,11 +450,11 @@
 
     - *REFRESH_ANSIBLE_FACTS
 
-    - name: Assert major version
+    - name: Assert target version
       assert:
         that:
-          - ansible_distribution_version is version('8.4','=')
-          - ansible_kernel is version('4.18.0-305','>=')
+          - ansible_distribution_version is version(versions.target.full, '=')
+          - ansible_kernel is version('4.18.0-305', '>=')
         quiet: true
 
     - name: Verify subscription status for non_cloud machines
@@ -299,19 +471,20 @@
         - name: Check that upgraded version remains correctly subscribed
           assert:
             that:
-              - subscription_version.stdout == "8.4"
+              - subscription_version.stdout == versions.target.full
               - subscription_status.stdout == "Subscribed"
             quiet: true
 
     ### POST-UPGRADE -- CLEANUP ###
 
     - name: Remove packages from the dnf exclude list  # populated by leapp during upgrade
-      ini_file:
+      community.general.ini_file:
         path: /etc/dnf/dnf.conf
         section: main
         option: exclude
         value: ''
         mode: u=rw,go=r
+        no_extra_spaces: true
 
     ## Remove Leapp
 
@@ -323,6 +496,13 @@
     - name: Remove leapp configuration
       file:
         path: /etc/leapp
+        state: absent
+
+    - name: Remove PostgreSQL repository
+      when: postgresql_version != 'null'
+      yum_repository:
+        name: pgdg{{ postgresql_version }}
+        file: pgdg{{ postgresql_version }}-rhel-{{ versions.target.full }}
         state: absent
 
     ## Remove RHEL 7 packages
@@ -524,36 +704,49 @@
           register: result
           failed_when: result.rc > 1 # May return code 1 even when correctly subscribed if system purpose is not defined
 
-    ### POST-UPGRADE -- UPDATE TO TARGET VERSION ###
+    # download-requirements.py fails if releasever = 8.4 (2ndQuadrant repo)
+    - name: Remove releasever DNF variable
+      file:
+        path: /etc/dnf/vars/releasever  # file created by upgrade
+        state: absent
 
-    - name: Update release to 8.5
+    # Resume HealthCheck process on AWS
+
+    - name: Resume HealthCheck process for auto scaling groups
+      when: provider == 'aws'
+      run_once: true
+      delegate_to: localhost
       block:
-        - name: Determine if 8.5 is the latest version
-          command: dnf --releasever 8.5 list kernel  # will fail when 8.5 is not the latest minor release
-          register: is_8_5_latest_version_available
-          changed_when: false
-          failed_when: is_8_5_latest_version_available.rc > 1
+        - name: Check if file with original configuration of ASGs exists
+          stat:
+            path: "{{ asg_config_file_path }}"
+            get_attributes: false
+            get_checksum: false
+            get_mime: false
+          register: stat_asg_config_yml
 
-        - name: Unlock release to latest  # mirrors will not point to 8.5 when it is the latest
-          when: is_8_5_latest_version_available.rc == 1
-          file:
-            path: /etc/dnf/vars/releasever
-            state: absent
+        - name: Restore original configuration
+          when: stat_asg_config_yml.stat.exists
+          block:
+            - name: Load original configuration from file
+              slurp:
+                src: "{{ asg_config_file_path }}"
+              register: slurp_asg_config_yml
 
-        - name: Set release to 8.5
-          when: is_8_5_latest_version_available.rc == 0  # 8.5 is not the latest
-          copy:
-            content: '8.5'
-            dest: /etc/dnf/vars/releasever
-            mode: u=rw,go=r
+            - name: Set ASG settings to restore
+              set_fact:
+                asgs_to_restore: "{{ slurp_asg_config_yml['content'] | b64decode | from_yaml }}"
 
-        - *UPDATE_ALL_PACKAGES
+            - name: Resume HealthCheck process
+              community.aws.ec2_asg:
+                name: "{{ item.name }}"
+                suspend_processes: "{{ item.suspended_processes }}"
+                region: "{{ aws_region }}"
+              loop_control:
+                label: "{{ item.name }}"
+              loop: "{{ asgs_to_restore }}"
 
-        - *REBOOT_SYSTEM_AFTER_UPDATE  # 8.5 brings a new kernel update
-
-        - *REFRESH_ANSIBLE_FACTS
-
-        - name: Assert update to 8.5 succeeded
-          assert:
-            that: ansible_distribution_version is version(versions.target.full, '=')
-            quiet: true
+            - name: Remove file with original configuration of ASGs
+              file:
+                path: "{{ asg_config_file_path }}"
+                state: absent

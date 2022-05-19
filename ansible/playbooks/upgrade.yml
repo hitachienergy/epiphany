@@ -316,9 +316,7 @@
     - include_role:
         name: postgresql
         tasks_from: upgrade/nodes/common/ensure-ansible-requirements
-      when:
-        - ansible_os_family == 'Debian'
-        - "'postgresql' in upgrade_components or upgrade_components|length == 0"
+      when: "'postgresql' in upgrade_components or upgrade_components|length == 0"
 
     # step 2: upgrade repmgr
     - include_role:
