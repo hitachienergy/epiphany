@@ -37,10 +37,10 @@ class Config:
 
         self.__add_args(argv)
 
+        self.__LINE_SIZE: int = 50  # used in printing
+
         if not self.rerun:
             self.__log_info_summary()
-
-        self.__LINE_SIZE: int = 50  # used in printing
 
     def __log_info_summary(self):
         """
@@ -61,7 +61,7 @@ class Config:
         lines.append(f'Repos backup file: {str(self.repos_backup_file)}')
 
         if self.dest_manifest:
-            lines.append(f'Manifest used: {str(self.dest_manifest)}')
+            lines.append(f'Manifest used: {str(self.dest_manifest.absolute())}')
 
         if self.is_log_file_enabled:
             lines.append(f'Log file location: {str(self.log_file.absolute())}')
@@ -216,7 +216,7 @@ class Config:
         self.rerun = args['rerun']
         self.pyyaml_installed = args['pyyaml_installed']
 
-    def __print_parsed_manifest_data(self, output: Dict[str, Any]):
+    def __print_parsed_manifest_data(self, requirements: Dict[str, Any], output: Dict[str, Any]):
         lines: List[str] = ['Manifest summary:']
 
         lines.append('-' * self.__LINE_SIZE)
@@ -230,6 +230,13 @@ class Config:
         lines.append('Features detected:')
         for feature in output['detected-features']:
             lines.append(f'- {feature}')
+
+        dashboards = requirements['grafana-dashboards']
+        if dashboards:
+            lines.append('')
+            lines.append('Dashboards to download:')
+            for dashboard in dashboards:
+                lines.append(f'- {dashboard}')
 
         lines.append('-' * self.__LINE_SIZE)
 
@@ -248,5 +255,8 @@ class Config:
         mreader = ManifestReader(self.dest_manifest)
         output = mreader.parse_manifest()
 
+        if 'grafana' not in output['detected-features']:
+            requirements['grafana-dashboards'] = []
+
         if self.verbose_mode:
-            self.__print_parsed_manifest_data(output)
+            self.__print_parsed_manifest_data(requirements, output)

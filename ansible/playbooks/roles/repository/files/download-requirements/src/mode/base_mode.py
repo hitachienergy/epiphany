@@ -235,9 +235,11 @@ class BaseMode:
         """
         # add required directories
         self._cfg.dest_files.mkdir(exist_ok=True, parents=True)
-        self._cfg.dest_grafana_dashboards.mkdir(exist_ok=True, parents=True)
         self._cfg.dest_images.mkdir(exist_ok=True, parents=True)
         self._cfg.dest_packages.mkdir(exist_ok=True, parents=True)
+
+        if self._requirements['grafana-dashboards']:
+            self._cfg.dest_grafana_dashboards.mkdir(exist_ok=True, parents=True)
 
         # provides tar which is required for backup
         logging.info('Installing base packages...')
@@ -265,9 +267,10 @@ class BaseMode:
         self.__download_files(self._requirements['files'], self._cfg.dest_files)
         logging.info('Done downloading files.')
 
-        logging.info('Downloading grafana dashboards...')
-        self.__download_grafana_dashboards()
-        logging.info('Done downloading grafana dashboards.')
+        if self._requirements['grafana-dashboards']:
+            logging.info('Downloading grafana dashboards...')
+            self.__download_grafana_dashboards()
+            logging.info('Done downloading grafana dashboards.')
 
         logging.info('Downloading Crane...')
         self.__download_crane()

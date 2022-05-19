@@ -230,9 +230,9 @@ class Apply(Step):
         if self.inventory:
             next_postgres_node_count = 0
             prev_postgres_node_count = len(self.inventory.list_hosts(pattern='postgresql'))
-            postgres_available = [x for x in features.specification if x.name == 'postgresql']
+            postgres_available = [x for x in features.specification.features if x.name == 'postgresql']
             if postgres_available[0].enabled:
-                for key, features in feature_mappings.specification.items():
+                for key, features in feature_mappings.specification.mappings.items():
                     if ('postgresql') in features and key in components:
                         next_postgres_node_count = next_postgres_node_count + components[key].count
 
