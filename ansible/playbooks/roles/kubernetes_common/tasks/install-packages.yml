@@ -1,8 +1,17 @@
 ---
 - name: Install Storage packages
-  package:
-    name: "{{ _packages[ansible_os_family] }}"
-    state: present
+  block:
+  - name: Install Storage packages on RedHat family systems
+    when: ansible_os_family == "RedHat"
+    dnf:
+      name: "{{ _packages[ansible_os_family] }}"
+      state: present
+      allowerasing: true
+  - name: Install Storage packages on Debian family systems
+    when: ansible_os_family == "Debian"
+    apt:
+      name: "{{ _packages[ansible_os_family] }}"
+      state: present
   vars:
     _packages:
       Debian:
