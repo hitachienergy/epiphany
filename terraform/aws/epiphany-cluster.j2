@@ -14,5 +14,8 @@ provider "aws" {
   version = "=2.26"
   access_key = "{{ specification.cloud.credentials.key }}"
   secret_key = "{{ specification.cloud.credentials.secret }}"
+{% if specification.cloud.credentials.session_token is defined %}
+  token = "{{ specification.cloud.credentials.session_token }}"
+{% endif %}
   region     = "{{ specification.cloud.region }}"
 }
