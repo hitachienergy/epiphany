@@ -3,6 +3,7 @@ from typing import Any, Callable, Dict, List, Set
 
 import yaml
 
+from src.config.os_type import OSArch
 from src.error import CriticalError
 
 
@@ -26,10 +27,12 @@ class ManifestReader:
     Main running method is :func:`~manifest_reader.ManifestReader.parse_manifest` which returns formatted manifest output.
     """
 
-    def __init__(self, dest_manifest: Path):
+    def __init__(self, dest_manifest: Path, arch: OSArch):
         self.__dest_manifest = dest_manifest
+        self.__os_arch: str = arch.value
         self.__detected_components: Set = set()
         self.__detected_features: Set = set()
+        self.__detected_images: Set = set()
 
     def __parse_cluster_info(self, cluster_doc: Dict):
         """
@@ -53,13 +56,28 @@ class ManifestReader:
             for feature in mappings[mapping]:
                 self.__detected_features.add(feature)
 
+    def __parse_image_registry_info(self, image_registry_doc: Dict):
+        """
+        Parse `configuration/image-registry` document and extract only used images.
+
+        :param image_registry_doc: handler to a `configuration/image-registry` document
+        """
+        self.__detected_images.add(image_registry_doc['specification']['registry_image']['name'])
+
+        target_arch_images = image_registry_doc['specification']['images_to_load'][self.__os_arch]
+        for target_images in target_arch_images:
+            for image in target_arch_images[target_images]:
+                self.__detected_images.add(image['name'])
+
     def parse_manifest(self) -> Dict[str, Any]:
         """
         Load the manifest file, call parsers on required docs and return formatted output.
         """
+        required_docs: Set[str] = {'epiphany-cluster', 'configuration/feature-mappings'}
         parse_doc: Dict[str, Callable] = {
             'epiphany-cluster':               self.__parse_cluster_info,
-            'configuration/feature-mappings': self.__parse_feature_mappings_info
+            'configuration/feature-mappings': self.__parse_feature_mappings_info,
+            'configuration/image-registry':   self.__parse_image_registry_info
         }
 
         parsed_docs: Set[str] = set()
@@ -71,8 +89,9 @@ class ManifestReader:
             except KeyError:
                 pass
 
-        if len(parsed_docs) != len(parse_doc.keys()):
-            raise CriticalError(f'ManifestReader - could not find documents: {parsed_docs ^ parse_doc.keys()}')
+        if len(parsed_docs) < len(required_docs):
+            raise CriticalError(f'ManifestReader - could not find documents: {parsed_docs ^ required_docs}')
 
         return {'detected-components': sorted(list(self.__detected_components)),
-                'detected-features': sorted(list(self.__detected_features))}
+                'detected-features': sorted(list(self.__detected_features)),
+                'detected-images': sorted(list(self.__detected_images))}

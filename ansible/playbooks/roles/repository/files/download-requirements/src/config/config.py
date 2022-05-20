@@ -231,7 +231,9 @@ class Config:
         for feature in manifest['detected-features']:
             lines.append(f'- {feature}')
 
-        for reqs in [('files', 'Files'), ('grafana-dashboards', 'Dashboards')]:
+        for reqs in [('files', 'Files'),
+                     ('grafana-dashboards', 'Dashboards'),
+                     ('images', 'Images')]:
             reqs_to_download = sorted(requirements[reqs[0]])
             if reqs_to_download:
                 lines.append('')
@@ -245,6 +247,10 @@ class Config:
 
     def __filter_manifest(self, requirements: Dict[str, Any], manifest: Dict[str, Any]):
         """
+        Filter entries in the `requirements` based on the parsed `manifest` documents.
+
+        :param requirements: parsed requirements which will be filtered based on the `manifest` output
+        :param manifest: parsed documents which will be used to filter `requirements`
         """
         if 'grafana' not in manifest['detected-features']:
             requirements['grafana-dashboards'] = []
@@ -259,6 +265,16 @@ class Config:
         if files_to_exclude:
             requirements['files'] = {url: data for url, data in files.items() if url not in files_to_exclude}
 
+        if len(manifest['detected-images']):
+            images = requirements['images']
+            images_to_exclude: List[str] = []
+            for image in images:
+                if image not in manifest['detected-images']:
+                    images_to_exclude.append(image)
+
+            if images_to_exclude:
+                requirements['images'] = {name: data for name, data in images.items() if name not in images_to_exclude}
+
     def read_manifest(self, requirements: Dict[str, Any]):
         """
         Construct ManifestReader and parse only required data.
@@ -269,7 +285,7 @@ class Config:
         if not self.dest_manifest:
             return
 
-        mreader = ManifestReader(self.dest_manifest)
+        mreader = ManifestReader(self.dest_manifest, self.os_arch)
         manifest = mreader.parse_manifest()
         self.__filter_manifest(requirements, manifest)
 

@@ -104,6 +104,199 @@ grafana-dashboards:
     sha256: 66340fa3256d432287cba75ab5177eb058c77afa7d521a75d58099f95b1bff50
 """
 
+IMAGE_REQUIREMENTS = """
+images:
+  'haproxy:2.2.2-alpine':
+    sha1: dff8993b065b7f7846adb553548bcdcfcd1b6e8e
+
+  'kubernetesui/dashboard:v2.3.1':
+    sha1: 8c8a4ac7a643f9c5dd9e5d22876c434187312db8
+
+  'kubernetesui/metrics-scraper:v1.0.7':
+    sha1: 5a0052e2afd3eef3ae638be21938b29b1d608ebe
+
+  'registry:2.8.0':
+    sha1: 89795c17099199c752d02ad8797c1d4565a08aff
+    allow_mismatch: true
+
+  # applications
+  'bitnami/pgpool:4.2.4':
+    sha1: 66741f3cf4a508bd1f80e2965b0086a4c0fc3580
+
+  'bitnami/pgbouncer:1.16.0':
+    sha1: f2e37eecbf9aed44d5566f06dcc101c1ba9edff9
+
+  'epiphanyplatform/keycloak:14.0.0':
+    sha1: b59d75a967cedd3a4cf5867eced2fb5dff52f60e
+
+  'rabbitmq:3.8.9':
+    sha1: c64408bf5bb522f47d5323652dd5e60560dcb5bc
+
+  # K8s
+  # v1.18.6
+  'k8s.gcr.io/kube-apiserver:v1.18.6':
+    sha1: 164968226f4617abaa31e6108ed9034a1e302f4f
+
+  'k8s.gcr.io/kube-controller-manager:v1.18.6':
+    sha1: ebea3fecab9e5693d31438fa37dc4d02c6914d67
+
+  'k8s.gcr.io/kube-scheduler:v1.18.6':
+    sha1: 183d29c4fdcfda7478d08240934fdb6845e2e3ec
+
+  'k8s.gcr.io/kube-proxy:v1.18.6':
+    sha1: 62da886e36efff0c03a16e19c1442a1c3040fbf1
+
+  'k8s.gcr.io/coredns:1.6.7':
+    sha1: 76615ffabb22fd4fb3d562cb6ebcd243f8826e48
+
+  'k8s.gcr.io/etcd:3.4.3-0':
+    sha1: 6ee82ddb1bbc7f1831c42046612b8bcfbb171b45
+
+  'quay.io/coreos/flannel:v0.12.0-amd64':
+    sha1: 3516522e779373983992095e61eb6615edd50d1f
+
+  'quay.io/coreos/flannel:v0.12.0':
+    sha1: 2cb6ce8f1361886225526767c4a0422c039453c8
+
+  'calico/cni:v3.15.0':
+    sha1: aa59f624c223bc398a42c7ba9e628e8143718e58
+
+  'calico/kube-controllers:v3.15.0':
+    sha1: f8921f5d67ee7db1c619aa9fdb74114569684ceb
+
+  'calico/node:v3.15.0':
+    sha1: b15308e1aa8b9c56253c142e4361e47125bb4ac5
+
+  'calico/pod2daemon-flexvol:v3.15.0':
+    sha1: dd1a6525bde05937a28e3d9176b826162ae489af
+
+  # v1.19.15
+  'k8s.gcr.io/kube-apiserver:v1.19.15':
+    sha1: e01c8d778e4e693a0ea09cdbbe041a65cf070c6f
+
+  'k8s.gcr.io/kube-controller-manager:v1.19.15':
+    sha1: d1f5cc6a861b2259861fb78b2b83e9a07b788e31
+
+  'k8s.gcr.io/kube-scheduler:v1.19.15':
+    sha1: b07fdd17205bc071ab108851d245689642244f92
+
+  'k8s.gcr.io/kube-proxy:v1.19.15':
+    sha1: 9e2e7a8d40840bbade3a1f2dc743b9226491b6c2
+
+  # v1.20.12
+  'k8s.gcr.io/kube-apiserver:v1.20.12':
+    sha1: bbb037b9452db326aaf09988cee080940f3c418a
+
+  'k8s.gcr.io/kube-controller-manager:v1.20.12':
+    sha1: 4a902578a0c548edec93e0f4afea8b601fa54b93
+
+  'k8s.gcr.io/kube-scheduler:v1.20.12':
+    sha1: ed5ceb21d0f5bc350db69550fb7feac7a6f1e50b
+
+  'k8s.gcr.io/kube-proxy:v1.20.12':
+    sha1: f937aba709f52be88360361230840e7bca756b2e
+
+  'k8s.gcr.io/coredns:1.7.0':
+    sha1: 5aa15f4cb942885879955b98a0a824833d9f66eb
+
+  'k8s.gcr.io/pause:3.2':
+    sha1: ae4799e1a1ec9cd0dda8ab643b6e50c9fe505fef
+
+  # v1.21.7
+  'k8s.gcr.io/kube-apiserver:v1.21.7':
+    sha1: edb26859b3485808716982deccd90ca420828649
+
+  'k8s.gcr.io/kube-controller-manager:v1.21.7':
+    sha1: 9abf1841da5b113b377c1471880198259ec2d246
+
+  'k8s.gcr.io/kube-scheduler:v1.21.7':
+    sha1: 996d25351afc96a10e9008c04418db07a99c76b7
+
+  'k8s.gcr.io/kube-proxy:v1.21.7':
+    sha1: 450af22a892ffef276d4d58332b7817a1dde34e7
+
+  'k8s.gcr.io/coredns/coredns:v1.8.0':
+    sha1: 03114a98137e7cc2dcf4983b919e6b93ac8d1189
+
+  'k8s.gcr.io/etcd:3.4.13-0':
+    sha1: d37a2efafcc4aa86e6dc497e87e80b5d7f326115
+
+  'k8s.gcr.io/pause:3.4.1':
+    sha1: 7f57ae28d733f99c0aab8f4e27d4b0c034cd0c04
+
+  # v1.22.4
+  'k8s.gcr.io/kube-apiserver:v1.22.4':
+    sha1: 2bf4ddb2e1f1530cf55ebaf8e8d0c56ad378b9ec
+
+  'k8s.gcr.io/kube-controller-manager:v1.22.4':
+    sha1: 241924fa3dc4671fe6644402f7beb60028c02c71
+
+  'k8s.gcr.io/kube-scheduler:v1.22.4':
+    sha1: 373e2939072b03cf5b1e115820b7fb6b749b0ebb
+
+  'k8s.gcr.io/kube-proxy:v1.22.4':
+    sha1: fecfb88509a430c29267a99b83f60f4a7c333583
+
+  'k8s.gcr.io/coredns/coredns:v1.8.4':
+    sha1: 69c8e14ac3941fd5551ff22180be5f4ea2742d7f
+
+  'k8s.gcr.io/etcd:3.5.0-0':
+    sha1: 9d9ee2df54a201dcc9c7a10ea763b9a5dce875f1
+
+  'k8s.gcr.io/pause:3.5':
+    sha1: bf3e3420df62f093f94c41d2b7a62b874dcbfc28
+
+  'quay.io/coreos/flannel:v0.14.0-amd64':
+    sha1: cff47465996a51de4632b53abf1fca873f147027
+
+  'quay.io/coreos/flannel:v0.14.0':
+    sha1: a487a36f7b31677e50e74b96b944f27fbce5ac13
+
+  'calico/cni:v3.20.3':
+    sha1: 95e4cf79e92715b13e500a0efcfdb65590de1e04
+
+  'calico/kube-controllers:v3.20.3':
+    sha1: 5769bae60830abcb3c5d97eb86b8f9938a587b2d
+
+  'calico/node:v3.20.3':
+    sha1: cc3c8727ad30b4850e8d0042681342a4f2351eff
+
+  'calico/pod2daemon-flexvol:v3.20.3':
+    sha1: 97c1b7ac90aa5a0f5c52e7f137549e598ff80f3e
+
+  # --- Rook ---
+  'k8s.gcr.io/sig-storage/csi-attacher:v3.4.0':
+    sha1: f076bd75359c6449b965c48eb8bad96c6d40790d
+
+  'k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.5.0':
+    sha1: 129eb73c8e118e5049fee3d273b2d477c547e080
+
+  'k8s.gcr.io/sig-storage/csi-provisioner:v3.1.0':
+    sha1: 2b45e5a3432cb89f3aec59584c1fa92c069e7a38
+
+  'k8s.gcr.io/sig-storage/csi-resizer:v1.4.0':
+    sha1: ce5c57454254c195762c1f58e1d902d7e81ea669
+
+  'k8s.gcr.io/sig-storage/csi-snapshotter:v5.0.1':
+    sha1: be1cf43617eea007629c0eb99149a99b6498f889
+
+  'quay.io/ceph/ceph:v16.2.7':
+    sha1: fe9b7802c67e19111f83ffe4754ab62df66fd417
+    allow_mismatch: true
+
+  'quay.io/cephcsi/cephcsi:v3.5.1':
+    sha1: 51dee9ea8ad76fb95ebd16f951e8ffaaaba95eb6
+
+  'quay.io/csiaddons/k8s-sidecar:v0.2.1':
+    sha1: f0fd757436ac5075910c460c1991ff67c4774d09
+
+  'quay.io/csiaddons/volumereplication-operator:v0.3.0':
+    sha1: d3cd17f14fcbf09fc6c8c2c5c0419f098f87a70f
+
+  'rook/ceph:v1.8.8':
+    sha1: f34039b17b18f5a855b096d48ff787b4013615e4
+"""
+
 
 EXPECTED_VERBOSE_OUTPUT = """
 Manifest summary:
@@ -186,5 +379,39 @@ Files to download:
 - https://github.com/danielqsj/kafka_exporter/releases/download/v1.4.0/kafka_exporter-1.4.0.linux-amd64.tar.gz
 - https://github.com/prometheus/node_exporter/releases/download/v1.3.1/node_exporter-1.3.1.linux-amd64.tar.gz
 - https://helm.elastic.co/helm/filebeat/filebeat-7.12.1.tgz
+--------------------------------------------------
+"""
+
+
+EXPECTED_VERBOSE_IMAGE_OUTPUT = """
+Manifest summary:
+--------------------------------------------------
+Components detected:
+- repository
+
+Features detected:
+- filebeat
+- firewall
+- image-registry
+- node-exporter
+- repository
+
+Images to download:
+- bitnami/pgpool:4.2.4
+- epiphanyplatform/keycloak:14.0.0
+- haproxy:2.2.2-alpine
+- k8s.gcr.io/coredns/coredns:v1.8.0
+- k8s.gcr.io/etcd:3.4.13-0
+- k8s.gcr.io/kube-apiserver:v1.21.7
+- k8s.gcr.io/kube-apiserver:v1.22.4
+- k8s.gcr.io/kube-controller-manager:v1.21.7
+- k8s.gcr.io/kube-controller-manager:v1.22.4
+- k8s.gcr.io/kube-proxy:v1.21.7
+- k8s.gcr.io/kube-scheduler:v1.21.7
+- k8s.gcr.io/pause:3.4.1
+- kubernetesui/dashboard:v2.3.1
+- kubernetesui/metrics-scraper:v1.0.7
+- rabbitmq:3.8.9
+- registry:2.8.0
 --------------------------------------------------
 """
