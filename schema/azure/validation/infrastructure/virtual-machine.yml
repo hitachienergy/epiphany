@@ -41,8 +41,6 @@ properties:
   storage_os_disk:
     type: object
     properties:
-      delete_on_termination:
-        type: boolean
       managed:
         type: boolean
       caching:

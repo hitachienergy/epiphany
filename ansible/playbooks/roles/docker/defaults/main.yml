@@ -14,3 +14,5 @@ docker_daemon_defaults:
 docker_version:
   Debian: "5:20.10.8*" # * is needed to match a version such as '5:19.03.14~3-0~ubuntu-bionic'
   RedHat: "20.10.8"
+
+containerd_version: "1.5.11"
