@@ -78,6 +78,7 @@ specification:
         - address_pool: 10.1.8.0/24
     ignite:
       count: 0
+      alt_component_name: ''
       machine: ignite-machine
       configuration: default
       subnets:
