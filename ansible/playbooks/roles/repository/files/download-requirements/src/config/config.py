@@ -216,31 +216,48 @@ class Config:
         self.rerun = args['rerun']
         self.pyyaml_installed = args['pyyaml_installed']
 
-    def __print_parsed_manifest_data(self, requirements: Dict[str, Any], output: Dict[str, Any]):
+    def __print_parsed_manifest_data(self, requirements: Dict[str, Any], manifest: Dict[str, Any]):
         lines: List[str] = ['Manifest summary:']
 
         lines.append('-' * self.__LINE_SIZE)
 
         lines.append('Components detected:')
-        for component in output['detected-components']:
+        for component in manifest['detected-components']:
             lines.append(f'- {component}')
 
         lines.append('')
 
         lines.append('Features detected:')
-        for feature in output['detected-features']:
+        for feature in manifest['detected-features']:
             lines.append(f'- {feature}')
 
-        dashboards = requirements['grafana-dashboards']
-        if dashboards:
-            lines.append('')
-            lines.append('Dashboards to download:')
-            for dashboard in dashboards:
-                lines.append(f'- {dashboard}')
+        for reqs in [('files', 'Files'), ('grafana-dashboards', 'Dashboards')]:
+            reqs_to_download = sorted(requirements[reqs[0]])
+            if reqs_to_download:
+                lines.append('')
+                lines.append(f'{reqs[1]} to download:')
+                for req_to_download in reqs_to_download:
+                    lines.append(f'- {req_to_download}')
 
         lines.append('-' * self.__LINE_SIZE)
 
         logging.info('\n'.join(lines))
+
+    def __filter_manifest(self, requirements: Dict[str, Any], manifest: Dict[str, Any]):
+        """
+        """
+        if 'grafana' not in manifest['detected-features']:
+            requirements['grafana-dashboards'] = []
+
+        files = requirements['files']
+        files_to_exclude: List[str] = []
+        for file in files:
+            deps = files[file]['deps']
+            if deps not in manifest['detected-features'] and deps != 'default':
+                files_to_exclude.append(file)
+
+        if files_to_exclude:
+            requirements['files'] = {url: data for url, data in files.items() if url not in files_to_exclude}
 
     def read_manifest(self, requirements: Dict[str, Any]):
         """
@@ -253,10 +270,8 @@ class Config:
             return
 
         mreader = ManifestReader(self.dest_manifest)
-        output = mreader.parse_manifest()
-
-        if 'grafana' not in output['detected-features']:
-            requirements['grafana-dashboards'] = []
+        manifest = mreader.parse_manifest()
+        self.__filter_manifest(requirements, manifest)
 
         if self.verbose_mode:
-            self.__print_parsed_manifest_data(requirements, output)
+            self.__print_parsed_manifest_data(requirements, manifest)
