@@ -1,0 +1,27 @@
+---
+- name: OpenSearch | Ensure OpenSearch service OS group exists
+  group:
+    name: "{{ opensearch_variables.specification.opensearch_os_group }}"
+    state: present
+
+- name: OpenSearch | Ensure OpenSearch service OS user exists
+  user:
+    name: "{{ opensearch_variables.specification.opensearch_os_user }}"
+    state: present
+    shell: /bin/bash
+    groups: "{{ opensearch_variables.specification.opensearch_os_group }}"
+    home: "{{ opensearch_variables.specification.paths.opensearch_home  }}"
+    create_home: true
+
+- name: OpenSearch | Ensure directory structure exists
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ opensearch_variables.specification.opensearch_os_user }}"
+    group: "{{ opensearch_variables.specification.opensearch_os_group }}"
+    mode: u=rwx,go=rx
+  loop:
+    - "{{ opensearch_variables.specification.paths.opensearch_log_dir }}"
+    - "{{ opensearch_variables.specification.paths.opensearch_conf_dir }}"
+    - "{{ opensearch_variables.specification.paths.opensearch_data_dir }}"
+    - "{{ opensearch_defaults.certificates.dirs.certs }}"

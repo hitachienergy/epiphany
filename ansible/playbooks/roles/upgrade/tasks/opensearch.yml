@@ -10,40 +10,18 @@
   block:
     - name: OpenSearch | Include defaults from OpenSearch role
       include_vars:
+        name: opensearch_defaults
         file: roles/opensearch/defaults/main.yml
 
     - name: OpenSearch | Include vars from OpenSearch role
       include_vars:
+        name: opensearch_variables
         file: roles/opensearch/vars/main.yml
 
-    - name: OpenSearch | Ensure OpenSearch service OS group exists
-      group:
-        name: "{{ specification.opensearch_os_group }}"
-        state: present
-
-    - name: OpenSearch | Ensure OpenSearch service OS user exists
-      user:
-        name: "{{ specification.opensearch_os_user }}"
-        state: present
-        shell: /bin/bash
-        groups: "{{ specification.opensearch_os_group }}"
-        home: "{{ specification.paths.opensearch_home  }}"
-        create_home: false
-
-    - name: OpenSearch | Ensure directory structure exists
-      file:
-        path: "{{ item }}"
-        state: directory
-        owner: "{{ specification.opensearch_os_user }}"
-        group: "{{ specification.opensearch_os_group }}"
-        mode: u=rw,go=r
-        recurse: true
-      loop:
-        - "{{ specification.paths.opensearch_home }}"
-        - "{{ specification.paths.opensearch_log_dir }}"
-        - "{{ specification.paths.opensearch_conf_dir }}"
-        - "{{ specification.paths.opensearch_data_dir }}"
-        - "{{ certificates.dirs.certs }}"
+    - name: OpenSearch | Run pre ODFE migration tasks
+      include_role:
+        name: upgrade
+        tasks_from: opensearch/pre-migrate
 
     - name: OpenSearch | Run ODFE migration tasks
       include_role:

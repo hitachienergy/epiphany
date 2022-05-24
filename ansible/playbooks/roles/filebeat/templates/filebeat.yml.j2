@@ -144,6 +144,12 @@ filebeat.config.modules:
 
 # ======================= Elasticsearch template setting =======================
 
+{% if is_upgrade_run %}
+setup.template.overwrite: true
+setup.template.append_fields:
+  - name: log.file.path
+    type: text
+{% endif %}
 setup.template.settings:
   index.number_of_shards: 3
   #index.codec: best_compression

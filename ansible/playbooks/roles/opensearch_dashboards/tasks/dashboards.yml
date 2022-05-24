@@ -28,6 +28,13 @@
     extra_opts:
       - --strip-components=1
 
+- name: Set opensearch dashboards hosts as fact
+  set_fact:
+    opensearch_nodes_dashboards: |-
+        {% for item in groups['opensearch_dashboards'] -%}
+          https://{{ item }}:{{ opensearch_api_port }}{% if not loop.last %}","{% endif %}
+        {%- endfor %}
+
 - name: Copy configuration file
   template:
     src: opensearch_dashboards.yml.j2

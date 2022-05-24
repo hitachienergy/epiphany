@@ -11,7 +11,7 @@
   module_defaults:
     uri:
       client_cert: "{{ es_api.cert_path }}"
-      client_key:  "{{ es_api.key_path }}"
+      client_key: "{{ es_api.key_path }}"
       validate_certs: false
       body_format: json
   block:
