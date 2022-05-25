@@ -134,7 +134,7 @@ psutil==5.9.0; python_full_version >= "3.6.0"
 pycparser==2.21; python_version >= "3.8" and python_full_version >= "3.6.0" and python_version < "4" and (python_version >= "3.6" and python_full_version < "3.0.0" or python_full_version >= "3.5.0" and python_version < "4" and python_version >= "3.6")
 pygithub==1.55; python_version >= "3.6" and python_full_version >= "3.6.0"
 pygments==2.11.2; python_version >= "3.5" and python_full_version >= "3.6.0"
-pyjwt==2.3.0; python_version >= "3.6" and python_full_version >= "3.6.0"
+pyjwt==2.4.0; python_version >= "3.6" and python_full_version >= "3.6.0"
 pynacl==1.4.0; python_version >= "3.6" and python_full_version >= "3.6.0"
 pyopenssl==21.0.0; python_full_version >= "3.6.0" and python_version < "4" and (python_version >= "3.6" and python_full_version < "3.0.0" or python_full_version >= "3.5.0" and python_version < "4" and python_version >= "3.6")
 pyparsing==3.0.7; python_version >= "3.8" and python_full_version >= "3.6.0"
