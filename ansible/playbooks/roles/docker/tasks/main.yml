@@ -7,7 +7,9 @@
   when: ansible_facts.packages is undefined
 
 - name: Check containerd.io versions
-  when: ansible_facts.packages['containerd.io'] is defined
+  when:
+    - ansible_facts.packages['containerd.io'] is defined
+    - ansible_os_family == 'Debian'
   block:
     - name: Set fact installed containerd.io version
       set_fact:
@@ -20,7 +22,7 @@
           - "Target version: {{ containerd_version }}"
 
     # apt module doesn't support --allow-downgrades so we remove packages as workaround
-    - name: Remove newer containerd.io package installed as dependency if they exist
+    - name: Remove containerd.io package installed as dependency if they exist
       apt:
         name: containerd.io
         state: absent
@@ -44,6 +46,7 @@
         - docker-ce-rootless-extras-{{ docker_version.RedHat }}
         - docker-ce-{{ docker_version.RedHat }}
   module_defaults:
-    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+    yum: {lock_timeout: "{{ yum_lock_timeout }}",
+          allow_downgrade: true}
 
 - include_tasks: configure-docker.yml
