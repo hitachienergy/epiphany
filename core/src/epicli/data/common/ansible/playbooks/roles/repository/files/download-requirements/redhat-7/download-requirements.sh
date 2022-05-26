@@ -588,6 +588,9 @@ else
 	fi
 fi
 
+# Ensure ca-certificates package is in the latest version
+run_cmd_with_retries yum install -y ca-certificates 3
+
 # Fix for RHUI client certificate expiration [#2319]
 if is_repo_enabled "rhui-microsoft-azure-rhel"; then
     run_cmd_with_retries yum update -y --disablerepo='*' --enablerepo='rhui-microsoft-azure-rhel*' 3
