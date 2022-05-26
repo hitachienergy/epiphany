@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Set
 
 from src.command.command import Command
 from src.config.config import Config
+from src.config.os_type import OSArch
 from src.mode.base_mode import BaseMode, load_yaml_file
 
 
@@ -99,7 +100,7 @@ class RedHatFamilyMode(BaseMode):
             self._tools.dnf.accept_keys()
 
         # repmgr is supported only with x86_64 architecture
-        if 'x86_64' in self.__archs:
+        if self._cfg.os_arch == OSArch.X86_64:
             for repo in ['https://dl.2ndquadrant.com/default/release/get/10/rpm',  # for repmgr
                         'https://dl.2ndquadrant.com/default/release/get/13/rpm']:
                 Command('curl', self._cfg.retries, [repo]) | Command('bash', self._cfg.retries)  # curl {repo} | bash
