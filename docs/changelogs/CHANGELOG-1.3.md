@@ -15,6 +15,7 @@
 - [#3065](https://github.com/epiphany-platform/epiphany/issues/3065) - Flag `delete_os_disk_on_termination` has no effect when removing cluster
 - [#3006](https://github.com/epiphany-platform/epiphany/issues/3006) - install 'containerd.io=1.4.12-*' failed, when upgrade from v1.3.0 to 2.0.0dev
 - [#3160](https://github.com/epiphany-platform/epiphany/issues/3160) - Upgrade from v1.0.3 LTS to v1.3.1 fails installing docker dependencies on Ubuntu
+- [#3165](https://github.com/epiphany-platform/epiphany/issues/3165) - [CentOS/RHEL] download-requirements.sh fails due to expired certificate
 
 ## [1.3.0] 2022-01-19
 
