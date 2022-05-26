@@ -136,31 +136,32 @@
   environment:
     KUBECONFIG: "{{ kubeconfig.local }}"
 
+# Currently, the upgrade of opensearch/logging instances is disabled
 # === logging ===
 
-- hosts: logging
-  become: true
-  become_method: sudo
-  tasks:
-    - include_role:
-        name: upgrade
-        tasks_from: opensearch
-      when: "'logging' in upgrade_components or upgrade_components|length == 0"
-  vars:
-    current_group_name: logging
+# - hosts: logging
+#   become: true
+#   become_method: sudo
+#   tasks:
+#     - include_role:
+#         name: upgrade
+#         tasks_from: opensearch
+#       when: "'logging' in upgrade_components or upgrade_components|length == 0"
+#   vars:
+#     current_group_name: logging
 
 # === opensearch ===
 
-- hosts: opensearch
-  become: true
-  become_method: sudo
-  tasks:
-    - include_role:
-        name: upgrade
-        tasks_from: opensearch
-      when: "'opensearch' in upgrade_components or upgrade_components|length == 0"
-  vars:
-    current_group_name: opensearch
+# - hosts: opensearch
+#   become: true
+#   become_method: sudo
+#   tasks:
+#     - include_role:
+#         name: upgrade
+#         tasks_from: opensearch
+#       when: "'opensearch' in upgrade_components or upgrade_components|length == 0"
+#   vars:
+#     current_group_name: opensearch
 
 - hosts: grafana
   become: true

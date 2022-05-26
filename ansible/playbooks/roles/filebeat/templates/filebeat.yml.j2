@@ -258,7 +258,7 @@ setup.kibana:
   {% if setup_kibana_host is defined %}
   host: {{ setup_kibana_host }}
   username: kibanaserver
-  password: {{ "'%s'" % opendistro_for_logging_vars.specification.kibanaserver_password | replace("'","''") }}
+  password: {{ "'%s'" % logging_vars.specification.kibanaserver_password | replace("'","''") }}
   {% else %}
   #host: "localhost:5601"
   {% endif %}
@@ -267,8 +267,8 @@ setup.kibana:
   {% if existing_setup_kibana.host is defined %}
   host: {{ existing_setup_kibana.host }}
   {% else %}
-    {% if groups.kibana is defined and groups.logging is defined and (groups.kibana | intersect(groups.logging) | count > 0) %}
-  host: {{ hostvars[groups.kibana | intersect(groups.logging) | first].ansible_hostname }}
+    {% if groups.opensearch_dashboards is defined and groups.logging is defined and (groups.opensearch_dashboards | intersect(groups.logging) | count > 0) %}
+  host: {{ hostvars[groups.opensearch_dashboards | intersect(groups.logging) | first].ansible_hostname }}
     {% else %}
   #host: "localhost:5601"
     {% endif %}
@@ -316,7 +316,7 @@ output.elasticsearch:
   # Authentication credentials - either API key or username/password.
   username: logstash
   {% if not is_upgrade_run %}
-  password: {{ "'%s'" % opendistro_for_logging_vars.specification.logstash_password | replace("'","''") }}
+  password: {{ "'%s'" % logging_vars.specification.logstash_password | replace("'","''") }}
   {% else %}
   password: {{ "'%s'" % existing_output_es_password | replace("'","''") }}
   {% endif %}
