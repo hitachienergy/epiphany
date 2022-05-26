@@ -211,72 +211,121 @@ specification:
   images_to_load:
     x86_64:
       generic:
-      - name: epiphanyplatform/keycloak:14.0.0
-        file_name: keycloak-14.0.0.tar
-      - name: rabbitmq:3.8.9
-        file_name: rabbitmq-3.8.9.tar
-      - name: kubernetesui/dashboard:v2.3.1
-        file_name: dashboard-v2.3.1.tar
-      - name: kubernetesui/metrics-scraper:v1.0.7
-        file_name: metrics-scraper-v1.0.7.tar
-      - name: bitnami/pgpool:4.2.4
-        file_name: pgpool-4.2.4.tar
+        applications:
+          - name: epiphanyplatform/keycloak:14.0.0
+            file_name: keycloak-14.0.0.tar
+        rabbitmq:
+          - name: rabbitmq:3.8.9
+            file_name: rabbitmq-3.8.9.tar
+        kubernetes:
+          - name: kubernetesui/dashboard:v2.3.1
+            file_name: dashboard-v2.3.1.tar
+          - name: kubernetesui/metrics-scraper:v1.0.7
+            file_name: metrics-scraper-v1.0.7.tar
+        postgresql:
+          - name: bitnami/pgpool:4.2.4
+            file_name: pgpool-4.2.4.tar
       current:
-      - name: haproxy:2.2.2-alpine
-        file_name: haproxy-2.2.2-alpine.tar
-      - name: k8s.gcr.io/kube-apiserver:v1.22.4
-        file_name: kube-apiserver-v1.22.4.tar
-      - name: k8s.gcr.io/kube-controller-manager:v1.22.4
-        file_name: kube-controller-manager-v1.22.4.tar
+        haproxy:
+          - name: haproxy:2.2.2-alpine
+            file_name: haproxy-2.2.2-alpine.tar
+        kubernetes:
+          - name: k8s.gcr.io/kube-apiserver:v1.22.4
+            file_name: kube-apiserver-v1.22.4.tar
+          - name: k8s.gcr.io/kube-controller-manager:v1.22.4
+            file_name: kube-controller-manager-v1.22.4.tar
       legacy:
-      - name: k8s.gcr.io/kube-apiserver:v1.21.7
-        file_name: kube-apiserver-v1.21.7.tar
-      - name: k8s.gcr.io/kube-controller-manager:v1.21.7
-        file_name: kube-controller-manager-v1.21.7.tar
-      - name: k8s.gcr.io/kube-proxy:v1.21.7
-        file_name: kube-proxy-v1.21.7.tar
-      - name: k8s.gcr.io/kube-scheduler:v1.21.7
-        file_name: kube-scheduler-v1.21.7.tar
-      - name: k8s.gcr.io/coredns/coredns:v1.8.0
-        file_name: coredns-v1.8.0.tar
-      - name: k8s.gcr.io/etcd:3.4.13-0
-        file_name: etcd-3.4.13-0.tar
-      - name: k8s.gcr.io/pause:3.4.1
-        file_name: pause-3.4.1.tar
+        kubernetes:
+          - name: k8s.gcr.io/kube-apiserver:v1.21.7
+            file_name: kube-apiserver-v1.21.7.tar
+          - name: k8s.gcr.io/kube-controller-manager:v1.21.7
+            file_name: kube-controller-manager-v1.21.7.tar
+          - name: k8s.gcr.io/kube-proxy:v1.21.7
+            file_name: kube-proxy-v1.21.7.tar
+          - name: k8s.gcr.io/kube-scheduler:v1.21.7
+            file_name: kube-scheduler-v1.21.7.tar
+          - name: k8s.gcr.io/coredns/coredns:v1.8.0
+            file_name: coredns-v1.8.0.tar
+          - name: k8s.gcr.io/etcd:3.4.13-0
+            file_name: etcd-3.4.13-0.tar
+          - name: k8s.gcr.io/pause:3.4.1
+            file_name: pause-3.4.1.tar
     arm64:
       generic:
-      - name: epiphanyplatform/keycloak:14.0.0
-        file_name: keycloak-14.0.0.tar
-      - name: rabbitmq:3.8.9
-        file_name: rabbitmq-3.8.9.tar
-      - name: kubernetesui/dashboard:v2.3.1
-        file_name: dashboard-v2.3.1.tar
-      - name: kubernetesui/metrics-scraper:v1.0.7
-        file_name: metrics-scraper-v1.0.7.tar
+        applications:
+          - name: epiphanyplatform/keycloak:14.0.0
+            file_name: keycloak-14.0.0.tar
+        rabbitmq:
+          - name: rabbitmq:3.8.9
+            file_name: rabbitmq-3.8.9.tar
+        kubernetes:
+          - name: kubernetesui/dashboard:v2.3.1
+            file_name: dashboard-v2.3.1.tar
+          - name: kubernetesui/metrics-scraper:v1.0.7
+            file_name: metrics-scraper-v1.0.7.tar
       current:
-      - name: haproxy:2.2.2-alpine
-        file_name: haproxy-2.2.2-alpine.tar
-      - name: k8s.gcr.io/kube-apiserver:v1.22.4
-        file_name: kube-apiserver-v1.22.4.tar
+        haproxy:
+          - name: haproxy:2.2.2-alpine
+            file_name: haproxy-2.2.2-alpine.tar
+        kubernetes:
+          - name: k8s.gcr.io/kube-apiserver:v1.22.4
+            file_name: kube-apiserver-v1.22.4.tar
       legacy:
-      - name: k8s.gcr.io/kube-apiserver:v1.21.7
-        file_name: kube-apiserver-v1.21.7.tar
-      - name: k8s.gcr.io/kube-scheduler:v1.21.7
-        file_name: kube-scheduler-v1.21.7.tar
-      - name: k8s.gcr.io/coredns/coredns:v1.8.0
-        file_name: coredns-v1.8.0.tar
-      - name: k8s.gcr.io/etcd:3.4.13-0
-        file_name: etcd-3.4.13-0.tar
-      - name: k8s.gcr.io/pause:3.4.1
-        file_name: pause-3.4.1.tar
+        kubernetes:
+          - name: k8s.gcr.io/kube-apiserver:v1.21.7
+            file_name: kube-apiserver-v1.21.7.tar
+          - name: k8s.gcr.io/kube-scheduler:v1.21.7
+            file_name: kube-scheduler-v1.21.7.tar
+          - name: k8s.gcr.io/coredns/coredns:v1.8.0
+            file_name: coredns-v1.8.0.tar
+          - name: k8s.gcr.io/etcd:3.4.13-0
+            file_name: etcd-3.4.13-0.tar
+          - name: k8s.gcr.io/pause:3.4.1
+            file_name: pause-3.4.1.tar
 version: 2.0.1dev
 provider: any
 """
 
 
+INPUT_MANIFEST_IMAGES_NO_DOCUMENT = f"""
+kind: epiphany-cluster
+title: Epiphany cluster Config
+provider: any
+name: default
+specification:
+  name: new_cluster
+  admin_user:
+    name: operations
+    key_path: /shared/.ssh/epiphany-operations/id_rsa
+  components:
+    repository:
+      count: 1
+    kubernetes_master:
+      count: 0
+    kubernetes_node:
+      count: 0
+    logging:
+      count: 0
+    monitoring:
+      count: 0
+    kafka:
+      count: 2
+    postgresql:
+      count: 0
+    load_balancer:
+      count: 0
+    rabbitmq:
+      count: 1
+    opendistro_for_elasticsearch:
+      count: 0
+version: 2.0.0dev
+{FEATURE_MAPPINGS}
+"""
+
+
 EXPECTED_FEATURE_MAPPINGS = {
-    'detected-components': ['kafka', 'repository'],
-    'detected-features': ['filebeat',
+    'requested-components': ['kafka', 'repository'],
+    'requested-features': ['filebeat',
                           'firewall',
                           'image-registry',
                           'jmx-exporter',
@@ -285,31 +334,31 @@ EXPECTED_FEATURE_MAPPINGS = {
                           'node-exporter',
                           'repository',
                           'zookeeper'],
-    'detected-images': []
+    'requested-images': []
 }
 
 
 EXPECTED_FEATURE_MAPPINGS_WITH_DASHBOARDS = {
-    'detected-components': ['monitoring', 'repository'],
-    'detected-features': ['filebeat',
+    'requested-components': ['monitoring', 'repository'],
+    'requested-features': ['filebeat',
                           'firewall',
                           'grafana',
                           'image-registry',
                           'node-exporter',
                           'prometheus',
                           'repository'],
-    'detected-images': []
+    'requested-images': []
 }
 
 
 EXPECTED_FEATURE_MAPPINGS_WITH_IMAGES_X86_64 = {
-    'detected-components': ['repository'],
-    'detected-features': ['filebeat',
+    'requested-components': ['repository'],
+    'requested-features': ['filebeat',
                           'firewall',
                           'image-registry',
                           'node-exporter',
                           'repository'],
-    'detected-images': [
+    'requested-images': [
         'bitnami/pgpool:4.2.4',
         'epiphanyplatform/keycloak:14.0.0',
         'haproxy:2.2.2-alpine',
@@ -331,13 +380,13 @@ EXPECTED_FEATURE_MAPPINGS_WITH_IMAGES_X86_64 = {
 
 
 EXPECTED_FEATURE_MAPPINGS_WITH_IMAGES_ARM64 = {
-    'detected-components': ['repository'],
-    'detected-features': ['filebeat',
+    'requested-components': ['repository'],
+    'requested-features': ['filebeat',
                           'firewall',
                           'image-registry',
                           'node-exporter',
                           'repository'],
-    'detected-images': [
+    'requested-images': [
         'epiphanyplatform/keycloak:14.0.0',
         'haproxy:2.2.2-alpine',
         'k8s.gcr.io/coredns/coredns:v1.8.0',

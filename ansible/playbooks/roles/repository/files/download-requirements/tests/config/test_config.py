@@ -10,9 +10,11 @@ from tests.data.config import (DASHBOARD_REQUIREMENTS,
                                EXPECTED_VERBOSE_DASHBOARD_OUTPUT,
                                EXPECTED_VERBOSE_FILE_OUTPUT,
                                EXPECTED_VERBOSE_IMAGE_OUTPUT,
+                               EXPECTED_VERBOSE_IMAGE_NO_DOCUMENT_OUTPUT,
                                FILE_REQUIREMENTS,
                                IMAGE_REQUIREMENTS)
 from tests.data.manifest_reader import (INPUT_MANIFEST_FEATURE_MAPPINGS,
+                                        INPUT_MANIFEST_IMAGES_NO_DOCUMENT,
                                         INPUT_MANIFEST_WITH_DASHBOARDS,
                                         INPUT_MANIFEST_WITH_IMAGES)
 from src.config.os_type import OSArch
@@ -23,7 +25,8 @@ from src.config.os_type import OSArch
                           (INPUT_MANIFEST_FEATURE_MAPPINGS, EXPECTED_VERBOSE_FILE_OUTPUT, FILE_REQUIREMENTS),
                           (INPUT_MANIFEST_FEATURE_MAPPINGS, EXPECTED_VERBOSE_OUTPUT, DASHBOARD_REQUIREMENTS),
                           (INPUT_MANIFEST_WITH_DASHBOARDS, EXPECTED_VERBOSE_DASHBOARD_OUTPUT, DASHBOARD_REQUIREMENTS),
-                          (INPUT_MANIFEST_WITH_IMAGES, EXPECTED_VERBOSE_IMAGE_OUTPUT, IMAGE_REQUIREMENTS)
+                          (INPUT_MANIFEST_WITH_IMAGES, EXPECTED_VERBOSE_IMAGE_OUTPUT, IMAGE_REQUIREMENTS),
+                          (INPUT_MANIFEST_IMAGES_NO_DOCUMENT, EXPECTED_VERBOSE_IMAGE_NO_DOCUMENT_OUTPUT, IMAGE_REQUIREMENTS)
                          ])
 def test_manifest_verbose_output(INPUT_DOC: str,
                                  EXPECTED_OUTPUT_DOC: str,

@@ -19,54 +19,72 @@ properties:
         type: object
         properties:
           generic:
-            type: array
-            items:
-              type: object
-              properties:
-                name:
-                  type: string
-                file_name:
-                  type: string
+            type: object
+            properties:
+              [applications, rabbitmq, kubernetes, postgresql, rook]:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    file_name:
+                      type: string
           current:
-            type: array
-            items:
-              type: object
-              properties:
-                name:
-                  type: string
-                file_name:
-                  type: string
+            type: object
+            properties:
+              [haproxy, kubernetes]:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    file_name:
+                      type: string
           legacy:
-            type: array
-            items:
-              type: object
-              properties:
-                name:
-                  type: string
-                file_name:
-                  type: string
+            type: object
+            properties:
+              kubernetes:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    file_name:
+                      type: string
       aarch64:
         type: object
         properties:
           generic:
-            type: array
-            items:
-              type: object
-              properties:
-                name:
-                  type: string
-                file_name:
-                  type: string
+            type: object
+            properties:
+              [applications, rabbitmq, kubernetes]:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    file_name:
+                      type: string
           current:
-            type: array
-            items:
-              type: object
-              properties:
-                name:
-                  type: string
-                file_name:
-                  type: string
+            type: object
+            properties:
+              [haproxy, kubernetes]:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    file_name:
+                      type: string
           legacy:
-            type: array
-            items:
-              items: {}
+            type: object
+            properties:
+              kubernetes:
+                type: array
+                items:
+                  items: {}

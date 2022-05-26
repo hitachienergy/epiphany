@@ -23,6 +23,7 @@ class Config:
         self.distro_subdir: Path
         self.is_log_file_enabled: bool
         self.log_file: Path
+        self.log_level: int
         self.os_arch: OSArch
         self.os_type: OSType
         self.pyyaml_installed: bool = False
@@ -158,18 +159,19 @@ class Config:
             'info': logging.INFO,
             'debug': logging.DEBUG
         }
+        self.log_level = log_levels[log_level.lower()]
 
         log_format = '%(asctime)s [%(levelname)s]: %(message)s'
 
         # add stdout logger:
-        logging.basicConfig(stream=sys.stdout, level=log_levels[log_level.lower()],
+        logging.basicConfig(stream=sys.stdout, level=self.log_level,
                             format=log_format)
 
         # add log file:
         if not no_logfile:
             root_logger = logging.getLogger()
             file_handler = logging.FileHandler(log_file)
-            file_handler.setLevel(log_levels[log_level.lower()])
+            file_handler.setLevel(self.log_level)
             file_handler.setFormatter(logging.Formatter(fmt=log_format))
             root_logger.addHandler(file_handler)
 
@@ -210,7 +212,7 @@ class Config:
         self.retries = args['retries']
         self.is_log_file_enabled = False if args['no_logfile'] else True
         self.dest_manifest = args['manifest'] or None
-        self.verbose_mode = args['verbose']
+        self.verbose_mode = True if self.log_level == logging.DEBUG else args['verbose']
 
         # offline mode
         self.rerun = args['rerun']
@@ -221,14 +223,14 @@ class Config:
 
         lines.append('-' * self.__LINE_SIZE)
 
-        lines.append('Components detected:')
-        for component in manifest['detected-components']:
+        lines.append('Components requested:')
+        for component in manifest['requested-components']:
             lines.append(f'- {component}')
 
         lines.append('')
 
-        lines.append('Features detected:')
-        for feature in manifest['detected-features']:
+        lines.append('Features requested:')
+        for feature in manifest['requested-features']:
             lines.append(f'- {feature}')
 
         for reqs in [('files', 'Files'),
@@ -249,31 +251,37 @@ class Config:
         """
         Filter entries in the `requirements` based on the parsed `manifest` documents.
 
-        :param requirements: parsed requirements which will be filtered based on the `manifest` output
+        :param requirements: parsed requirements which will be filtered based on the `manifest` content
         :param manifest: parsed documents which will be used to filter `requirements`
         """
-        if 'grafana' not in manifest['detected-features']:
+        if 'grafana' not in manifest['requested-features']:
             requirements['grafana-dashboards'] = []
 
         files = requirements['files']
         files_to_exclude: List[str] = []
         for file in files:
             deps = files[file]['deps']
-            if deps not in manifest['detected-features'] and deps != 'default':
+            if deps not in manifest['requested-features'] and deps != 'default':
                 files_to_exclude.append(file)
 
         if files_to_exclude:
             requirements['files'] = {url: data for url, data in files.items() if url not in files_to_exclude}
 
-        if len(manifest['detected-images']):
-            images = requirements['images']
-            images_to_exclude: List[str] = []
+        images_to_exclude: List[str] = []
+        images = requirements['images']
+        if len(manifest['requested-images']):
             for image in images:
-                if image not in manifest['detected-images']:
+                if image not in manifest['requested-images']:
                     images_to_exclude.append(image)
 
-            if images_to_exclude:
-                requirements['images'] = {name: data for name, data in images.items() if name not in images_to_exclude}
+        else:
+            for image in images:
+                deps = images[image]['deps']
+                if deps not in manifest['requested-features'] and deps != 'default':
+                    images_to_exclude.append(image)
+
+        if images_to_exclude:
+            requirements['images'] = {name: data for name, data in images.items() if name not in images_to_exclude}
 
     def read_manifest(self, requirements: Dict[str, Any]):
         """

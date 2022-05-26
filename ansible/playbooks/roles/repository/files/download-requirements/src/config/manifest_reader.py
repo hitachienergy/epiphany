@@ -30,9 +30,9 @@ class ManifestReader:
     def __init__(self, dest_manifest: Path, arch: OSArch):
         self.__dest_manifest = dest_manifest
         self.__os_arch: str = arch.value
-        self.__detected_components: Set = set()
-        self.__detected_features: Set = set()
-        self.__detected_images: Set = set()
+        self.__requested_components: Set = set()
+        self.__requested_features: Set = set()
+        self.__requested_images: Set = set()
 
     def __parse_cluster_info(self, cluster_doc: Dict):
         """
@@ -43,7 +43,7 @@ class ManifestReader:
         components = cluster_doc['specification']['components']
         for component in components:
             if components[component]['count'] > 0:
-                self.__detected_components.add(component)
+                self.__requested_components.add(component)
 
     def __parse_feature_mappings_info(self, feature_mappings_doc: Dict):
         """
@@ -52,9 +52,9 @@ class ManifestReader:
         :param feature_mappings_doc: handler to a `configuration/feature-mappings` document
         """
         mappings = feature_mappings_doc['specification']['mappings']
-        for mapping in mappings.keys() & self.__detected_components:
+        for mapping in mappings.keys() & self.__requested_components:
             for feature in mappings[mapping]:
-                self.__detected_features.add(feature)
+                self.__requested_features.add(feature)
 
     def __parse_image_registry_info(self, image_registry_doc: Dict):
         """
@@ -62,12 +62,14 @@ class ManifestReader:
 
         :param image_registry_doc: handler to a `configuration/image-registry` document
         """
-        self.__detected_images.add(image_registry_doc['specification']['registry_image']['name'])
+        self.__requested_images.add(image_registry_doc['specification']['registry_image']['name'])
 
         target_arch_images = image_registry_doc['specification']['images_to_load'][self.__os_arch]
         for target_images in target_arch_images:
-            for image in target_arch_images[target_images]:
-                self.__detected_images.add(image['name'])
+            features = target_arch_images[target_images]
+            for feature in features:
+                for image in features[feature]:
+                    self.__requested_images.add(image['name'])
 
     def parse_manifest(self) -> Dict[str, Any]:
         """
@@ -90,8 +92,8 @@ class ManifestReader:
                 pass
 
         if len(parsed_docs) < len(required_docs):
-            raise CriticalError(f'ManifestReader - could not find documents: {parsed_docs ^ required_docs}')
+            raise CriticalError(f'ManifestReader - could not find document(s): {parsed_docs ^ required_docs}')
 
-        return {'detected-components': sorted(list(self.__detected_components)),
-                'detected-features': sorted(list(self.__detected_features)),
-                'detected-images': sorted(list(self.__detected_images))}
+        return {'requested-components': sorted(list(self.__requested_components)),
+                'requested-features': sorted(list(self.__requested_features)),
+                'requested-images': sorted(list(self.__requested_images))}
