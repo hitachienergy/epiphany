@@ -1,4 +1,31 @@
 ---
+- name: Get information on installed packages as facts
+  package_facts:
+    manager: auto
+  when: ansible_facts.packages is undefined
+
+- name: Check containerd.io versions
+  when:
+    - ansible_facts.packages['containerd.io'] is defined
+  block:
+    - name: Set fact installed containerd.io version
+      set_fact:
+        containerd_installed: "{{ ansible_facts.packages['containerd.io'][0].version.split('-')[0] }}"
+
+    - name: Print containerd.io versions
+      debug:
+        msg:
+          - "Installed version: {{ containerd_installed }}"
+          - "Target version: {{ containerd_version }}"
+
+    # apt module doesn't support --allow-downgrades so we remove packages as workaround
+    - name: Remove containerd.io package installed as dependency if they exist
+      apt:
+        name: containerd.io
+        state: absent
+      when:
+        - containerd_version is version(containerd_installed, '!=')
+
 - name: Install containerd.io package for Debian family
   apt:
     update_cache: true

@@ -5,3 +5,4 @@
     name:
       - containerd.io-{{ containerd_version }}  # provides "runc"
     state: present
+    allow_downgrade: true
