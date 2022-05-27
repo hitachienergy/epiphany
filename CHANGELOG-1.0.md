@@ -1,5 +1,11 @@
 # Changelog 1.0
 
+## [1.0.4] 2022-xx-xx
+
+### Fixed
+
+- [#3165](https://github.com/epiphany-platform/epiphany/issues/3165) - [CentOS/RHEL] download-requirements.sh fails due to expired certificate
+
 ## [1.0.3] 2022-05-16
 
 ### Added

@@ -571,6 +571,9 @@ else
 	fi
 fi
 
+# Ensure ca-certificates package is in the latest version
+run_cmd_with_retries yum install -y ca-certificates 3
+
 # --- Install required packages unless present ---
 
 # repos can be enabled or disabled using the yum-config-manager command, which is provided by yum-utils package
