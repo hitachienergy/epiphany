@@ -21,6 +21,7 @@
       - python36
       - python3-pyyaml
       - rsync  # for Ansible (synchronize module)
+      - tar
     state: present
   register: result
   retries: 3

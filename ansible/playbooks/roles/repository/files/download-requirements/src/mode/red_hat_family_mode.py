@@ -67,9 +67,8 @@ class RedHatFamilyMode(BaseMode):
         self.__remove_dnf_cache_for_custom_repos()
         self._tools.dnf.makecache(True)
 
-        # tar does not come by default from image. We install it, but don't want to remove it
-        if not self._tools.rpm.is_package_installed('tar'):
-            self._tools.dnf.install('tar')
+        # Ensure ca-certificates package is in the latest version
+        self._tools.dnf.install('ca-certificates')
 
         for package in self.__base_packages:
             if not self._tools.rpm.is_package_installed(package):

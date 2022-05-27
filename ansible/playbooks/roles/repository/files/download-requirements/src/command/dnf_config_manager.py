@@ -28,9 +28,6 @@ class DnfConfigManager(Command):
             chunks = var.split('=', maxsplit=1)
             if name == chunks[0].strip():
                 value = chunks[1].strip()
-                break
+                return value
 
-        if not value:
-            raise DnfVariableNotfound(f'Variable not found: {name}')
-
-        return value
+        raise DnfVariableNotfound(f'Variable not found: {name}')

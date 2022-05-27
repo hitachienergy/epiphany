@@ -39,9 +39,12 @@ class DebianFamilyMode(BaseMode):
         # install prerequisites which might be missing
         installed_packages = self._tools.apt.list_installed_packages()
 
+        # Ensure ca-certificates package is in the latest version
+        self._tools.apt.install('ca-certificates')
+
         for package in ['wget', 'gpg', 'curl', 'tar']:
             if package not in installed_packages:
-                self._tools.apt.install(package, assume_yes=True)
+                self._tools.apt.install(package)
                 self.__installed_packages.append(package)
                 logging.info(f'- {package}')
 

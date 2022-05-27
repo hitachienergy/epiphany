@@ -11,6 +11,10 @@
 
 - [#3164](https://github.com/epiphany-platform/epiphany/issues/3164) - Specify version and allow containerd.io package downgrade in haproxy_runc role
 
+### Fixed
+
+- [#3165](https://github.com/epiphany-platform/epiphany/issues/3165) - download-requirements.py may fail due to expired certificate
+
 ### Updated
 
 - [#3080](https://github.com/epiphany-platform/epiphany/issues/3080) - update Filebeat to the latest compatible version with OpenSearch
