@@ -558,22 +558,48 @@
 
     ## Fix failed services
 
+    - name: Gather service facts
+      service_facts: ~
+
+    - &SET_FAILED_SERVICES_FACT
+      name: Set list of failed services
+      set_fact:
+        failed_services: "{{ ansible_facts.services | json_query('*[] | [?(@.status==`failed`)].name') }}"
+
+    - name: Print failed services
+      when: failed_services | count > 0
+      debug:
+        var: failed_services
+
+    - name: Fix repmgr10 service
+      when: "'repmgr10.service' in failed_services"
+      block:
+        # upstream node must be running before repmgrd can start
+        - name: Search for PostgreSQL primary node
+          become_user: postgres
+          # command prints primary/standby
+          shell: |-
+            set -o pipefail && \
+            repmgr node status | grep -ioP '(?<=Role:).+' | xargs
+          changed_when: false
+          register: pg_node_role
+          failed_when: pg_node_role.rc != 0 or pg_node_role.stdout == ""
+
+        - name: Wait for PostgreSQL primary node to be reachable
+          when: pg_node_role.stdout == 'primary'
+          wait_for:
+            port: 5432
+            timeout: 30
+
+        - name: Restart repmgr10 service
+          when: pg_node_role.stdout == 'standby'
+          systemd:
+            name: repmgr10
+            state: restarted
+
     - name: Azure specific block
       when: provider == 'azure'
       block:
-        - name: Gather service facts
-          service_facts: ~
-
-        - &SET_FAILED_SERVICES_FACT
-          name: Set list of failed services
-          set_fact:
-            failed_services: "{{ ansible_facts.services | json_query('*[] | [?(@.status==`failed`)].name') }}"
-
-        - name: Print failed services
-          when: failed_services | count > 0
-          debug:
-            var: failed_services
-
         - name: Fix cloud-init.service
           when: "'cloud-init.service' in failed_services"
           block:
@@ -663,7 +689,8 @@
 
     ## Verify services
 
-    - name: Gather service facts
+    - name: Refresh service facts
+      when: failed_services | count > 0
       service_facts: ~
 
     - *SET_FAILED_SERVICES_FACT
