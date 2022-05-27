@@ -234,14 +234,25 @@ class Config:
             lines.append(f'- {feature}')
 
         for reqs in [('files', 'Files'),
-                     ('grafana-dashboards', 'Dashboards'),
-                     ('images', 'Images')]:
+                     ('grafana-dashboards', 'Dashboards')]:
             reqs_to_download = sorted(requirements[reqs[0]])
             if reqs_to_download:
                 lines.append('')
                 lines.append(f'{reqs[1]} to download:')
                 for req_to_download in reqs_to_download:
                     lines.append(f'- {req_to_download}')
+
+        images = requirements['images']
+        images_to_print: List[str] = []
+        for image_category in images:
+            for image in images[image_category]:
+                images_to_print.append(image)
+
+        if images_to_print:
+            lines.append('')
+            lines.append('Images to download:')
+            for image in sorted(images_to_print):
+                lines.append(f'- {image}')
 
         lines.append('-' * self.__LINE_SIZE)
 
@@ -267,21 +278,25 @@ class Config:
         if files_to_exclude:
             requirements['files'] = {url: data for url, data in files.items() if url not in files_to_exclude}
 
-        images_to_exclude: List[str] = []
+        # prepare image categories:
         images = requirements['images']
-        if len(manifest['requested-images']):
-            for image in images:
-                if image not in manifest['requested-images']:
-                    images_to_exclude.append(image)
+        images_to_download: Dict[str, Dict] = {}
+        for image_category in images:
+            images_to_download[image_category] = {}
 
-        else:
-            for image in images:
-                deps = images[image]['deps']
-                if deps not in manifest['requested-features'] and deps != 'default':
-                    images_to_exclude.append(image)
+        if len(manifest['requested-images']):  # if image-registry document used:
+            for image_category in images:
+                for image, data in images[image_category].items():
+                    if image in manifest['requested-images']:
+                        images_to_download[image_category][image] = data
+        else:                                  # otherwise check features used:
+            for image_category in images:
+                if image_category in manifest['requested-features'] or image_category == 'default':
+                    for image, data in images[image_category].items():
+                        images_to_download[image_category][image] = data
 
-        if images_to_exclude:
-            requirements['images'] = {name: data for name, data in images.items() if name not in images_to_exclude}
+        if images_to_download:
+            requirements['images'] = images_to_download
 
     def read_manifest(self, requirements: Dict[str, Any]):
         """
