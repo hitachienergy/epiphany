@@ -1,0 +1,38 @@
+---
+- name: Include default vars from opensearch role
+  include_vars:
+    file: roles/opensearch/defaults/main.yml
+    name: opensearch_defaults
+
+- name: Include vars from opensearch role
+  include_vars:
+    file: roles/opensearch/vars/main.yml
+    name: opensearch_vars
+
+- name: Assert that the snapshot_name fact is defined and valid
+  assert:
+    that:
+      - snapshot_name is defined
+      - snapshot_name is string
+      - snapshot_name | length > 0
+    fail_msg: The snapshot_name fact must be defined and must be a non-empty string.
+
+- name: Display snapshot name
+  debug: var=snapshot_name
+
+- name: Create snapshot archive
+  import_tasks: common/create_snapshot_archive.yml
+  vars:
+    snapshot_prefix: "opensearch_conf"
+    dirs_to_archive:
+      - "{{ opensearch_vars.specification.paths.opensearch_conf_dir }}"
+
+- name: Create snapshot checksum
+  import_tasks: common/create_snapshot_checksum.yml
+
+- name: Transfer artifacts via rsync
+  import_tasks: common/download_via_rsync.yml
+  vars:
+    artifacts:
+      - "{{ snapshot_path }}"
+      - "{{ snapshot_path }}.sha1"

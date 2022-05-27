@@ -1,0 +1,11 @@
+---
+# Ansible playbook for installing OpenSearch Dashboards
+
+- hosts: repository # to gather facts
+  tasks: []
+
+- hosts: opensearch_dashboards
+  become: true
+  become_method: sudo
+  roles:
+    - opensearch_dashboards

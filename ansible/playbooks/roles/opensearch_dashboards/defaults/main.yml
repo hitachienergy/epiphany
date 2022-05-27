@@ -1,0 +1,7 @@
+---
+file_name_version:
+  opensearch_dashboards:
+    x86_64: opensearch-dashboards-1.2.0-linux-x64.tar.gz
+    aarch64: opensearch-dashboards-1.2.0-linux-arm64.tar.gz
+opensearch_api_port: 9200
+java: "{{ es_java | default('java-1.8.0-openjdk.x86_64') }}"

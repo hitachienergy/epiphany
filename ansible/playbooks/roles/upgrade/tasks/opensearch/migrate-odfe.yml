@@ -1,0 +1,203 @@
+---
+- name: OpenSearch | Get information about installed packages as facts
+  package_facts:
+    manager: auto
+  when: ansible_facts.packages is undefined
+
+- name: OpenSearch | Print ElasticSearch ond OpenSearch versions
+  debug:
+    msg:
+      - "Elasticsearch version currently installed: {{ ansible_facts.packages['elasticsearch-oss'][0].version }}"
+      - "OpenSearch version to be installed: {{ opensearch_defaults.file_name_version.opensearch[ansible_architecture].split('-')[1] }}"
+
+- name: ODFE migration | Ensure elasticsearch cluster is up and running
+  systemd:
+    name: elasticsearch
+    enabled: true
+    state: started
+  register: elasticsearch_state
+
+- name: ODFE migration | Set existing_config facts
+  include_tasks: opensearch/utils/get-config-from-files.yml
+
+- name: ODFE migration | Set common facts
+  set_fact:
+    es_host: "{{ existing_config.main['network.host'] | default('_local_') }}"
+    es_http_port: "{{ existing_config.main['http.port'] | default(opensearch_defaults.ports.http) }}"
+    es_transport_port: "{{ existing_config.main['transport.port'] | default(opensearch_defaults.ports.transport) }}"
+    es_clustered: "{{ (existing_config.main['discovery.seed_hosts'] | length > 1) | ternary(True, False) }}"
+    es_node_name: "{{ existing_config.main['node.name'] }}"
+    override_main_response_version_exist:
+      - "{{ existing_config.main['compatibility.override_main_response_version'] | default(false) }}"
+
+- name: ODFE migration | Prepare ODFE to OpenSearch migration
+  include_tasks:
+    file: opensearch/utils/prepare-cluster-for-node-restart.yml
+    apply:
+      delegate_to: "{{ target_inventory_hostname }}"
+      delegate_facts: true
+  loop: "{{ groups.logging | default([]) }}"
+  loop_control:
+    loop_var: target_inventory_hostname
+  vars:
+    es_api:
+      cert_type: Epiphany
+      cert_path: "{{ opensearch.upgrade_config.custom_admin_certificate.cert_path }}"
+      key_path: "{{ opensearch.upgrade_config.custom_admin_certificate.key_path }}"
+      url: https://{{ es_host }}:{{ es_http_port }}
+    fail_msg: API access test failed
+
+- name: ODFE migration | Run core migration tasks individually on each node
+  include_tasks:
+    file: opensearch/migrate-odfe-serial.yml
+    apply:
+      delegate_to: "{{ target_hostname }}"
+      delegate_facts: true
+  loop: "{{ groups.logging | default([]) }}"
+  loop_control:
+    loop_var: target_hostname
+  run_once: true
+
+- name: ODFE migration | Check if default admin user exists
+  uri:
+    url: "https://{{ inventory_hostname }}:{{ opensearch_defaults.ports.http }}/_opendistro/_security/api/internalusers/admin"
+    method: GET
+    # 404 code is used there as someone can remove admin user on its own.
+    status_code: [200, 404]
+    validate_certs: false
+    client_cert: "{{ opensearch.upgrade_config.custom_admin_certificate.cert_path }}"
+    client_key: "{{ opensearch.upgrade_config.custom_admin_certificate.key_path }}"
+  register: admin_check_response
+  until: admin_check_response is success
+  retries: 60
+  delay: 1
+  run_once: true
+
+- name: ODFE migration | Set OpenSearch admin password
+  uri:
+    url: "https://{{ inventory_hostname }}:{{ opensearch_defaults.ports.http }}/_opendistro/_security/api/internalusers"
+    method: PATCH
+    status_code: [200]
+    body:
+      - op: "replace"
+        path: "/admin"
+        value:
+          password: "{{ opensearch_variables.specification.admin_password }}"
+          reserved: "true"
+          backend_roles:
+            - "admin"
+          description: "Admin user"
+    client_cert: "{{ opensearch.upgrade_config.custom_admin_certificate.cert_path }}"
+    client_key: "{{ opensearch.upgrade_config.custom_admin_certificate.key_path }}"
+    body_format: json
+    validate_certs: false
+  register: uri_response
+  until: uri_response is success
+  retries: 5
+  delay: 1
+  run_once: true
+  when: admin_check_response.status == 200
+
+- name: ODFE migration | Check if kibanaserver user exists
+  uri:
+    url: "https://{{ inventory_hostname }}:{{ opensearch_defaults.ports.http }}/_opendistro/_security/api/internalusers/kibanaserver"
+    method: GET
+    # 404 code is used there as someone can remove admin user on its own.
+    status_code: [200, 404]
+    validate_certs: false
+    client_cert: "{{ opensearch.upgrade_config.custom_admin_certificate.cert_path }}"
+    client_key: "{{ opensearch.upgrade_config.custom_admin_certificate.key_path }}"
+  register: kibanaserver_check_response
+  until: kibanaserver_check_response is success
+  retries: 60
+  delay: 1
+  run_once: true
+
+- name: ODFE migration | Set kibanaserver user password
+  uri:
+    url: "https://{{ inventory_hostname }}:{{ opensearch_defaults.ports.http }}/_opendistro/_security/api/internalusers"
+    method: PATCH
+    status_code: [200]
+    body:
+      - op: "replace"
+        path: "/kibanaserver"
+        value:
+          password: "{{ opensearch_variables.specification.kibanaserver_password }}"
+          reserved: "true"
+          description: "kibanaserver user"
+    client_cert: "{{ opensearch.upgrade_config.custom_admin_certificate.cert_path }}"
+    client_key: "{{ opensearch.upgrade_config.custom_admin_certificate.key_path }}"
+    body_format: json
+    validate_certs: false
+  register: uri_response
+  until: uri_response is success
+  retries: 5
+  delay: 1
+  run_once: true
+  when: kibanaserver_check_response.status == 200
+
+- name: ODFE migration | Check if logstash user exists
+  uri:
+    url: "https://{{ inventory_hostname }}:{{ opensearch_defaults.ports.http }}/_opendistro/_security/api/internalusers/logstash"
+    method: GET
+    # 404 code is used there as someone can remove admin user on its own.
+    status_code: [200, 404]
+    validate_certs: false
+    client_cert: "{{ opensearch.upgrade_config.custom_admin_certificate.cert_path }}"
+    client_key: "{{ opensearch.upgrade_config.custom_admin_certificate.key_path }}"
+  register: logstash_check_response
+  until: logstash_check_response is success
+  retries: 60
+  delay: 1
+  run_once: true
+
+- name: ODFE migration | Set logstash user password
+  uri:
+    url: "https://{{ inventory_hostname }}:{{ opensearch_defaults.ports.http }}/_opendistro/_security/api/internalusers"
+    method: PATCH
+    status_code: [200]
+    body:
+      - op: "replace"
+        path: "/logstash"
+        value:
+          password: "{{ opensearch_variables.specification.logstash_password }}"
+          reserved: "true"
+          backend_roles:
+            - "logstash"
+          description: "Logstash user"
+    client_cert: "{{ opensearch.upgrade_config.custom_admin_certificate.cert_path }}"
+    client_key: "{{ opensearch.upgrade_config.custom_admin_certificate.key_path }}"
+    body_format: json
+    validate_certs: false
+  register: uri_response
+  until: uri_response is success
+  retries: 5
+  delay: 1
+  run_once: true
+  when: logstash_check_response.status == 200
+
+- name: ODFE migration | Check the OpenSearch status
+  command: curl https://{{ inventory_hostname }}:{{ opensearch_defaults.ports.http }}/_cluster/health?pretty -u 'admin:{{ opensearch_variables.specification.admin_password }}' -k
+  register: opensearch_status
+
+- name: ODFE migration | Show the OpenSearch status
+  debug:
+    msg: "{{ opensearch_status.stdout }}"
+  failed_when: "'number_of_nodes' not in opensearch_status.stdout"
+
+- name: ODFE migration | Reenable shard allocation for the cluster
+  include_tasks:
+    file: opensearch/utils/enable-shard-allocation.yml
+    apply:
+      delegate_to: "{{ target_inventory_hostname }}"
+      delegate_facts: true
+  loop: "{{ ansible_play_hosts_all }}"
+  loop_control:
+    loop_var: target_inventory_hostname
+  vars:
+    es_api:
+      cert_type: Epiphany
+      cert_path: "{{ opensearch.upgrade_config.custom_admin_certificate.cert_path }}"
+      key_path: "{{ opensearch.upgrade_config.custom_admin_certificate.key_path }}"
+      url: https://{{ es_host }}:{{ es_http_port }}
+    fail_msg: API access test failed.

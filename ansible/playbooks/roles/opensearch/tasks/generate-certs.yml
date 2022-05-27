@@ -1,0 +1,218 @@
+---
+# This file is meant to be also used by upgrade role
+
+- name: Create directory for CA private key
+  file:
+    state: directory
+    path: "{{ certificates.dirs.ca_key }}"
+    owner: "{{ specification.opensearch_os_user }}"
+    group: "{{ specification.opensearch_os_group }}"
+    mode: u=rwx,g=rwx,o=
+
+# csr files are kept only for idempotency
+- name: Create directory for CSR files
+  file:
+    state: directory
+    path: "{{ certificates.dirs.csr }}"
+    owner: "{{ specification.opensearch_os_user }}"
+    group: "{{ specification.opensearch_os_group }}"
+    mode: u=rwx,g=rwx,o= # CSR file doesn't contain private key
+
+- name: Generate keys and certificates on first node
+  when: inventory_hostname == ansible_play_hosts_all[0]
+  module_defaults:
+    community.crypto.openssl_privatekey:
+      size: 2048 # based on ODFE docs
+      type: RSA
+      mode: u=rw,go=
+      owner: "{{ specification.opensearch_os_user }}"
+      format: pkcs8
+    community.crypto.openssl_csr:
+      mode: u=rw,g=r,o=
+      owner: "{{ specification.opensearch_os_user }}"
+      use_common_name_for_san: false
+    community.crypto.x509_certificate:
+      selfsigned_digest: sha256
+      ownca_digest: sha256
+      mode: u=rw,g=r,o=
+      owner: "{{ specification.opensearch_os_user }}"
+  block:
+    # --- Generate CA root certificate ---
+
+    - name: Generate private key for root CA
+      community.crypto.openssl_privatekey:
+        path: "{{ certificates.dirs.ca_key }}/{{ certificates.files.root_ca.key.filename }}"
+        return_content: false
+      register: ca_key
+
+    - name: Generate CSR for root CA # based on ODFE demo cert (root-ca.pem)
+      community.crypto.openssl_csr:
+        path: "{{ certificates.dirs.csr }}/{{ certificates.files.root_ca.cert.filename | regex_replace('\\..+$', '.csr') }}"
+        privatekey_path: "{{ ca_key.filename }}" # 'filename' contains full path
+        CN: "{{ certificates.files.root_ca.cert.subject.CN }}"
+        OU: "{{ certificates.files.root_ca.cert.subject.OU }}"
+        O: "{{ certificates.files.root_ca.cert.subject.O }}"
+        basic_constraints:
+          - CA:TRUE
+        basic_constraints_critical: true
+        key_usage:
+          - Digital Signature
+          - Certificate Sign
+          - CRL Sign
+        key_usage_critical: true
+      register: ca_csr
+
+    - name: Generate CA root certificate
+      community.crypto.x509_certificate:
+        path: "{{ certificates.dirs.certs }}/{{ certificates.files.root_ca.cert.filename }}"
+        csr_path: "{{ ca_csr.filename }}"
+        privatekey_path: "{{ ca_key.filename }}"
+        provider: selfsigned
+        selfsigned_not_after: "{{ certificates.files.root_ca.cert.selfsigned_not_after }}"
+        return_content: false
+      register: ca_crt
+
+    # --- Generate admin certificate ---
+
+    - name: Generate private key for admin certificate
+      community.crypto.openssl_privatekey:
+        path: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key.filename }}"
+        format: pkcs8 # specified explicitly since this format is required
+        return_content: false
+      register: admin_key
+
+    - name: Generate CSR for admin certificate # based on ODFE demo cert (kirk.pem)
+      community.crypto.openssl_csr:
+        path: "{{ certificates.dirs.csr }}/{{ certificates.files.admin.cert.filename | regex_replace('\\..+$', '.csr') }}"
+        privatekey_path: "{{ admin_key.filename }}" # 'filename' contains full path
+        CN: "{{ certificates.files.admin.cert.subject.CN }}"
+        OU: "{{ certificates.files.admin.cert.subject.OU }}"
+        O: "{{ certificates.files.admin.cert.subject.O }}"
+        basic_constraints:
+          - CA:FALSE
+        basic_constraints_critical: true
+        key_usage:
+          - Digital Signature
+          - Non Repudiation
+          - Key Encipherment
+        key_usage_critical: true
+        extended_key_usage:
+          - TLS Web Client Authentication
+        extended_key_usage_critical: true
+      register: admin_csr
+
+    - name: Generate admin certificate
+      community.crypto.x509_certificate:
+        path: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert.filename }}"
+        csr_path: "{{ admin_csr.filename }}"
+        provider: ownca
+        ownca_path: "{{ ca_crt.filename }}"
+        ownca_privatekey_path: "{{ ca_key.filename }}"
+        ownca_not_after: "{{ certificates.files.admin.cert.ownca_not_after }}"
+        return_content: false
+      register: admin_crt
+
+- name: Copy common files to other hosts
+  when:
+    - ansible_play_hosts_all | count > 1
+    - inventory_hostname in ansible_play_hosts_all[1:]
+  module_defaults:
+    copy:
+      owner: root
+      group: "{{ specification.opensearch_os_group }}"
+  block:
+    - name: Get certificate files from the first host
+      slurp:
+        src: "{{ item }}"
+      delegate_to: "{{ ansible_play_hosts_all[0] }}"
+      register: slurp_certs
+      no_log: true # sensitive data
+      loop:
+        - "{{ certificates.dirs.ca_key }}/{{ certificates.files.root_ca.key.filename }}"
+        - "{{ certificates.dirs.certs }}/{{ certificates.files.root_ca.cert.filename }}"
+        - "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key.filename }}"
+        - "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert.filename }}"
+
+    - name: Copy CA private key to other hosts
+      copy:
+        content: "{{ slurp_certs.results[0].content | b64decode }}"
+        dest: "{{ certificates.dirs.ca_key }}/{{ certificates.files.root_ca.key.filename }}"
+        mode: u=rw,go=
+      no_log: true # sensitive data
+
+    - name: Copy root CA to other hosts
+      copy:
+        content: "{{ slurp_certs.results[1].content | b64decode }}"
+        dest: "{{ certificates.dirs.certs }}/{{ certificates.files.root_ca.cert.filename }}"
+        mode: u=rw,g=r,o=
+
+    - name: Copy admin private key to other hosts
+      copy:
+        content: "{{ slurp_certs.results[2].content | b64decode }}"
+        dest: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key.filename }}"
+        mode: u=rw,go=
+      no_log: true # sensitive data
+
+    - name: Copy admin certificate to other hosts
+      copy:
+        content: "{{ slurp_certs.results[3].content | b64decode }}"
+        dest: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert.filename }}"
+        mode: u=rw,g=r,o=
+      no_log: true # sensitive data
+
+# --- Generate node certificate (each node has its own) ---
+
+- name: Generate private key for node certificate
+  community.crypto.openssl_privatekey:
+    path: "{{ certificates.dirs.certs }}/{{ certificates.files.node.key.filename }}"
+    format: pkcs8
+    size: 2048
+    type: RSA
+    mode: u=rw,g=r,o=
+    owner: "{{ specification.opensearch_os_user }}"
+    group: "{{ specification.opensearch_os_group }}"
+    return_content: false
+  register: node_key
+
+- name: Generate CSR for node certificate # based on ODFE demo cert (esnode.pem)
+  community.crypto.openssl_csr:
+    path: "{{ certificates.dirs.csr }}/{{ certificates.files.node.cert.filename | regex_replace('\\..+$', '.csr') }}"
+    privatekey_path: "{{ node_key.filename }}" # 'filename' contains full path
+    CN: "{{ certificates.files.node.cert.subject.CN }}"
+    OU: "{{ certificates.files.node.cert.subject.OU }}"
+    O: "{{ certificates.files.node.cert.subject.O }}"
+    basic_constraints:
+      - CA:FALSE
+    basic_constraints_critical: true
+    key_usage:
+      - Digital Signature
+      - Non Repudiation
+      - Key Encipherment
+    key_usage_critical: true
+    extended_key_usage:
+      - TLS Web Server Authentication
+      - TLS Web Client Authentication
+    extended_key_usage_critical: true
+    subjectAltName: "{{ _dns_list + [ 'IP:' + ansible_default_ipv4.address ] }}"
+    use_common_name_for_san: false
+    mode: u=rw,g=r,o=
+    owner: "{{ specification.opensearch_os_user }}"
+    group: "{{ specification.opensearch_os_group }}"
+  register: node_csr
+  vars:
+    _unique_hostnames: "{{ [ansible_hostname, ansible_nodename, ansible_fqdn] | unique }}"
+    _dns_list: >-
+      {{ ['DNS'] | zip_longest(_unique_hostnames, fillvalue='DNS') | map('join', ':') }}
+
+- name: Generate node certificate
+  community.crypto.x509_certificate:
+    path: "{{ certificates.dirs.certs }}/{{ certificates.files.node.cert.filename }}"
+    csr_path: "{{ node_csr.filename }}"
+    provider: ownca
+    ownca_path: "{{ certificates.dirs.certs }}/{{ certificates.files.root_ca.cert.filename }}"
+    ownca_privatekey_path: "{{ certificates.dirs.ca_key }}/{{ certificates.files.root_ca.key.filename }}"
+    ownca_not_after: "{{ certificates.files.node.cert.ownca_not_after }}"
+    ownca_digest: sha256
+    mode: u=rw,go=r
+    owner: "{{ specification.opensearch_os_user }}"
+    group: "{{ specification.opensearch_os_group }}"

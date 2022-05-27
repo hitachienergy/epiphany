@@ -1,0 +1,126 @@
+---
+- name: Include default vars from opensearch role
+  include_vars:
+    file: roles/opensearch/defaults/main.yml
+    name: odfe
+
+- name: Set helper facts
+  set_fact:
+    opensearch_endpoint: >-
+      https://{{ ansible_default_ipv4.address }}:9200
+  vars:
+    uri_template: &uri
+      client_cert: "{{ odfe.certificates.dirs.certs }}/{{ odfe.certificates.files.admin.cert.filename }}"
+      client_key:  "{{ odfe.certificates.dirs.certs }}/{{ odfe.certificates.files.admin.key.filename }}"
+      validate_certs: false
+      body_format: json
+
+- name: Check cluster health
+  uri:
+    <<: *uri
+    url: "{{ opensearch_endpoint }}/_cluster/health"
+    method: GET
+  register: uri_response
+  until: uri_response is success
+  retries: 12
+  delay: 5
+
+- name: Find snapshot archive
+  import_tasks: common/find_snapshot_archive.yml
+  vars:
+    snapshot_prefix: "opensearch_snapshot"
+    snapshot_name: "{{ specification.components.logging.snapshot_name }}"
+
+- name: Transfer the archive via rsync
+  import_tasks: common/upload_via_rsync.yml
+  vars:
+    artifacts:
+      - "{{ snapshot_path }}"
+      - "{{ snapshot_path }}.sha1"
+
+- name: Verify snapshot checksum
+  import_tasks: common/verify_snapshot_checksum.yml
+
+- name: Clear directories
+  import_tasks: common/clear_directories.yml
+  vars:
+    dirs_to_clear:
+      - "{{ opensearch_snapshot_repository_location }}/"
+
+- name: Extract the archive
+  unarchive:
+    dest: "{{ opensearch_snapshot_repository_location }}/"
+    src: "{{ recovery_dir }}/{{ snapshot_path | basename }}"
+    remote_src: true
+
+- name: Change snapshot directory permissions
+  file:
+    path: "{{ opensearch_snapshot_repository_location }}/"
+    owner: opensearch
+    group: opensearch
+    recurse: true
+
+- name: Reconstruct the snapshot_name
+  set_fact:
+    snapshot_name: >-
+      {{ snapshot_path | basename | regex_replace('^opensearch_snapshot_(.*).tar.gz$', '\1') }}
+
+- name: Display snapshot name
+  debug: var=snapshot_name
+
+- name: Ensure all OPSD and filebeat instances are stopped, then restore the snapshot
+  block:
+    - name: Stop allOpenSearch Dashboards instances
+      delegate_to: "{{ item }}"
+      systemd:
+        name: opensearch-dashboards
+        state: stopped
+        enabled: false
+      loop: "{{ groups.opensearch_dashboards | default([]) }}"
+
+    - name: Stop all filebeat instances
+      delegate_to: "{{ item }}"
+      systemd:
+        name: filebeat
+        state: stopped
+        enabled: false
+      loop: "{{ groups.filebeat | default([]) }}"
+
+    - name: Close all indices
+      uri:
+        <<: *uri
+        url: "{{ opensearch_endpoint }}/_all/_close"
+        method: POST
+
+    - name: Delete all indices
+      uri:
+        <<: *uri
+        url: "{{ opensearch_endpoint }}/_all"
+        method: DELETE
+
+    - name: Restore the snapshot
+      uri:
+        <<: *uri
+        url: "{{ opensearch_endpoint }}/_snapshot/{{ opensearch_snapshot_repository_name }}/{{ snapshot_name }}/_restore"
+        method: POST
+
+  always:
+    - name: Start all OpenSearch Dashboards instances
+      delegate_to: "{{ item }}"
+      systemd:
+        name: opensearch-dashboards
+        state: started
+        enabled: true
+      loop: "{{ groups.opensearch_dashboards | default([]) }}"
+
+    - name: Start all filebeat instances
+      delegate_to: "{{ item }}"
+      systemd:
+        name: filebeat
+        state: started
+        enabled: true
+      register: filebeat
+      until: filebeat.status.ActiveState == "active"
+      retries: 30
+      delay: 10
+      loop: "{{ groups.filebeat | default([]) }}"

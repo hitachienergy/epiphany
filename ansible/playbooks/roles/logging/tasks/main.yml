@@ -10,8 +10,8 @@
   run_once: true
   no_log: true  # contains sensitive data
 
-- name: Install and configure OpenDistro for Elasticsearch
+- name: Install and configure OpenSearch
   import_role:
-    name: opendistro_for_elasticsearch
+    name: opensearch
   vars:
-    specification: "{{ logging_vars.specification }}"  # to override opendistro_for_elasticsearch specification
+    specification: "{{ logging_vars.specification }}"  # to override OpenSearch specification

@@ -11,8 +11,12 @@ changes made in settings of your antivirus/antimalware solution.
 
 ## Contents
 
-- [Users and roles created by Epiphany](#users-and-roles-created-by-epiphany)
-- [Ports used by components in Epiphany](#ports-used-by-components-in-epiphany)
+- [Security related information](#security-related-information)
+  - [Contents](#contents)
+    - [Users and roles created by epiphany](#users-and-roles-created-by-epiphany)
+    - [Ports used by components in Epiphany](#ports-used-by-components-in-epiphany)
+    - [Connection protocols and ciphers used by components in Epiphany](#connection-protocols-and-ciphers-used-by-components-in-epiphany)
+      - [Notes](#notes)
 
 ### Users and roles created by epiphany
 
@@ -61,15 +65,15 @@ different values. The list does not include ports that are bound to the loopback
     - 9093 - encrypted communication (if TLS/SSL is enabled)
     - unconfigurable random port from ephemeral range - JMX (for local access only), see note [[1]](#notes)
 
-5. Elasticsearch:
+5. OpenSearch:
 
-    - 9200 - Elasticsearch REST communication
-    - 9300 - Elasticsearch nodes communication
+    - 9200 - OpenSearch REST communication
+    - 9300 - OpenSearch nodes communication
     - 9600 - Performance Analyzer (REST API)
 
-6. Kibana:
+6. OpenSearch Dashboards:
 
-    - 5601 - Kibana web UI
+    - 5601 - OpenSearch Dashboards web UI
 
 7. Prometheus:
 

@@ -37,10 +37,9 @@ unsupported_roles:
       - zookeeper
       - haproxy
       - logging
+      - opensearch
+      - opensearch_dashboards
       - elasticsearch_curator
-      - opendistro_for_elasticsearch
-      - elasticsearch
-      - kibana
       - filebeat
       - prometheus
       - grafana
@@ -74,10 +73,9 @@ unsupported_roles:
       - zookeeper
       - haproxy
       - logging
+      - opensearch
+      - opensearch_dashboards
       - elasticsearch_curator
-      - opendistro_for_elasticsearch
-      - elasticsearch
-      - kibana
       - filebeat
       - prometheus
       - grafana

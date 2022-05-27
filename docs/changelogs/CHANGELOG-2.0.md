@@ -9,8 +9,8 @@
 ### Updated
 
 - [#3080](https://github.com/epiphany-platform/epiphany/issues/3080) - update Filebeat to the latest compatible version with OpenSearch
-
 - [#2982](https://github.com/epiphany-platform/epiphany/issues/2982) - Using AKS and EKS Terraform configuration directly with Epiphany.
+- [#2870](https://github.com/epiphany-platform/epiphany/issues/2870) - OpenDistro for ElasticSearch replaced by OpenSearch
 
 ### Deprecated
 

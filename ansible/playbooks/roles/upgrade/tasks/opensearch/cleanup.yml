@@ -1,0 +1,24 @@
+---
+- name: OpenSearch | Get information about installed packages as facts
+  package_facts:
+    manager: auto
+  when: ansible_facts.packages is undefined
+
+- name: Remove Kibana package
+  when: ansible_facts.packages['kibana'] is defined
+  package:
+    name: kibana
+    state: absent
+
+- name: Remove Elasticsearch package
+  when: ansible_facts.packages['elasticsearch-oss'] is defined
+  package:
+    name: elasticsearch-oss
+    state: absent
+
+# All others ODFE plugins are removed as dependencies to above
+- name: Remove ODFE Kibana plugin
+  when: ansible_facts.packages['opendistroforelasticsearch-kibana'] is defined
+  package:
+    name: opendistroforelasticsearch-kibana
+    state: absent

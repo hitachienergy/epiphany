@@ -1,8 +1,0 @@
----
-kibana_version:
-  RedHat: "1.13.1"
-  Debian: "1.13.1"
-
-# Required and used for upgrade Open Distro for Elasticsearch - Kibana:
-specification:
-  kibana_log_dir: /var/log/kibana

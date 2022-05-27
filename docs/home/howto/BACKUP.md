@@ -125,11 +125,11 @@ Recovery includes all backed up files
 
 Logging backup includes:
 
-- Elasticsearch database snapshot
-- Elasticsearch configuration ``/etc/elasticsearch/``
-- Kibana configuration ``/etc/kibana/``
+- OpenSearch database snapshot
+- OpenSearch configuration ``/usr/share/opensearch/config/``
+- OpenSearch Dashboards configuration ``/usr/share/opensearch-dashboards/config/``
 
-Only single-node Elasticsearch backup is supported. Solution for multi-node Elasticsearch cluster will be added in
+Only single-node OpenSearch backup is supported. Solution for multi-node OpenSearch cluster will be added in
 future release.
 
 ### Monitoring

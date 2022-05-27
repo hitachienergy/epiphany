@@ -453,11 +453,10 @@ Properly configured application (kubernetes service) to use fully HA configurati
 PostgreSQL native replication is now deprecated and removed.
 Use [PostgreSQL HA replication with repmgr](#how-to-set-up-postgresql-ha-replication-with-repmgr-cluster) instead.
 
-## How to start working with OpenDistro for Elasticsearch
+## How to start working with OpenSearch
 
-OpenDistro for Elasticsearch
-is [an Apache 2.0-licensed distribution of Elasticsearch enhanced with enterprise security, alerting, SQL](https://opendistro.github.io/for-elasticsearch/).
-In order to start working with OpenDistro change machines count to value greater than 0 in your cluster configuration:
+OpenSearch is the [successor](https://opendistro.github.io/for-elasticsearch-docs/) of OpenDistro for ElasticSearch project. Epiphany is providing an [automated solution](./UPGRADE.md#migration-from-open-distro-for-elasticsearch--kibana-to-opensearch-and-opensearch-dashboards) for migrating your existing ODFE installation to OpenSearch.
+On the other hand, if you plan to just start working with OpenSearch - change machines count to value greater than 0 in your cluster configuration:
 
 ```yaml
 kind: epiphany-cluster
@@ -473,22 +472,22 @@ specification:
     ...
     logging:
       count: 1
-    opendistro_for_elasticsearch:
+    opensearch:
       count: 2
 ```
 
-**Installation with more than one node will always be clustered** - Option to configure the non-clustered installation of more than one node for Open Distro is not supported.
+**Installation with more than one node will always be clustered** - Option to configure the non-clustered installation of more than one node for OpenSearch is not supported.
 
 ```yaml
-kind: configuration/opendistro-for-elasticsearch
-title: OpenDistro for Elasticsearch Config
+kind: configuration/opensearch
+title: OpenSearch Config
 name: default
 specification:
-  cluster_name: EpiphanyElastic
+  cluster_name: EpiphanyOpenSearch
 ```
 
-By default, Kibana is deployed only for `logging` component. If you want to deploy Kibana
-for `opendistro_for_elasticsearch` you have to modify feature mapping. Use below configuration in your manifest.
+By default, OpenSearch Dashboards ( previously Kibana component )  is deployed only for `logging` component. If you want to deploy it
+for `opensearch` component you have to modify feature mapping. Use below configuration in your manifest:
 
 ```yaml
 kind: configuration/feature-mapping
@@ -496,12 +495,11 @@ title: "Feature mapping to roles"
 name: default
 specification:
   roles_mapping:
-    opendistro_for_elasticsearch:
-      - opendistro-for-elasticsearch
+    opensearch:
       - node-exporter
       - filebeat
       - firewall
-      - kibana
+      - opensearch-dashboards
 ```
 
-Filebeat running on `opendistro_for_elasticsearch` hosts will always point to centralized logging hosts (./LOGGING.md).
+Filebeat running on `opensearch` hosts will always point to centralized logging hosts ( [more info](./LOGGING.md) ).
