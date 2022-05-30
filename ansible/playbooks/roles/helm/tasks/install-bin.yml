@@ -13,6 +13,11 @@
     state: directory
     mode: u=rwx,go=rx
 
+- name: Ensure tar is installed  # required by 'unarchive' module
+  package:
+    name: tar
+    state: present
+
 - name: Unpack Helm binary
   unarchive:
     src: "{{ download_directory }}/{{ newest_archive_name }}"

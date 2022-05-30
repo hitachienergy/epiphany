@@ -1,0 +1,19 @@
+---
+- name: Include dashboards installation
+  include_tasks: dashboards.yml
+
+- name: Make sure OpenSearch Dashboards is started
+  service:
+    name: opensearch-dashboards
+    state: started
+    enabled: true
+
+- name: Get all the installed dashboards plugins
+  command: "{{ specification.paths.dashboards_plugin_bin_path }} list"
+  become: true
+  become_user: "{{ specification.dashboards_os_user }}"
+  register: list_plugins
+
+- name: Show all the installed dashboards plugins
+  debug:
+    msg: "{{ list_plugins.stdout }}"

@@ -5,7 +5,7 @@ provider = readDataYaml('epiphany-cluster')['provider']
 
 #=== Test LVM merge (RHEL on Azure) ===
 
-if provider == 'azure' and os[:family] == 'redhat' and lvm_installed?
+if provider == 'azure' && os[:family] == 'redhat' && lvm_present?
   describe 'Check LVM logical volumes' do
     describe command('lvs -o lv_name --noheadings --readonly') do
       let(:disable_sudo) { false }

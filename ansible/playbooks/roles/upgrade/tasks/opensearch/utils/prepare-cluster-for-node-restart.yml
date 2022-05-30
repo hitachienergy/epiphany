@@ -1,0 +1,53 @@
+---
+# For clustered nodes it's recommended to disable shard allocation for the cluster before restarting a node.
+# See https://www.elastic.co/guide/en/elasticsearch/reference/current/restart-cluster.html#restart-cluster-rolling
+
+# required vars:
+# - es_api.url
+# - es_api.cert_path
+# - es_api.key_path
+
+- name: Disable shard allocation for the cluster and perform synced flush
+  module_defaults:
+    uri:
+      client_cert: "{{ es_api.cert_path }}"
+      client_key: "{{ es_api.key_path }}"
+      validate_certs: false
+      body_format: json
+  block:
+    # It's safe to run this task many times regardless of the state
+    - name: OpenSearch | Disable shard allocation for the cluster
+      uri:
+        url: "{{ es_api.url }}/_cluster/settings"
+        method: PUT
+        body: '{"persistent":{"cluster.routing.allocation.enable": "primaries"}}'
+      register: response_allocation_primaries
+      until:
+        - response_allocation_primaries.json.acknowledged is defined
+        - response_allocation_primaries.json.acknowledged
+      retries: 30
+      delay: 1
+
+    # Synced flush speeds up shard recovery however it's optional.
+    # https://www.elastic.co/guide/en/elasticsearch/reference/7.10/rolling-upgrades.html#_upgrading_your_cluster
+    # Synced flush is deprecated (flush has the same effect as synced flush on Elasticsearch >= 7.6) and will be removed in ES 8.0.
+    # Since synced flush fails under a large volume of incoming data (e.g. increased log level) it's replaced by flush.
+    # In epicli 0.7.x there is ES 7.3.2 but this step is optional.
+    - name: Handle flush failure
+      block:
+        - name: OpenSearch | Perform a synced flush (optional step)
+          uri:
+            url: "{{ es_api.url }}/_flush"
+            method: POST
+          register: response_flush
+          until:
+            - response_flush.json._shards is defined
+            - response_flush.json._shards.failed == 0
+          retries: 120
+          delay: 1
+      rescue:
+        - name: OpenSearch | Print warning
+          debug:
+            msg:
+              - "WARNING: flush command failed"
+              - "{{ response_flush }}"

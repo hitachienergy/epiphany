@@ -268,28 +268,34 @@ class InfrastructureBuilder(Step):
         # Check if we have a cluster-config OS image defined that we want to apply cluster wide.
         cloud_os_image_defaults = self.get_config_or_default(self.docs, 'infrastructure/cloud-os-image-defaults')
         cloud_image = self.cluster_model.specification.cloud.default_os_image
+
         if cloud_image != 'default':
             if not hasattr(cloud_os_image_defaults.specification, cloud_image):
                 raise NotImplementedError(f'default_os_image "{cloud_image}" is unsupported for "{self.cluster_model.provider}" provider.')
+
             model_with_defaults.specification.storage_image_reference = dict_to_objdict(deepcopy(cloud_os_image_defaults.specification[cloud_image]))
+
+            if 'plan' in cloud_os_image_defaults.specification[cloud_image]:
+                model_with_defaults.specification.plan = dict_to_objdict(deepcopy(cloud_os_image_defaults.specification[cloud_image].plan))
+                del model_with_defaults.specification.storage_image_reference.plan
 
         # finally check if we are trying to re-apply a configuration.
         if self.manifest_docs:
             manifest_vm_config = select_first(self.manifest_docs, lambda x: x.name == machine_selector and x.kind == 'infrastructure/virtual-machine')
-            manifest_firstvm_config = select_first(self.manifest_docs, lambda x: x.kind == 'infrastructure/virtual-machine')
 
-            if manifest_vm_config  is not None and model_with_defaults.specification.storage_image_reference == manifest_vm_config.specification.storage_image_reference:
-                return model_with_defaults
+            if manifest_vm_config is None:
+                manifest_vm_config = select_first(self.manifest_docs, lambda x: x.kind == 'infrastructure/virtual-machine')
 
-            if model_with_defaults.specification.storage_image_reference == manifest_firstvm_config.specification.storage_image_reference:
-                return model_with_defaults
+            if model_with_defaults.specification.storage_image_reference == manifest_vm_config.specification.storage_image_reference:
+                if (not 'plan' in manifest_vm_config.specification) or model_with_defaults.specification.plan == manifest_vm_config.specification.plan:
+                    return model_with_defaults
 
             self.logger.warning(f"Re-applying a different OS image might lead to data loss and/or other issues. Preserving the existing OS image used for VM definition '{machine_selector}'.")
 
-            if manifest_vm_config  is not None:
-                model_with_defaults.specification.storage_image_reference = dict_to_objdict(deepcopy(manifest_vm_config.specification.storage_image_reference))
-            else:
-                model_with_defaults.specification.storage_image_reference = dict_to_objdict(deepcopy(manifest_firstvm_config.specification.storage_image_reference))
+            model_with_defaults.specification.storage_image_reference = dict_to_objdict(deepcopy(manifest_vm_config.specification.storage_image_reference))
+
+            if 'plan' in manifest_vm_config.specification:
+                model_with_defaults.specification.plan = dict_to_objdict(deepcopy(manifest_vm_config.specification.plan))
 
         return model_with_defaults
 

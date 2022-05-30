@@ -96,7 +96,7 @@ filebeatConfig:
       {% endfor %}
 
       username: logstash
-      password: {{ "'%s'" % opendistro_for_logging_vars.specification.logstash_password | replace("'","''") }}
+      password: {{ "'%s'" % logging_vars.specification.logstash_password | replace("'","''") }}
 
 {#    Controls the verification of certificates #}
       ssl.verification_mode: none

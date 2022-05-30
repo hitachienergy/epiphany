@@ -20,13 +20,16 @@ specification:
     publisher: Canonical
     offer: 0001-com-ubuntu-server-focal
     sku: 20_04-lts-gen2
-    version: "20.04.202201100" # Never put latest on anything! Need to always pin the version number but testing we can get away with it
+    version: "20.04.202204190" # Never put latest on anything! Need to always pin the version number but testing we can get away with it
   storage_os_disk:
     managed: true
     caching: ReadWrite
     create_option: FromImage
     disk_size_gb: 32
     managed_disk_type: Premium_LRS
+  additional_disks: []
+    # - storage_account_type: Premium_LRS
+    #   disk_size_gb: 32
   network_interface:
     enable_accelerated_networking: false
     private_ip:
@@ -386,8 +389,8 @@ specification:
         destination_port_range: "9300"
         source_address_prefix: "10.1.0.0/20"
         destination_address_prefix: "0.0.0.0/0"
-      - name: Kibana
-        description: Allow Kibana
+      - name: OpenSearchDashboards
+        description: Allow OpenSearch Dashboards
         priority: 203
         direction: Inbound
         access: Allow

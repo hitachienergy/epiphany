@@ -17,11 +17,11 @@ specification:
       enabled: true
     - name: logging
       enabled: true
-    - name: opendistro-for-elasticsearch
+    - name: opensearch
       enabled: true
     - name: elasticsearch-curator
       enabled: true
-    - name: kibana
+    - name: opensearch-dashboards
       enabled: true
     - name: filebeat
       enabled: true
@@ -49,6 +49,8 @@ specification:
       enabled: true
     - name: applications
       enabled: true
+    - name: rook
+      enabled: true
 
   roles_mapping:
     kafka:
@@ -66,7 +68,7 @@ specification:
       - firewall
     logging:
       - logging
-      - kibana
+      - opensearch-dashboards
       - node-exporter
       - filebeat
       - firewall
@@ -100,6 +102,7 @@ specification:
       - node-exporter
       - logging
       - firewall
+      - rook
     single_machine:
       - repository
       - image-registry
@@ -109,10 +112,12 @@ specification:
       - rabbitmq
       - postgresql
       - firewall
+      - rook
     kubernetes_master:
       - kubernetes-master
       - helm
       - applications
+      - rook
       - node-exporter
       - filebeat
       - firewall
@@ -121,8 +126,8 @@ specification:
       - node-exporter
       - filebeat
       - firewall
-    opendistro_for_elasticsearch:
-      - opendistro-for-elasticsearch
+    opensearch:
+      - opensearch
       - node-exporter
       - filebeat
       - firewall

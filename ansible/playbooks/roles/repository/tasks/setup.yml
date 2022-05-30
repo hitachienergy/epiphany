@@ -12,20 +12,15 @@
 - name: Set OS name for download script
   set_fact:
     download_requirements_os_name: >-
-      {{ 'centos-7' if (ansible_distribution == 'CentOS' and ansible_distribution_major_version == '7') else
-          'redhat-7' if (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '7') else
-          'ubuntu-20.04' if (ansible_distribution == 'Ubuntu' and ansible_distribution_version == '20.04') else None }}
+      {{ 'almalinux-8' if (ansible_distribution == 'AlmaLinux' and ansible_distribution_major_version == '8') else
+         'rhel-8' if (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '8') else
+         'ubuntu-20.04' if (ansible_distribution == 'Ubuntu' and ansible_distribution_version == '20.04') else
+         'detect' }}
 
 - name: Download Epiphany requirements on repository host  # online mode
   block:
     - name: Install required packages for repository
       include_tasks: "{{ ansible_os_family }}/install-packages.yml"
-
-    - name: Install Poyo library for YAML support
-      pip:
-        name: poyo==0.5.0
-        executable: pip3
-        extra_args: --user
 
     - name: Create download-requirements directory
       file:
@@ -35,8 +30,9 @@
     - name: Copy files for downloading requirements to repository host
       include_tasks: copy-download-requirements.yml
       vars:
-        _os_type: "{{ download_requirements_os_name }}"
         _arch_type: "{{ ansible_architecture }}"
+        _family_type: "{{ ansible_os_family | lower }}"
+        _os_type: "{{ download_requirements_os_name }}"
 
     - name: Make download script executable
       file:

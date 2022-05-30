@@ -9,8 +9,9 @@ images:
   'kubernetesui/metrics-scraper:v1.0.7':
     sha1: 5a0052e2afd3eef3ae638be21938b29b1d608ebe
 
-  'registry:2':
-    sha1: 6afd2766e6880c62cb80d1ea85dbcc20d6ef16a4
+  'registry:2.8.0':
+    sha1: 89795c17099199c752d02ad8797c1d4565a08aff
+    allow_mismatch: true
 
   # applications
   'bitnami/pgpool:4.2.4':
@@ -156,3 +157,35 @@ images:
 
   'calico/pod2daemon-flexvol:v3.20.3':
     sha1: 97c1b7ac90aa5a0f5c52e7f137549e598ff80f3e
+
+  # --- Rook ---
+  'k8s.gcr.io/sig-storage/csi-attacher:v3.4.0':
+    sha1: f076bd75359c6449b965c48eb8bad96c6d40790d
+
+  'k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.5.0':
+    sha1: 129eb73c8e118e5049fee3d273b2d477c547e080
+
+  'k8s.gcr.io/sig-storage/csi-provisioner:v3.1.0':
+    sha1: 2b45e5a3432cb89f3aec59584c1fa92c069e7a38
+
+  'k8s.gcr.io/sig-storage/csi-resizer:v1.4.0':
+    sha1: ce5c57454254c195762c1f58e1d902d7e81ea669
+
+  'k8s.gcr.io/sig-storage/csi-snapshotter:v5.0.1':
+    sha1: be1cf43617eea007629c0eb99149a99b6498f889
+
+  'quay.io/ceph/ceph:v16.2.7':
+    sha1: fe9b7802c67e19111f83ffe4754ab62df66fd417
+    allow_mismatch: true
+
+  'quay.io/cephcsi/cephcsi:v3.5.1':
+    sha1: 51dee9ea8ad76fb95ebd16f951e8ffaaaba95eb6
+
+  'quay.io/csiaddons/k8s-sidecar:v0.2.1':
+    sha1: f0fd757436ac5075910c460c1991ff67c4774d09
+
+  'quay.io/csiaddons/volumereplication-operator:v0.3.0':
+    sha1: d3cd17f14fcbf09fc6c8c2c5c0419f098f87a70f
+
+  'rook/ceph:v1.8.8':
+    sha1: f34039b17b18f5a855b096d48ff787b4013615e4

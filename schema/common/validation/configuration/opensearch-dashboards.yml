@@ -1,0 +1,24 @@
+kind: configuration/opensearch-dashboards
+title: "OpenSearch Dashboards specification schema"
+name: default
+type: object
+properties:
+  dashboards_os_user:
+    type: string
+  dashboards_os_group:
+    type: string
+  dashboards_user:
+    type: string
+  dashboards_user_password:
+    type: string
+  paths:
+    type: object
+    properties:
+      dashboards_home:
+        type: string
+      dashboards_conf_dir:
+        type: string
+      dashboards_plugin_bin_path:
+        type: string
+      dashboards_log_dir:
+        type: string

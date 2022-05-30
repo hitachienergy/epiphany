@@ -82,7 +82,7 @@
 - [#381](https://github.com/epiphany-platform/epiphany/issues/381) - Add AWS EC2 Root Volume encryption
 - [#782](https://github.com/epiphany-platform/epiphany/issues/781) - All disks encryption documentation - AWS
 - [#782](https://github.com/epiphany-platform/epiphany/issues/782) - All disks encryption documentation - Azure
-- [#784](https://github.com/epiphany-platform/epiphany/issues/784) - Switch to Open Distro for Elasticsearch
+- [#784](https://github.com/epiphany-platform/epiphany/issues/784) - Switch to Open Distro for ElasticSearch
   - [Data storage](/docs/home/howto/DATABASES.md#how-to-start-working-with-opendistro-for-elasticsearch)
   - [Centralized logging](/docs/home/howto/LOGGING.md#centralized-logging-setup)
 

@@ -5,7 +5,7 @@
 # w/o subscription https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
 - name: Install the latest version of ca-certificates package
-  yum:
+  dnf:
     name:
       - ca-certificates
     update_cache: true
@@ -16,24 +16,22 @@
   until: result is succeeded
 
 - name: Install RedHat family packages
-  yum:
+  dnf:
     name:
       - bash-completion
       - curl
-      - ebtables
       - ethtool
       - fping
       - htop
       - iftop
+      - iptables-ebtables
       - jq
-      - libselinux-python
-      - libsemanage-python
       - logrotate
       - nc
-      - net-tools  # required by Ansible (module listen_ports_facts)
+      - net-tools  # for Ansible (listen_ports_facts module)
       - openssl
-      - python-setuptools
       - python3
+      - python3-libselinux  # for Ansible (selinux module)
       - rsync
       - sysstat
       - tar
@@ -41,8 +39,6 @@
       - tmux
       - unzip
       - vim
-      - yum-utils
-      - yum-versionlock
     state: present
   register: result
   retries: 3
@@ -53,3 +49,7 @@
   lineinfile:
     path: /home/{{ admin_user.name }}/.bash_profile
     line: source /etc/profile.d/operations.sh
+
+- name: Fix NetworkManager-cloud-setup issue
+  include_tasks: fix-nm-cloud-setup.yml
+  when: ansible_distribution_version is version('8.4','=')

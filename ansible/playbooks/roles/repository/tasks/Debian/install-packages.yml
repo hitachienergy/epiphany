@@ -2,7 +2,7 @@
 - name: Install Debian family packages for repository to work
   apt:
     name:
-      - python3-pip
+      - python3-yaml
     state: present
     update_cache: true
   register: result

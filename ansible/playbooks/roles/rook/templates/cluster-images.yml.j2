@@ -1,0 +1,5 @@
+toolbox:
+  image: {{ image_registry_address }}/{{ data.toolbox.image }}
+cephClusterSpec:
+  cephVersion:
+    image: {{ image_registry_address }}/{{ data.cephClusterSpec.cephVersion.image }}

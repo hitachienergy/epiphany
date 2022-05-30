@@ -8,6 +8,6 @@
       Debian:
         - python3-cryptography
       RedHat:
-        - python2-cryptography
+        - python3-cryptography
   module_defaults:
-    yum: { lock_timeout: "{{ yum_lock_timeout }}" }
+    yum: {lock_timeout: "{{ yum_lock_timeout }}"}

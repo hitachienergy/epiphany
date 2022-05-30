@@ -34,5 +34,5 @@ specification:
       count: 1
     rabbitmq:
       count: 1
-    opendistro_for_elasticsearch:
+    opensearch:
       count: 1

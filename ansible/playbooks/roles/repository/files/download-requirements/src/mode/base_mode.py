@@ -4,20 +4,21 @@ from os import chmod
 from pathlib import Path
 from typing import Any, Dict
 
-from poyo import parse_string, PoyoException
+import yaml
 
 from src.command.toolchain import Toolchain, TOOLCHAINS
-from src.config import Config
-from src.crypt import get_sha1, get_sha256
-from src.error import CriticalError
+from src.config.config import Config, OSArch
+from src.crypt import SHA_ALGORITHMS
+from src.downloader import Downloader
+from src.error import CriticalError, ChecksumMismatch
 
 
 def load_yaml_file(filename: Path) -> Any:
     try:
         with open(filename, encoding="utf-8") as req_handler:
-            return parse_string(req_handler.read())
-    except PoyoException as pexc:
-        raise CriticalError(f'Failed loading: `{pexc}`') from pexc
+            return yaml.safe_load(req_handler)
+    except yaml.YAMLError as yaml_err:
+        raise CriticalError(f'Failed loading: `{yaml_err}`') from yaml_err
     except Exception as err:
         raise CriticalError(f'Failed loading: `{filename}`') from err
 
@@ -33,7 +34,7 @@ class BaseMode:
 
         self._repositories: Dict[str, Dict] = self.__parse_repositories()
         self._requirements: Dict[str, Any] = self.__parse_requirements()
-        self._tools: Toolchain = TOOLCHAINS[self._cfg.os_type](self._cfg.retries)
+        self._tools: Toolchain = TOOLCHAINS[self._cfg.os_type.os_family](self._cfg.retries)
 
     def __parse_repositories(self) -> Dict[str, Dict]:
         """
@@ -41,32 +42,49 @@ class BaseMode:
 
         :returns: parsed repositories data
         """
-        return load_yaml_file(self._cfg.repo_path / f'{self._cfg.distro_subdir}.yml')['repositories']
+        common_repository_file = self._cfg.repo_path / f'{self._cfg.family_subdir}/{self._cfg.os_type.os_family.value}.yml'
+        distro_repository_file = self._cfg.repo_path / f'{self._cfg.distro_subdir}/{self._cfg.os_type.os_name}.yml'
+
+        repos: Dict[str, Dict] = {}
+        if common_repository_file.exists():
+            repos.update(load_yaml_file(common_repository_file)['repositories'])
+
+        if distro_repository_file.exists():
+            repos.update(load_yaml_file(distro_repository_file)['repositories'])
+
+        if not repos:
+            raise CriticalError('No repositories found')
+
+        return repos
+
+    def _parse_packages(self) -> Dict[str, Any]:
+        """
+        Load packages for target architecture/distro from yaml file(s).
+
+        :returns: parsed packages data
+        """
+        raise NotImplementedError
 
     def __parse_requirements(self) -> Dict[str, Any]:
         """
-        Load requirements for target architecture/distro from a yaml file.
+        Load requirements for target architecture/distro from yaml files.
 
         :returns: parsed requirements data
         """
         reqs: Dict = defaultdict(dict)
 
-        content = load_yaml_file(self._cfg.reqs_path / f'{self._cfg.distro_subdir}/packages.yml')
-        reqs['packages'] = content['packages']
+        reqs.update(self._parse_packages())
 
-        try:
-            reqs['prereq-packages'] = content['prereq-packages']
-        except KeyError:
-            pass  # prereq packages are only for some distros
-
+        # parse distro files:
         distro_files: Path = self._cfg.reqs_path / f'{self._cfg.distro_subdir}/files.yml'
         if distro_files.exists():  # distro files are optional
             content = load_yaml_file(distro_files)
             reqs['files'].update(content['files'])
 
-        for common_reqs in ['cranes', 'files', 'images']:
-            content = load_yaml_file(self._cfg.reqs_path / f'{self._cfg.os_arch.value}/{common_reqs}.yml')
-            reqs[common_reqs].update(content[common_reqs])
+        # parse common arch files:
+        for common_arch_reqs in ['cranes', 'files', 'images']:
+            content = load_yaml_file(self._cfg.reqs_path / f'{self._cfg.os_arch.value}/{common_arch_reqs}.yml')
+            reqs[common_arch_reqs].update(content[common_arch_reqs])
 
         content = load_yaml_file(self._cfg.reqs_path / 'grafana-dashboards.yml')
         reqs['grafana-dashboards'].update(content['grafana-dashboards'])
@@ -131,35 +149,20 @@ class BaseMode:
         :param files: to be downloaded
         :param dest: where to save the files
         """
-        for file in files:
-            try:
-                filepath = dest / file.split('/')[-1]
-                if files[file]['sha256'] == get_sha256(filepath):
-                    logging.debug(f'- {file} - checksum ok, skipped')
-                    continue
-
-                logging.info(f'- {file}')
-                self._download_file(file, filepath)
-            except CriticalError:
-                logging.warn(f'Could not download file: {file}')
+        downloader: Downloader = Downloader(files, 'sha256', self._download_file)
+        for req_file in files:
+            filepath = dest / req_file.split('/')[-1]
+            downloader.download(req_file, filepath)
 
     def __download_grafana_dashboards(self):
         """
         Download grafana dashboards under `self._requirements['grafana-dashboards']`.
         """
         dashboards: Dict[str, Dict] = self._requirements['grafana-dashboards']
+        downloader: Downloader = Downloader(dashboards, 'sha256', self._download_grafana_dashboard)
         for dashboard in dashboards:
-            try:
-                output_file = self._cfg.dest_grafana_dashboards / f'{dashboard}.json'
-
-                if dashboards[dashboard]['sha256'] == get_sha256(output_file):
-                    logging.debug(f'- {dashboard} - checksum ok, skipped')
-                    continue
-
-                logging.info(f'- {dashboard}')
-                self._download_grafana_dashboard(dashboards[dashboard]['url'], output_file)
-            except CriticalError:
-                logging.warn(f'Could not download grafana dashboard: {dashboard}')
+            output_file = self._cfg.dest_grafana_dashboards / f'{dashboard}.json'
+            downloader.download(dashboard, output_file, 'url')
 
     def __download_crane(self):
         """
@@ -167,13 +170,13 @@ class BaseMode:
         """
         crane_path = self._cfg.dest_dir / 'crane'
         crane_package_path = Path(f'{crane_path}.tar.gz')
-
         cranes = self._requirements['cranes']
         first_crane = next(iter(cranes))  # right now we use only single crane source
-        if cranes[first_crane]['sha256'] == get_sha256(crane_package_path):
-            logging.debug('crane - checksum ok, skipped')
-        else:
-            self._download_crane_binary(first_crane, crane_package_path)
+
+        downloader: Downloader = Downloader(cranes, 'sha256', self._download_crane_binary)
+        downloader.download(first_crane, crane_package_path)
+
+        if not crane_path.exists():
             self._tools.tar.unpack(crane_package_path, Path('crane'), directory=self._cfg.dest_dir)
             chmod(crane_path, 0o0755)
 
@@ -187,21 +190,18 @@ class BaseMode:
         """
         Download images under `self._requirements['images']` using Crane.
         """
-        platform: str = 'linux/amd64' if self._cfg.os_arch.X86_64 else 'linux/arm64'
-        images = self._requirements['images']
-        for image in images:
-            try:
-                url, version = image.split(':')
-                filename = Path(f'{url.split("/")[-1]}-{version}.tar')  # format: image_version.tar
+        platform: str = 'linux/amd64' if self._cfg.os_arch == OSArch.X86_64 else 'linux/arm64'
+        downloader: Downloader = Downloader(self._requirements['images'],
+                                            'sha1',
+                                            self._tools.crane.pull,
+                                            {'platform': platform})
 
-                if images[image]['sha1'] == get_sha1(self._cfg.dest_images / filename):
-                    logging.debug(f'- {image} - checksum ok, skipped')
-                    continue
+        for image in self._requirements['images']:
+            url, version = image.split(':')
+            filename = Path(f'{url.split("/")[-1]}-{version}.tar')  # format: image_version.tar
 
-                logging.info(f'- {image}')
-                self._tools.crane.pull(image, self._cfg.dest_images / filename, platform)
-            except CriticalError:
-                logging.warn(f'Could not download image: `{image}`')
+            image_file = self._cfg.dest_images / filename
+            downloader.download(image, image_file)
 
     def _cleanup(self):
         """
@@ -243,14 +243,15 @@ class BaseMode:
         self._cfg.dest_images.mkdir(exist_ok=True, parents=True)
         self._cfg.dest_packages.mkdir(exist_ok=True, parents=True)
 
+        # provides tar which is required for backup
+        logging.info('Installing base packages...')
+        self._install_base_packages()
+        logging.info('Done installing base packages.')
+
         self._create_backup_repositories()
 
         if not self._cfg.was_backup_created:
             self.__restore_repositories()
-
-        logging.info('Installing base packages...')
-        self._install_base_packages()
-        logging.info('Done installing base packages.')
 
         logging.info('Adding third party repositories...')
         self._add_third_party_repositories()

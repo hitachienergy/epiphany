@@ -1,17 +1,17 @@
 ---
 supported_oses:
-  - name: CentOS
+  - name: AlmaLinux
     version:
-      min: 7.6
-      max: 7.9
+      min: '8.4'
+      max: '8.10'
   - name: RedHat
     version:
-      min: 7.6
-      max: 7.9
+      min: '8.4'
+      max: '8.10'  # based on https://access.redhat.com/support/policy/updates/errata#RHEL8_Life_Cycle
   - name: Ubuntu
     version:
-      min: 20.04
-      max: 20.04
+      min: '20.04'
+      max: '20.04'
 
 # The list of unsupported K8s applications per architecture
 unsupported_apps:
@@ -37,10 +37,9 @@ unsupported_roles:
       - zookeeper
       - haproxy
       - logging
+      - opensearch
+      - opensearch_dashboards
       - elasticsearch_curator
-      - opendistro_for_elasticsearch
-      - elasticsearch
-      - kibana
       - filebeat
       - prometheus
       - grafana
@@ -51,10 +50,10 @@ unsupported_roles:
       - postgresql
       - postgres_exporter
       - applications
-  - distro: CentOS
+  - distro: AlmaLinux
     arch: x86_64
     roles: []  # all supported
-  - distro: CentOS
+  - distro: AlmaLinux
     arch: aarch64
     roles:
       - elasticsearch_curator
@@ -74,10 +73,9 @@ unsupported_roles:
       - zookeeper
       - haproxy
       - logging
+      - opensearch
+      - opensearch_dashboards
       - elasticsearch_curator
-      - opendistro_for_elasticsearch
-      - elasticsearch
-      - kibana
       - filebeat
       - prometheus
       - grafana

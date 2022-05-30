@@ -4,17 +4,15 @@ from typing import Dict
 from src.command.apt import Apt
 from src.command.apt_cache import AptCache
 from src.command.apt_key import AptKey
-from src.command.command import Command
 from src.command.crane import Crane
-from src.command.pip import Pip
-from src.command.repoquery import Repoquery
+from src.command.dnf_repoquery import DnfRepoquery
 from src.command.rpm import Rpm
 from src.command.tar import Tar
 from src.command.wget import Wget
-from src.command.yum import Yum
-from src.command.yum_config_manager import YumConfigManager
-from src.command.yumdownloader import Yumdownloader
-from src.config import OSType
+from src.command.dnf import Dnf
+from src.command.dnf_config_manager import DnfConfigManager
+from src.command.dnf_download import DnfDownload
+from src.config.os_type import OSFamily
 
 
 class Toolchain:
@@ -26,32 +24,38 @@ class Toolchain:
         self.crane = Crane(retries)
         self.tar = Tar()
         self.wget = Wget(retries)
-        self.pip = Pip(retries)
 
-    def install_pip(self):
+    @property
+    def pyyaml_package(self) -> str:
         """
-        Used for offline mode, install pip package
+        Name of OS package that provides PyYAML
         """
         raise NotImplementedError
 
-    def uninstall_pip(self):
+    def _install_pyyaml(self):
         """
-        Used for offline mode, uninstall pip package
+        Used for offline mode, install PyYAML
         """
         raise NotImplementedError
 
-    def ensure_pip(self) -> bool:
+    def uninstall_pyyaml(self):
         """
-        Used for offline mode to ensure that pip is installed on target OS
-        :returns: True - pip had to be installed, False - pip already installed
+        Used for offline mode, uninstall PyYAML
         """
-        try:  # check if pip is installed
-            import pip
+        raise NotImplementedError
+
+    def ensure_pyyaml(self) -> bool:
+        """
+        Used for offline mode to ensure that PyYAML is available
+        :returns: True - PyYAML had to be installed, False - PyYAML already present
+        """
+        try:  # check if PyYAML is available
+            import yaml # pylint: disable=import-outside-toplevel,unused-import
             return False
 
-        except ModuleNotFoundError:  # pip missing
-            logging.info('pip3 not installed, try installing...')
-            self.install_pip()
+        except ModuleNotFoundError:  # PyYAML missing
+            logging.info(f'PyYAML not found, trying to install {self.pyyaml_package} package...')
+            self._install_pyyaml()
             logging.info('Done.')
             return True
 
@@ -64,17 +68,21 @@ class RedHatFamilyToolchain(Toolchain):
     def __init__(self, retries: int):
         super().__init__(retries)
 
-        self.repoquery = Repoquery(retries)
+        self.repoquery = DnfRepoquery(retries)
         self.rpm = Rpm(retries)
-        self.yum = Yum(retries)
-        self.yum_config_manager = YumConfigManager(retries)
-        self.yumdownloader = Yumdownloader(retries)
+        self.dnf = Dnf(retries)
+        self.dnf_config_manager = DnfConfigManager(retries)
+        self.dnf_download = DnfDownload(retries)
 
-    def install_pip(self):
-        self.yum.install('python3-pip')
+    @property
+    def pyyaml_package(self) -> str:
+        return 'python3-pyyaml'
 
-    def uninstall_pip(self):
-        self.yum.remove('python3-pip')
+    def _install_pyyaml(self):
+        self.dnf.install(self.pyyaml_package)
+
+    def uninstall_pyyaml(self):
+        self.dnf.remove(self.pyyaml_package)
 
 
 class DebianFamilyToolchain(Toolchain):
@@ -89,14 +97,18 @@ class DebianFamilyToolchain(Toolchain):
         self.apt_cache = AptCache(retries)
         self.apt_key = AptKey(retries)
 
-    def install_pip(self):
-        self.apt.install('python3-pip')
+    @property
+    def pyyaml_package(self) -> str:
+        return 'python3-yaml'
 
-    def uninstall_pip(self):
-        self.apt.remove('python3-pip')
+    def _install_pyyaml(self):
+        self.apt.install(self.pyyaml_package)
+
+    def uninstall_pyyaml(self):
+        self.apt.remove(self.pyyaml_package)
 
 
-TOOLCHAINS: Dict[OSType, Toolchain] = {
-    OSType.RedHat: RedHatFamilyToolchain,
-    OSType.Ubuntu: DebianFamilyToolchain
+TOOLCHAINS: Dict[OSFamily, Toolchain] = {
+    OSFamily.Debian: DebianFamilyToolchain,
+    OSFamily.RedHat: RedHatFamilyToolchain
 }

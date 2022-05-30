@@ -1,0 +1,22 @@
+---
+- name: OpenSearch | Assert input parameters
+  assert:
+    that:
+      - es_api.cert_path is defined
+      - es_api.cert_type is defined
+      - es_api.cert_type in ['custom', 'demo', 'Epiphany']
+      - es_api.key_path is defined
+      - es_api.url is defined
+      - fail_msg is defined
+    quiet: true
+
+# Sets 'test_api_access'
+- include_tasks: test-api-access.yml
+
+- name: OpenSearch | Assert API access
+  assert:
+    that: test_api_access.status == 200
+    fail_msg:
+      - "{{ fail_msg }}"
+      - "Test result: {{ test_api_access }}"
+    quiet: true

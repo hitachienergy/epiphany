@@ -1,24 +1,10 @@
 ---
-logging:
+opensearch:
   upgrade_config:
     custom_admin_certificate:
-      cert_path: /etc/elasticsearch/custom-admin.pem
-      key_path:  /etc/elasticsearch/custom-admin-key.pem
-
-opendistro_for_elasticsearch:
-  upgrade_config:
-    custom_admin_certificate:
-      cert_path: /etc/elasticsearch/custom-admin.pem
-      key_path:  /etc/elasticsearch/custom-admin-key.pem
-
-  certs_migration:
-    demo_DNs:
-      admin: CN=kirk,OU=client,O=client,L=test,C=de
-      node:  CN=node-0.example.com,OU=node,O=node,L=test,DC=de
-    dual_root_ca:
-      filename: demo2epiphany-certs-migration-root-CAs.pem
-
-  upgrade_state_file_path: /etc/elasticsearch/epicli-upgrade-started.state
+      cert_path: /etc/elasticsearch/epiphany-admin.pem
+      key_path:  /etc/elasticsearch/epiphany-admin-key.pem
+  upgrade_state_file_path: /var/lib/epiphany/upgrade/state/opensearch-upgrade.uncompleted
 
 kubernetes:
   upgrade_state_file_path: /var/lib/epiphany/upgrade/state/kubernetes-{{ ver }}.uncompleted

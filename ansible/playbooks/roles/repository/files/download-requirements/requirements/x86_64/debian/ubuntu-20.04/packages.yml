@@ -1,0 +1,179 @@
+---
+packages:
+  from_repo:
+    - 'adduser'
+    - 'apt-transport-https'
+    - 'auditd'
+    - 'bash-completion'
+    - 'ca-certificates'
+    - 'cifs-utils'
+    - 'containerd.io=1.5.11*'
+    - 'cri-tools=1.13.0*'
+    - 'curl'
+    - 'docker-ce=5:20.10.8*'
+    - 'docker-ce-cli=5:20.10.8*'
+    - 'docker-ce-rootless-extras=5:20.10.8*'
+    - 'ebtables'
+
+    # for opensearch & logging roles
+    - 'elasticsearch-oss=7.10.2*'
+
+    # Erlang packages must be compatible with RabbitMQ version.
+    # Metapackages such as erlang and erlang-nox must only be used
+    # with apt version pinning. They do not pin their dependency versions.
+    # List based on: https://www.rabbitmq.com/install-debian.html#installing-erlang-package
+    - 'erlang-asn1=1:23.1.5*'
+    - 'erlang-base=1:23.1.5*'
+    - 'erlang-crypto=1:23.1.5*'
+    - 'erlang-eldap=1:23.1.5*'
+    - 'erlang-ftp=1:23.1.5*'
+    - 'erlang-inets=1:23.1.5*'
+    - 'erlang-mnesia=1:23.1.5*'
+    - 'erlang-os-mon=1:23.1.5*'
+    - 'erlang-parsetools=1:23.1.5*'
+    - 'erlang-public-key=1:23.1.5*'
+    - 'erlang-runtime-tools=1:23.1.5*'
+    - 'erlang-snmp=1:23.1.5*'
+    - 'erlang-ssl=1:23.1.5*'
+    - 'erlang-syntax-tools=1:23.1.5*'
+    - 'erlang-tftp=1:23.1.5*'
+    - 'erlang-tools=1:23.1.5*'
+    - 'erlang-xmerl=1:23.1.5*'
+    - 'ethtool'
+    - 'filebeat=7.12.1*'
+    - 'firewalld'
+    - 'fping'
+    - 'gnupg2'
+    - 'htop'
+    - 'iftop'
+    - 'jq'
+
+    # for dpkg-scanpackages
+    - 'libdpkg-perl'
+    - 'libfontconfig1'
+    - 'logrotate'
+    - 'netcat'
+    - 'net-tools'
+    - 'nfs-common'
+
+    # for nfs-common
+    - 'libtirpc3'
+    - 'openjdk-8-jre-headless'
+    - 'openssl'
+    - 'postgresql-13'
+    - 'python3-psycopg2'
+    - 'python3-selinux'
+    - 'rabbitmq-server=3.8.9*'
+    - 'smbclient'
+    - 'samba-common'
+    - 'software-properties-common'
+    - 'sshpass'
+    - 'sysstat'
+
+    # for sysstat
+    - 'libsensors5'
+    - 'tar'
+    - 'telnet'
+    - 'tmux'
+    - 'unzip'
+    - 'vim'
+
+    # to make remote-to-remote "synchronize" work in ansible
+    - 'rsync'
+
+    # for curl, issue #869
+    - 'libcurl4'
+
+    # for openjdk-8-jre-headless
+    - 'libnss3'
+    - 'libcups2'
+    - 'libavahi-client3'
+    - 'libavahi-common3'
+    - 'libjpeg8'
+    - 'libxtst6'
+    - 'fontconfig-config'
+
+    # for rabbit/erlang
+    - 'libodbc1'
+
+    # for air-gap repo installation
+    - 'apache2'
+    - 'apache2-bin'
+    - 'apache2-utils'
+
+    # for jq
+    - 'libjq1'
+
+    # for gnupg2
+    - 'gnupg'
+    - 'gpg'
+    - 'gpg-agent'
+    - 'samba-libs'
+    - 'libsmbclient'
+
+    # postgres related packages
+    # if version is not specified, it's not related to postgres version and the latest is used
+    - 'pgdg-keyring'
+    - 'postgresql-13-pgaudit=1.5.0*'
+    - 'postgresql-10-repmgr=5.2.1*'
+    - 'postgresql-13-repmgr=5.2.1*'
+    - 'postgresql-client-13'
+    - 'postgresql-client-common'
+    - 'postgresql-common'
+    - 'repmgr-common=5.2.1*'
+
+    # for firewalld
+    - 'ipset'
+    - 'python3-decorator'
+    - 'python3-slip'
+    - 'python3-slip-dbus'
+
+    # for ansible module postgresql_query in role postgres-exporter
+    - 'libpq5'
+    - 'python3-jmespath'
+
+    # for Ansible (certificate modules)
+    - 'python3-cryptography'
+
+    # for python3-cryptography
+    - 'python3-cffi-backend'
+
+    # K8s v1.18.6 (Epiphany >= v0.7.1)
+    - 'kubeadm=1.18.6*'
+    - 'kubectl=1.18.6*'
+    - 'kubelet=1.18.6*'
+
+    # K8s v1.19.15 (Epiphany >= v1.3, transitional version)
+    - 'kubeadm=1.19.15*'
+    - 'kubectl=1.19.15*'
+    - 'kubelet=1.19.15*'
+
+    # K8s v1.20.12 (Epiphany >= v1.3, transitional version)
+    - 'kubeadm=1.20.12*'
+    - 'kubectl=1.20.12*'
+    - 'kubelet=1.20.12*'
+
+    # K8s v1.21.7 (Epiphany >= v1.3, transitional version)
+    - 'kubeadm=1.21.7*'
+    - 'kubectl=1.21.7*'
+    - 'kubelet=1.21.7*'
+
+    # K8s v1.22.4
+    - 'kubeadm=1.22.4*'
+    - 'kubectl=1.22.4*'
+    - 'kubelet=1.22.4*'
+
+    # Kubernetes Generic
+    # kubernetes-cni-0.8.6 since K8s v1.18.6
+    - 'kubernetes-cni=0.8.6-00*'
+
+    # kubernetes-cni-0.8.7 since K8s v1.19.15
+    - 'kubernetes-cni=0.8.7-00*'
+
+  from_url:
+    # Switched from APT repo because there was only one (the latest) version available (issue #2262)
+    'https://packages.elastic.co/curator/5/debian9/pool/main/e/elasticsearch-curator/elasticsearch-curator_5.8.3_amd64.deb':
+      sha256: 575a41184899678d9769a8ea120134ec329c41967c94586c1aa6439aa68d4829
+    # Grafana package is not downloaded from repository since it was not reliable (issue #2449)
+    'https://dl.grafana.com/oss/release/grafana_8.3.2_amd64.deb':
+      sha256: 3f5ecf5726223314aa3147a24c732cc9ccede86b7d703d4835a6fc69d0fffff8

@@ -47,7 +47,7 @@ TEST_MINIMAL_CLUSTER_CONFIG = {
             'postgresql': {'count': 1},
             'load_balancer': {'count': 1},
             'rabbitmq': {'count': 1},
-            'opendistro_for_elasticsearch': {'count': 1}
+            'opensearch': {'count': 1}
         }
     }
 }

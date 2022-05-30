@@ -13,22 +13,15 @@
             name: component_vars
         - import_role:
             name: recovery
-            tasks_from: logging_elasticsearch_etc
+            tasks_from: logging_opensearch_conf
         - import_role:
             name: recovery
-            tasks_from: logging_elasticsearch_snapshot
+            tasks_from: logging_opensearch_snapshot
 
-- hosts: kibana[0]
-  gather_facts: true
-  become: true
-  become_method: sudo
-  serial: 1
-  tasks:
-    - when: specification.components.logging.enabled | default(false)
-      block:
+        # OpenSearch Dashboards
         - include_vars:
-            file: roles/kibana/vars/main.yml
+            file: roles/opensearch_dashboards/vars/main.yml
             name: component_vars
         - import_role:
             name: recovery
-            tasks_from: logging_kibana_etc
+            tasks_from: logging_opensearch_dashboards_conf

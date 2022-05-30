@@ -144,6 +144,12 @@ filebeat.config.modules:
 
 # ======================= Elasticsearch template setting =======================
 
+{% if is_upgrade_run %}
+setup.template.overwrite: true
+setup.template.append_fields:
+  - name: log.file.path
+    type: text
+{% endif %}
 setup.template.settings:
   index.number_of_shards: 3
   #index.codec: best_compression
@@ -169,16 +175,21 @@ setup.template.settings:
 # These settings control loading the sample dashboards to the Kibana index. Loading
 # the dashboards is disabled by default and can be enabled either by setting the
 # options here or by using the `setup` command.
-{% set dashboards_enabled = is_upgrade_run | ternary(existing_setup_dashboards.enabled, specification.kibana.dashboards.enabled) %}
-{% if dashboards_enabled | lower == 'auto' %}
-  {% if group_names | intersect(['kibana', 'logging']) | count == 2 %}
-setup.dashboards.enabled: true
-  {% else %}
+#
+#    Below logic commented out as a workaround for problem with filebeat till the time OPS team will resolve it.
+#    More info: https://github.com/opensearch-project/OpenSearch-Dashboards/issues/656#issuecomment-978036236
+#    A static value is used instead:
 setup.dashboards.enabled: false
-  {% endif %}
-{% else %}
-setup.dashboards.enabled: {{ dashboards_enabled | lower }}
-{% endif %}
+# {% set dashboards_enabled = is_upgrade_run | ternary(existing_setup_dashboards.enabled, specification.opensearch.dashboards.enabled) %}
+# {% if dashboards_enabled | lower == 'auto' %}
+#  {% if group_names | intersect(['opensearch_dashboards', 'logging']) | count == 2 %}
+# setup.dashboards.enabled: true
+#  {% else %}
+#setup.dashboards.enabled: false
+#  {% endif %}
+#{% else %}
+#setup.dashboards.enabled: {{ dashboards_enabled | lower }}
+#{% endif %}
 
 # The Elasticsearch index name.
 # This setting overwrites the index name defined in the dashboards and index pattern.
@@ -186,7 +197,7 @@ setup.dashboards.enabled: {{ dashboards_enabled | lower }}
 {% if is_upgrade_run %}
   {% set dashboards_index = 'filebeat-*' if (existing_setup_dashboards.index == 'null') else existing_setup_dashboards.index %}
 {% else %}
-  {% set dashboards_index = specification.kibana.dashboards.index %}
+  {% set dashboards_index = specification.opensearch.dashboards.index %}
 {% endif %}
 setup.dashboards.index: "{{ dashboards_index }}"
 
@@ -247,7 +258,7 @@ setup.kibana:
   {% if setup_kibana_host is defined %}
   host: {{ setup_kibana_host }}
   username: kibanaserver
-  password: {{ "'%s'" % opendistro_for_logging_vars.specification.kibanaserver_password | replace("'","''") }}
+  password: {{ "'%s'" % logging_vars.specification.kibanaserver_password | replace("'","''") }}
   {% else %}
   #host: "localhost:5601"
   {% endif %}
@@ -256,8 +267,8 @@ setup.kibana:
   {% if existing_setup_kibana.host is defined %}
   host: {{ existing_setup_kibana.host }}
   {% else %}
-    {% if groups.kibana is defined and groups.logging is defined and (groups.kibana | intersect(groups.logging) | count > 0) %}
-  host: {{ hostvars[groups.kibana | intersect(groups.logging) | first].ansible_hostname }}
+    {% if groups.opensearch_dashboards is defined and groups.logging is defined and (groups.opensearch_dashboards | intersect(groups.logging) | count > 0) %}
+  host: {{ hostvars[groups.opensearch_dashboards | intersect(groups.logging) | first].ansible_hostname }}
     {% else %}
   #host: "localhost:5601"
     {% endif %}
@@ -305,7 +316,7 @@ output.elasticsearch:
   # Authentication credentials - either API key or username/password.
   username: logstash
   {% if not is_upgrade_run %}
-  password: {{ "'%s'" % opendistro_for_logging_vars.specification.logstash_password | replace("'","''") }}
+  password: {{ "'%s'" % logging_vars.specification.logstash_password | replace("'","''") }}
   {% else %}
   password: {{ "'%s'" % existing_output_es_password | replace("'","''") }}
   {% endif %}

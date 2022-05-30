@@ -24,6 +24,6 @@
 - name: Update elasticsearch-curator package
   include_role:
     name: elasticsearch_curator
-    tasks_from: install-es-curator-{{ ansible_os_family }}  # update only package and do not change configured cron jobs
+    tasks_from: install-ops-curator-{{ ansible_os_family }}  # update only package and do not change configured cron jobs
   when:
     - curator_defaults.curator_version is version(ansible_facts.packages['elasticsearch-curator'][0].version, '>')

@@ -10,7 +10,7 @@ Besides making sure that the selected providers, operating systems, components a
 
 ### Providers
 
-| Provider | CentOS 7.x | RedHat 7.x | Ubuntu 18.04 |
+| Provider | AlmaLinux 8.4 | RedHat 8.x | Ubuntu 20.04 |
 | - | - | - | - |
 | Any | :heavy_check_mark: | :x: | :x: |
 | AWS | :heavy_check_mark: | :x: | :x: |
@@ -18,7 +18,7 @@ Besides making sure that the selected providers, operating systems, components a
 
 ### Components
 
-| Component | CentOS 7.x | RedHat 7.x | Ubuntu 18.04 |
+| Component | AlmaLinux 8.4 | RedHat 8.x | Ubuntu 20.04 |
 | - | - | - | - |
 | repository | :heavy_check_mark: | :x: | :x: |
 | kubernetes_master | :heavy_check_mark: | :x: | :x: |
@@ -29,7 +29,7 @@ Besides making sure that the selected providers, operating systems, components a
 | monitoring | :heavy_check_mark: | :x: | :x: |
 | load_balancer | :heavy_check_mark: | :x: | :x: |
 | postgresql | :heavy_check_mark: | :x: | :x: |
-| opendistro_for_elasticsearch | :heavy_check_mark: | :x: | :x: |
+| opensearch | :heavy_check_mark: | :x: | :x: |
 | single_machine | :heavy_check_mark: | :x: | :x: |
 
 ***Notes***
@@ -63,7 +63,7 @@ provider: any
 title: Epiphany cluster Config
 specification:
   prefix: arm
-  name: centos
+  name: almalinux
   admin_user:
     key_path: /shared/ssh/id_rsa
     name: admin
@@ -92,9 +92,9 @@ specification:
     rabbitmq:
       count: 2
       machine: rabbitmq-machine-arm
-    opendistro_for_elasticsearch:
+    opensearch:
       count: 1
-      machine: opendistro-machine-arm
+      machine: opensearch-machine-arm
     repository:
       count: 1
       machine: repository-machine-arm
@@ -164,7 +164,7 @@ specification:
   ip: x.x.x.x
 ---
 kind: infrastructure/virtual-machine
-name: opendistro-machine-arm
+name: opensearch-machine-arm
 provider: any
 based_on: logging-machine
 specification:
@@ -206,7 +206,7 @@ name: default
 specification:
   applications:
   - name: auth-service # requires PostgreSQL to be installed in cluster
-    enabled: yes
+    enabled: true
     image_path: epiphanyplatform/keycloak:9.0.0
     use_local_image_registry: true
     #image_pull_secret_name: regcred
@@ -223,7 +223,7 @@ specification:
       user: auth-db-user
       password: PASSWORD_TO_CHANGE
   - name: rabbitmq
-    enabled: yes
+    enabled: true
     image_path: rabbitmq:3.8.9
     use_local_image_registry: true
     #image_pull_secret_name: regcred # optional
@@ -254,7 +254,7 @@ specification:
 ### ```AWS``` provider
 
 - Important is to specify the correct ```arm64``` machine type for component which can be found [here](https://aws.amazon.com/ec2/instance-types/a1/).
-- Important is to specify the correct ```arm64``` OS image which currently is only ```CentOS 7.9.2009 aarch64```.
+- Important is to specify the correct ```arm64``` OS image which currently is only ```AlmaLinux OS 8.4.20211015 aarch64``` or newer.
 
 ```yaml
 ---
@@ -264,10 +264,10 @@ provider: aws
 title: Epiphany cluster Config
 specification:
   prefix: arm
-  name: centos
+  name: almalinux
   admin_user:
     key_path: /shared/ssh/testenvs/id_rsa
-    name: centos
+    name: ec2-user
   cloud:
     credentials:
       access_key_id: xxxx
@@ -315,9 +315,9 @@ specification:
       machine: rabbitmq-machine-arm
       subnets:
         - address_pool: 10.1.8.0/24
-    opendistro_for_elasticsearch:
+    opensearch:
       count: 1
-      machine: opendistro-machine-arm
+      machine: opensearch-machine-arm
       subnets:
         - address_pool: 10.1.10.0/24
     repository:
@@ -331,7 +331,7 @@ title: "Virtual Machine Infra"
 provider: aws
 name: default
 specification:
-  os_full_name: CentOS 7.9.2009 aarch64
+  os_full_name: AlmaLinux OS 8.4.20211015 aarch64
 ---
 kind: infrastructure/virtual-machine
 name: kafka-machine-arm
@@ -390,7 +390,7 @@ specification:
   size: a1.medium
 ---
 kind: infrastructure/virtual-machine
-name: opendistro-machine-arm
+name: opensearch-machine-arm
 provider: aws
 based_on: logging-machine
 specification:

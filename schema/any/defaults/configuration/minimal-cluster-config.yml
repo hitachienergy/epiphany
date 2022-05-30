@@ -46,10 +46,10 @@ specification:
       count: 1
       machines:
         - default-rabbitmq
-    opendistro_for_elasticsearch:
+    opensearch:
       count: 1
       machines:
-        - default-opendistro
+        - default-opensearch
 ---
 kind: infrastructure/machine
 provider: any
@@ -130,7 +130,7 @@ specification:
 ---
 kind: infrastructure/machine
 provider: any
-name: default-opendistro
+name: default-opensearch
 specification:
-  hostname: opendistro # YOUR-MACHINE-HOSTNAME
+  hostname: opensearch # YOUR-MACHINE-HOSTNAME
   ip: 192.168.100.112 # YOUR-MACHINE-IP

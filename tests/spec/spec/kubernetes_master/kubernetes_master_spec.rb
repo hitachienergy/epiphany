@@ -4,7 +4,7 @@ require 'base64'
 kube_apiserver_secure_port = 6443
 
 describe 'Waiting for all pods to be ready' do
-  describe command("for i in {1..1200}; do if [ $(kubectl get pods --all-namespaces -o json  | jq -r '.items[] | select(.status.phase != \"Running\" or ([ .status.conditions[] | select(.type == \"Ready\" and .status != \"True\") ] | length ) == 1 ) | .metadata.namespace + \"/\" + .metadata.name' | wc -l) -eq 0 ]; \
+  describe command("for i in {1..1200}; do if [ $(kubectl get pods --all-namespaces -o json  | jq -r '.items[] | select((.status.phase != \"Succeeded\") and (.status.phase != \"Running\" or ([ .status.conditions[] | select(.type == \"Ready\" and .status != \"True\") ] | length ) == 1 )) | .metadata.namespace + \"/\" + .metadata.name' | wc -l) -eq 0 ]; \
   then echo 'READY'; break; else echo 'WAITING'; sleep 1; fi; done") do
     its(:stdout) { should match(/READY/) }
     its(:exit_status) { should eq 0 }
@@ -44,7 +44,7 @@ describe 'Checking if kube-apiserver is running' do
 end
 
 describe 'Checking if there are any pods that have status other than Running' do
-  describe command('kubectl get pods --all-namespaces --field-selector=status.phase!=Running') do
+  describe command('kubectl get pods --all-namespaces --field-selector=status.phase!=Running,status.phase!=Succeeded') do
     its(:stdout) { should match(/^$/) }
     its(:stderr) { should match(/No resources found/) }
   end

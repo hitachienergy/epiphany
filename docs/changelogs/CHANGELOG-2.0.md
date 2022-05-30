@@ -4,16 +4,32 @@
 
 ### Added
 
+- [#2932](https://github.com/epiphany-platform/epiphany/issues/2932) - Support `epicli upgrade` for RHEL/AlmaLinux 8
 - [#3057](https://github.com/epiphany-platform/epiphany/issues/3057) - Additional AWS authentication option
+
+### Updated
+
+- [#3080](https://github.com/epiphany-platform/epiphany/issues/3080) - update Filebeat to the latest compatible version with OpenSearch
+- [#2982](https://github.com/epiphany-platform/epiphany/issues/2982) - Using AKS and EKS Terraform configuration directly with Epiphany.
+- [#2870](https://github.com/epiphany-platform/epiphany/issues/2870) - OpenDistro for ElasticSearch replaced by OpenSearch
+
+### Deprecated
+
+- Support for Modules:
+  [Azure Basic Infrastructure](https://github.com/epiphany-platform/m-azure-basic-infrastructure) (AzBI) module
+  [Azure AKS](https://github.com/epiphany-platform/m-azure-kubernetes-service) (AzKS) module
+  [AWS Basic Infrastructure](https://github.com/epiphany-platform/m-aws-basic-infrastructure) (AwsBI) module
+  [AWS EKS](https://github.com/epiphany-platform/m-aws-kubernetes-service) (AwsKS) module
 
 ### Breaking changes
 
 - AWS credentials configuration parameters are renamed from `specification.cloud.credentials.key` and `specification.cloud.credentials.secret` to `specification.cloud.credentials.access_key_id` and `specification.cloud.credentials.secret_access_key`.
 
-## [2.0.0] YYYY-MM-DD
+## [2.0.0] 2022-05-09
 
 ### Added
 
+- [#1332](https://github.com/epiphany-platform/epiphany/issues/1332) - Support for RHEL 8.4 and AlmaLinux 8.4
 - [#959](https://github.com/epiphany-platform/epiphany/issues/959) - Add usage of use_network_security_groups to disable NSG on AWS
 - [#2701](https://github.com/epiphany-platform/epiphany/issues/2701) - Epicli prepare - generate files in separate directory
 - [#2812](https://github.com/epiphany-platform/epiphany/issues/2812) - Extend K8s config validation
@@ -30,6 +46,14 @@
 - [#2448](https://github.com/epiphany-platform/epiphany/issues/2448) - Passwordless SSH communication for postgres user between DB nodes
 - [#2821](https://github.com/epiphany-platform/epiphany/issues/2821) - Node Exporter preflight checks
 - [#2996](https://github.com/epiphany-platform/epiphany/issues/2996) - Introduce the new configuration field to change a component name
+- [#2888](https://github.com/epiphany-platform/epiphany/issues/2888) - Define additional disks with defined sizes to VMs for Azure
+- [#2812](https://github.com/epiphany-platform/epiphany/issues/2812) - Extend K8s config validation
+- [#2890](https://github.com/epiphany-platform/epiphany/issues/2890) - Rook/Ceph Kubernetes Native Storage for Azure Kubernetes non-AKS cluster
+- [#1452](https://github.com/epiphany-platform/epiphany/issues/1452) - Create Kubernetes Native Storage Epiphany configuration for Azure provider
+- [#2891](https://github.com/epiphany-platform/epiphany/issues/2891) - Rook/Ceph Kubernetes Native Storage for AWS non-EKS
+- [#2887](https://github.com/epiphany-platform/epiphany/issues/2887) - Create Kubernetes Native Storage Epiphany configuration for AWS provider
+- [#2734](https://github.com/epiphany-platform/epiphany/issues/2734) - Document upgrade Red Hat / CentOS 7 to v 8.x
+- [#3101](https://github.com/epiphany-platform/epiphany/issues/3101) - Add support for ARM architecture for AlmaLinux 8
 
 ### Fixed
 
@@ -74,9 +98,12 @@
   - Ansible 2.10.15 to 5.2.0
   - Python 3.7 to 3.10
 - [#2871](https://github.com/epiphany-platform/epiphany/issues/2871) - Upgrade Kafka to 2.8.1
+- [#3090](https://github.com/epiphany-platform/epiphany/issues/3090) - Update cloud OS images to the latest
 
 ### Removed
 
+- Support for RHEL 7
+- Support for CentOS
 - [#2834](https://github.com/epiphany-platform/epiphany/issues/2834) - Removal of Hashicorp Vault component
 - [#2833](https://github.com/epiphany-platform/epiphany/issues/2833) - Removal of Logstash component
 - [#2836](https://github.com/epiphany-platform/epiphany/issues/2836) - Removal of Istio component
@@ -88,8 +115,13 @@
 
 ### Breaking changes
 
+- **RHEL 7 and CentOS are not supported**. For RHEL, release 8.4 is required and upgrade from version 7 is not handled by Epiphany.
+Support for CentOS has been replaced by AlmaLinux (migration is not handled by Epiphany).
+- Support for ARM architecture has been removed (together with CentOS), planned to be added for AlmaLinux in the next release.
 - Upgrade of Terraform components in issue [#2825](https://github.com/epiphany-platform/epiphany/issues/2825) and [#2853](https://github.com/epiphany-platform/epiphany/issues/2853) will make running re-apply with infrastructure break on existing 1.x clusters. The advice is to deploy a new cluster and migrate data. If needed a manual upgrade path is described [here.](../home/howto/UPGRADE.md#terraform-upgrade-from-epiphany-1.x-to-2.x)
 - Kubernetes container runtime changed. Dockershim and Docker are no longer on Kubernetes hosts.
 - Filebeat `docker` input replaced by `container` input. New field provided for Filebeat as system service installation: `container.id`. Field `kubernetes.container.name` is no longer valid.
 
 ### Known issues
+
+- `epicli upgrade` is not supported yet for RHEL or AlmaLinux
