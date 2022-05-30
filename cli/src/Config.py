@@ -32,6 +32,7 @@ class Config:
             self._log_count = 10
             self._log_type = 'plain'
 
+            self._input_file_name = ''
             self._validate_certs = True
             self._debug = 0
             self._auto_approve = False
@@ -39,6 +40,14 @@ class Config:
             self._wait_for_pods = False
             self._upgrade_components = []
             self._vault_password_location = os.path.join(expanduser("~"), '.epicli/vault.cfg')
+
+        @property
+        def input_file_name(self):
+            return self._input_file_name
+
+        @input_file_name.setter
+        def input_file_name(self, input_file_name):
+            self._input_file_name = input_file_name
 
         @property
         def docker_cli(self):

@@ -57,7 +57,7 @@
 
     - name: Copy the manifest file
       synchronize:
-        src: "{{ inventory_dir }}/manifest.yml"
+        src: "{{ inventory_dir }}/{{ input_file_name }}"
         dest: "{{ download_requirements_dir }}/manifest.yml"
 
     - name: Copy RedHat family specific download requirements file

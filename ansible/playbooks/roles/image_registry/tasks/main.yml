@@ -130,6 +130,7 @@
 
     - name: Initialize image containers
       set_fact:
+        available_images: []
         current_images: []
         generic_images: []
         legacy_images: []
@@ -149,23 +150,34 @@
         legacy_images: "{{ legacy_images + item.value }}"
       loop: "{{ legacy_images_to_unpack | dict2items }}"
 
-    - name: Merge generic and current images
+    - name: Merge current and generic images
       set_fact:
-        generic_and_current_images: >-
-          {{ generic_images + current_images }}
+        current_and_generic_images: >-
+          {{ current_images + generic_images }}
+
+    - name: Get list of available images
+      include_role:
+        name: download
+        tasks_from: list_images.yml
+
+    - name: Filter only available images
+      set_fact:
+        available_images: "{{ available_images + [item] }}"
+      when: "{{ item.file_name in list_images_result }}"
+      loop: "{{ current_and_generic_images }}"
 
     - name: Load generic and current version images
       vars:
         docker_image: "{{ item }}"
       include_tasks: load-image.yml
-      loop: "{{ generic_and_current_images }}"
+      loop: "{{ available_images }}"
 
     - name: Push generic and current version images to registry
       vars:
         docker_image: "{{ item }}"
         new_image_tag: "{{ image_registry_address }}/{{ item.name }}"
       include_tasks: push-image.yml
-      loop: "{{ generic_and_current_images }}"
+      loop: "{{ available_images }}"
 
     - name: Load legacy version images to registry when upgrading
       when: is_upgrade_run

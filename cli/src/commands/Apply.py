@@ -2,6 +2,7 @@ import os
 import sys
 from typing import Dict
 
+from cli.src.Config import Config
 from cli.src.ansible.AnsibleRunner import AnsibleRunner
 from cli.src.helpers.build_io import (get_build_path, get_inventory_path,
                                       get_manifest_path, load_inventory,
@@ -43,14 +44,7 @@ class Apply(Step):
         self.infrastructure_docs = []
         self.all_docs = []
 
-
-    def __enter__(self):
-        return self
-
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        pass
-
+        Config().input_file_name = os.path.basename(self.file)
 
     def load_documents(self):
         # Load the input docs from the input
