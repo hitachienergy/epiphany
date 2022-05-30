@@ -217,7 +217,7 @@ specification:
         rabbitmq:
           - name: rabbitmq:3.8.9
             file_name: rabbitmq-3.8.9.tar
-        kubernetes:
+        kubernetes-master:
           - name: kubernetesui/dashboard:v2.3.1
             file_name: dashboard-v2.3.1.tar
           - name: kubernetesui/metrics-scraper:v1.0.7
@@ -229,13 +229,13 @@ specification:
         haproxy:
           - name: haproxy:2.2.2-alpine
             file_name: haproxy-2.2.2-alpine.tar
-        kubernetes:
+        kubernetes-master:
           - name: k8s.gcr.io/kube-apiserver:v1.22.4
             file_name: kube-apiserver-v1.22.4.tar
           - name: k8s.gcr.io/kube-controller-manager:v1.22.4
             file_name: kube-controller-manager-v1.22.4.tar
       legacy:
-        kubernetes:
+        kubernetes-master:
           - name: k8s.gcr.io/kube-apiserver:v1.21.7
             file_name: kube-apiserver-v1.21.7.tar
           - name: k8s.gcr.io/kube-controller-manager:v1.21.7
@@ -258,7 +258,7 @@ specification:
         rabbitmq:
           - name: rabbitmq:3.8.9
             file_name: rabbitmq-3.8.9.tar
-        kubernetes:
+        kubernetes-master:
           - name: kubernetesui/dashboard:v2.3.1
             file_name: dashboard-v2.3.1.tar
           - name: kubernetesui/metrics-scraper:v1.0.7
@@ -267,11 +267,11 @@ specification:
         haproxy:
           - name: haproxy:2.2.2-alpine
             file_name: haproxy-2.2.2-alpine.tar
-        kubernetes:
+        kubernetes-master:
           - name: k8s.gcr.io/kube-apiserver:v1.22.4
             file_name: kube-apiserver-v1.22.4.tar
       legacy:
-        kubernetes:
+        kubernetes-master:
           - name: k8s.gcr.io/kube-apiserver:v1.21.7
             file_name: kube-apiserver-v1.21.7.tar
           - name: k8s.gcr.io/kube-scheduler:v1.21.7

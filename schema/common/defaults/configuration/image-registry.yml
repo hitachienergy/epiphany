@@ -15,7 +15,7 @@ specification:
         rabbitmq:
           - name: "rabbitmq:3.8.9"
             file_name: rabbitmq-3.8.9.tar
-        kubernetes:
+        kubernetes-master:
           - name: "kubernetesui/dashboard:v2.3.1"
             file_name: dashboard-v2.3.1.tar
           - name: "kubernetesui/metrics-scraper:v1.0.7"
@@ -32,7 +32,7 @@ specification:
         haproxy:
           - name: "haproxy:2.2.2-alpine"
             file_name: haproxy-2.2.2-alpine.tar
-        kubernetes:
+        kubernetes-master:
           # K8s v1.22.4 - Epiphany 1.3
           # https://github.com/kubernetes/kubernetes/blob/v1.22.4/build/dependencies.yaml
           - name: "k8s.gcr.io/kube-apiserver:v1.22.4"
@@ -82,7 +82,7 @@ specification:
           - name: "calico/pod2daemon-flexvol:v3.20.3"
             file_name: pod2daemon-flexvol-v3.20.3.tar
       legacy:
-        kubernetes:
+        kubernetes-master:
           # K8s v1.21.7 - Epiphany 1.3 (transitional version)
           - name: "k8s.gcr.io/kube-apiserver:v1.21.7"
             file_name: kube-apiserver-v1.21.7.tar
@@ -155,7 +155,7 @@ specification:
         rabbitmq:
           - name: "rabbitmq:3.8.9"
             file_name: rabbitmq-3.8.9.tar
-        kubernetes:
+        kubernetes-master:
           - name: "kubernetesui/dashboard:v2.3.1"
             file_name: dashboard-v2.3.1.tar
           - name: "kubernetesui/metrics-scraper:v1.0.7"
@@ -164,7 +164,7 @@ specification:
         haproxy:
           - name: "haproxy:2.2.2-alpine"
             file_name: haproxy-2.2.2-alpine.tar
-        kubernetes:
+        kubernetes-master:
           # K8s v1.21.7 - Epiphany 1.3
           - name: "k8s.gcr.io/kube-apiserver:v1.22.4"
             file_name: kube-apiserver-v1.22.4.tar
@@ -195,7 +195,7 @@ specification:
           - name: "calico/pod2daemon-flexvol:v3.20.3"
             file_name: pod2daemon-flexvol-v3.20.3.tar
       legacy:
-        kubernetes:
+        kubernetes-master:
           # K8s v1.21.7 - Epiphany 1.3 (transitional version)
           - name: "k8s.gcr.io/kube-apiserver:v1.21.7"
             file_name: kube-apiserver-v1.21.7.tar

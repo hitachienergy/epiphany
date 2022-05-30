@@ -4,7 +4,7 @@ images:
     'haproxy:2.2.2-alpine':
       sha1: dff8993b065b7f7846adb553548bcdcfcd1b6e8e
 
-  default:
+  image-registry:
     'registry:2.8.0':
       sha1: 89795c17099199c752d02ad8797c1d4565a08aff
       allow_mismatch: true
@@ -24,7 +24,7 @@ images:
     'rabbitmq:3.8.9':
       sha1: c64408bf5bb522f47d5323652dd5e60560dcb5bc
 
-  kubernetes:
+  kubernetes-master:
     'kubernetesui/dashboard:v2.3.1':
       sha1: 8c8a4ac7a643f9c5dd9e5d22876c434187312db8
 

@@ -122,11 +122,37 @@
             --name {{ epiphany_registry.container_name }} -v {{ epiphany_registry.volume_name }}:/var/lib/registry
             {{ specification.registry_image.name }}
 
-    - name: Set images to load
+    - name: Define images to unpack
+      set_fact:
+        current_images_to_unpack: "{{ specification.images_to_load[ansible_architecture].current }}"
+        generic_images_to_unpack: "{{ specification.images_to_load[ansible_architecture].generic }}"
+        legacy_images_to_unpack: "{{ specification.images_to_load[ansible_architecture].legacy }}"
+
+    - name: Initialize image containers
+      set_fact:
+        current_images: []
+        generic_images: []
+        legacy_images: []
+
+    - name: Unpack current images
+      set_fact:
+        current_images: "{{ current_images + item.value }}"
+      loop: "{{ current_images_to_unpack | dict2items }}"
+
+    - name: Unpack generic images
+      set_fact:
+        generic_images: "{{ generic_images + item.value }}"
+      loop: "{{ generic_images_to_unpack | dict2items }}"
+
+    - name: Unpack legacy images
+      set_fact:
+        legacy_images: "{{ legacy_images + item.value }}"
+      loop: "{{ legacy_images_to_unpack | dict2items }}"
+
+    - name: Merge generic and current images
       set_fact:
         generic_and_current_images: >-
-          {{ specification.images_to_load[ansible_architecture].generic + specification.images_to_load[ansible_architecture].current }}
-        legacy_images: "{{ specification.images_to_load[ansible_architecture].legacy }}"
+          {{ generic_images + current_images }}
 
     - name: Load generic and current version images
       vars:

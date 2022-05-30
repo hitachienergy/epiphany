@@ -184,8 +184,8 @@ class BaseMode:
         images = self._requirements['images']
 
         images_to_download: Dict[str, Dict] = {}
-        for image_category in images:  # kubernetes, rabbitmq, etc.
-            for image, data in images[image_category].items():
+        for image_group in images:  # kubernetes-master, rabbitmq, etc.
+            for image, data in images[image_group].items():
                 images_to_download[image] = data
 
         downloader: Downloader = Downloader(images_to_download,

@@ -281,19 +281,19 @@ class Config:
         # prepare image categories:
         images = requirements['images']
         images_to_download: Dict[str, Dict] = {}
-        for image_category in images:
-            images_to_download[image_category] = {}
+        for image_group in images:
+            images_to_download[image_group] = {}
 
         if len(manifest['requested-images']):  # if image-registry document used:
-            for image_category in images:
-                for image, data in images[image_category].items():
+            for image_group in images:
+                for image, data in images[image_group].items():
                     if image in manifest['requested-images']:
-                        images_to_download[image_category][image] = data
+                        images_to_download[image_group][image] = data
         else:                                  # otherwise check features used:
-            for image_category in images:
-                if image_category in manifest['requested-features'] or image_category == 'default':
-                    for image, data in images[image_category].items():
-                        images_to_download[image_category][image] = data
+            for image_group in images:
+                if image_group in manifest['requested-features']:
+                    for image, data in images[image_group].items():
+                        images_to_download[image_group][image] = data
 
         if images_to_download:
             requirements['images'] = images_to_download
