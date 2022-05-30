@@ -1,8 +1,4 @@
 # ARM
-### **NOTE**
----------------
-ARM Architecture is not supported in Epiphany 2.0.0. This feature will be added to platform in version 2.0.1
---------------
 
 From Epiphany v1.1.0 preliminary support for the ```arm64``` architecture was added. As the ```arm64``` architecture is relatively new to the datacenter at the time of writing only a subset of providers, operating systems, components and applications are supported. Support will be extended in the future when there is a need for it.
 
@@ -14,7 +10,7 @@ Besides making sure that the selected providers, operating systems, components a
 
 ### Providers
 
-| Provider | CentOS 7.x | RedHat 7.x | Ubuntu 18.04 |
+| Provider | AlmaLinux 8.4 | RedHat 8.x | Ubuntu 20.04 |
 | - | - | - | - |
 | Any | :heavy_check_mark: | :x: | :x: |
 | AWS | :heavy_check_mark: | :x: | :x: |
@@ -22,7 +18,7 @@ Besides making sure that the selected providers, operating systems, components a
 
 ### Components
 
-| Component | CentOS 7.x | RedHat 7.x | Ubuntu 18.04 |
+| Component | AlmaLinux 8.4 | RedHat 8.x | Ubuntu 20.04 |
 | - | - | - | - |
 | repository | :heavy_check_mark: | :x: | :x: |
 | kubernetes_master | :heavy_check_mark: | :x: | :x: |
@@ -67,7 +63,7 @@ provider: any
 title: Epiphany cluster Config
 specification:
   prefix: arm
-  name: centos
+  name: almalinux
   admin_user:
     key_path: /shared/ssh/id_rsa
     name: admin
@@ -210,7 +206,7 @@ name: default
 specification:
   applications:
   - name: auth-service # requires PostgreSQL to be installed in cluster
-    enabled: yes
+    enabled: true
     image_path: epiphanyplatform/keycloak:9.0.0
     use_local_image_registry: true
     #image_pull_secret_name: regcred
@@ -227,7 +223,7 @@ specification:
       user: auth-db-user
       password: PASSWORD_TO_CHANGE
   - name: rabbitmq
-    enabled: yes
+    enabled: true
     image_path: rabbitmq:3.8.9
     use_local_image_registry: true
     #image_pull_secret_name: regcred # optional
@@ -258,7 +254,7 @@ specification:
 ### ```AWS``` provider
 
 - Important is to specify the correct ```arm64``` machine type for component which can be found [here](https://aws.amazon.com/ec2/instance-types/a1/).
-- Important is to specify the correct ```arm64``` OS image which currently is only ```CentOS 7.9.2009 aarch64```.
+- Important is to specify the correct ```arm64``` OS image which currently is only ```AlmaLinux OS 8.4.20211015 aarch64``` or newer.
 
 ```yaml
 ---
@@ -268,10 +264,10 @@ provider: aws
 title: Epiphany cluster Config
 specification:
   prefix: arm
-  name: centos
+  name: almalinux
   admin_user:
     key_path: /shared/ssh/testenvs/id_rsa
-    name: centos
+    name: ec2-user
   cloud:
     credentials:
       key: xxxx
@@ -335,7 +331,7 @@ title: "Virtual Machine Infra"
 provider: aws
 name: default
 specification:
-  os_full_name: CentOS 7.9.2009 aarch64
+  os_full_name: AlmaLinux OS 8.4.20211015 aarch64
 ---
 kind: infrastructure/virtual-machine
 name: kafka-machine-arm

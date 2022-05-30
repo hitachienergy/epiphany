@@ -6,7 +6,7 @@ properties:
   name:
     type: string
   cluster_name:
-    type: string    
+    type: string
   vpc_name:
     type: string
   rules:

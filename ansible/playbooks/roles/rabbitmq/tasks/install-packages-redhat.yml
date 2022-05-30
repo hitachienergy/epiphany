@@ -1,6 +1,6 @@
 ---
 - name: Install packages
-  yum:
+  dnf:
     name:
       - logrotate
       - "{{ versions.redhat.erlang_package[ansible_architecture] }}"

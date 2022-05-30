@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Set
 
 from src.command.command import Command
 from src.config.config import Config
+from src.config.os_type import OSArch
 from src.mode.base_mode import BaseMode, load_yaml_file
 
 
@@ -99,14 +100,16 @@ class RedHatFamilyMode(BaseMode):
             self._tools.dnf_config_manager.add_repo('https://download.docker.com/linux/centos/docker-ce.repo')
             self._tools.dnf.accept_keys()
 
-        for repo in ['https://dl.2ndquadrant.com/default/release/get/10/rpm',  # for repmgr
-                     'https://dl.2ndquadrant.com/default/release/get/13/rpm']:
-            Command('curl', self._cfg.retries, [repo]) | Command('bash', self._cfg.retries)  # curl {repo} | bash
+        # repmgr is supported only with x86_64 architecture
+        if self._cfg.os_arch == OSArch.X86_64:
+            for repo in ['https://dl.2ndquadrant.com/default/release/get/10/rpm',  # for repmgr
+                        'https://dl.2ndquadrant.com/default/release/get/13/rpm']:
+                Command('curl', self._cfg.retries, [repo]) | Command('bash', self._cfg.retries)  # curl {repo} | bash
 
-        # script adds 2 repositories, only 1 is required
-        for repo in ['2ndquadrant-dl-default-release-pg10-debug',
-                     '2ndquadrant-dl-default-release-pg13-debug']:
-            self._tools.dnf_config_manager.disable_repo(repo)
+            # script adds 2 repositories, only 1 is required
+            for repo in ['2ndquadrant-dl-default-release-pg10-debug',
+                        '2ndquadrant-dl-default-release-pg13-debug']:
+                self._tools.dnf_config_manager.disable_repo(repo)
 
         self._tools.dnf.makecache(False, True)
 
