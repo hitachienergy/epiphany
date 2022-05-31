@@ -89,7 +89,8 @@ def CLUSTER_MODEL(provider: str) -> ObjDict:
                 'hostname_domain_extension': '',
                 'credentials': {
                     'access_key_id': 'key',
-                    'secret_access_key': 'secret'
+                    'secret_access_key': 'secret',
+                    'session_token': 'token'
                 }
             },
             'components': {
