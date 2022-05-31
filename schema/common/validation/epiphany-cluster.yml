@@ -79,19 +79,25 @@ properties:
         type: object
         title: The Credentials Schema
         required:
-        - key
-        - secret
+        - access_key_id
+        - secret_access_key
         properties:
-          key:
-            "$id": "#/properties/specification/properties/cloud/properties/credentials/properties/key"
+          access_key_id:
+            "$id": "#/properties/specification/properties/cloud/properties/credentials/properties/access_key_id"
             type: string
-            title: The Key Schema
+            title: The Key Id Schema
             pattern: "^(.*)$"
-          secret:
-            "$id": "#/properties/specification/properties/cloud/properties/credentials/properties/secret"
+          secret_access_key:
+            "$id": "#/properties/specification/properties/cloud/properties/credentials/properties/secret_access_key"
             type: string
             title: The Secret Schema
             pattern: "^(.*)$"
+          session_token:
+            "$id": "#/properties/specification/properties/cloud/properties/credentials/properties/session_token"
+            type: string
+            title: The session token
+            description: "Session token cannot contain whitespaces"
+            pattern: "^[^\\s]*$"
       network:
         "$id": "#/properties/specification/properties/cloud/properties/network"
         type: object

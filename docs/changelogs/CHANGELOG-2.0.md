@@ -5,6 +5,7 @@
 ### Added
 
 - [#2932](https://github.com/epiphany-platform/epiphany/issues/2932) - Support `epicli upgrade` for RHEL/AlmaLinux 8
+- [#3057](https://github.com/epiphany-platform/epiphany/issues/3057) - Additional AWS authentication option
 
 ### Updated
 
@@ -19,6 +20,10 @@
   [Azure AKS](https://github.com/epiphany-platform/m-azure-kubernetes-service) (AzKS) module
   [AWS Basic Infrastructure](https://github.com/epiphany-platform/m-aws-basic-infrastructure) (AwsBI) module
   [AWS EKS](https://github.com/epiphany-platform/m-aws-kubernetes-service) (AwsKS) module
+
+### Breaking changes
+
+- AWS credentials configuration parameters are renamed from `specification.cloud.credentials.key` and `specification.cloud.credentials.secret` to `specification.cloud.credentials.access_key_id` and `specification.cloud.credentials.secret_access_key`.
 
 ## [2.0.0] 2022-05-09
 
