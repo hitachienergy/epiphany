@@ -110,6 +110,15 @@ packages:
     - 'samba-client-libs'  # for samba-client
     - 'samba-common'
     - 'samba-libs'  # for cifs-utils
+    - 'sssd'  # needed for samba packages installation
+    - 'sssd-client'  # needed for sssd upgrade
+    - 'sssd-common'  # needed for sssd upgrade
+    - 'sssd-ad'  # needed for sssd upgrade
+    - 'sssd-ipa'  # needed for sssd upgrade
+    - 'sssd-kcm'  # needed for sssd upgrade
+    - 'sssd-krb5'  # needed for sssd upgrade
+    - 'sssd-ldap'  # needed for sssd upgrade
+    - 'sssd-proxy'  # needed for sssd upgrade
     - 'slirp4netns'  # for docker-ce-rootless-extras
     - 'sysstat'
     - 'tar'
