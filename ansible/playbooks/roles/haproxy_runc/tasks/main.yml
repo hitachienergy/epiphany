@@ -9,6 +9,11 @@
     haproxy_dir: "{{ runc_dir }}/{{ haproxy_service }}"
     haproxy_service_needs_restart: false
 
+- name: Include containerd defaults
+  include_vars:
+    file: roles/containerd/defaults/main.yml
+    name: containerd_defaults
+
 - name: Install required system packages
   include_tasks: "install-packages-{{ ansible_os_family }}.yml"
 

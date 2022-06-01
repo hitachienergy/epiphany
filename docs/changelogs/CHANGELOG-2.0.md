@@ -7,6 +7,10 @@
 - [#2932](https://github.com/epiphany-platform/epiphany/issues/2932) - Support `epicli upgrade` for RHEL/AlmaLinux 8
 - [#3057](https://github.com/epiphany-platform/epiphany/issues/3057) - Additional AWS authentication option
 
+### Fixed
+
+- [#3164](https://github.com/epiphany-platform/epiphany/issues/3164) - Specify version and allow containerd.io package downgrade in haproxy_runc role
+
 ### Updated
 
 - [#3080](https://github.com/epiphany-platform/epiphany/issues/3080) - update Filebeat to the latest compatible version with OpenSearch
