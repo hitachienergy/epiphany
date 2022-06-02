@@ -19,7 +19,7 @@ class RedHatFamilyMode(BaseMode):
         super().__init__(config)
         self.__all_queried_packages: Set[str] = set()
         self.__archs: List[str] = [config.os_arch.value, 'noarch']
-        self.__base_packages: List[str] = ['curl', 'python3-dnf-plugins-core', 'wget']
+        self.__base_packages: List[str] = ['curl', 'python3-dnf-plugins-core', 'wget', 'tar']
         self.__installed_packages: List[str] = []
         self.__dnf_cache_path: Path = Path('/var/cache/dnf')
 
