@@ -20,8 +20,9 @@ class RedHatFamilyMode(BaseMode):
         self.__all_queried_packages: Set[str] = set()
         self.__archs: List[str] = [config.os_arch.value, 'noarch']
         self.__base_packages: List[str] = ['curl', 'python3-dnf-plugins-core', 'wget', 'tar']
-        self.__installed_packages: List[str] = []
         self.__dnf_cache_path: Path = Path('/var/cache/dnf')
+        self.__installed_packages: List[str] = []
+        self.__repos_config_dir: Path = Path('/etc/yum.repos.d')
 
         try:
             dnf_config = configparser.ConfigParser()
@@ -114,22 +115,33 @@ class RedHatFamilyMode(BaseMode):
 
     def __remove_dnf_cache_for_custom_repos(self):
         # clean metadata for upgrades (when the same package can be downloaded from changed repo)
-        repocaches: List[str] = list(self.__dnf_cache_path.iterdir())
+        cache_paths: List[str] = list(self.__dnf_cache_path.iterdir())
 
         id_names = [
             '2ndquadrant',
             'docker-ce',
             'epel',
-        ] + [self._repositories[key]['id'] for key in self._repositories.keys()]
+        ] + [repo['id'] for _, repo in self._repositories.items()]
 
-        for repocache in repocaches:
-            matched_ids = [repocache.name.startswith(repo_name) for repo_name in id_names]
-            if any(matched_ids):
+        matched_cache_paths: List[str] = []
+
+        for path in cache_paths:
+            for repo_name in id_names:
+                if path.name.startswith(repo_name):
+                    matched_cache_paths.append(path)
+                    break
+
+        if matched_cache_paths:
+            matched_cache_paths.sort()
+            logging.debug(f'Removing DNF cache files from {self.__dnf_cache_path}...')
+
+        for path in matched_cache_paths:
+                logging.debug(f'- {path.name}')
                 try:
-                    if repocache.is_dir():
-                        shutil.rmtree(str(repocache))
+                    if path.is_dir():
+                        shutil.rmtree(str(path))
                     else:
-                        repocache.unlink()
+                        path.unlink()
                 except FileNotFoundError:
                     logging.debug('__remove_dnf_cache_for_custom_repos: cache directory already removed')
 
@@ -215,14 +227,17 @@ class RedHatFamilyMode(BaseMode):
     def _download_crane_binary(self, url: str, dest: Path):
         self._tools.wget.download(url, dest, additional_params=False)
 
-    def _clean_up_repository_files(self):
-        for repofile in Path('/etc/yum.repos.d').iterdir():
-            repofile.unlink()
+    def _remove_repository_files(self):
+        logging.debug(f'Removing files from {self.__repos_config_dir}...')
+        for repo_file in self.__repos_config_dir.iterdir():
+            logging.debug(f'- {repo_file.name}')
+            repo_file.unlink()
+        logging.debug('Done removing files.')
 
     def _cleanup(self):
-        # remove installed packages
+        self.__remove_dnf_cache_for_custom_repos()
+
+    def _cleanup_packages(self):
         for package in self.__installed_packages:
             if self._tools.rpm.is_package_installed(package):
                 self._tools.dnf.remove(package)
-
-        self.__remove_dnf_cache_for_custom_repos()

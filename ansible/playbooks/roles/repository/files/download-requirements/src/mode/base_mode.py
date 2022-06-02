@@ -209,9 +209,15 @@ class BaseMode:
         """
         pass
 
-    def _clean_up_repository_files(self):
+    def _cleanup_packages(self):
         """
-        Additional routines before unpacking backup to remove repository files under the /etc directory.
+        Remove installed packages.
+        """
+        pass
+
+    def _remove_repository_files(self):
+        """
+        Additional routines before unpacking backup to remove all repository files under the /etc directory.
         """
         pass
 
@@ -221,7 +227,7 @@ class BaseMode:
         """
         if self._cfg.repos_backup_file.exists() and self._cfg.repos_backup_file.stat().st_size:
             logging.info('Restoring repository files...')
-            self._clean_up_repository_files()
+            self._remove_repository_files()
             self._tools.tar.unpack(filename=self._cfg.repos_backup_file,
                                    directory=Path('/'),
                                    absolute_names=True,
@@ -291,4 +297,9 @@ class BaseMode:
         self._cleanup()
         logging.info('Done running cleanup.')
 
+        # requires tar but has to be run after cleanup
         self.__restore_repositories()
+
+        logging.info('Cleaning up installed packages...')
+        self._cleanup_packages()
+        logging.info('Done cleaning up installed packages.')

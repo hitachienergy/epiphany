@@ -16,6 +16,7 @@ class DebianFamilyMode(BaseMode):
         super().__init__(config)
         self.__create_repo_paths()
         self.__installed_packages: List[str] = []
+        self.__repos_config_dir: Path = Path('/etc/apt/sources.list.d')
 
     def __create_repo_paths(self):
         for repo in self._repositories.keys():
@@ -126,9 +127,12 @@ class DebianFamilyMode(BaseMode):
     def _download_crane_binary(self, url: str, dest: Path):
         self._tools.wget.download(url, dest)
 
-    def _clean_up_repository_files(self):
-        for repofile in Path('/etc/apt/sources.list.d').iterdir():
-            repofile.unlink()
+    def _remove_repository_files(self):
+        logging.debug(f'Removing files from {self.__repos_config_dir}...')
+        for repo_file in self.__repos_config_dir.iterdir():
+            logging.debug(f'- {repo_file.name}')
+            repo_file.unlink()
+        logging.debug('Done removing files.')
 
     def _cleanup(self):
         # cleaning up 3rd party repositories
@@ -136,6 +140,6 @@ class DebianFamilyMode(BaseMode):
             if data['path'].exists():
                 data['path'].unlink()
 
-        # remove installed packages
+    def _cleanup_packages(self):
         for package in self.__installed_packages:
             self._tools.apt.remove(package)
