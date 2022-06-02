@@ -1,3 +1,4 @@
+---
 kind: infrastructure/public-ip
 title: "Public IP Config"
 provider: azure
@@ -6,4 +7,4 @@ specification:
   name: SET_BY_AUTOMATION
   allocation_method: SET_BY_AUTOMATION
   idle_timeout_in_minutes: SET_BY_AUTOMATION
-  sku: SET_BY_AUTOMATION   
+  sku: SET_BY_AUTOMATION

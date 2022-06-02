@@ -1,3 +1,4 @@
+---
 kind: configuration/firewall
 title: OS level firewall
 name: default

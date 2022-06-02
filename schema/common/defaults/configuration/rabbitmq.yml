@@ -1,3 +1,4 @@
+---
 kind: configuration/rabbitmq
 title: "RabbitMQ"
 name: default

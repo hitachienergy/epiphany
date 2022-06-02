@@ -1,3 +1,4 @@
+---
 kind: configuration/backup
 title: Backup Config
 name: default

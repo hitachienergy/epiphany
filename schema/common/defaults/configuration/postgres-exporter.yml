@@ -1,3 +1,4 @@
+---
 kind: configuration/postgres-exporter
 title: Postgres exporter
 name: default

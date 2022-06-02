@@ -1,3 +1,4 @@
+---
 kind: infrastructure/availability-set
 title: "Availability Set Config"
 provider: azure

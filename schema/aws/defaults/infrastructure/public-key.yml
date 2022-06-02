@@ -1,3 +1,4 @@
+---
 kind: infrastructure/public-key
 title: "Public Key"
 provider: aws

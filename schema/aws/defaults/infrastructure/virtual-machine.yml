@@ -1,3 +1,4 @@
+---
 kind: infrastructure/virtual-machine
 title: "Virtual Machine Infra"
 provider: aws

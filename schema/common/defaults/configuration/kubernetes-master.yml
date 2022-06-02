@@ -1,3 +1,4 @@
+---
 kind: configuration/kubernetes-master
 title: Kubernetes Master Config
 name: default

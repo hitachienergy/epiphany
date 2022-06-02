@@ -1,3 +1,4 @@
+---
 kind: infrastructure/efs-storage
 title: "Elastic File System Config"
 provider: aws
