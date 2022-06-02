@@ -10,6 +10,7 @@
 ### Fixed
 
 - [#3164](https://github.com/epiphany-platform/epiphany/issues/3164) - Specify version and allow containerd.io package downgrade in haproxy_runc role
+- [#3179](https://github.com/epiphany-platform/epiphany/issues/3179) - terraform fails when `use_network_security_groups` is set to `false`
 
 ### Updated
 
