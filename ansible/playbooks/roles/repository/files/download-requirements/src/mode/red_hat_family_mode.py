@@ -51,22 +51,25 @@ class RedHatFamilyMode(BaseMode):
             logging.debug('Done.')
 
     def _install_base_packages(self):
+        # Ensure dnf config-manager command
+        DNF_CONFIG_MANAGER_PACKAGE = 'dnf-plugins-core'
+        if not self._tools.rpm.is_package_installed(DNF_CONFIG_MANAGER_PACKAGE):
+            self._tools.dnf.install(DNF_CONFIG_MANAGER_PACKAGE)
+            self.__installed_packages.append(DNF_CONFIG_MANAGER_PACKAGE)
 
         # Bug in RHEL 8.4 https://bugzilla.redhat.com/show_bug.cgi?id=2004853
         releasever = '8' if self._tools.dnf_config_manager.get_variable('releasever') == '8.4' else None
         self._tools.dnf.update(package='libmodulemd', releasever=releasever)
 
-        # some packages are from EPEL repo
-        # make sure that we reinstall it before proceeding
-        if self._tools.rpm.is_package_installed('epel-release'):
-            if not self._tools.dnf.is_repo_enabled('epel') or not self._tools.dnf.is_repo_enabled('epel-modular'):
-                self._tools.dnf.remove('epel-release')
-
-        self._tools.dnf.install('https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm')
-        self.__installed_packages.append('epel-release')
+        # some packages are from EPEL repo, ensure the latest version
+        if not self._tools.rpm.is_package_installed('epel-release'):
+            self._tools.dnf.install('https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm')
+            self.__installed_packages.append('epel-release')
+        else:
+            self._tools.dnf.update('https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm')
 
         self.__remove_dnf_cache_for_custom_repos()
-        self._tools.dnf.makecache(True)
+        self._tools.dnf.makecache(timer=True)
 
         # Ensure ca-certificates package is in the latest version
         self._tools.dnf.install('ca-certificates')
