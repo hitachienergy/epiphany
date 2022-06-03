@@ -37,7 +37,7 @@ packages:
     - 'docker-ce-rootless-extras-20.10.8'
     - 'elasticsearch-oss-7.10.2'  # for opendistroforelasticsearch & logging roles
     - 'ethtool'
-    - 'filebeat-7.9.2'
+    - 'filebeat-7.12.1'
     - 'firewalld'
     - 'fontconfig'  # for grafana
     - 'fping'
@@ -67,14 +67,7 @@ packages:
     - 'nmap-ncat'
     - 'nss'  # for java-1.8.0-openjdk-headless
     - 'nss-softokn'  # for nss
-    # Open Distro for Elasticsearch plugins are installed individually to not download them twice in different versions (as dependencies of opendistroforelasticsearch package)
-    - 'opendistro-alerting-1.13.1.*'
-    - 'opendistro-index-management-1.13.1.*'
-    - 'opendistro-job-scheduler-1.13.0.*'
-    - 'opendistro-performance-analyzer-1.13.0.*'
-    - 'opendistro-security-1.13.1.*'
-    - 'opendistro-sql-1.13.0.*'
-    - 'opendistroforelasticsearch-kibana-1.13.1'  # kibana has shorter version
+    - 'ntsysv'  # for python36
     - 'openssl'
     - 'perl'  # for vim
     - 'perl-Getopt-Long'  # for vim
@@ -108,6 +101,15 @@ packages:
     - 'samba-client-libs'  # for samba-client
     - 'samba-common'
     - 'samba-libs'  # for cifs-utils
+    - 'sssd'  # needed for samba packages installation
+    - 'sssd-client'  # needed for sssd upgrade
+    - 'sssd-common'  # needed for sssd upgrade
+    - 'sssd-ad'  # needed for sssd upgrade
+    - 'sssd-ipa'  # needed for sssd upgrade
+    - 'sssd-kcm'  # needed for sssd upgrade
+    - 'sssd-krb5'  # needed for sssd upgrade
+    - 'sssd-ldap'  # needed for sssd upgrade
+    - 'sssd-proxy'  # needed for sssd upgrade
     - 'slirp4netns'  # for docker-ce-rootless-extras
     - 'sysstat'
     - 'tar'
