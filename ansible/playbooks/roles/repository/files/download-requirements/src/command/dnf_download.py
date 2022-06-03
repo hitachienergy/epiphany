@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import List
 
 from src.command.command import Command
+from src.command.dnf import filter_non_critical_errors
 from src.error import CriticalError
 
 
@@ -38,6 +39,6 @@ class DnfDownload(Command):
         if 'error' in process.stdout:
             raise CriticalError(
                 f'Found an error. dnf download failed for packages `{packages}`, reason: `{process.stdout}`')
-        if process.stderr:
+        if filter_non_critical_errors(process.stderr):
             raise CriticalError(
                 f'dnf download failed for packages `{packages}`, reason: `{process.stderr}`')

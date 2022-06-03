@@ -1,8 +1,12 @@
 from typing import Dict, List
+import re
 
 from src.command.command import Command
 from src.error import CriticalError
 
+
+def filter_non_critical_errors(stderr: str):
+    re.sub('^Failed to set locale, defaulting to .+\n', '', stderr)
 
 class Dnf(Command):
     """
@@ -49,7 +53,7 @@ class Dnf(Command):
         if 'error' in proc.stdout:
             raise CriticalError(
                 f'Found an error. dnf update failed for package `{package}`, reason: `{proc.stdout}`')
-        if proc.stderr:
+        if filter_non_critical_errors(proc.stderr):
             raise CriticalError(
                 f'dnf update failed for packages `{package}`, reason: `{proc.stderr}`')
 
@@ -72,7 +76,7 @@ class Dnf(Command):
         if 'error' in proc.stdout:
             raise CriticalError(
                 f'Found an error. dnf install failed for package `{package}`, reason: `{proc.stdout}`')
-        if proc.stderr:
+        if filter_non_critical_errors(proc.stderr):
             raise CriticalError(
                 f'dnf install failed for package `{package}`, reason: `{proc.stderr}`')
 
