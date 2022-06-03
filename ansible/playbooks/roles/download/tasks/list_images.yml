@@ -1,6 +1,6 @@
 ---
 - name: Get images list from the repository
-  import_tasks: list_requirements.yml
+  include_tasks: list_requirements.yml
   vars:
     _requirements: images
 

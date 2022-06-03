@@ -34,7 +34,7 @@ class ManifestReader:
         self.__requested_features: Set = set()
         self.__requested_images: Set = set()
 
-    def __parse_cluster_info(self, cluster_doc: Dict):
+    def __parse_cluster_doc(self, cluster_doc: Dict):
         """
         Parse `epiphany-cluster` document and extract only used components.
 
@@ -45,7 +45,7 @@ class ManifestReader:
             if components[component]['count'] > 0:
                 self.__requested_components.add(component)
 
-    def __parse_feature_mappings_info(self, feature_mappings_doc: Dict):
+    def __parse_feature_mappings_doc(self, feature_mappings_doc: Dict):
         """
         Parse `configuration/feature-mappings` document and extract only used features (based on `epiphany-cluster` doc).
 
@@ -56,7 +56,7 @@ class ManifestReader:
             for feature in mappings[mapping]:
                 self.__requested_features.add(feature)
 
-    def __parse_image_registry_info(self, image_registry_doc: Dict):
+    def __parse_image_registry_doc(self, image_registry_doc: Dict):
         """
         Parse `configuration/image-registry` document and extract only used images.
 
@@ -77,9 +77,9 @@ class ManifestReader:
         """
         required_docs: Set[str] = {'epiphany-cluster', 'configuration/feature-mappings'}
         parse_doc: Dict[str, Callable] = {
-            'epiphany-cluster':               self.__parse_cluster_info,
-            'configuration/feature-mappings': self.__parse_feature_mappings_info,
-            'configuration/image-registry':   self.__parse_image_registry_info
+            'epiphany-cluster':               self.__parse_cluster_doc,
+            'configuration/feature-mappings': self.__parse_feature_mappings_doc,
+            'configuration/image-registry':   self.__parse_image_registry_doc
         }
 
         parsed_docs: Set[str] = set()

@@ -21,7 +21,7 @@ properties:
           generic:
             type: object
             properties:
-              [applications, rabbitmq, kubernetes, postgresql, rook]:
+              [applications, rabbitmq, kubernetes-master, postgresql, rook]:
                 type: array
                 items:
                   type: object
@@ -33,7 +33,7 @@ properties:
           current:
             type: object
             properties:
-              [haproxy, kubernetes]:
+              [haproxy, kubernetes-master]:
                 type: array
                 items:
                   type: object
@@ -45,7 +45,7 @@ properties:
           legacy:
             type: object
             properties:
-              kubernetes:
+              kubernetes-master:
                 type: array
                 items:
                   type: object
@@ -60,7 +60,7 @@ properties:
           generic:
             type: object
             properties:
-              [applications, rabbitmq, kubernetes]:
+              [applications, rabbitmq, kubernetes-master]:
                 type: array
                 items:
                   type: object
@@ -72,7 +72,7 @@ properties:
           current:
             type: object
             properties:
-              [haproxy, kubernetes]:
+              [haproxy, kubernetes-master]:
                 type: array
                 items:
                   type: object
@@ -84,7 +84,7 @@ properties:
           legacy:
             type: object
             properties:
-              kubernetes:
+              kubernetes-master:
                 type: array
                 items:
                   items: {}

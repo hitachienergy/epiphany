@@ -1,6 +1,7 @@
 import os
 import re
 import time
+from pathlib import Path
 
 from cli.src.Config import Config
 from cli.src.ansible.AnsibleCommand import AnsibleCommand
@@ -24,7 +25,7 @@ class Upgrade(Step):
         self.input_docs = []
         self.ping_retries: int = input_data.ping_retries
 
-        Config().input_file_name = os.path.basename(self.file)
+        Config().input_manifest_path = Path(self.file) or Path(self.build_dir) / 'manifest.yml'
 
     def __enter__(self):
         super().__enter__()

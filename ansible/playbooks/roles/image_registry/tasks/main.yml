@@ -124,31 +124,28 @@
 
     - name: Define images to unpack
       set_fact:
-        current_images_to_unpack: "{{ specification.images_to_load[ansible_architecture].current }}"
-        generic_images_to_unpack: "{{ specification.images_to_load[ansible_architecture].generic }}"
-        legacy_images_to_unpack: "{{ specification.images_to_load[ansible_architecture].legacy }}"
+        current_schema_images: "{{ specification.images_to_load[ansible_architecture].current }}"
+        generic_schema_images: "{{ specification.images_to_load[ansible_architecture].generic }}"
+        legacy_schema_images: "{{ specification.images_to_load[ansible_architecture].legacy }}"
 
     - name: Initialize image containers
       set_fact:
-        available_images: []
+        requested_images: []
         current_images: []
         generic_images: []
         legacy_images: []
 
-    - name: Unpack current images
+    - name: Set list of current images to be loaded/pushed
       set_fact:
-        current_images: "{{ current_images + item.value }}"
-      loop: "{{ current_images_to_unpack | dict2items }}"
+        current_images: "{{ current_schema_images | dict_to_list(only_values='True') | flatten_list }}"
 
-    - name: Unpack generic images
+    - name: Set list of generic images to be loaded/pushed
       set_fact:
-        generic_images: "{{ generic_images + item.value }}"
-      loop: "{{ generic_images_to_unpack | dict2items }}"
+        generic_images: "{{ generic_schema_images | dict_to_list(only_values='True') | flatten_list }}"
 
-    - name: Unpack legacy images
+    - name: Set list of legacy images to be loaded/pushed
       set_fact:
-        legacy_images: "{{ legacy_images + item.value }}"
-      loop: "{{ legacy_images_to_unpack | dict2items }}"
+        legacy_images: "{{ legacy_schema_images | dict_to_list(only_values='True') | flatten_list }}"
 
     - name: Merge current and generic images
       set_fact:
@@ -160,9 +157,9 @@
         name: download
         tasks_from: list_images.yml
 
-    - name: Filter only available images
-      set_fact:
-        available_images: "{{ available_images + [item] }}"
+    - name: Filter only requested images
+      set_fact:  # gather only images listed in schema, this is needed to avoid downloading wrong files
+        requested_images: "{{ requested_images + [item] }}"
       when: "{{ item.file_name in list_images_result }}"
       loop: "{{ current_and_generic_images }}"
 
@@ -170,14 +167,14 @@
       vars:
         docker_image: "{{ item }}"
       include_tasks: load-image.yml
-      loop: "{{ available_images }}"
+      loop: "{{ requested_images }}"
 
     - name: Push generic and current version images to registry
       vars:
         docker_image: "{{ item }}"
         new_image_tag: "{{ image_registry_address }}/{{ item.name }}"
       include_tasks: push-image.yml
-      loop: "{{ available_images }}"
+      loop: "{{ requested_images }}"
 
     - name: Load legacy version images to registry when upgrading
       when: is_upgrade_run

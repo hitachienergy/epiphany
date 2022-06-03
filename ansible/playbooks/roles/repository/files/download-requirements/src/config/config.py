@@ -278,7 +278,7 @@ class Config:
         if files_to_exclude:
             requirements['files'] = {url: data for url, data in files.items() if url not in files_to_exclude}
 
-        # prepare image categories:
+        # prepare image groups:
         images = requirements['images']
         images_to_download: Dict[str, Dict] = {}
         for image_group in images:

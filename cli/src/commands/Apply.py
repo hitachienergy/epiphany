@@ -1,5 +1,6 @@
 import os
 import sys
+from pathlib import Path
 from typing import Dict
 
 from cli.src.Config import Config
@@ -44,7 +45,7 @@ class Apply(Step):
         self.infrastructure_docs = []
         self.all_docs = []
 
-        Config().input_file_name = os.path.basename(self.file)
+        Config().input_manifest_path = Path(self.file)
 
     def load_documents(self):
         # Load the input docs from the input

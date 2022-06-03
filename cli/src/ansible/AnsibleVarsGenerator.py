@@ -144,7 +144,7 @@ class AnsibleVarsGenerator(Step):
         main_vars = ObjDict()
         main_vars['admin_user'] = self.cluster_model.specification.admin_user
         main_vars['epiphany_version'] = VERSION
-        main_vars['input_file_name'] = Config().input_file_name
+        main_vars['input_manifest_path'] = str(Config().input_manifest_path.absolute())
         main_vars['is_upgrade_run'] = self.is_upgrade_run
         main_vars['offline_requirements'] = Config().offline_requirements
         main_vars['roles_with_generated_vars'] = sorted(self.roles_with_generated_vars)
