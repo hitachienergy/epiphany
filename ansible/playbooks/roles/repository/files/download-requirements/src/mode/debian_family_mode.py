@@ -11,23 +11,23 @@ class DebianFamilyMode(BaseMode):
     """
     Used by distros based of Debian GNU/Linux
     """
+    APT_REPOS_DIR = Path('/etc/apt/sources.list.d')
 
     def __init__(self, config: Config):
         super().__init__(config)
         self.__create_repo_paths()
         self.__installed_packages: List[str] = []
-        self.__repos_config_dir: Path = Path('/etc/apt/sources.list.d')
 
     def __create_repo_paths(self):
-        for repo in self._repositories.keys():
-            self._repositories[repo]['path'] = Path('/etc/apt/sources.list.d') / f'{repo}.list'
+        for repo_id, repo_item in self._repositories.items():
+            repo_item['path'] = self.APT_REPOS_DIR / f'{repo_id}.list'
 
     def _create_backup_repositories(self):
         if not self._cfg.repos_backup_file.exists():
             logging.debug('Creating backup for system repositories...')
             self._tools.tar.pack(self._cfg.repos_backup_file,
                                  targets=[Path('/etc/apt/sources.list'),
-                                          Path('/etc/apt/sources.list.d')],
+                                          self.APT_REPOS_DIR],
                                  verbose=True,
                                  preserve=True,
                                  absolute_names=True,
@@ -128,8 +128,8 @@ class DebianFamilyMode(BaseMode):
         self._tools.wget.download(url, dest)
 
     def _remove_repository_files(self):
-        logging.debug(f'Removing files from {self.__repos_config_dir}...')
-        for repo_file in self.__repos_config_dir.iterdir():
+        logging.debug(f'Removing files from {self.APT_REPOS_DIR}...')
+        for repo_file in self.APT_REPOS_DIR.iterdir():
             logging.debug(f'- {repo_file.name}')
             repo_file.unlink()
         logging.debug('Done removing files.')

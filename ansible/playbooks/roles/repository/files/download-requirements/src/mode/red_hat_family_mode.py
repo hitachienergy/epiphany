@@ -14,22 +14,22 @@ class RedHatFamilyMode(BaseMode):
     """
     Used by distros based of RedHat GNU/Linux
     """
+    DNF_REPOS_DIR = Path('/etc/yum.repos.d')
 
     def __init__(self, config: Config):
         super().__init__(config)
         self.__all_queried_packages: Set[str] = set()
         self.__archs: List[str] = [config.os_arch.value, 'noarch']
         self.__base_packages: List[str] = ['curl', 'python3-dnf-plugins-core', 'wget', 'tar']
-        self.__dnf_cache_path: Path = Path('/var/cache/dnf')
+        self.__dnf_cache_dir: Path = Path('/var/cache/dnf')
         self.__installed_packages: List[str] = []
-        self.__repos_config_dir: Path = Path('/etc/yum.repos.d')
 
         try:
             dnf_config = configparser.ConfigParser()
             with Path('/etc/dnf/dnf.conf').open() as dnf_config_file:
                 dnf_config.read(dnf_config_file)
 
-            self.__dnf_cache_path = Path(dnf_config['main']['cachedir'])
+            self.__dnf_cache_dir = Path(dnf_config['main']['cachedir'])
         except FileNotFoundError:
             logging.debug('RedHatFamilyMode.__init__(): dnf config file not found')
         except configparser.Error as e:
@@ -115,7 +115,7 @@ class RedHatFamilyMode(BaseMode):
 
     def __remove_dnf_cache_for_custom_repos(self):
         # clean metadata for upgrades (when the same package can be downloaded from changed repo)
-        cache_paths: List[str] = list(self.__dnf_cache_path.iterdir())
+        cache_paths: List[str] = list(self.__dnf_cache_dir.iterdir())
 
         id_names = [
             '2ndquadrant',
@@ -133,7 +133,7 @@ class RedHatFamilyMode(BaseMode):
 
         if matched_cache_paths:
             matched_cache_paths.sort()
-            logging.debug(f'Removing DNF cache files from {self.__dnf_cache_path}...')
+            logging.debug(f'Removing DNF cache files from {self.__dnf_cache_dir}...')
 
         for path in matched_cache_paths:
                 logging.debug(f'- {path.name}')
@@ -228,8 +228,8 @@ class RedHatFamilyMode(BaseMode):
         self._tools.wget.download(url, dest, additional_params=False)
 
     def _remove_repository_files(self):
-        logging.debug(f'Removing files from {self.__repos_config_dir}...')
-        for repo_file in self.__repos_config_dir.iterdir():
+        logging.debug(f'Removing files from {self.DNF_REPOS_DIR}...')
+        for repo_file in self.DNF_REPOS_DIR.iterdir():
             logging.debug(f'- {repo_file.name}')
             repo_file.unlink()
         logging.debug('Done removing files.')
