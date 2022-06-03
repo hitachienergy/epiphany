@@ -1,3 +1,4 @@
+---
 kind: configuration/postgresql
 title: PostgreSQL
 name: default

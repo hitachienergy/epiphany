@@ -1,3 +1,4 @@
+---
 kind: configuration/shared-config
 title: "Shared configuration that will be visible to all roles"
 name: default

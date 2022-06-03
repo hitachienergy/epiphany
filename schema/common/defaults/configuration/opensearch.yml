@@ -1,3 +1,4 @@
+---
 kind: configuration/opensearch
 title: OpenSearch Config
 name: default

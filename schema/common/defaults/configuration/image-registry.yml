@@ -1,3 +1,4 @@
+---
 kind: configuration/image-registry
 title: "Epiphany image registry"
 name: default

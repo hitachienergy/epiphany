@@ -1,3 +1,4 @@
+---
 kind: infrastructure/vnet
 title: "VNET Config"
 provider: azure

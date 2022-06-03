@@ -1,3 +1,4 @@
+---
 kind: infrastructure/vpc
 title: "VPC Config"
 provider: aws

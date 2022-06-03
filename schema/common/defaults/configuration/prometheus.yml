@@ -1,3 +1,4 @@
+---
 kind: configuration/prometheus
 title: "Prometheus"
 name: default

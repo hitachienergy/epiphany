@@ -1,3 +1,4 @@
+---
 kind: configuration/kubernetes-node
 title: Kubernetes Node Config
 name: default

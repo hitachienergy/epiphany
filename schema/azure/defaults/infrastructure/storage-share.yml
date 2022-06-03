@@ -1,3 +1,4 @@
+---
 kind: infrastructure/storage-share
 title: "Azure shared storage"
 provider: azure

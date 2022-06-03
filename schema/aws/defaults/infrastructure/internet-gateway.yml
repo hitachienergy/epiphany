@@ -1,3 +1,4 @@
+---
 kind: infrastructure/internet-gateway
 title: "Internet Gateway Config"
 provider: aws
