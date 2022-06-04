@@ -14,7 +14,6 @@ class RedHatFamilyMode(BaseMode):
     """
     Used by distros based of RedHat GNU/Linux
     """
-    DNF_REPOS_DIR = Path('/etc/yum.repos.d')
 
     def __init__(self, config: Config):
         super().__init__(config)
@@ -26,7 +25,7 @@ class RedHatFamilyMode(BaseMode):
 
         try:
             dnf_config = configparser.ConfigParser()
-            with Path('/etc/dnf/dnf.conf').open() as dnf_config_file:
+            with Path('/etc/dnf/dnf.conf').open(encoding='utf-8') as dnf_config_file:
                 dnf_config.read(dnf_config_file)
 
             self.__dnf_cache_dir = Path(dnf_config['main']['cachedir'])
@@ -51,11 +50,10 @@ class RedHatFamilyMode(BaseMode):
             logging.debug('Done.')
 
     def _install_base_packages(self):
-        # Ensure dnf config-manager command
-        DNF_CONFIG_MANAGER_PACKAGE = 'dnf-plugins-core'
-        if not self._tools.rpm.is_package_installed(DNF_CONFIG_MANAGER_PACKAGE):
-            self._tools.dnf.install(DNF_CONFIG_MANAGER_PACKAGE)
-            self.__installed_packages.append(DNF_CONFIG_MANAGER_PACKAGE)
+        # Ensure `dnf config-manager` command
+        if not self._tools.rpm.is_package_installed('dnf-plugins-core'):
+            self._tools.dnf.install('dnf-plugins-core')
+            self.__installed_packages.append('dnf-plugins-core')
 
         # Bug in RHEL 8.4 https://bugzilla.redhat.com/show_bug.cgi?id=2004853
         releasever = '8' if self._tools.dnf_config_manager.get_variable('releasever') == '8.4' else None
@@ -231,8 +229,8 @@ class RedHatFamilyMode(BaseMode):
         self._tools.wget.download(url, dest, additional_params=False)
 
     def _remove_repository_files(self):
-        logging.debug(f'Removing files from {self.DNF_REPOS_DIR}...')
-        for repo_file in self.DNF_REPOS_DIR.iterdir():
+        logging.debug('Removing files from /etc/yum.repos.d...')
+        for repo_file in Path('/etc/yum.repos.d').iterdir():
             logging.debug(f'- {repo_file.name}')
             repo_file.unlink()
         logging.debug('Done removing files.')
