@@ -4,6 +4,6 @@
   vars:
     _requirements: files
 
-- name: Set files facts
+- name: Set files in repository as fact
   set_fact:
     list_files_result: "{{ list_requirements_result }}"

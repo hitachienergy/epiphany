@@ -128,7 +128,7 @@
         generic_schema_images: "{{ specification.images_to_load[ansible_architecture].generic }}"
         legacy_schema_images: "{{ specification.images_to_load[ansible_architecture].legacy }}"
 
-    - name: Initialize image containers
+    - name: Initialize image facts
       set_fact:
         requested_images: []
         current_images: []
@@ -137,15 +137,15 @@
 
     - name: Set list of current images to be loaded/pushed
       set_fact:
-        current_images: "{{ current_schema_images | dict_to_list(only_values='True') | flatten_list }}"
+        current_images: "{{ current_schema_images | dict_to_list(only_values='True') | flatten }}"
 
     - name: Set list of generic images to be loaded/pushed
       set_fact:
-        generic_images: "{{ generic_schema_images | dict_to_list(only_values='True') | flatten_list }}"
+        generic_images: "{{ generic_schema_images | dict_to_list(only_values='True') | flatten }}"
 
     - name: Set list of legacy images to be loaded/pushed
       set_fact:
-        legacy_images: "{{ legacy_schema_images | dict_to_list(only_values='True') | flatten_list }}"
+        legacy_images: "{{ legacy_schema_images | dict_to_list(only_values='True') | flatten }}"
 
     - name: Merge current and generic images
       set_fact:
@@ -158,7 +158,7 @@
         tasks_from: list_images.yml
 
     - name: Filter only requested images
-      set_fact:  # gather only images listed in schema, this is needed to avoid downloading wrong files
+      set_fact:  # gather only images listed in schema to avoid downloading unknown files
         requested_images: "{{ requested_images + [item] }}"
       when: "{{ item.file_name in list_images_result }}"
       loop: "{{ current_and_generic_images }}"

@@ -1,4 +1,3 @@
-from itertools import chain
 from typing import Any, Dict, List
 
 
@@ -7,8 +6,7 @@ class FilterModule:
 
     def filters(self):
         return {
-            'dict_to_list': self.dict_to_list,
-            'flatten_list': self.flatten_list,
+            'dict_to_list': self.dict_to_list
         }
 
     def dict_to_list(self, data: Dict, only_values: bool = False, only_keys: bool = False) -> List:
@@ -27,12 +25,3 @@ class FilterModule:
             return list(data.keys())
 
         return list(data.items())
-
-    def flatten_list(self, data: List[List[Any]]) -> Any:
-        """
-        Flatten list of lists to a single list with elements
-
-        :param data: to be flatten
-        :return: list of elements
-        """
-        return list(chain(*data))
