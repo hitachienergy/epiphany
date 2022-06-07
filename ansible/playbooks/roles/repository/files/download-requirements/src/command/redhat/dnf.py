@@ -12,46 +12,38 @@ class Dnf(Command):
     def __init__(self, retries: int):
         super().__init__('dnf', retries)
 
-    def update(self, package: str = None,
-                     disablerepo: str = None,
-                     enablerepo: str = None,
-                     releasever: str = None,
+    def update(self, package: str = '',
+                     disablerepo: str = '',
+                     enablerepo: str = '',
+                     releasever: str = '',
                      assume_yes: bool = True):
 
         """
         Interface for `dnf update`
-
-        :param package:
-        :param disablerepo:
-        :param enablerepo:
-        :param releasever:
-        :param assume_yes: if set to True, -y flag will be used
         """
         update_parameters: List[str] = ['update']
 
         if assume_yes:
             update_parameters.append('-y')
 
-        if package is not None:
+        if package:
             update_parameters.append(package)
 
-        if disablerepo is not None:
+        if disablerepo:
             update_parameters.append(f'--disablerepo={disablerepo}')
 
-        if enablerepo is not None:
+        if enablerepo:
             update_parameters.append(f'--enablerepo={enablerepo}')
 
-        if releasever is not None:
+        if releasever:
             update_parameters.append(f'--releasever={releasever}')
 
         proc = self.run(update_parameters)
 
         if 'error' in proc.stdout:
-            raise CriticalError(
-                f'Found an error. dnf update failed for package `{package}`, reason: `{proc.stdout}`')
+            raise CriticalError(f'Found an error. dnf update failed for package `{package}`, reason: `{proc.stdout}`')
         if proc.stderr:
-            raise CriticalError(
-                f'dnf update failed for packages `{package}`, reason: `{proc.stderr}`')
+            raise CriticalError(f'dnf update failed for packages `{package}`, reason: `{proc.stderr}`')
 
 
     def install(self, package: str,
@@ -66,15 +58,13 @@ class Dnf(Command):
         proc = self.run(['install', no_ask, package], accept_nonzero_returncode=True)
 
         if proc.returncode != 0:
-            if not 'does not update' in proc.stdout:  # trying to reinstall package with url
+            if 'does not update' not in proc.stdout:  # trying to reinstall package with url
                 raise CriticalError(f'dnf install failed for `{package}`, reason `{proc.stdout}`')
 
         if 'error' in proc.stdout:
-            raise CriticalError(
-                f'Found an error. dnf install failed for package `{package}`, reason: `{proc.stdout}`')
+            raise CriticalError(f'Found an error. dnf install failed for package `{package}`, reason: `{proc.stdout}`')
         if proc.stderr:
-            raise CriticalError(
-                f'dnf install failed for package `{package}`, reason: `{proc.stderr}`')
+            raise CriticalError(f'dnf install failed for package `{package}`, reason: `{proc.stderr}`')
 
     def remove(self, package: str,
                assume_yes: bool = True):
