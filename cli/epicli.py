@@ -8,7 +8,7 @@ import socket
 import subprocess
 import sys
 import time
-
+from pathlib import Path
 from typing import List
 
 from cli.licenses import LICENSES
@@ -195,7 +195,7 @@ def apply_parser(subparsers):
     required = sub_parser.add_argument_group('required arguments')
 
     #required
-    required.add_argument('-f', '--file', dest='file', type=str, required=True,
+    required.add_argument('-f', '--input-manifest', dest='input_manifest', type=Path, required=True,
                             help='File with infrastructure/configuration definitions to use.')
 
     #optional
@@ -286,7 +286,7 @@ def upgrade_parser(subparsers):
                             help='Absolute path to directory with build artifacts.')
 
     #optional
-    optional.add_argument('-f', '--file', dest='file', type=str, required=False,
+    optional.add_argument('-f', '--input-manifest', dest='input_manifest', type=str, required=False,
                             help='File with upgraded configuration definitions to use for the components to be upgraded.')
     optional.add_argument('--offline-requirements', dest='offline_requirements', type=str, required=False,
                             help='Path to the folder with pre-prepared offline requirements.')
@@ -356,7 +356,7 @@ def backup_parser(subparsers):
     required = sub_parser.add_argument_group('required arguments')
 
     #required
-    required.add_argument('-f', '--file', dest='file', type=str, required=True,
+    required.add_argument('-f', '--input-manifest', dest='input_manifest', type=str, required=True,
                             help='Backup configuration definition file to use.')
     required.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.',
@@ -382,7 +382,7 @@ def recovery_parser(subparsers):
     required = sub_parser.add_argument_group('required arguments')
 
     #required
-    required.add_argument('-f', '--file', dest='file', type=str, required=True,
+    required.add_argument('-f', '--input-manifest', dest='input_manifest', type=str, required=True,
                             help='Recovery configuration definition file to use.')
     required.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.',
@@ -412,13 +412,13 @@ def adjust_paths_from_output_dir():
 
 
 def adjust_paths_from_file(args):
-    if not os.path.isabs(args.file):
-        args.file = os.path.join(os.getcwd(), args.file)
-    if not os.path.isfile(args.file):
+    if not os.path.isabs(args.input_manifest):
+        args.input_manifest = os.path.join(os.getcwd(), args.input_manifest)
+    if not os.path.isfile(args.input_manifest):
         Config().output_dir = os.getcwd()  # Default to working dir so we can at least write logs.
-        raise Exception(f'File "{args.file}" does not exist')
+        raise Exception(f'File "{args.input_manifest}" does not exist')
     if Config().output_dir is None:
-        Config().output_dir = os.path.join(os.path.dirname(args.file), 'build')
+        Config().output_dir = os.path.join(os.path.dirname(args.input_manifest), 'build')
 
 
 def adjust_paths_from_build(args):

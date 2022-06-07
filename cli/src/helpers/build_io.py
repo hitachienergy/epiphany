@@ -13,28 +13,12 @@ from cli.src.helpers.data_loader import (ANSIBLE_PLAYBOOK_PATH,
 from cli.src.helpers.yaml_helpers import dump, dump_all
 
 TERRAFORM_OUTPUT_DIR = 'terraform/'
-MANIFEST_FILE_NAME = 'manifest.yml'
 SP_FILE_NAME = 'sp.yml'
 ANSIBLE_INVENTORY_FILE = 'inventory'
 ANSIBLE_CFG_FILE = 'ansible.cfg'
 ANSIBLE_OUTPUT_DIR = 'ansible/'
 ANSIBLE_VAULT_OUTPUT_DIR = 'vault/'
 SPEC_OUTPUT_DIR = 'spec_tests/'
-
-
-def save_manifest(docs, cluster_name, manifest_name=MANIFEST_FILE_NAME):
-    build_dir = get_build_path(cluster_name)
-    path = os.path.join(build_dir, manifest_name)
-    with open(path, 'w') as stream:
-        dump_all(docs, stream)
-    return path
-
-
-def load_manifest(build_dir):
-    path_to_manifest = os.path.join(build_dir, MANIFEST_FILE_NAME)
-    if not os.path.isfile(path_to_manifest):
-        raise Exception('No manifest.yml inside the build folder')
-    return load_yamls_file(path_to_manifest)
 
 
 def save_sp(service_principle, cluster_name):
@@ -91,10 +75,6 @@ def get_build_path(cluster_name):
 
 def get_inventory_path(cluster_name):
     return os.path.join(get_build_path(cluster_name), ANSIBLE_INVENTORY_FILE)
-
-
-def get_manifest_path(cluster_name):
-    return os.path.join(get_build_path(cluster_name), MANIFEST_FILE_NAME)
 
 
 def get_inventory_path_for_build(build_directory):

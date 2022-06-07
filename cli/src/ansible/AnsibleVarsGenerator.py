@@ -13,6 +13,7 @@ from cli.src.helpers.naming_helpers import to_feature_name, to_role_name
 from cli.src.helpers.ObjDict import ObjDict
 from cli.src.helpers.yaml_helpers import dump
 from cli.src.schema.DefaultMerger import DefaultMerger
+from cli.src.schema.ManifestHandler import ManifestHandler
 from cli.src.Step import Step
 from cli.version import VERSION
 
@@ -25,7 +26,6 @@ class AnsibleVarsGenerator(Step):
         self.inventory_creator = inventory_creator
         self.inventory_upgrade = inventory_upgrade
         self.roles_with_generated_vars = []
-        self.manifest_docs = []
 
         if inventory_creator is not None and inventory_upgrade is None:
             self.cluster_model = inventory_creator.cluster_model
@@ -40,7 +40,7 @@ class AnsibleVarsGenerator(Step):
                     self.config_docs.append(default)
                 else:
                     self.config_docs.append(config_doc)
-            self.manifest_docs = inventory_upgrade.manifest_docs
+            self.mhandler: ManifestHandler = inventory_upgrade.manifest_docs
         else:
             raise Exception('Invalid AnsibleVarsGenerator configuration')
 
@@ -120,11 +120,11 @@ class AnsibleVarsGenerator(Step):
 
     def write_role_manifest_vars(self, ansible_dir, role, kind):
         try:
-            cluster_model = select_single(self.manifest_docs, lambda x: x.kind == 'epiphany-cluster')
-        except ExpectedSingleResultException:
+            cluster_model = self.mhandler['epiphany-cluster']
+        except IndexError:
             return  # skip
 
-        document = select_first(self.manifest_docs, lambda x: x.kind == kind)
+        document = self.mhandler[kind]
         if document is None:
             # If there is no document provided by the user, then fallback to defaults
             document = load_schema_obj(schema_types.DEFAULT, 'common', kind)
@@ -205,10 +205,10 @@ class AnsibleVarsGenerator(Step):
         # Reuse shared config from existing manifest
         # Shared config contains the use_ha_control_plane flag which is required during upgrades
 
-        cluster_model = select_single(self.manifest_docs, lambda x: x.kind == 'epiphany-cluster')
+        cluster_model = self.mhandler['epiphany-cluster']
 
         try:
-            shared_config_doc = select_single(self.manifest_docs, lambda x: x.kind == 'configuration/shared-config')
+            shared_config_doc = self.mhandler['configuration/shared-config']
             shared_config_doc['provider'] = cluster_model['provider']
         except ExpectedSingleResultException:
             # If there is no shared-config doc inside the manifest file, this is probably a v0.3 cluster
