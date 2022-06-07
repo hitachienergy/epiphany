@@ -6,89 +6,89 @@ name: default
 specification:
   mappings:
     kafka:
-    - zookeeper
-    - jmx-exporter
-    - kafka
-    - kafka-exporter
-    - node-exporter
-    - filebeat
-    - firewall
+      - zookeeper
+      - jmx-exporter
+      - kafka
+      - kafka-exporter
+      - node-exporter
+      - filebeat
+      - firewall
     rabbitmq:
-    - rabbitmq
-    - node-exporter
-    - filebeat
-    - firewall
+      - rabbitmq
+      - node-exporter
+      - filebeat
+      - firewall
     logging:
-    - logging
-    - kibana
-    - node-exporter
-    - filebeat
-    - firewall
+      - logging
+      - opensearch-dashboards
+      - node-exporter
+      - filebeat
+      - firewall
     load_balancer:
-    - haproxy
-    - node-exporter
-    - filebeat
-    - firewall
+      - haproxy
+      - node-exporter
+      - filebeat
+      - firewall
     monitoring:
-    - prometheus
-    - grafana
-    - node-exporter
-    - filebeat
-    - firewall
+      - prometheus
+      - grafana
+      - node-exporter
+      - filebeat
+      - firewall
     postgresql:
-    - postgresql
-    - postgres-exporter
-    - node-exporter
-    - filebeat
-    - firewall
+      - postgresql
+      - postgres-exporter
+      - node-exporter
+      - filebeat
+      - firewall
     custom:
-    - repository
-    - image-registry
-    - kubernetes-master
-    - node-exporter
-    - filebeat
-    - rabbitmq
-    - postgresql
-    - prometheus
-    - grafana
-    - node-exporter
-    - logging
-    - firewall
-    - rook
+      - repository
+      - image-registry
+      - kubernetes-master
+      - node-exporter
+      - filebeat
+      - rabbitmq
+      - postgresql
+      - prometheus
+      - grafana
+      - node-exporter
+      - logging
+      - firewall
+      - rook
     single_machine:
-    - repository
-    - image-registry
-    - kubernetes-master
-    - helm
-    - applications
-    - rabbitmq
-    - postgresql
-    - firewall
-    - rook
+      - repository
+      - image-registry
+      - kubernetes-master
+      - helm
+      - applications
+      - rabbitmq
+      - postgresql
+      - firewall
+      - rook
     kubernetes_master:
-    - kubernetes-master
-    - helm
-    - applications
-    - rook
-    - node-exporter
-    - filebeat
-    - firewall
+      - kubernetes-master
+      - helm
+      - applications
+      - rook
+      - node-exporter
+      - filebeat
+      - firewall
     kubernetes_node:
-    - kubernetes-node
-    - node-exporter
-    - filebeat
-    - firewall
-    opendistro_for_elasticsearch:
-    - opendistro-for-elasticsearch
-    - node-exporter
-    - filebeat
-    - firewall
+      - kubernetes-node
+      - node-exporter
+      - filebeat
+      - firewall
+    opensearch:
+      - opensearch
+      - node-exporter
+      - filebeat
+      - firewall
     repository:
-    - repository
-    - image-registry
-    - firewall
-    - filebeat
-    - node-exporter
+      - repository
+      - image-registry
+      - firewall
+      - filebeat
+      - node-exporter
 version: 2.0.0dev
 provider: azure
 """
@@ -123,7 +123,7 @@ specification:
       count: 0
     rabbitmq:
       count: 0
-    opendistro_for_elasticsearch:
+    opensearch:
       count: 0
 version: 2.0.0dev
 {FEATURE_MAPPINGS}
@@ -159,7 +159,7 @@ specification:
       count: 0
     rabbitmq:
       count: 0
-    opendistro_for_elasticsearch:
+    opensearch:
       count: 0
 version: 2.0.0dev
 {FEATURE_MAPPINGS}
@@ -195,7 +195,7 @@ specification:
       count: 0
     rabbitmq:
       count: 0
-    opendistro_for_elasticsearch:
+    opensearch:
       count: 0
 version: 2.0.0dev
 {FEATURE_MAPPINGS}
@@ -250,7 +250,7 @@ specification:
             file_name: etcd-3.4.13-0.tar
           - name: k8s.gcr.io/pause:3.4.1
             file_name: pause-3.4.1.tar
-    arm64:
+    aarch64:
       generic:
         applications:
           - name: epiphanyplatform/keycloak:14.0.0
@@ -316,7 +316,7 @@ specification:
       count: 0
     rabbitmq:
       count: 1
-    opendistro_for_elasticsearch:
+    opensearch:
       count: 0
 version: 2.0.0dev
 {FEATURE_MAPPINGS}
@@ -326,14 +326,14 @@ version: 2.0.0dev
 EXPECTED_FEATURE_MAPPINGS = {
     'requested-components': ['kafka', 'repository'],
     'requested-features': ['filebeat',
-                          'firewall',
-                          'image-registry',
-                          'jmx-exporter',
-                          'kafka',
-                          'kafka-exporter',
-                          'node-exporter',
-                          'repository',
-                          'zookeeper'],
+                           'firewall',
+                           'image-registry',
+                           'jmx-exporter',
+                           'kafka',
+                           'kafka-exporter',
+                           'node-exporter',
+                           'repository',
+                           'zookeeper'],
     'requested-images': []
 }
 
@@ -341,12 +341,12 @@ EXPECTED_FEATURE_MAPPINGS = {
 EXPECTED_FEATURE_MAPPINGS_WITH_DASHBOARDS = {
     'requested-components': ['monitoring', 'repository'],
     'requested-features': ['filebeat',
-                          'firewall',
-                          'grafana',
-                          'image-registry',
-                          'node-exporter',
-                          'prometheus',
-                          'repository'],
+                           'firewall',
+                           'grafana',
+                           'image-registry',
+                           'node-exporter',
+                           'prometheus',
+                           'repository'],
     'requested-images': []
 }
 
@@ -354,10 +354,10 @@ EXPECTED_FEATURE_MAPPINGS_WITH_DASHBOARDS = {
 EXPECTED_FEATURE_MAPPINGS_WITH_IMAGES_X86_64 = {
     'requested-components': ['repository'],
     'requested-features': ['filebeat',
-                          'firewall',
-                          'image-registry',
-                          'node-exporter',
-                          'repository'],
+                           'firewall',
+                           'image-registry',
+                           'node-exporter',
+                           'repository'],
     'requested-images': [
         'bitnami/pgpool:4.2.4',
         'epiphanyplatform/keycloak:14.0.0',
@@ -382,10 +382,10 @@ EXPECTED_FEATURE_MAPPINGS_WITH_IMAGES_X86_64 = {
 EXPECTED_FEATURE_MAPPINGS_WITH_IMAGES_ARM64 = {
     'requested-components': ['repository'],
     'requested-features': ['filebeat',
-                          'firewall',
-                          'image-registry',
-                          'node-exporter',
-                          'repository'],
+                           'firewall',
+                           'image-registry',
+                           'node-exporter',
+                           'repository'],
     'requested-images': [
         'epiphanyplatform/keycloak:14.0.0',
         'haproxy:2.2.2-alpine',
