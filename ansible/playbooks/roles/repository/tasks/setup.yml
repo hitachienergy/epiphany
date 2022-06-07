@@ -123,4 +123,6 @@
 
 - name: Include Helm repository creation
   include_tasks: "create-helm-repo.yml"
-  when: inventory_hostname == target_repository_hostnames[0]
+  when:
+    - inventory_hostname == target_repository_hostnames[0]
+    - (groups['kubernetes_master'] is defined and inventory_hostname in groups['kubernetes_master'])

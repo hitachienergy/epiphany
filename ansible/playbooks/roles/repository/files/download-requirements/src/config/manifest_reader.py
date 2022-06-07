@@ -3,6 +3,7 @@ from typing import Any, Callable, Dict, List, Set
 
 import yaml
 
+from src.config.os_type import OSArch
 from src.error import CriticalError
 
 
@@ -26,12 +27,14 @@ class ManifestReader:
     Main running method is :func:`~manifest_reader.ManifestReader.parse_manifest` which returns formatted manifest output.
     """
 
-    def __init__(self, dest_manifest: Path):
+    def __init__(self, dest_manifest: Path, arch: OSArch):
         self.__dest_manifest = dest_manifest
-        self.__detected_components: Set = set()
-        self.__detected_features: Set = set()
+        self.__os_arch: str = arch.value
+        self.__requested_components: Set = set()
+        self.__requested_features: Set = set()
+        self.__requested_images: Set = set()
 
-    def __parse_cluster_info(self, cluster_doc: Dict):
+    def __parse_cluster_doc(self, cluster_doc: Dict):
         """
         Parse `epiphany-cluster` document and extract only used components.
 
@@ -40,26 +43,43 @@ class ManifestReader:
         components = cluster_doc['specification']['components']
         for component in components:
             if components[component]['count'] > 0:
-                self.__detected_components.add(component)
+                self.__requested_components.add(component)
 
-    def __parse_feature_mappings_info(self, feature_mappings_doc: Dict):
+    def __parse_feature_mappings_doc(self, feature_mappings_doc: Dict):
         """
         Parse `configuration/feature-mappings` document and extract only used features (based on `epiphany-cluster` doc).
 
         :param feature_mappings_doc: handler to a `configuration/feature-mappings` document
         """
         mappings = feature_mappings_doc['specification']['mappings']
-        for mapping in mappings.keys() & self.__detected_components:
+        for mapping in mappings.keys() & self.__requested_components:
             for feature in mappings[mapping]:
-                self.__detected_features.add(feature)
+                self.__requested_features.add(feature)
+
+    def __parse_image_registry_doc(self, image_registry_doc: Dict):
+        """
+        Parse `configuration/image-registry` document and extract only used images.
+
+        :param image_registry_doc: handler to a `configuration/image-registry` document
+        """
+        self.__requested_images.add(image_registry_doc['specification']['registry_image']['name'])
+
+        target_arch_images = image_registry_doc['specification']['images_to_load'][self.__os_arch]
+        for target_images in target_arch_images:
+            features = target_arch_images[target_images]
+            for feature in features:
+                for image in features[feature]:
+                    self.__requested_images.add(image['name'])
 
     def parse_manifest(self) -> Dict[str, Any]:
         """
         Load the manifest file, call parsers on required docs and return formatted output.
         """
+        required_docs: Set[str] = {'epiphany-cluster', 'configuration/feature-mappings'}
         parse_doc: Dict[str, Callable] = {
-            'epiphany-cluster':               self.__parse_cluster_info,
-            'configuration/feature-mappings': self.__parse_feature_mappings_info
+            'epiphany-cluster':               self.__parse_cluster_doc,
+            'configuration/feature-mappings': self.__parse_feature_mappings_doc,
+            'configuration/image-registry':   self.__parse_image_registry_doc
         }
 
         parsed_docs: Set[str] = set()
@@ -71,8 +91,9 @@ class ManifestReader:
             except KeyError:
                 pass
 
-        if len(parsed_docs) != len(parse_doc.keys()):
-            raise CriticalError(f'ManifestReader - could not find documents: {parsed_docs ^ parse_doc.keys()}')
+        if len(parsed_docs) < len(required_docs):
+            raise CriticalError(f'ManifestReader - could not find document(s): {parsed_docs ^ required_docs}')
 
-        return {'detected-components': sorted(list(self.__detected_components)),
-                'detected-features': sorted(list(self.__detected_features))}
+        return {'requested-components': sorted(list(self.__requested_components)),
+                'requested-features': sorted(list(self.__requested_features)),
+                'requested-images': sorted(list(self.__requested_images))}

@@ -181,12 +181,19 @@ class BaseMode:
         Download images under `self._requirements['images']` using Crane.
         """
         platform: str = 'linux/amd64' if self._cfg.os_arch == OSArch.X86_64 else 'linux/arm64'
-        downloader: Downloader = Downloader(self._requirements['images'],
+        images = self._requirements['images']
+
+        images_to_download: Dict[str, Dict] = {}
+        for image_group in images:  # kubernetes-master, rabbitmq, etc.
+            for image, data in images[image_group].items():
+                images_to_download[image] = data
+
+        downloader: Downloader = Downloader(images_to_download,
                                             'sha1',
                                             self._tools.crane.pull,
                                             {'platform': platform})
 
-        for image in self._requirements['images']:
+        for image in images_to_download:
             url, version = image.split(':')
             filename = Path(f'{url.split("/")[-1]}-{version}.tar')  # format: image_version.tar
 

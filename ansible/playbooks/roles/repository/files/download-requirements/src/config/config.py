@@ -23,6 +23,7 @@ class Config:
         self.distro_subdir: Path
         self.is_log_file_enabled: bool
         self.log_file: Path
+        self.log_level: int
         self.os_arch: OSArch
         self.os_type: OSType
         self.pyyaml_installed: bool = False
@@ -158,18 +159,19 @@ class Config:
             'info': logging.INFO,
             'debug': logging.DEBUG
         }
+        self.log_level = log_levels[log_level.lower()]
 
         log_format = '%(asctime)s [%(levelname)s]: %(message)s'
 
         # add stdout logger:
-        logging.basicConfig(stream=sys.stdout, level=log_levels[log_level.lower()],
+        logging.basicConfig(stream=sys.stdout, level=self.log_level,
                             format=log_format)
 
         # add log file:
         if not no_logfile:
             root_logger = logging.getLogger()
             file_handler = logging.FileHandler(log_file)
-            file_handler.setLevel(log_levels[log_level.lower()])
+            file_handler.setLevel(self.log_level)
             file_handler.setFormatter(logging.Formatter(fmt=log_format))
             root_logger.addHandler(file_handler)
 
@@ -210,7 +212,7 @@ class Config:
         self.retries = args['retries']
         self.is_log_file_enabled = False if args['no_logfile'] else True
         self.dest_manifest = args['manifest'] or None
-        self.verbose_mode = args['verbose']
+        self.verbose_mode = True if self.log_level == logging.DEBUG else args['verbose']
 
         # offline mode
         self.rerun = args['rerun']
@@ -221,17 +223,18 @@ class Config:
 
         lines.append('-' * self.__LINE_SIZE)
 
-        lines.append('Components detected:')
-        for component in manifest['detected-components']:
+        lines.append('Components requested:')
+        for component in manifest['requested-components']:
             lines.append(f'- {component}')
 
         lines.append('')
 
-        lines.append('Features detected:')
-        for feature in manifest['detected-features']:
+        lines.append('Features requested:')
+        for feature in manifest['requested-features']:
             lines.append(f'- {feature}')
 
-        for reqs in [('files', 'Files'), ('grafana-dashboards', 'Dashboards')]:
+        for reqs in [('files', 'Files'),
+                     ('grafana-dashboards', 'Dashboards')]:
             reqs_to_download = sorted(requirements[reqs[0]])
             if reqs_to_download:
                 lines.append('')
@@ -239,25 +242,61 @@ class Config:
                 for req_to_download in reqs_to_download:
                     lines.append(f'- {req_to_download}')
 
+        images = requirements['images']
+        images_to_print: List[str] = []
+        for image_category in images:
+            for image in images[image_category]:
+                images_to_print.append(image)
+
+        if images_to_print:
+            lines.append('')
+            lines.append('Images to download:')
+            for image in sorted(images_to_print):
+                lines.append(f'- {image}')
+
         lines.append('-' * self.__LINE_SIZE)
 
         logging.info('\n'.join(lines))
 
     def __filter_manifest(self, requirements: Dict[str, Any], manifest: Dict[str, Any]):
         """
+        Filter entries in the `requirements` based on the parsed `manifest` documents.
+
+        :param requirements: parsed requirements which will be filtered based on the `manifest` content
+        :param manifest: parsed documents which will be used to filter `requirements`
         """
-        if 'grafana' not in manifest['detected-features']:
+        if 'grafana' not in manifest['requested-features']:
             requirements['grafana-dashboards'] = []
 
         files = requirements['files']
         files_to_exclude: List[str] = []
         for file in files:
             deps = files[file]['deps']
-            if deps not in manifest['detected-features'] and deps != 'default':
+            if deps not in manifest['requested-features'] and deps != 'default':
                 files_to_exclude.append(file)
 
         if files_to_exclude:
             requirements['files'] = {url: data for url, data in files.items() if url not in files_to_exclude}
+
+        # prepare image groups:
+        images = requirements['images']
+        images_to_download: Dict[str, Dict] = {}
+        for image_group in images:
+            images_to_download[image_group] = {}
+
+        if len(manifest['requested-images']):  # if image-registry document used:
+            for image_group in images:
+                for image, data in images[image_group].items():
+                    if image in manifest['requested-images']:
+                        images_to_download[image_group][image] = data
+        else:                                  # otherwise check features used:
+            for image_group in images:
+                if image_group in manifest['requested-features']:
+                    for image, data in images[image_group].items():
+                        images_to_download[image_group][image] = data
+
+        if images_to_download:
+            requirements['images'] = images_to_download
 
     def read_manifest(self, requirements: Dict[str, Any]):
         """
@@ -269,7 +308,7 @@ class Config:
         if not self.dest_manifest:
             return
 
-        mreader = ManifestReader(self.dest_manifest)
+        mreader = ManifestReader(self.dest_manifest, self.os_arch)
         manifest = mreader.parse_manifest()
         self.__filter_manifest(requirements, manifest)
 

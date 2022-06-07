@@ -1,0 +1,9 @@
+---
+- name: Get images list from the repository
+  include_tasks: list_requirements.yml
+  vars:
+    _requirements: images
+
+- name: Set images in repository as fact
+  set_fact:
+    list_images_result: "{{ list_requirements_result }}"

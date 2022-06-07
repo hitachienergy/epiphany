@@ -24,11 +24,11 @@ class Dnf(DnfBase):
     Interface for `dnf`
     """
 
-    def update(self, package: str = None,
-                     disablerepo: str = None,
-                     enablerepo: str = None,
+    def update(self, package: str = '',
+                     disablerepo: str = '',
+                     enablerepo: str = '',
                      ignore_already_installed_error: bool = False,
-                     releasever: str = None,
+                     releasever: str = '',
                      assume_yes: bool = True):
         """
         Interface for `dnf update`
@@ -46,16 +46,16 @@ class Dnf(DnfBase):
         if assume_yes:
             update_parameters.append('-y')
 
-        if package is not None:
+        if package:
             update_parameters.append(package)
 
-        if disablerepo is not None:
+        if disablerepo:
             update_parameters.append(f'--disablerepo={disablerepo}')
 
-        if enablerepo is not None:
+        if enablerepo:
             update_parameters.append(f'--enablerepo={enablerepo}')
 
-        if releasever is not None:
+        if releasever:
             update_parameters.append(f'--releasever={releasever}')
 
         proc = self.run(update_parameters)
@@ -87,7 +87,7 @@ class Dnf(DnfBase):
         proc = self.run(['install', no_ask, package], accept_nonzero_returncode=True)
 
         if proc.returncode != 0:
-            if not 'does not update' in proc.stdout:  # trying to reinstall package with url
+            if 'does not update' not in proc.stdout:  # trying to reinstall package with url
                 raise CriticalError(f'dnf install failed for `{package}`, reason `{proc.stdout}`')
 
         if 'error' in proc.stdout:

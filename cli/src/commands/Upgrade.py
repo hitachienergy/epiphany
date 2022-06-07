@@ -1,7 +1,9 @@
 import os
 import re
 import time
+from pathlib import Path
 
+from cli.src.Config import Config
 from cli.src.ansible.AnsibleCommand import AnsibleCommand
 from cli.src.ansible.AnsibleRunner import AnsibleRunner
 from cli.src.helpers.build_io import copy_files_recursively
@@ -22,6 +24,8 @@ class Upgrade(Step):
         self.ansible_command = AnsibleCommand()
         self.input_docs = []
         self.ping_retries: int = input_data.ping_retries
+
+        Config().input_manifest_path = Path(self.file) or Path(self.build_dir) / 'manifest.yml'
 
     def __enter__(self):
         super().__enter__()
