@@ -1,18 +1,14 @@
 from pathlib import Path
 from typing import List
 
-from src.command.command import Command
-from src.command.dnf import filter_non_critical_errors
+from src.command.dnf import DnfBase
 from src.error import CriticalError
 
 
-class DnfDownload(Command):
+class DnfDownload(DnfBase):
     """
     Interface for `dnf download`
     """
-
-    def __init__(self, retries: int):
-        super().__init__('dnf', retries)
 
     def download_packages(self, packages: List[str],
                           archlist: List[str],
@@ -39,6 +35,6 @@ class DnfDownload(Command):
         if 'error' in process.stdout:
             raise CriticalError(
                 f'Found an error. dnf download failed for packages `{packages}`, reason: `{process.stdout}`')
-        if filter_non_critical_errors(process.stderr):
+        if self._filter_non_critical_errors(process.stderr):
             raise CriticalError(
                 f'dnf download failed for packages `{packages}`, reason: `{process.stderr}`')

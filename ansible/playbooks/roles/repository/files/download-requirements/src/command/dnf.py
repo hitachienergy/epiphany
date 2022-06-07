@@ -1,20 +1,28 @@
 from typing import Dict, List
-import re
 
 from src.command.command import Command
 from src.error import CriticalError
 
 
-def filter_non_critical_errors(stderr: str):
-    re.sub('^Failed to set locale, defaulting to .+\n', '', stderr)
-
-class Dnf(Command):
+class DnfBase(Command):
     """
-    Interface for `dnf`
+    Base class for `dnf` interfaces
     """
 
     def __init__(self, retries: int):
         super().__init__('dnf', retries)
+
+    def _filter_non_critical_errors(self, stderr: str) -> str:  # pylint: disable=no-self-use
+        output_lines = [line for line in stderr.split(
+            '\n') if not line.startswith('Failed to set locale, defaulting to')]
+
+        return '\n'.join(output_lines)
+
+
+class Dnf(DnfBase):
+    """
+    Interface for `dnf`
+    """
 
     def update(self, package: str = None,
                      disablerepo: str = None,
@@ -53,7 +61,7 @@ class Dnf(Command):
         if 'error' in proc.stdout:
             raise CriticalError(
                 f'Found an error. dnf update failed for package `{package}`, reason: `{proc.stdout}`')
-        if filter_non_critical_errors(proc.stderr):
+        if self._filter_non_critical_errors(proc.stderr):
             raise CriticalError(
                 f'dnf update failed for packages `{package}`, reason: `{proc.stderr}`')
 
@@ -76,7 +84,7 @@ class Dnf(Command):
         if 'error' in proc.stdout:
             raise CriticalError(
                 f'Found an error. dnf install failed for package `{package}`, reason: `{proc.stdout}`')
-        if filter_non_critical_errors(proc.stderr):
+        if self._filter_non_critical_errors(proc.stderr):
             raise CriticalError(
                 f'dnf install failed for package `{package}`, reason: `{proc.stderr}`')
 
@@ -113,6 +121,11 @@ class Dnf(Command):
             return True
 
         return False
+
+    def are_all_repos_enabled(self, repos: List[str]) -> bool:
+        enabled_repos = self.__get_repo_ids()
+
+        return all(repo in enabled_repos for repo in repos)
 
     def accept_keys(self):
         # to accept import of repo's GPG key (for repo_gpgcheck=1)

@@ -1,6 +1,6 @@
-from tests.mocks.command_run_mock import CommandRunMock
-
 from src.command.dnf import Dnf
+
+from tests.mocks.command_run_mock import CommandRunMock
 
 
 def test_interface_update(mocker):

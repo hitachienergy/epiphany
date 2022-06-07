@@ -62,12 +62,8 @@ class RedHatFamilyMode(BaseMode):
         # epel-release package is re-installed when repo it provides is not enabled
         epel_package_initially_present: bool = self._tools.rpm.is_package_installed('epel-release')
 
-        if (
-            epel_package_initially_present and
-            (not self._tools.dnf.is_repo_enabled('epel')
-             or not self._tools.dnf.is_repo_enabled('epel-modular'))
-        ):
-            self._tools.dnf.remove('epel-release')
+        if epel_package_initially_present and not self._tools.dnf.are_all_repos_enabled(['epel', 'epel-modular']):
+                self._tools.dnf.remove('epel-release')
 
         # some packages are from EPEL repo, ensure the latest version
         if not self._tools.rpm.is_package_installed('epel-release'):
@@ -128,21 +124,21 @@ class RedHatFamilyMode(BaseMode):
 
     def __remove_dnf_cache_for_custom_repos(self):
         # clean metadata for upgrades (when the same package can be downloaded from changed repo)
-        cache_paths: List[str] = list(self.__dnf_cache_dir.iterdir())
+        cache_paths: List[Path] = list(self.__dnf_cache_dir.iterdir())
 
-        id_names = [
+        def get_matched_paths(repo_id: str, paths: List[Path]) -> List[Path]:
+            return [path for path in paths if path.name.startswith(repo_id)]
+
+        repo_ids = [
             '2ndquadrant',
             'docker-ce',
             'epel',
-        ] + [repo['id'] for _, repo in self._repositories.items()]
+        ] + [repo['id'] for repo in self._repositories.values()]
 
-        matched_cache_paths: List[str] = []
+        matched_cache_paths: List[Path] = []
 
-        for path in cache_paths:
-            for repo_name in id_names:
-                if path.name.startswith(repo_name):
-                    matched_cache_paths.append(path)
-                    break
+        for repo_id in repo_ids:
+            matched_cache_paths.extend(get_matched_paths(repo_id, cache_paths))
 
         if matched_cache_paths:
             matched_cache_paths.sort()
