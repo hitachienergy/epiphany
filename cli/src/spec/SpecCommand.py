@@ -58,5 +58,4 @@ These need to be installed to run the cluster spec tests from epicli'''
         for entry in listdir:
             if os.path.isdir(f'{SPEC_TEST_PATH}/spec/{entry}'):
                 groups = groups + [entry]
-        sorted(groups, key=str.lower)
-        return groups
+        return sorted(groups, key=str.lower)
