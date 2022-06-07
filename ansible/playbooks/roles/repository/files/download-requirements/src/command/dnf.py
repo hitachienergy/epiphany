@@ -1,3 +1,4 @@
+from cgitb import enable
 from typing import Dict, List
 import re
 
@@ -91,29 +92,28 @@ class Dnf(Command):
         no_ask: str = '-y' if assume_yes else ''
         self.run(['remove', no_ask, package])
 
+    def __get_repo_ids(self, repoinfo_extra_args: List[str] = None) -> List[str]:
+        repoinfo_args: List[str] = ['--quiet', '-y']
+
+        if repoinfo_extra_args:
+            repoinfo_args.extend(repoinfo_extra_args)
+
+        output = self.run(['repoinfo'] + repoinfo_args).stdout
+        repo_ids: List[str] = []
+
+        for line in output.splitlines():
+            if 'Repo-id' in line:  # e.g. `Repo-id            : epel`
+                repo_ids.append(line.split(':')[1].strip())
+
+        return repo_ids
+
     def is_repo_enabled(self, repo: str) -> bool:
-        output = self.run(['repolist',
-                           '--enabled',
-                           '--quiet',
-                           '-y']).stdout
-        if repo in output:
+        enabled_repos = self.__get_repo_ids()
+
+        if repo in enabled_repos:
             return True
 
         return False
-
-    def find_rhel_repo_id(self, patterns: List[str]) -> List[str]:
-        output = self.run(['repolist',
-                           '--all',
-                           '--quiet',
-                           '-y']).stdout
-
-        repos: List[str] = []
-        for line in output.split('\n'):
-            for pattern in patterns:
-                if pattern in line:
-                    repos.append(pattern)
-
-        return repos
 
     def accept_keys(self):
         # to accept import of repo's GPG key (for repo_gpgcheck=1)
