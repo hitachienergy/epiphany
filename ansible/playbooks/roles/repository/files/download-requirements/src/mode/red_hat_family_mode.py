@@ -59,9 +59,11 @@ class RedHatFamilyMode(BaseMode):
         releasever = '8' if self._tools.dnf_config_manager.get_variable('releasever') == '8.4' else None
         self._tools.dnf.update(package='libmodulemd', releasever=releasever)
 
-        # epel-release package is re-installed if repo it provides is not enabled
+        # epel-release package is re-installed when repo it provides is not enabled
+        epel_package_initially_present: bool = self._tools.rpm.is_package_installed('epel-release')
+
         if (
-            self._tools.rpm.is_package_installed('epel-release') and
+            epel_package_initially_present and
             (not self._tools.dnf.is_repo_enabled('epel')
              or not self._tools.dnf.is_repo_enabled('epel-modular'))
         ):
@@ -70,7 +72,9 @@ class RedHatFamilyMode(BaseMode):
         # some packages are from EPEL repo, ensure the latest version
         if not self._tools.rpm.is_package_installed('epel-release'):
             self._tools.dnf.install('https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm')
-            self.__installed_packages.append('epel-release')
+
+            if not epel_package_initially_present:
+                self.__installed_packages.append('epel-release')
         else:
             self._tools.dnf.update('https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm')
 
