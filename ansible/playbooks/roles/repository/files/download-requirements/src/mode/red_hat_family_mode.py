@@ -62,8 +62,8 @@ class RedHatFamilyMode(BaseMode):
         # epel-release package is re-installed when repo it provides is not enabled
         epel_package_initially_present: bool = self._tools.rpm.is_package_installed('epel-release')
 
-        if epel_package_initially_present and not self._tools.dnf.are_all_repos_enabled(['epel', 'epel-modular']):
-                self._tools.dnf.remove('epel-release')
+        if epel_package_initially_present and not self._tools.dnf.are_repos_enabled(['epel', 'epel-modular']):
+            self._tools.dnf.remove('epel-release')
 
         # some packages are from EPEL repo, ensure the latest version
         if not self._tools.rpm.is_package_installed('epel-release'):

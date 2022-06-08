@@ -12,9 +12,9 @@ class DnfBase(Command):
     def __init__(self, retries: int):
         super().__init__('dnf', retries)
 
-    def _filter_non_critical_errors(self, stderr: str) -> str:  # pylint: disable=no-self-use
-        output_lines = [line for line in stderr.split(
-            '\n') if not line.startswith('Failed to set locale, defaulting to')]
+    def _filter_non_critical_errors(self, stderr: str) -> str:
+        output_lines = [line for line in stderr.split('\n')
+                        if not line.startswith('Failed to set locale, defaulting to')]
 
         return '\n'.join(output_lines)
 
@@ -122,9 +122,8 @@ class Dnf(DnfBase):
 
         return False
 
-    def are_all_repos_enabled(self, repos: List[str]) -> bool:
-        enabled_repos = self.__get_repo_ids()
-
+    def are_repos_enabled(self, repos: List[str]) -> bool:
+        enabled_repos: List[str] = self.__get_repo_ids()
         return all(repo in enabled_repos for repo in repos)
 
     def accept_keys(self):
