@@ -27,15 +27,17 @@ class Dnf(DnfBase):
     def update(self, package: str = None,
                      disablerepo: str = None,
                      enablerepo: str = None,
+                     ignore_already_installed_error: bool = False,
                      releasever: str = None,
                      assume_yes: bool = True):
-
         """
         Interface for `dnf update`
 
         :param package:
         :param disablerepo:
         :param enablerepo:
+        :param ignore_already_installed_error: if set to True,
+            `The same or higher version of {package} is already installed` error is ignored
         :param releasever:
         :param assume_yes: if set to True, -y flag will be used
         """
@@ -61,10 +63,17 @@ class Dnf(DnfBase):
         if 'error' in proc.stdout:
             raise CriticalError(
                 f'Found an error. dnf update failed for package `{package}`, reason: `{proc.stdout}`')
-        if self._filter_non_critical_errors(proc.stderr):
+
+        filtered_stderr: str = self._filter_non_critical_errors(proc.stderr)
+
+        if filtered_stderr:
+            if (ignore_already_installed_error
+                    and all(string in filtered_stderr for string in
+                            ('The same or higher version', 'is already installed, cannot update it.'))):
+                return
+
             raise CriticalError(
                 f'dnf update failed for packages `{package}`, reason: `{proc.stderr}`')
-
 
     def install(self, package: str,
                 assume_yes: bool = True):

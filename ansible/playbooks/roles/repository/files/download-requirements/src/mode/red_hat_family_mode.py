@@ -72,7 +72,8 @@ class RedHatFamilyMode(BaseMode):
             if not epel_package_initially_present:
                 self.__installed_packages.append('epel-release')
         else:
-            self._tools.dnf.update('https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm')
+            self._tools.dnf.update('https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm',
+                                   ignore_already_installed_error=True)
 
         self.__remove_dnf_cache_for_custom_repos()
         self._tools.dnf.makecache(timer=True)
