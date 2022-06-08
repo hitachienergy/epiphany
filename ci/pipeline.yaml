@@ -1,0 +1,70 @@
+---
+trigger:
+  branches:
+    include:
+    - develop
+pr:
+  branches:
+    include:
+    - develop
+
+pool:
+  name: $(poolName)
+
+variables:
+  repository: epicli
+  tags: $(Build.SourceBranchName).$(Build.BuildId)
+
+jobs:
+- job: Run_unit_tests
+  displayName: Run unit tests
+  steps:
+  - task: UsePythonVersion@0
+    displayName: Use Python 3.10
+    inputs:
+      versionSpec: 3.10
+  - task: Bash@3
+    displayName: Install Python dependencies
+    inputs:
+      targetType: inline
+      script: |
+        pip install boto3 jinja2 jsonschema pytest pytest_mock python-json-logger pyyaml ruamel.yaml setuptools twine wheel
+  - task: Bash@3
+    displayName: Run unit tests
+    continueOnError: true
+    inputs:
+      targetType: inline
+      script: |
+        pytest --junit-xml=tests/results/result.xml
+  - task: PublishTestResults@2
+    displayName: Publish Test Results
+    inputs:
+      testResultsFiles: '*.xml'
+      searchFolder: $(System.DefaultWorkingDirectory)/tests/results
+      failTaskOnFailedTests: true
+      testRunTitle: Python unit tests for epicli
+- job: Build_epicli_image
+  displayName: Build an epicli image
+  dependsOn:
+  - Run_unit_tests
+  steps:
+  - task: CmdLine@2
+    displayName: Display image tags
+    inputs:
+      script: |
+        echo Image tags: $(containerRegistry)/$(repository):$(tags)
+  - task: Docker@2
+    displayName: Build the image
+    inputs:
+      containerRegistry: $(containerRegistry)
+      repository: $(repository)
+      command: build
+      Dockerfile: Dockerfile
+      tags: $(tags)
+  - task: Docker@2
+    displayName: Push the image
+    inputs:
+      containerRegistry: $(containerRegistry)
+      repository: $(repository)
+      command: push
+      tags: $(tags)
