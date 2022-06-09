@@ -1,0 +1,128 @@
+---
+trigger:
+  branches:
+    include:
+    - develop
+pr:
+  branches:
+    include:
+    - develop
+
+pool:
+  name: $(poolName)
+
+variables:
+  ansible_lint_error_threshold: 730
+  pylint_score_cli_threshold: 9.25
+  pylint_score_tests_threshold: 9.65
+  rubocop_linter_threshold: 207
+
+jobs:
+- job: Run_linters
+  displayName: Run linters
+  steps:
+  - task: UsePythonVersion@0
+    displayName: Use Python 3.10
+    inputs:
+      versionSpec: 3.10
+  - task: Bash@3
+    displayName: Install Ansible Linter and its dependencies
+    inputs:
+      targetType: inline
+      script: |
+        pip install --upgrade ansible ansible-lint ansible-lint-junit==0.16 lxml pip setuptools
+  - task: Bash@3
+    displayName: Run Ansible Linter
+    inputs:
+      targetType: inline
+      script: |
+        ansible-lint --nocolor > ansible_lint_errors
+        # Suppress the next line when the "load-failure" bug in ansible-lint is solved
+        # https://github.com/ansible-community/ansible-lint/issues/1446
+        sed -i '/load-failure/d' ansible_lint_errors
+        error_count=$(wc -l ansible_lint_errors | awk '{ print $1 }')
+        # Convert to junit
+        ansible-lint-junit ansible_lint_errors -o ansible_lint_errors.xml
+        test $error_count -le $(ansible_lint_error_threshold)
+  - task: PublishTestResults@2
+    displayName: Publish Ansible Linting Test Results
+    inputs:
+      testResultsFiles: ansible_lint_errors.xml
+      searchFolder: $(System.DefaultWorkingDirectory)
+      testRunTitle: Ansible Linting Test Results
+  - task: Bash@3
+    displayName: Install Python dependencies and its dependencies
+    inputs:
+      targetType: inline
+      script: |
+        pip install --upgrade pylint pylint-fail-under pylint-junit
+  - task: Bash@3
+    displayName: Run Python Linter on CLI code
+    inputs:
+      targetType: inline
+      script: |
+        pylint ./cli \
+        --rcfile .pylintrc \
+        --fail-under=$(pylint_score_cli_threshold) \
+        --output cli_code_results.xml
+  - task: PublishTestResults@2
+    displayName: Publish Python Linting Test Results for CLI Code
+    inputs:
+      testResultsFiles: cli_code_results.xml
+      searchFolder: $(System.DefaultWorkingDirectory)
+      testRunTitle: Python Linting Test Results for CLI Code
+  - task: Bash@3
+    displayName: Run Python Linter on Test Code
+    inputs:
+      targetType: inline
+      script: |
+        python -m pylint ./tests \
+        --rcfile .pylintrc \
+        --fail-under=$(pylint_score_tests_threshold) \
+        --output test_code_results.xml \
+        --disable=F0401 # Disable import-error checking
+  - task: PublishTestResults@2
+    displayName: Publish Python Linting Test Results for Test Code
+    inputs:
+      testResultsFiles: test_code_results.xml
+      searchFolder: $(System.DefaultWorkingDirectory)
+      testRunTitle: Python Linting Test Results for Test Code
+  - task: Bash@3
+    displayName: Install Rubocop and its dependencies
+    inputs:
+      targetType: inline
+      script: |
+        apt-get -y update \
+        && apt-get -y install rubygems \
+        && gem install rubocop-ast:1.17.0 rubocop:1.28.2 rubocop-junit_formatter
+  - task: Bash@3
+    displayName: Run Rubocop linter on Test Code
+    inputs:
+      targetType: inline
+      script: |
+        rubocop ./tests \
+        -c .rubocop.yml \
+        --require rubocop/formatter/junit_formatter \
+        --format RuboCop::Formatter::JUnitFormatter \
+        --out rubocop_results.xml \
+        --fail-level error
+  - task: Bash@3
+    displayName: Assert number of linter failures
+    inputs:
+      targetType: inline
+      script: |
+        # Fetch number of detected failures from results file, then test if it does not exceed the declared threshold
+        # rubocop_linter_threshold is set based on latest linter results performed after code cleaning
+        set -e
+        detected_failures=$( \
+          grep --only-matching 'failures=.[0-9]*.' rubocop_results.xml | \
+          grep --only-matching '[0-9]*')
+        echo "Number of detected failures: $detected_failures"
+        echo "Failures threshold value: $(rubocop_linter_threshold)"
+        test $detected_failures -le $(rubocop_linter_threshold)
+  - task: PublishTestResults@2
+    displayName: Publish Rubocop Linting Test Results
+    inputs:
+      testResultsFiles: rubocop_results.xml
+      searchFolder: $(System.DefaultWorkingDirectory)
+      testRunTitle: Rubocop Test Results
