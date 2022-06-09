@@ -21,6 +21,7 @@ jobs:
   steps:
   - task: UsePythonVersion@0
     displayName: Use Python 3.10
+    # To be compatible with the epicli's parent image (python:3.10-slim).
     inputs:
       versionSpec: 3.10
   - task: Bash@3
