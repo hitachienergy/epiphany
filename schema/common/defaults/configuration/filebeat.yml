@@ -1,3 +1,4 @@
+---
 kind: configuration/filebeat
 title: Filebeat
 name: default

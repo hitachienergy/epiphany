@@ -1,3 +1,4 @@
+---
 kind: infrastructure/security-group-rule
 title: "Default Group Rule"
 provider: aws

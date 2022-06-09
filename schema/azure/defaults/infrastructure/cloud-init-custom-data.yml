@@ -1,3 +1,4 @@
+---
 kind: infrastructure/cloud-init-custom-data
 title: cloud-init user-data
 provider: azure

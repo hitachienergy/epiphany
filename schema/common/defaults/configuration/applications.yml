@@ -1,3 +1,4 @@
+---
 kind: configuration/applications
 title: "Kubernetes Applications Config"
 name: default

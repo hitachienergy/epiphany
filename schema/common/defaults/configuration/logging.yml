@@ -1,3 +1,4 @@
+---
 kind: configuration/logging
 title: Logging Config
 name: default

@@ -113,9 +113,9 @@ Terraform : 1..4 map to the following Terraform verbosity levels:
     config.log_type = args.log_type
     config.log_count = args.log_count
     config.validate_certs = True if args.validate_certs == 'true' else False
-    if 'offline_requirements' in args and not args.offline_requirements is None:
+    if 'offline_requirements' in args and args.offline_requirements is not None:
         config.offline_requirements = args.offline_requirements
-    if 'wait_for_pods' in args and not args.wait_for_pods is None:
+    if 'wait_for_pods' in args and args.wait_for_pods is not None:
         config.wait_for_pods = args.wait_for_pods
     if 'upgrade_components' in args and args.upgrade_components:
         config.upgrade_components = args.upgrade_components

@@ -1,3 +1,4 @@
+---
 kind: configuration/helm
 title: "Helm"
 name: default

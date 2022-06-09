@@ -1,3 +1,4 @@
+---
 kind: infrastructure/cloud-os-image-defaults
 title: "Cloud OS Image Defaults"
 name: default

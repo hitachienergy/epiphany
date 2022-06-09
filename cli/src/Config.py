@@ -59,7 +59,7 @@ class Config:
 
         @log_file.setter
         def log_file(self, log_file):
-            if not log_file is None:
+            if log_file is not None:
                 self._log_file = log_file
 
         @property
@@ -68,7 +68,7 @@ class Config:
 
         @log_format.setter
         def log_format(self, log_format):
-            if not log_format is None:
+            if log_format is not None:
                 self._log_format = log_format
 
         @property
@@ -77,7 +77,7 @@ class Config:
 
         @log_date_format.setter
         def log_date_format(self, log_date_format):
-            if not log_date_format is None:
+            if log_date_format is not None:
                 self._log_date_format = log_date_format
 
         @property
@@ -86,7 +86,7 @@ class Config:
 
         @log_count.setter
         def log_count(self, log_count):
-            if not log_count is None:
+            if log_count is not None:
                 self._log_count = log_count
 
         @property
@@ -95,7 +95,7 @@ class Config:
 
         @log_type.setter
         def log_type(self, log_type):
-            if not log_type is None:
+            if log_type is not None:
                 if log_type in LOG_TYPES:
                     self._log_type = log_type
                 else:
@@ -107,7 +107,7 @@ class Config:
 
         @validate_certs.setter
         def validate_certs(self, validate_certs):
-            if not validate_certs is None:
+            if validate_certs is not None:
                 self._validate_certs = validate_certs
 
         @property
@@ -116,7 +116,7 @@ class Config:
 
         @debug.setter
         def debug(self, debug):
-            if not debug is None:
+            if debug is not None:
                 self._debug = debug
 
         @property
@@ -125,7 +125,7 @@ class Config:
 
         @auto_approve.setter
         def auto_approve(self, auto_approve):
-            if not auto_approve is None:
+            if auto_approve is not None:
                 self._auto_approve = auto_approve
 
         @property
@@ -134,7 +134,7 @@ class Config:
 
         @vault_password_location.setter
         def vault_password_location(self, vault_password_location):
-            if not vault_password_location is None:
+            if vault_password_location is not None:
                 self._vault_password_location = vault_password_location
 
         @property
@@ -143,7 +143,7 @@ class Config:
 
         @offline_requirements.setter
         def offline_requirements(self, offline_requirements):
-            if not offline_requirements is None:
+            if offline_requirements is not None:
                 if not os.path.isdir(offline_requirements):
                     raise Exception(f'offline_requirements path "{offline_requirements}" is not a valid path.')
 
@@ -158,7 +158,7 @@ class Config:
 
         @wait_for_pods.setter
         def wait_for_pods(self, wait_for_pods):
-            if not wait_for_pods is None:
+            if wait_for_pods is not None:
                 self._wait_for_pods = wait_for_pods
 
         @property

@@ -79,6 +79,7 @@ class InfrastructureBuilder(Step):
                                     item.specification.address_prefix == subnet_definition['address_pool'])
 
             if subnet is None:
+                subnet_nsg_association_name = ''
                 subnet = self.get_subnet(subnet_definition, component_key, 0)
                 infrastructure.append(subnet)
 
@@ -93,6 +94,7 @@ class InfrastructureBuilder(Step):
                                                                                         nsg.specification.name,
                                                                                         0)
                     infrastructure.append(subnet_nsg_association)
+                    subnet_nsg_association_name = subnet_nsg_association.specification.name
 
             availability_set = None
             if 'availability_set' in component_value:
@@ -118,7 +120,7 @@ class InfrastructureBuilder(Step):
                                                                vm_config,
                                                                subnet.specification.name,
                                                                public_ip_name,
-                                                               subnet_nsg_association.specification.name,
+                                                               subnet_nsg_association_name,
                                                                index)
                 infrastructure.append(network_interface)
 

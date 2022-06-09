@@ -1,3 +1,4 @@
+---
 kind: configuration/opensearch-dashboards
 title: "OpenSearch-Dashboards"
 name: default

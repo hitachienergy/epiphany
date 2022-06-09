@@ -1,3 +1,4 @@
+---
 kind: configuration/helm-charts
 title: "Helm charts"
 name: default

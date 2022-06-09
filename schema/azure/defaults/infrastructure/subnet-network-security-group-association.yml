@@ -1,3 +1,4 @@
+---
 kind: infrastructure/subnet-network-security-group-association
 title: "Subnet Network Security Group Association"
 provider: azure

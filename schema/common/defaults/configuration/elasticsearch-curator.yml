@@ -1,3 +1,4 @@
+---
 kind: configuration/elasticsearch-curator
 title: Elasticsearch Curator
 name: default
