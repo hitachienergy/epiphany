@@ -27,29 +27,31 @@ unsupported_roles:
   - distro: Ubuntu
     arch: aarch64
     roles:
-      - repository
-      - kafka
-      - firewall
-      - image_registry
-      - kubernetes_master
-      - kubernetes_node
-      - helm
-      - zookeeper
-      - haproxy
-      - logging
-      - opensearch
-      - opensearch_dashboards
+      - applications
       - elasticsearch_curator
       - filebeat
-      - prometheus
+      - firewall
       - grafana
-      - node_exporter
+      - haproxy
+      - helm
+      - image_registry
       - jmx_exporter
-      - rabbitmq
+      - kafka
       - kafka_exporter
+      - kubernetes_master
+      - kubernetes_node
+      - logging
+      - node_exporter
+      - opensearch
+      - opensearch_dashboards
       - postgresql
       - postgres_exporter
-      - applications
+      - prometheus
+      - rabbitmq
+      - repository
+      - rook
+      - zookeeper
+
   - distro: AlmaLinux
     arch: x86_64
     roles: []  # all supported
@@ -57,35 +59,37 @@ unsupported_roles:
     arch: aarch64
     roles:
       - elasticsearch_curator
+      - rook
   - distro: RedHat
     arch: x86_64
     roles: []  # all supported
   - distro: RedHat
     arch: aarch64
     roles:
-      - repository
-      - kafka
-      - firewall
-      - image_registry
-      - kubernetes_master
-      - kubernetes_node
-      - helm
-      - zookeeper
-      - haproxy
-      - logging
-      - opensearch
-      - opensearch_dashboards
+      - applications
       - elasticsearch_curator
       - filebeat
-      - prometheus
+      - firewall
       - grafana
-      - node_exporter
+      - haproxy
+      - helm
+      - image_registry
       - jmx_exporter
-      - rabbitmq
+      - kafka
       - kafka_exporter
+      - kubernetes_master
+      - kubernetes_node
+      - logging
+      - node_exporter
+      - opensearch
+      - opensearch_dashboards
       - postgresql
       - postgres_exporter
-      - applications
+      - prometheus
+      - rabbitmq
+      - repository
+      - rook
+      - zookeeper
 
 unsupported_postgres_extensions:
   x86_64: []

@@ -11,6 +11,7 @@ images:
 
   'registry:2.8.0':
     sha1: c6cdd738fbdd2efaef9588b439fc3a7c0c090368
+    allow_mismatch: true
 
   # applications
   'epiphanyplatform/keycloak:14.0.0':
