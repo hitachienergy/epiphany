@@ -19,16 +19,16 @@ class RedHatFamilyMode(BaseMode):
         super().__init__(config)
         self.__all_queried_packages: Set[str] = set()
         self.__archs: List[str] = [config.os_arch.value, 'noarch']
-        self.__base_packages: List[str] = ['curl', 'python3-dnf-plugins-core', 'wget']
+        self.__base_packages: List[str] = ['curl', 'python3-dnf-plugins-core', 'wget', 'tar']
+        self.__dnf_cache_dir: Path = Path('/var/cache/dnf')
         self.__installed_packages: List[str] = []
-        self.__dnf_cache_path: Path = Path('/var/cache/dnf')
 
         try:
             dnf_config = configparser.ConfigParser()
-            with Path('/etc/dnf/dnf.conf').open() as dnf_config_file:
+            with Path('/etc/dnf/dnf.conf').open(encoding='utf-8') as dnf_config_file:
                 dnf_config.read(dnf_config_file)
 
-            self.__dnf_cache_path = Path(dnf_config['main']['cachedir'])
+            self.__dnf_cache_dir = Path(dnf_config['main']['cachedir'])
         except FileNotFoundError:
             logging.debug('RedHatFamilyMode.__init__(): dnf config file not found')
         except configparser.Error as e:
@@ -50,26 +50,36 @@ class RedHatFamilyMode(BaseMode):
             logging.debug('Done.')
 
     def _install_base_packages(self):
+        # Ensure `dnf config-manager` command
+        if not self._tools.rpm.is_package_installed('dnf-plugins-core'):
+            self._tools.dnf.install('dnf-plugins-core')
+            self.__installed_packages.append('dnf-plugins-core')
 
         # Bug in RHEL 8.4 https://bugzilla.redhat.com/show_bug.cgi?id=2004853
         releasever = '8' if self._tools.dnf_config_manager.get_variable('releasever') == '8.4' else None
         self._tools.dnf.update(package='libmodulemd', releasever=releasever)
 
-        # some packages are from EPEL repo
-        # make sure that we reinstall it before proceeding
-        if self._tools.rpm.is_package_installed('epel-release'):
-            if not self._tools.dnf.is_repo_enabled('epel') or not self._tools.dnf.is_repo_enabled('epel-modular'):
-                self._tools.dnf.remove('epel-release')
+        # epel-release package is re-installed when repo it provides is not enabled
+        epel_package_initially_present: bool = self._tools.rpm.is_package_installed('epel-release')
 
-        self._tools.dnf.install('https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm')
-        self.__installed_packages.append('epel-release')
+        if epel_package_initially_present and not self._tools.dnf.are_repos_enabled(['epel', 'epel-modular']):
+            self._tools.dnf.remove('epel-release')
+
+        # some packages are from EPEL repo, ensure the latest version
+        if not self._tools.rpm.is_package_installed('epel-release'):
+            self._tools.dnf.install('https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm')
+
+            if not epel_package_initially_present:
+                self.__installed_packages.append('epel-release')
+        else:
+            self._tools.dnf.update('https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm',
+                                   ignore_already_installed_error=True)
 
         self.__remove_dnf_cache_for_custom_repos()
-        self._tools.dnf.makecache(True)
+        self._tools.dnf.makecache(timer=True)
 
-        # tar does not come by default from image. We install it, but don't want to remove it
-        if not self._tools.rpm.is_package_installed('tar'):
-            self._tools.dnf.install('tar')
+        # Ensure ca-certificates package is in the latest version
+        self._tools.dnf.install('ca-certificates')
 
         for package in self.__base_packages:
             if not self._tools.rpm.is_package_installed(package):
@@ -115,22 +125,33 @@ class RedHatFamilyMode(BaseMode):
 
     def __remove_dnf_cache_for_custom_repos(self):
         # clean metadata for upgrades (when the same package can be downloaded from changed repo)
-        repocaches: List[str] = list(self.__dnf_cache_path.iterdir())
+        cache_paths: List[Path] = list(self.__dnf_cache_dir.iterdir())
 
-        id_names = [
+        def get_matched_paths(repo_id: str, paths: List[Path]) -> List[Path]:
+            return [path for path in paths if path.name.startswith(repo_id)]
+
+        repo_ids = [
             '2ndquadrant',
             'docker-ce',
             'epel',
-        ] + [self._repositories[key]['id'] for key in self._repositories.keys()]
+        ] + [repo['id'] for repo in self._repositories.values()]
 
-        for repocache in repocaches:
-            matched_ids = [repocache.name.startswith(repo_name) for repo_name in id_names]
-            if any(matched_ids):
+        matched_cache_paths: List[Path] = []
+
+        for repo_id in repo_ids:
+            matched_cache_paths.extend(get_matched_paths(repo_id, cache_paths))
+
+        if matched_cache_paths:
+            matched_cache_paths.sort()
+            logging.debug(f'Removing DNF cache files from {self.__dnf_cache_dir}...')
+
+        for path in matched_cache_paths:
+                logging.debug(f'- {path.name}')
                 try:
-                    if repocache.is_dir():
-                        shutil.rmtree(str(repocache))
+                    if path.is_dir():
+                        shutil.rmtree(str(path))
                     else:
-                        repocache.unlink()
+                        path.unlink()
                 except FileNotFoundError:
                     logging.debug('__remove_dnf_cache_for_custom_repos: cache directory already removed')
 
@@ -216,14 +237,17 @@ class RedHatFamilyMode(BaseMode):
     def _download_crane_binary(self, url: str, dest: Path):
         self._tools.wget.download(url, dest, additional_params=False)
 
-    def _clean_up_repository_files(self):
-        for repofile in Path('/etc/yum.repos.d').iterdir():
-            repofile.unlink()
+    def _remove_repository_files(self):
+        logging.debug('Removing files from /etc/yum.repos.d...')
+        for repo_file in Path('/etc/yum.repos.d').iterdir():
+            logging.debug(f'- {repo_file.name}')
+            repo_file.unlink()
+        logging.debug('Done removing files.')
 
     def _cleanup(self):
-        # remove installed packages
+        self.__remove_dnf_cache_for_custom_repos()
+
+    def _cleanup_packages(self):
         for package in self.__installed_packages:
             if self._tools.rpm.is_package_installed(package):
                 self._tools.dnf.remove(package)
-
-        self.__remove_dnf_cache_for_custom_repos()

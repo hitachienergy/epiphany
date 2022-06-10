@@ -1,6 +1,6 @@
-from tests.mocks.command_run_mock import CommandRunMock
-
 from src.command.dnf import Dnf
+
+from tests.mocks.command_run_mock import CommandRunMock
 
 
 def test_interface_update(mocker):
@@ -25,12 +25,6 @@ def test_interface_remove(mocker):
 
 
 def test_interface_is_repo_enabled(mocker):
-    ''' Check argument construction for `dnf repolist enabled` '''
+    ''' Check argument construction for `dnf repoinfo enabled` '''
     with CommandRunMock(mocker, Dnf(1).is_repo_enabled, {'repo': 'some_repo'}) as call_args:
-        assert call_args == ['dnf' , 'repolist', '--enabled', '--quiet', '-y']
-
-
-def test_interface_find_rhel_repo_id(mocker):
-    ''' Check argument construction for `dnf repolist all` '''
-    with CommandRunMock(mocker, Dnf(1).find_rhel_repo_id, {'patterns': ['pat1', 'pat2']}) as call_args:
-        assert call_args == ['dnf' , 'repolist', '--all', '--quiet', '-y']
+        assert call_args == ['dnf' , 'repoinfo', '--quiet', '-y']

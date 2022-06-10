@@ -18,8 +18,8 @@ class DebianFamilyMode(BaseMode):
         self.__installed_packages: List[str] = []
 
     def __create_repo_paths(self):
-        for repo in self._repositories.keys():
-            self._repositories[repo]['path'] = Path('/etc/apt/sources.list.d') / f'{repo}.list'
+        for repo_id, repo_item in self._repositories.items():
+            repo_item['path'] = Path('/etc/apt/sources.list.d') / f'{repo_id}.list'
 
     def _create_backup_repositories(self):
         if not self._cfg.repos_backup_file.exists():
@@ -39,9 +39,12 @@ class DebianFamilyMode(BaseMode):
         # install prerequisites which might be missing
         installed_packages = self._tools.apt.list_installed_packages()
 
+        # Ensure ca-certificates package is in the latest version
+        self._tools.apt.install('ca-certificates')
+
         for package in ['wget', 'gpg', 'curl', 'tar']:
             if package not in installed_packages:
-                self._tools.apt.install(package, assume_yes=True)
+                self._tools.apt.install(package)
                 self.__installed_packages.append(package)
                 logging.info(f'- {package}')
 
@@ -123,9 +126,12 @@ class DebianFamilyMode(BaseMode):
     def _download_crane_binary(self, url: str, dest: Path):
         self._tools.wget.download(url, dest)
 
-    def _clean_up_repository_files(self):
-        for repofile in Path('/etc/apt/sources.list.d').iterdir():
-            repofile.unlink()
+    def _remove_repository_files(self):
+        logging.debug('Removing files from /etc/apt/sources.list.d...')
+        for repo_file in Path('/etc/apt/sources.list.d').iterdir():
+            logging.debug(f'- {repo_file.name}')
+            repo_file.unlink()
+        logging.debug('Done removing files.')
 
     def _cleanup(self):
         # cleaning up 3rd party repositories
@@ -133,6 +139,6 @@ class DebianFamilyMode(BaseMode):
             if data['path'].exists():
                 data['path'].unlink()
 
-        # remove installed packages
+    def _cleanup_packages(self):
         for package in self.__installed_packages:
             self._tools.apt.remove(package)

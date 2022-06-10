@@ -4,26 +4,40 @@ from src.command.command import Command
 from src.error import CriticalError
 
 
-class Dnf(Command):
+class DnfBase(Command):
     """
-    Interface for `dnf`
+    Base class for `dnf` interfaces
     """
 
     def __init__(self, retries: int):
         super().__init__('dnf', retries)
 
+    def _filter_non_critical_errors(self, stderr: str) -> str:
+        output_lines = [line for line in stderr.split('\n')
+                        if not line.startswith('Failed to set locale, defaulting to')]
+
+        return '\n'.join(output_lines)
+
+
+class Dnf(DnfBase):
+    """
+    Interface for `dnf`
+    """
+
     def update(self, package: str = None,
                      disablerepo: str = None,
                      enablerepo: str = None,
+                     ignore_already_installed_error: bool = False,
                      releasever: str = None,
                      assume_yes: bool = True):
-
         """
         Interface for `dnf update`
 
         :param package:
         :param disablerepo:
         :param enablerepo:
+        :param ignore_already_installed_error: if set to True,
+            `The same or higher version of {package} is already installed` error is ignored
         :param releasever:
         :param assume_yes: if set to True, -y flag will be used
         """
@@ -49,10 +63,17 @@ class Dnf(Command):
         if 'error' in proc.stdout:
             raise CriticalError(
                 f'Found an error. dnf update failed for package `{package}`, reason: `{proc.stdout}`')
-        if proc.stderr:
+
+        filtered_stderr: str = self._filter_non_critical_errors(proc.stderr)
+
+        if filtered_stderr:
+            if (ignore_already_installed_error
+                    and all(string in filtered_stderr for string in
+                            ('The same or higher version', 'is already installed, cannot update it.'))):
+                return
+
             raise CriticalError(
                 f'dnf update failed for packages `{package}`, reason: `{proc.stderr}`')
-
 
     def install(self, package: str,
                 assume_yes: bool = True):
@@ -72,7 +93,7 @@ class Dnf(Command):
         if 'error' in proc.stdout:
             raise CriticalError(
                 f'Found an error. dnf install failed for package `{package}`, reason: `{proc.stdout}`')
-        if proc.stderr:
+        if self._filter_non_critical_errors(proc.stderr):
             raise CriticalError(
                 f'dnf install failed for package `{package}`, reason: `{proc.stderr}`')
 
@@ -87,29 +108,32 @@ class Dnf(Command):
         no_ask: str = '-y' if assume_yes else ''
         self.run(['remove', no_ask, package])
 
+    def __get_repo_ids(self, repoinfo_extra_args: List[str] = None) -> List[str]:
+        repoinfo_args: List[str] = ['--quiet', '-y']
+
+        if repoinfo_extra_args:
+            repoinfo_args.extend(repoinfo_extra_args)
+
+        output = self.run(['repoinfo'] + repoinfo_args).stdout
+        repo_ids: List[str] = []
+
+        for line in output.splitlines():
+            if 'Repo-id' in line:  # e.g. `Repo-id            : epel`
+                repo_ids.append(line.split(':')[1].strip())
+
+        return repo_ids
+
     def is_repo_enabled(self, repo: str) -> bool:
-        output = self.run(['repolist',
-                           '--enabled',
-                           '--quiet',
-                           '-y']).stdout
-        if repo in output:
+        enabled_repos = self.__get_repo_ids()
+
+        if repo in enabled_repos:
             return True
 
         return False
 
-    def find_rhel_repo_id(self, patterns: List[str]) -> List[str]:
-        output = self.run(['repolist',
-                           '--all',
-                           '--quiet',
-                           '-y']).stdout
-
-        repos: List[str] = []
-        for line in output.split('\n'):
-            for pattern in patterns:
-                if pattern in line:
-                    repos.append(pattern)
-
-        return repos
+    def are_repos_enabled(self, repos: List[str]) -> bool:
+        enabled_repos: List[str] = self.__get_repo_ids()
+        return all(repo in enabled_repos for repo in repos)
 
     def accept_keys(self):
         # to accept import of repo's GPG key (for repo_gpgcheck=1)
