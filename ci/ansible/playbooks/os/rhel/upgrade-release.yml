@@ -639,6 +639,12 @@
               systemd:
                 name: cloud-init
                 state: restarted
+              # On K8s master with Calico CNI plugin there is error in first attempt:
+              # duplicate mac found! both 'cali770930d50fa' and 'cali67622b483b3' have mac 'ee:ee:ee:ee:ee:ee'
+              register: restart_cloud_init
+              until: restart_cloud_init is succeeded
+              retries: 1
+              delay: 1
 
             - name: Restore cloud-init config file
               when: cloud_init_cfg_ssh_deletekeys.changed
