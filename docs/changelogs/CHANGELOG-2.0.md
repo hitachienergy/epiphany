@@ -7,14 +7,15 @@
 - [#2932](https://github.com/epiphany-platform/epiphany/issues/2932) - Support `epicli upgrade` for RHEL/AlmaLinux 8
 - [#3057](https://github.com/epiphany-platform/epiphany/issues/3057) - Additional AWS authentication option
 - [#3101](https://github.com/epiphany-platform/epiphany/issues/3101) - Add support for ARM architecture for AlmaLinux 8
+- [#3105](https://github.com/epiphany-platform/epiphany/issues/3105) - Add manifest file parsing
+- [#3131](https://github.com/epiphany-platform/epiphany/issues/3131) - Optimize Grafana dashboards downloading
+- [#3116](https://github.com/epiphany-platform/epiphany/issues/3116) - Optimize files downloading
+- [#3106](https://github.com/epiphany-platform/epiphany/issues/3106) - Add image-registry configuration reading
 
 ### Fixed
 
 - [#3164](https://github.com/epiphany-platform/epiphany/issues/3164) - Specify version and allow containerd.io package downgrade in haproxy_runc role
 - [#3179](https://github.com/epiphany-platform/epiphany/issues/3179) - terraform fails when `use_network_security_groups` is set to `false`
-
-### Fixed
-
 - [#3165](https://github.com/epiphany-platform/epiphany/issues/3165) - download-requirements.py may fail due to expired certificate
 
 ### Updated
@@ -23,6 +24,7 @@
 - [#2982](https://github.com/epiphany-platform/epiphany/issues/2982) - Using AKS and EKS Terraform configuration directly with Epiphany.
 - [#2870](https://github.com/epiphany-platform/epiphany/issues/2870) - OpenDistro for ElasticSearch replaced by OpenSearch
 - [#3163](https://github.com/epiphany-platform/epiphany/issues/3163) - Upgrade Python dependencies
+- [#3097](https://github.com/epiphany-platform/epiphany/issues/3097) - Split available_roles and roles_mapping into separate yaml documents
 
 ### Deprecated
 
@@ -31,13 +33,10 @@
   [Azure AKS](https://github.com/epiphany-platform/m-azure-kubernetes-service) (AzKS) module
   [AWS Basic Infrastructure](https://github.com/epiphany-platform/m-aws-basic-infrastructure) (AwsBI) module
   [AWS EKS](https://github.com/epiphany-platform/m-aws-kubernetes-service) (AwsKS) module
-- [#3097](https://github.com/epiphany-platform/epiphany/issues/3097) - Split available_roles and roles_mapping into separate yaml documents
 
 ### Breaking changes
 
 - Schema `configuration/feature-mapping` changed. The document was splitted into two separate docs `configuration/features` and `configuration/feature-mappings`.
-
-### Breaking changes
 
 - AWS credentials configuration parameters are renamed from `specification.cloud.credentials.key` and `specification.cloud.credentials.secret` to `specification.cloud.credentials.access_key_id` and `specification.cloud.credentials.secret_access_key`.
 
