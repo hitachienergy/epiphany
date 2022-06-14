@@ -201,24 +201,47 @@
           block:
             - name: Set cloud facts
               set_fact:
+                aws_config_dir: "{{ '~root' | expanduser }}/.aws"
                 aws_region: "{{ _cluster_doc.specification.cloud.region }}"
                 cluster_name: "{{ _cluster_doc.specification.prefix }}-{{ _cluster_doc.specification.name }}"
 
             - name: Create AWS configuration directory
               file:
-                path: "{{ '~root' | expanduser }}/.aws"
+                path: "{{ aws_config_dir }}"
                 state: directory
-                mode: u=rwx,go=
+                mode: u=rwx,go=rx
 
-            - name: Create credentials file
+            - name: Check if AWS credentials file exists
+              stat:
+                path: "{{ aws_config_dir }}/{{ item }}"
+                get_attributes: false
+                get_checksum: false
+                get_mime: false
+              register: stat_aws_credentials_file
+              loop:
+                - credentials
+                - credentials.rhel-7-upgrade.bak
+
+            - name: Back up AWS credentials file
+              when:
+                - stat_aws_credentials_file.results[0].stat.exists
+                - not stat_aws_credentials_file.results[1].stat.exists
               copy:
-                dest: "{{ '~root' | expanduser }}/.aws/credentials"
+                src: "{{ aws_config_dir }}/credentials"
+                dest: "{{ aws_config_dir }}/credentials.rhel-7-upgrade.bak"
+                remote_src: true
+                mode: preserve
+              no_log: true
+
+            - name: Create AWS credentials file
+              copy:
+                dest: "{{ aws_config_dir }}/credentials"
                 content: |
                   [default]
                   aws_access_key_id = {{ _cluster_doc.specification.cloud.credentials.key }}
                   aws_secret_access_key = {{ _cluster_doc.specification.cloud.credentials.secret }}
                 mode: u=rw,go=
-                backup: true
+              no_log: true
 
         - name: Find auto scaling groups
           community.aws.ec2_asg_info:
@@ -750,6 +773,38 @@
       run_once: true
       delegate_to: localhost
       block:
+        # Suspending HealthCheck process doesn't solve issue with auto-restoring instances after the reboot so we mark them
+        # as Healthy first. Ansible modules don't support required command so we use AWS cli.
+        - name: Ensure pip3
+          block:
+            - name: Check if pip3 is present
+              command: pip3 --version
+              register: check_pip3
+              changed_when: false
+              failed_when: false
+
+            - name: Install pip3
+              command: python3 -m ensurepip
+              when: check_pip3.rc != 0
+
+        - name: Install AWS cli
+          pip:
+            name: awscli
+          register: install_awscli
+
+        - name: Mark all instances as healthy
+          command: >-
+            aws autoscaling set-instance-health
+              --instance-id {{ item }} --health-status Healthy --region {{ aws_region }}
+          loop: >-
+            {{ cluster_asgs.results | map(attribute='instances') | flatten | map(attribute='instance_id') }}
+
+        - name: Uninstall AWS cli
+          when: install_awscli.changed
+          pip:
+            name: awscli
+            state: absent
+
         - name: Check if file with original configuration of ASGs exists
           stat:
             path: "{{ asg_config_file_path }}"
@@ -782,4 +837,36 @@
             - name: Remove file with original configuration of ASGs
               file:
                 path: "{{ asg_config_file_path }}"
+                state: absent
+
+        - name: Remove AWS credentials file
+          file:
+            path: "{{ aws_config_dir }}/credentials"
+            state: absent
+
+        - name: Restore AWS credentials file
+          vars:
+            _backup_path: "{{ aws_config_dir }}/credentials.rhel-7-upgrade.bak"
+          block:
+            - name: Check if backup of AWS credentials file exists
+              stat:
+                path: "{{ _backup_path }}"
+                get_attributes: false
+                get_checksum: false
+                get_mime: false
+              register: stat_aws_credentials_file_backup
+
+            - name: Restore AWS credentials file
+              when: stat_aws_credentials_file_backup.stat.exists
+              copy:
+                src: "{{ _backup_path }}"
+                dest: "{{ aws_config_dir }}/credentials"
+                remote_src: true
+                mode: preserve
+              no_log: true
+
+            - name: Remove backup of AWS credentials file
+              when: stat_aws_credentials_file_backup.stat.exists
+              file:
+                path: "{{ _backup_path }}"
                 state: absent
