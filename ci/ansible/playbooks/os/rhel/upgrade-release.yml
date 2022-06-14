@@ -284,7 +284,7 @@
               when: not 'HealthCheck' in (item.suspended_processes | map(attribute='process_name'))
               community.aws.ec2_asg:
                 name: "{{ item.name }}"
-                suspend_processes: "{{ item.suspended_processes | union(['HealthCheck']) }}"
+                suspend_processes: "{{ item.suspended_processes | union(['HealthCheck', 'ReplaceUnhealthy']) }}"
                 region: "{{ aws_region }}"
               loop_control:
                 label: "{{ item.name }}"
