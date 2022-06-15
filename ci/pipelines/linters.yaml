@@ -45,7 +45,7 @@ jobs:
             if ansible-lint --nocolor 1> ansible_lint_stdout 2> ansible_lint_stderr \
             || grep 'violation(s) that are fatal' ansible_lint_stderr; then
               # Suppress the next line when the "load-failure" bug in ansible-lint is solved
-              # https://github.com/ansible-community/ansible-lint/issues/1446
+              # https://github.com/ansible/ansible-lint/issues/2217
               sed -i '/load-failure/d' ansible_lint_stdout
               error_count=$(wc -l < ansible_lint_stdout)
               # Convert to junit
