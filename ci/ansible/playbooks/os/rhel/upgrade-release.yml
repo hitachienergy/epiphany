@@ -180,13 +180,31 @@
           when: update_containerd_config_option.changed
              or add_containerd_config_option.changed
 
-    # Suspend HealthCheck process on AWS (required for reboots)
+    # AWS: Disable instance auto-recovery
 
-    - name: Suspend HealthCheck process for auto scaling groups
+    - name: Put all instances into Standby state and disable auto-recovery
       when: provider == 'aws'
       run_once: true
       delegate_to: localhost
       block:
+        # Ansible modules don't support required commands so we use AWS cli
+        - name: Ensure pip3
+          block:
+            - name: Check if pip3 is present
+              command: pip3 --version
+              register: check_pip3
+              changed_when: false
+              failed_when: false
+
+            - name: Install pip3
+              command: python3 -m ensurepip
+              when: check_pip3.rc != 0
+
+        - name: Install AWS cli
+          pip:
+            name: awscli
+          register: install_awscli
+
         - name: Load Epiphany manifest
           slurp:
             src: "{{ epiphany_manifest }}"
@@ -203,7 +221,8 @@
               set_fact:
                 aws_config_dir: "{{ '~root' | expanduser }}/.aws"
                 aws_region: "{{ _cluster_doc.specification.cloud.region }}"
-                cluster_name: "{{ _cluster_doc.specification.prefix }}-{{ _cluster_doc.specification.name }}"
+                cluster_name: "{{ _cluster_doc.specification.name }}"
+                cluster_full_name: "{{ _cluster_doc.specification.prefix }}-{{ _cluster_doc.specification.name }}"
 
             - name: Create AWS configuration directory
               file:
@@ -245,24 +264,24 @@
 
         - name: Find auto scaling groups
           community.aws.ec2_asg_info:
-            name: "{{ cluster_name }}"
+            name: "{{ cluster_full_name }}"
             region: "{{ aws_region }}"
           register: cluster_asgs
 
-        - name: Reconfigure ASGs to suspend EC2 health check
+        - name: Put instances into Standby state
           when: cluster_asgs.results | count > 0
           block:
             - name: Set facts on ASGs
               set_fact:
                 asg_facts: "{{ cluster_asgs.results | json_query(_query) }}"
               vars:
-                _query: '[].{name: auto_scaling_group_name, suspended_processes: suspended_processes}'
+                _query: '[].{auto_scaling_group_name: auto_scaling_group_name, instances: instances, min_size: min_size}'
 
             - name: Set path to file with original configuration of ASGs
               set_fact:
-                asg_config_file_path: "{{ playbook_dir }}/{{ cluster_name }}-asg-config.yml"
+                asg_config_file_path: "{{ playbook_dir }}/{{ cluster_full_name }}-asg-config.yml"
 
-            - name: Check if file with original configuration of ASGs exists
+            - name: Check if backup of original configuration of ASGs exists
               stat:
                 path: "{{ asg_config_file_path }}"
                 get_attributes: false
@@ -270,7 +289,7 @@
                 get_mime: false
               register: stat_asg_config_yml
 
-            - name: Save original configuration of auto scaling groups
+            - name: Back up configuration of auto scaling groups
               when: not stat_asg_config_yml.stat.exists
               become: false
               copy:
@@ -278,17 +297,42 @@
                 mode: u=rw,g=r,o=
                 content: |
                   # This file is managed by Ansible and is needed to restore original configuration. DO NOT EDIT.
-                  {{ asg_facts | to_nice_yaml }}
+                  {{ asg_facts | to_nice_yaml(indent=2) }}
 
-            - name: Suspend HealthCheck process
-              when: not 'HealthCheck' in (item.suspended_processes | map(attribute='process_name'))
+            - name: Set minimum capacity to 0
               community.aws.ec2_asg:
-                name: "{{ item.name }}"
-                suspend_processes: "{{ item.suspended_processes | union(['HealthCheck', 'ReplaceUnhealthy']) }}"
+                name: "{{ item }}"
+                min_size: 0
                 region: "{{ aws_region }}"
+              loop: >-
+                {{ cluster_asgs.results | rejectattr('min_size', '==', 0) | map(attribute='auto_scaling_group_name') }}
+
+            - name: Put instances into Standby state
+              command: >-
+                aws autoscaling enter-standby
+                  --instance-ids {{ item.instances | map(attribute='instance_id') | join(' ') }}
+                  --auto-scaling-group-name {{ item.auto_scaling_group_name }}
+                  --should-decrement-desired-capacity --region {{ aws_region }}
+              when: item.instances | rejectattr('lifecycle_state', '==', 'Standby') | count > 0
+              loop: >-
+                {{ cluster_asgs.results }}
               loop_control:
-                label: "{{ item.name }}"
-              loop: "{{ asg_facts }}"
+                label: "{{ item.auto_scaling_group_name }}"
+
+        - name: Find cluster instances
+          community.aws.ec2_instance_info:
+            filters:
+              "tag:cluster_name": "{{ cluster_name }}"
+              instance-state-name: ['running']
+            region: "{{ aws_region }}"
+          register: cluster_instances
+
+        - name: Disable auto-recovery for all instances
+          command: >-
+            aws ec2 modify-instance-maintenance-options
+              --instance-id {{ item }} --auto-recovery disabled --region {{ aws_region }}
+          loop: >-
+            {{ cluster_instances.instances | map(attribute='instance_id') }}
 
     - &UPDATE_ALL_PACKAGES
       name: Update all packages in current major version
@@ -766,45 +810,13 @@
         path: /etc/dnf/vars/releasever  # file created by upgrade
         state: absent
 
-    # Resume HealthCheck process on AWS
+    # AWS: Restore original configuration
 
-    - name: Resume HealthCheck process for auto scaling groups
+    - name: Put all instances into InService state
       when: provider == 'aws'
       run_once: true
       delegate_to: localhost
       block:
-        # Suspending HealthCheck process doesn't solve issue with auto-restoring instances after the reboot so we mark them
-        # as Healthy first. Ansible modules don't support required command so we use AWS cli.
-        - name: Ensure pip3
-          block:
-            - name: Check if pip3 is present
-              command: pip3 --version
-              register: check_pip3
-              changed_when: false
-              failed_when: false
-
-            - name: Install pip3
-              command: python3 -m ensurepip
-              when: check_pip3.rc != 0
-
-        - name: Install AWS cli
-          pip:
-            name: awscli
-          register: install_awscli
-
-        - name: Mark all instances as healthy
-          command: >-
-            aws autoscaling set-instance-health
-              --instance-id {{ item }} --health-status Healthy --region {{ aws_region }}
-          loop: >-
-            {{ cluster_asgs.results | map(attribute='instances') | flatten | map(attribute='instance_id') }}
-
-        - name: Uninstall AWS cli
-          when: install_awscli.changed
-          pip:
-            name: awscli
-            state: absent
-
         - name: Check if file with original configuration of ASGs exists
           stat:
             path: "{{ asg_config_file_path }}"
@@ -816,7 +828,7 @@
         - name: Restore original configuration
           when: stat_asg_config_yml.stat.exists
           block:
-            - name: Load original configuration from file
+            - name: Load original configuration from backup
               slurp:
                 src: "{{ asg_config_file_path }}"
               register: slurp_asg_config_yml
@@ -825,19 +837,38 @@
               set_fact:
                 asgs_to_restore: "{{ slurp_asg_config_yml['content'] | b64decode | from_yaml }}"
 
-            - name: Resume HealthCheck process
-              community.aws.ec2_asg:
-                name: "{{ item.name }}"
-                suspend_processes: "{{ item.suspended_processes }}"
-                region: "{{ aws_region }}"
-              loop_control:
-                label: "{{ item.name }}"
-              loop: "{{ asgs_to_restore }}"
+        - name: Refresh info on auto scaling groups
+          community.aws.ec2_asg_info:
+            name: "{{ cluster_full_name }}"
+            region: "{{ aws_region }}"
+          register: cluster_asgs
 
-            - name: Remove file with original configuration of ASGs
-              file:
-                path: "{{ asg_config_file_path }}"
-                state: absent
+        - name: Put instances back in service
+          command: >-
+            aws autoscaling exit-standby
+              --instance-ids {{ item.instances | map(attribute='instance_id') | join(' ') }}
+              --auto-scaling-group-name {{ item.auto_scaling_group_name }}
+              --region {{ aws_region }}
+          when: item.instances | selectattr('lifecycle_state', '==', 'Standby') | count > 0
+          loop: >-
+            {{ cluster_asgs.results }}
+          loop_control:
+            label: "{{ item.auto_scaling_group_name }}"
+
+        - name: Restore minimum capacity
+          community.aws.ec2_asg:
+            name: "{{ item.auto_scaling_group_name }}"
+            min_size: "{{ item.min_size }}"
+            region: "{{ aws_region }}"
+          loop: >-
+            {{ asgs_to_restore }}
+          loop_control:
+            label: "{{ item.auto_scaling_group_name }}"
+
+        - name: Remove backup of original configuration of ASGs
+          file:
+            path: "{{ asg_config_file_path }}"
+            state: absent
 
         - name: Remove AWS credentials file
           file:
@@ -870,3 +901,9 @@
               file:
                 path: "{{ _backup_path }}"
                 state: absent
+
+        - name: Uninstall AWS cli
+          when: install_awscli.changed
+          pip:
+            name: awscli
+            state: absent
