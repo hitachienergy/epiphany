@@ -4,7 +4,8 @@ from typing import Any, Callable, Dict, List, Set
 import yaml
 
 from src.config.os_type import OSArch
-from src.error import CriticalError
+from src.config.version import Version
+from src.error import CriticalError, OldManifestVersion
 
 
 def load_yaml_file_all(filename: Path) -> List[Any]:
@@ -39,7 +40,12 @@ class ManifestReader:
         Parse `epiphany-cluster` document and extract only used components.
 
         :param cluster_doc: handler to a `epiphany-cluster` document
+        :raises:
+            :class:`OldManifestVersion`: can be raised when old manifest version used
         """
+        if Version(cluster_doc['version']) < Version('2.0.1'):
+            raise OldManifestVersion(cluster_doc['version'])
+
         components = cluster_doc['specification']['components']
         for component in components:
             if components[component]['count'] > 0:

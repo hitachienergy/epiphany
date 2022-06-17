@@ -89,7 +89,7 @@ specification:
       - firewall
       - filebeat
       - node-exporter
-version: 2.0.0dev
+version: 2.0.1dev
 provider: azure
 """
 
@@ -125,7 +125,7 @@ specification:
       count: 0
     opensearch:
       count: 0
-version: 2.0.0dev
+version: 2.0.1dev
 {FEATURE_MAPPINGS}
 """
 
@@ -161,7 +161,7 @@ specification:
       count: 0
     opensearch:
       count: 0
-version: 2.0.0dev
+version: 2.0.1dev
 {FEATURE_MAPPINGS}
 """
 
@@ -197,7 +197,7 @@ specification:
       count: 0
     opensearch:
       count: 0
-version: 2.0.0dev
+version: 2.0.1dev
 {FEATURE_MAPPINGS}
 ---
 kind: configuration/image-registry
@@ -318,7 +318,7 @@ specification:
       count: 1
     opensearch:
       count: 0
-version: 2.0.0dev
+version: 2.0.1dev
 {FEATURE_MAPPINGS}
 """
 

@@ -8,7 +8,7 @@ from typing import Any, Dict, List
 
 from src.config.manifest_reader import ManifestReader
 from src.config.os_type import OSArch, OSConfig, OSType, SUPPORTED_OS_TYPES
-from src.error import CriticalError
+from src.error import CriticalError, OldManifestVersion
 
 
 class Config:
@@ -309,8 +309,11 @@ class Config:
             return
 
         mreader = ManifestReader(self.dest_manifest, self.os_arch)
-        manifest = mreader.parse_manifest()
-        self.__filter_manifest(requirements, manifest)
+        try:
+            manifest = mreader.parse_manifest()
+            self.__filter_manifest(requirements, manifest)
 
-        if self.verbose_mode:
-            self.__print_parsed_manifest_data(requirements, manifest)
+            if self.verbose_mode:
+                self.__print_parsed_manifest_data(requirements, manifest)
+        except OldManifestVersion:
+            pass  # old manifest used, cannot optimize download time

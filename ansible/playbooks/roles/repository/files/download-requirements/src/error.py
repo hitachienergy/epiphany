@@ -35,4 +35,12 @@ class ChecksumMismatch(DownloadRequirementsError):
     """
     def __init__(self, msg: str):
         super().__init__(f'{msg} - download failed due to checksum mismatch, '
-                         'WARNING someone might have replaced the file')
+                         'WARNING someone might have replaced the file.')
+
+
+class OldManifestVersion(DownloadRequirementsError):
+    """
+    Raised when old manifest version used
+    """
+    def __init__(self, version: str):
+        super().__init__(f'Old manifest version used: `{version}`, no optimization will be performed.')
