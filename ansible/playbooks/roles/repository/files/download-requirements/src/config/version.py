@@ -18,7 +18,7 @@ class Version:
                 return True
 
             if self.minor == rhs.minor:
-                if self.patch < self.patch:
+                if self.patch < rhs.patch:
                     return True
 
         return False
