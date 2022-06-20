@@ -151,6 +151,7 @@ class AnsibleVarsGenerator(Step):
         main_vars['upgrade_components'] = Config().upgrade_components
         main_vars['validate_certs'] = Config().validate_certs
         main_vars['wait_for_pods'] = Config().wait_for_pods
+        main_vars['full_download'] = Config().full_download
 
         # Consider to move this to the provider level.
         if self.cluster_model.provider != 'any':

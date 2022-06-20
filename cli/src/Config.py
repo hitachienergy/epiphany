@@ -33,6 +33,7 @@ class Config:
             self._log_count = 10
             self._log_type = 'plain'
 
+            self._full_download: bool = False
             self._input_manifest_path: Path = None
             self._validate_certs = True
             self._debug = 0
@@ -41,6 +42,14 @@ class Config:
             self._wait_for_pods = False
             self._upgrade_components = []
             self._vault_password_location = os.path.join(expanduser("~"), '.epicli/vault.cfg')
+
+        @property
+        def full_download(self) -> bool:
+            return self._full_download
+
+        @full_download.setter
+        def full_download(self, full_download: bool):
+            self._full_download = full_download
 
         @property
         def input_manifest_path(self) -> Path:

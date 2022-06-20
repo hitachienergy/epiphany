@@ -45,6 +45,7 @@ class Apply(Step):
         self.infrastructure_docs = []
         self.all_docs = []
 
+        Config().full_download = input_data.full_download
         Config().input_manifest_path = Path(self.file)
 
     def load_documents(self):

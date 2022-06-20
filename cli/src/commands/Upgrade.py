@@ -25,6 +25,7 @@ class Upgrade(Step):
         self.input_docs = []
         self.ping_retries: int = input_data.ping_retries
 
+        Config().full_download = input_data.full_download
         Config().input_manifest_path = Path(self.file) or Path(self.build_dir) / 'manifest.yml'
 
     def __enter__(self):
