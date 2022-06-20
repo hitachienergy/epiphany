@@ -6,7 +6,6 @@ from os import uname
 from pathlib import Path
 from typing import Any, Dict, List
 
-from src.config.manifest_reader import ManifestReader
 from src.config.os_type import OSArch, OSConfig, OSType, SUPPORTED_OS_TYPES
 from src.error import CriticalError, OldManifestVersion
 
@@ -308,6 +307,7 @@ class Config:
         if not self.dest_manifest:
             return
 
+        from src.config.manifest_reader import ManifestReader
         mreader = ManifestReader(self.dest_manifest, self.os_arch)
         try:
             manifest = mreader.parse_manifest()
