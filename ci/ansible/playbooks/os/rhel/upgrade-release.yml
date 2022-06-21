@@ -11,7 +11,10 @@
 # ansible-playbook -e leapp_archive=/absolute/path/leapp-data16.tar.gz -e epiphany_manifest=/shared/build/aws/manifest.yml
 
 # Note:
-# For AWS, playbook creates/overwrites with backup '/root/.aws/credentials' file locally.
+# For AWS playbook:
+# - creates/overwrites with backup '/root/.aws/credentials' file locally
+# - suspends ReplaceUnhealthy process for auto scaling groups
+# - disables auto-recovery for all instances
 
 # Limitations:
 # - Ansible connection as root is not supported (PermitRootLogin)
@@ -182,29 +185,11 @@
 
     # AWS: Disable instance auto-recovery
 
-    - name: Put all instances into Standby state and disable auto-recovery
+    - name: Suspend ReplaceUnhealthy process for auto scaling groups and disable auto-recovery
       when: provider == 'aws'
       run_once: true
       delegate_to: localhost
       block:
-        # Ansible modules don't support required commands so we use AWS cli
-        - name: Ensure pip3
-          block:
-            - name: Check if pip3 is present
-              command: pip3 --version
-              register: check_pip3
-              changed_when: false
-              failed_when: false
-
-            - name: Install pip3
-              command: python3 -m ensurepip
-              when: check_pip3.rc != 0
-
-        - name: Install AWS cli
-          pip:
-            name: awscli
-          register: install_awscli
-
         - name: Load Epiphany manifest
           slurp:
             src: "{{ epiphany_manifest }}"
@@ -268,14 +253,14 @@
             region: "{{ aws_region }}"
           register: cluster_asgs
 
-        - name: Put instances into Standby state
+        - name: Reconfigure ASGs to suspend HealthCheck and ReplaceUnhealthy processes
           when: cluster_asgs.results | count > 0
           block:
             - name: Set facts on ASGs
               set_fact:
                 asg_facts: "{{ cluster_asgs.results | json_query(_query) }}"
               vars:
-                _query: '[].{auto_scaling_group_name: auto_scaling_group_name, instances: instances, min_size: min_size}'
+                _query: '[].{auto_scaling_group_name: auto_scaling_group_name, instances: instances, suspended_processes: suspended_processes}'
 
             - name: Set path to file with original configuration of ASGs
               set_fact:
@@ -299,25 +284,33 @@
                   # This file is managed by Ansible and is needed to restore original configuration. DO NOT EDIT.
                   {{ asg_facts | to_nice_yaml(indent=2) }}
 
-            - name: Set minimum capacity to 0
+            - name: Suspend HealthCheck and ReplaceUnhealthy processes
               community.aws.ec2_asg:
-                name: "{{ item }}"
-                min_size: 0
+                name: "{{ item.auto_scaling_group_name }}"
+                suspend_processes: "{{ item.suspended_processes | union(['HealthCheck', 'ReplaceUnhealthy']) }}"
                 region: "{{ aws_region }}"
-              loop: >-
-                {{ cluster_asgs.results | rejectattr('min_size', '==', 0) | map(attribute='auto_scaling_group_name') }}
-
-            - name: Put instances into Standby state
-              command: >-
-                aws autoscaling enter-standby
-                  --instance-ids {{ item.instances | map(attribute='instance_id') | join(' ') }}
-                  --auto-scaling-group-name {{ item.auto_scaling_group_name }}
-                  --should-decrement-desired-capacity --region {{ aws_region }}
-              when: item.instances | rejectattr('lifecycle_state', '==', 'Standby') | count > 0
-              loop: >-
-                {{ cluster_asgs.results }}
               loop_control:
                 label: "{{ item.auto_scaling_group_name }}"
+              loop: >-
+                {{ cluster_asgs.results }}
+
+        # Ansible modules don't support `ec2 modify-instance-maintenance-options` command so we use AWS cli
+        - name: Ensure pip3
+          block:
+            - name: Check if pip3 is present
+              command: pip3 --version
+              register: check_pip3
+              changed_when: false
+              failed_when: false
+
+            - name: Install pip3
+              command: python3 -m ensurepip
+              when: check_pip3.rc != 0
+
+        - name: Install AWS cli
+          pip:
+            name: awscli
+          register: install_awscli
 
         - name: Find cluster instances
           community.aws.ec2_instance_info:
@@ -810,9 +803,9 @@
         path: /etc/dnf/vars/releasever  # file created by upgrade
         state: absent
 
-    # AWS: Restore original configuration
+    # AWS: Resume HealthCheck process
 
-    - name: Put all instances into InService state
+    - name: Resume HealthCheck process for auto scaling groups
       when: provider == 'aws'
       run_once: true
       delegate_to: localhost
@@ -825,7 +818,7 @@
             get_mime: false
           register: stat_asg_config_yml
 
-        - name: Restore original configuration
+        - name: Restore original configuration except for ReplaceUnhealthy process
           when: stat_asg_config_yml.stat.exists
           block:
             - name: Load original configuration from backup
@@ -837,38 +830,19 @@
               set_fact:
                 asgs_to_restore: "{{ slurp_asg_config_yml['content'] | b64decode | from_yaml }}"
 
-        - name: Refresh info on auto scaling groups
-          community.aws.ec2_asg_info:
-            name: "{{ cluster_full_name }}"
-            region: "{{ aws_region }}"
-          register: cluster_asgs
+            - name: Resume HealthCheck process
+              community.aws.ec2_asg:
+                name: "{{ item.auto_scaling_group_name }}"
+                suspend_processes: "{{ item.suspended_processes | union(['ReplaceUnhealthy']) }}"
+                region: "{{ aws_region }}"
+              loop_control:
+                label: "{{ item.auto_scaling_group_name }}"
+              loop: "{{ asgs_to_restore }}"
 
-        - name: Put instances back in service
-          command: >-
-            aws autoscaling exit-standby
-              --instance-ids {{ item.instances | map(attribute='instance_id') | join(' ') }}
-              --auto-scaling-group-name {{ item.auto_scaling_group_name }}
-              --region {{ aws_region }}
-          when: item.instances | selectattr('lifecycle_state', '==', 'Standby') | count > 0
-          loop: >-
-            {{ cluster_asgs.results }}
-          loop_control:
-            label: "{{ item.auto_scaling_group_name }}"
-
-        - name: Restore minimum capacity
-          community.aws.ec2_asg:
-            name: "{{ item.auto_scaling_group_name }}"
-            min_size: "{{ item.min_size }}"
-            region: "{{ aws_region }}"
-          loop: >-
-            {{ asgs_to_restore }}
-          loop_control:
-            label: "{{ item.auto_scaling_group_name }}"
-
-        - name: Remove backup of original configuration of ASGs
-          file:
-            path: "{{ asg_config_file_path }}"
-            state: absent
+            - name: Remove backup of original configuration of ASGs
+              file:
+                path: "{{ asg_config_file_path }}"
+                state: absent
 
         - name: Remove AWS credentials file
           file:
