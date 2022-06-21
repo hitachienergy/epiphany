@@ -59,7 +59,7 @@
       synchronize:
         src: "{{ input_manifest_path }}"
         dest: "{{ download_requirements_dir }}/manifest.yml"
-      when: full_download
+      when: not full_download
 
     - name: Copy RedHat family specific download requirements file
       synchronize:

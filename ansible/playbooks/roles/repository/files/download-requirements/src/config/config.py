@@ -271,7 +271,7 @@ class Config:
                 files_to_exclude.append(file)
 
         if is_k8s_as_cloud_service:
-            files_to_exclude = [file for file in files if 'kubernetes' not in file.deps]
+            files_to_exclude = [file for file in files if 'kubernetes' not in files[file]['deps']]
 
         if files_to_exclude:
             requirements['files'] = {url: data for url, data in files.items() if url not in files_to_exclude}
@@ -326,7 +326,10 @@ class Config:
         if not self.dest_manifest:
             return
 
+        # Needs to be imported here as the libyaml might be missing on the OS,
+        # this could cause crash on config.py import.
         from src.config.manifest_reader import ManifestReader
+
         mreader = ManifestReader(self.dest_manifest, self.os_arch)
         try:
             manifest = mreader.parse_manifest()

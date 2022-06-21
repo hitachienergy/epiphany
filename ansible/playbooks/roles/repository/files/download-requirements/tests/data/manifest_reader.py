@@ -320,6 +320,44 @@ version: 2.0.1dev
 """
 
 
+INPUT_MANIFEST_WITH_K8S_AS_CLOUD_SERVICE = f"""
+kind: epiphany-cluster
+title: Epiphany cluster Config
+provider: any
+name: default
+specification:
+  name: new_cluster
+  admin_user:
+    name: operations
+    key_path: /shared/.ssh/epiphany-operations/id_rsa
+  cloud:
+    k8s_as_cloud_service: true
+  components:
+    repository:
+      count: 1
+    kubernetes_master:
+      count: 0
+    kubernetes_node:
+      count: 0
+    logging:
+      count: 0
+    monitoring:
+      count: 0
+    kafka:
+      count: 0
+    postgresql:
+      count: 0
+    load_balancer:
+      count: 0
+    rabbitmq:
+      count: 0
+    opensearch:
+      count: 0
+version: 2.0.1dev
+{FEATURE_MAPPINGS}
+"""
+
+
 EXPECTED_FEATURE_MAPPINGS = {
     'requested-components': ['kafka', 'repository'],
     'requested-features': ['filebeat',

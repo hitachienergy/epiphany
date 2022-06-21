@@ -438,3 +438,25 @@ Images to download:
 - registry:2.8.0
 --------------------------------------------------
 """
+
+
+EXPECTED_VERBOSE_K8S_AS_CLOUD_SERVICE_OUTPUT = """
+Manifest summary:
+--------------------------------------------------
+Components requested:
+- repository
+
+Features requested:
+- filebeat
+- firewall
+- image-registry
+- node-exporter
+- repository
+
+Files to download:
+- https://charts.bitnami.com/bitnami/node-exporter-2.3.17.tgz
+- https://charts.rook.io/release/rook-ceph-cluster-v1.8.8.tgz
+- https://charts.rook.io/release/rook-ceph-v1.8.8.tgz
+- https://helm.elastic.co/helm/filebeat/filebeat-7.12.1.tgz
+--------------------------------------------------
+"""
