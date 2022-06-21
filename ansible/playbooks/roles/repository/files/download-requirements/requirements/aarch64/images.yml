@@ -13,8 +13,8 @@ images:
     'epiphanyplatform/keycloak:14.0.0':
       sha1: c73be9d38580fc9819bec8942e2d2569196547e1
 
-  'rabbitmq:3.8.9':
-    sha1: 854d06bae1ee7e3a94570e1ce104618430988f57
+    'rabbitmq:3.8.9':
+      sha1: 854d06bae1ee7e3a94570e1ce104618430988f57
 
   kubernetes-master:
     'kubernetesui/dashboard:v2.3.1':

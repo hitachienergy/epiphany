@@ -31,9 +31,16 @@ class ManifestReader:
     def __init__(self, dest_manifest: Path, arch: OSArch):
         self.__dest_manifest = dest_manifest
         self.__os_arch: str = arch.value
+
+        self.__k8s_as_cloud_service: bool = False
+
         self.__requested_components: Set = set()
         self.__requested_features: Set = set()
         self.__requested_images: Set = set()
+
+    @property
+    def is_k8s_as_cloud_service(self) -> bool:
+        return self.__k8s_as_cloud_service
 
     def __parse_cluster_doc(self, cluster_doc: Dict):
         """
@@ -45,6 +52,11 @@ class ManifestReader:
         """
         if Version(cluster_doc['version']) < Version('2.0.1'):
             raise OldManifestVersion(cluster_doc['version'])
+
+        try:
+            self.__k8s_as_cloud_service = cluster_doc['specification']['cloud']['k8s_as_cloud_service']
+        except KeyError:
+            self.__k8s_as_cloud_service = False
 
         components = cluster_doc['specification']['components']
         for component in components:

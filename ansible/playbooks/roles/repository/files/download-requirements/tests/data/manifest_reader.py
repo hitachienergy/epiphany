@@ -214,17 +214,15 @@ specification:
         applications:
           - name: epiphanyplatform/keycloak:14.0.0
             file_name: keycloak-14.0.0.tar
-        rabbitmq:
           - name: rabbitmq:3.8.9
             file_name: rabbitmq-3.8.9.tar
+          - name: bitnami/pgpool:4.2.4
+            file_name: pgpool-4.2.4.tar
         kubernetes-master:
           - name: kubernetesui/dashboard:v2.3.1
             file_name: dashboard-v2.3.1.tar
           - name: kubernetesui/metrics-scraper:v1.0.7
             file_name: metrics-scraper-v1.0.7.tar
-        postgresql:
-          - name: bitnami/pgpool:4.2.4
-            file_name: pgpool-4.2.4.tar
       current:
         haproxy:
           - name: haproxy:2.2.2-alpine
@@ -255,7 +253,6 @@ specification:
         applications:
           - name: epiphanyplatform/keycloak:14.0.0
             file_name: keycloak-14.0.0.tar
-        rabbitmq:
           - name: rabbitmq:3.8.9
             file_name: rabbitmq-3.8.9.tar
         kubernetes-master:

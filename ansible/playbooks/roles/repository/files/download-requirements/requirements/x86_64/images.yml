@@ -9,14 +9,13 @@ images:
       sha1: 89795c17099199c752d02ad8797c1d4565a08aff
       allow_mismatch: true
 
-  postgresql:
+  applications:
     'bitnami/pgpool:4.2.4':
       sha1: 66741f3cf4a508bd1f80e2965b0086a4c0fc3580
 
     'bitnami/pgbouncer:1.16.0':
       sha1: f2e37eecbf9aed44d5566f06dcc101c1ba9edff9
 
-  applications:
     'epiphanyplatform/keycloak:14.0.0':
       sha1: b59d75a967cedd3a4cf5867eced2fb5dff52f60e
 

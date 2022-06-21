@@ -257,26 +257,29 @@ class Config:
 
         logging.info('\n'.join(lines))
 
-    def __filter_manifest(self, requirements: Dict[str, Any], manifest: Dict[str, Any]):
+    def __filter_files(self, requirements: Dict[str, Any],
+                             manifest: Dict[str, Any],
+                             is_k8s_as_cloud_service: bool):
         """
-        Filter entries in the `requirements` based on the parsed `manifest` documents.
-
-        :param requirements: parsed requirements which will be filtered based on the `manifest` content
-        :param manifest: parsed documents which will be used to filter `requirements`
+        See :func:`~config.Config.__filter_manifest`
         """
-        if 'grafana' not in manifest['requested-features']:
-            requirements['grafana-dashboards'] = []
-
         files = requirements['files']
         files_to_exclude: List[str] = []
         for file in files:
             deps = files[file]['deps']
-            if deps not in manifest['requested-features'] and deps != 'default':
+            if any(dep not in manifest['requested-features'] for dep in deps) and deps != 'default':
                 files_to_exclude.append(file)
+
+        if is_k8s_as_cloud_service:
+            files_to_exclude = [file for file in files if 'kubernetes' not in file.deps]
 
         if files_to_exclude:
             requirements['files'] = {url: data for url, data in files.items() if url not in files_to_exclude}
 
+    def __filter_images(self, requirements: Dict[str, Any], manifest: Dict[str, Any]):
+        """
+        See :func:`~config.Config.__filter_manifest`
+        """
         # prepare image groups:
         images = requirements['images']
         images_to_download: Dict[str, Dict] = {}
@@ -297,6 +300,22 @@ class Config:
         if images_to_download:
             requirements['images'] = images_to_download
 
+    def __filter_manifest(self, requirements: Dict[str, Any],
+                                manifest: Dict[str, Any],
+                                is_k8s_as_cloud_service: bool):
+        """
+        Filter entries in the `requirements` based on the parsed `manifest` documents.
+
+        :param requirements: parsed requirements which will be filtered based on the `manifest` content
+        :param manifest: parsed documents which will be used to filter `requirements`
+        :param is_k8s_as_cloud_service: whether to download kubernetes files if service is not present
+        """
+        if 'grafana' not in manifest['requested-features']:
+            requirements['grafana-dashboards'] = []
+
+        self.__filter_files(requirements, manifest, is_k8s_as_cloud_service)
+        self.__filter_images(requirements, manifest)
+
     def read_manifest(self, requirements: Dict[str, Any]):
         """
         Construct ManifestReader and parse only required data.
@@ -311,7 +330,7 @@ class Config:
         mreader = ManifestReader(self.dest_manifest, self.os_arch)
         try:
             manifest = mreader.parse_manifest()
-            self.__filter_manifest(requirements, manifest)
+            self.__filter_manifest(requirements, manifest, mreader.is_k8s_as_cloud_service)
 
             if self.verbose_mode:
                 self.__print_parsed_manifest_data(requirements, manifest)

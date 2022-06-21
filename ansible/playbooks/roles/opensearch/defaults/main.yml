@@ -59,4 +59,3 @@ certificates:
 ports:
   http: 9200
   transport: 9300
-log4j_file_name: apache-log4j-2.17.1-bin.tar.gz
