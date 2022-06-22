@@ -271,7 +271,7 @@ class Config:
                 files_to_exclude.append(file)
 
         if is_k8s_as_cloud_service:
-            files_to_exclude = [file for file in files if 'kubernetes' not in files[file]['deps']]
+            files_to_exclude = [file for file in files if 'kubernetes-master' not in files[file]['deps']]
 
         if files_to_exclude:
             requirements['files'] = {url: data for url, data in files.items() if url not in files_to_exclude}
