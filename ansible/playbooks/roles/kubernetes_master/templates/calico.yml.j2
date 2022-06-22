@@ -3861,8 +3861,10 @@ spec:
             # Set Felix endpoint to host default action to ACCEPT.
             - name: FELIX_DEFAULTENDPOINTTOHOSTACTION
               value: "ACCEPT"
+{% if 'arm64' in calico_arch %}
             - name: FELIX_IPTABLESBACKEND
               value: "Legacy"
+{% endif %}
             # Disable IPv6 on Kubernetes.
             - name: FELIX_IPV6SUPPORT
               value: "false"
