@@ -328,15 +328,21 @@ def test_parser(subparsers):
                             help='Absolute path to directory with build artifacts.')
 
     #optional
-    group_list = '{' + ', '.join(SpecCommand.get_spec_groups()) + '}'
-    optional.add_argument('-g', '--group', choices=SpecCommand.get_spec_groups(), default='all', action='store', dest='group', required=False, metavar=group_list,
-                            help='Group of tests to be run, e.g. kafka.')
+    TEST_GROUPS = SpecCommand.get_spec_groups()
+    include_choices = ['all'] + TEST_GROUPS
+
+    optional.add_argument('-e', '--exclude', default=[], choices=TEST_GROUPS, action='store',
+                            dest='excluded_groups', required=False, nargs='*',
+                            help='Group of tests to be skipped, e.g. -e kafka kafka_exporter.')
+    optional.add_argument('-i', '--include', default='all', choices=include_choices, action='store',
+                            dest='included_groups', required=False, nargs='*',
+                            help='Group of tests to be run, e.g. -i kafka kafka_exporter.')
     sub_parser._action_groups.append(optional)
 
     def run_test(args):
         experimental_query()
         adjust_paths_from_build(args)
-        with Test(args) as cmd:
+        with Test(args, TEST_GROUPS) as cmd:
             return cmd.test()
 
     sub_parser.set_defaults(func=run_test)

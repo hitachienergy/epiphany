@@ -22,7 +22,7 @@ These need to be installed to run the cluster spec tests from epicli'''
         if  shutil.which('ruby') is None or shutil.which('gem') is None:
             raise Exception(error_str)
 
-        p = subprocess.Popen(['gem', 'query', '--local'], stdout=PIPE)
+        p = subprocess.Popen(['gem', 'list', '--local'], stdout=PIPE)
         out, err = p.communicate()
         if all(n in out.decode('utf-8') for n in required_gems) is False:
             raise Exception(error_str)
@@ -52,9 +52,9 @@ These need to be installed to run the cluster spec tests from epicli'''
 
 
     @staticmethod
-    def get_spec_groups():
+    def get_spec_groups() -> list[str]:
         listdir = os.listdir(f'{SPEC_TEST_PATH}/spec')
-        groups = ['all']
+        groups = []
         for entry in listdir:
             if os.path.isdir(f'{SPEC_TEST_PATH}/spec/{entry}'):
                 groups = groups + [entry]

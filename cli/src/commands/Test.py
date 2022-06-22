@@ -8,10 +8,17 @@ from cli.src.Step import Step
 
 
 class Test(Step):
-    def __init__(self, input_data):
+    def __init__(self, input_data, available_test_groups: list[str]):
         super().__init__(__name__)
         self.build_directory = input_data.build_directory
-        self.group = input_data.group
+        self.test_groups = input_data.included_groups
+
+        if input_data.excluded_groups:
+            included_groups = input_data.included_groups
+            if 'all' in included_groups:
+                included_groups = available_test_groups
+
+            self.test_groups = sorted(set(included_groups) - set(input_data.excluded_groups))
 
     def __enter__(self):
         super().__enter__()
@@ -42,6 +49,11 @@ class Test(Step):
 
         # run the spec tests
         spec_command = SpecCommand()
-        spec_command.run(spec_output, path_to_inventory, admin_user.name, admin_user.key_path, self.group)
+        if 'all' in self.test_groups:
+            spec_command.run(spec_output, path_to_inventory, admin_user.name, admin_user.key_path, 'all')
+        else:
+            self.logger.info(f'Selected test groups: {self.test_groups}')
+            for group in self.test_groups:
+                spec_command.run(spec_output, path_to_inventory, admin_user.name, admin_user.key_path, group)
 
         return 0
