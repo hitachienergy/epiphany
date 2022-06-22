@@ -267,7 +267,7 @@ class Config:
         files_to_exclude: List[str] = []
         for file in files:
             deps = files[file]['deps']
-            if any(dep not in manifest['requested-features'] for dep in deps) and deps != 'default':
+            if all(dep not in manifest['requested-features'] for dep in deps) and deps != 'default':
                 files_to_exclude.append(file)
 
         if is_k8s_as_cloud_service:
