@@ -39,12 +39,6 @@ files:
   'https://helm.elastic.co/helm/filebeat/filebeat-7.12.1.tgz':
     sha256: 5838058fe06372390dc335900a7707109cc7287a84164ca245d395af1f9c0a79
 
-  'https://charts.rook.io/release/rook-ceph-v1.8.8.tgz':
-    sha256: f67e474dedffd4004f3a0b7b40112694a7f1c2b1a0048b03b3083d0a01e86b14
-
-  'https://charts.rook.io/release/rook-ceph-cluster-v1.8.8.tgz':
-    sha256: df4e1f2125af41fb84c72e4d12aa0cb859dddd4f37b3d5979981bd092040bd16
-
   # --- OpenSearch Bundle ---
   'https://artifacts.opensearch.org/releases/bundle/opensearch/1.2.4/opensearch-1.2.4-linux-arm64.tar.gz':
     sha256: 5e8cd13ad1831e4a286a54334505c16c43ce8e50981100eea4eb18f79d3e63a5
