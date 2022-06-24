@@ -11,7 +11,10 @@
 # ansible-playbook -e leapp_archive=/absolute/path/leapp-data16.tar.gz -e epiphany_manifest=/shared/build/aws/manifest.yml
 
 # Note:
-# For AWS, playbook creates/overwrites with backup '/root/.aws/credentials' file locally.
+# For AWS playbook:
+# - creates/overwrites with backup '/root/.aws/credentials' file locally
+# - suspends ReplaceUnhealthy process for auto scaling groups
+# - disables auto-recovery for all instances
 
 # Limitations:
 # - Ansible connection as root is not supported (PermitRootLogin)
@@ -180,9 +183,9 @@
           when: update_containerd_config_option.changed
              or add_containerd_config_option.changed
 
-    # Suspend HealthCheck process on AWS (required for reboots)
+    # AWS: Disable instance auto-recovery
 
-    - name: Suspend HealthCheck process for auto scaling groups
+    - name: Suspend ReplaceUnhealthy process for auto scaling groups and disable auto-recovery
       when: provider == 'aws'
       run_once: true
       delegate_to: localhost
@@ -201,45 +204,69 @@
           block:
             - name: Set cloud facts
               set_fact:
+                aws_config_dir: "{{ '~root' | expanduser }}/.aws"
                 aws_region: "{{ _cluster_doc.specification.cloud.region }}"
-                cluster_name: "{{ _cluster_doc.specification.prefix }}-{{ _cluster_doc.specification.name }}"
+                cluster_name: "{{ _cluster_doc.specification.name }}"
+                cluster_full_name: "{{ _cluster_doc.specification.prefix }}-{{ _cluster_doc.specification.name }}"
 
             - name: Create AWS configuration directory
               file:
-                path: "{{ '~root' | expanduser }}/.aws"
+                path: "{{ aws_config_dir }}"
                 state: directory
-                mode: u=rwx,go=
+                mode: u=rwx,go=rx
 
-            - name: Create credentials file
+            - name: Check if AWS credentials file exists
+              stat:
+                path: "{{ aws_config_dir }}/{{ item }}"
+                get_attributes: false
+                get_checksum: false
+                get_mime: false
+              register: stat_aws_credentials_file
+              loop:
+                - credentials
+                - credentials.rhel-7-upgrade.bak
+
+            - name: Back up AWS credentials file
+              when:
+                - stat_aws_credentials_file.results[0].stat.exists
+                - not stat_aws_credentials_file.results[1].stat.exists
               copy:
-                dest: "{{ '~root' | expanduser }}/.aws/credentials"
+                src: "{{ aws_config_dir }}/credentials"
+                dest: "{{ aws_config_dir }}/credentials.rhel-7-upgrade.bak"
+                remote_src: true
+                mode: preserve
+              no_log: true
+
+            - name: Create AWS credentials file
+              copy:
+                dest: "{{ aws_config_dir }}/credentials"
                 content: |
                   [default]
                   aws_access_key_id = {{ _cluster_doc.specification.cloud.credentials.key }}
                   aws_secret_access_key = {{ _cluster_doc.specification.cloud.credentials.secret }}
                 mode: u=rw,go=
-                backup: true
+              no_log: true
 
         - name: Find auto scaling groups
           community.aws.ec2_asg_info:
-            name: "{{ cluster_name }}"
+            name: "{{ cluster_full_name }}"
             region: "{{ aws_region }}"
           register: cluster_asgs
 
-        - name: Reconfigure ASGs to suspend EC2 health check
+        - name: Reconfigure ASGs to suspend HealthCheck and ReplaceUnhealthy processes
           when: cluster_asgs.results | count > 0
           block:
             - name: Set facts on ASGs
               set_fact:
                 asg_facts: "{{ cluster_asgs.results | json_query(_query) }}"
               vars:
-                _query: '[].{name: auto_scaling_group_name, suspended_processes: suspended_processes}'
+                _query: '[].{auto_scaling_group_name: auto_scaling_group_name, instances: instances, suspended_processes: suspended_processes}'
 
             - name: Set path to file with original configuration of ASGs
               set_fact:
-                asg_config_file_path: "{{ playbook_dir }}/{{ cluster_name }}-asg-config.yml"
+                asg_config_file_path: "{{ playbook_dir }}/{{ cluster_full_name }}-asg-config.yml"
 
-            - name: Check if file with original configuration of ASGs exists
+            - name: Check if backup of original configuration of ASGs exists
               stat:
                 path: "{{ asg_config_file_path }}"
                 get_attributes: false
@@ -247,7 +274,7 @@
                 get_mime: false
               register: stat_asg_config_yml
 
-            - name: Save original configuration of auto scaling groups
+            - name: Back up configuration of auto scaling groups
               when: not stat_asg_config_yml.stat.exists
               become: false
               copy:
@@ -255,17 +282,50 @@
                 mode: u=rw,g=r,o=
                 content: |
                   # This file is managed by Ansible and is needed to restore original configuration. DO NOT EDIT.
-                  {{ asg_facts | to_nice_yaml }}
+                  {{ asg_facts | to_nice_yaml(indent=2) }}
 
-            - name: Suspend HealthCheck process
-              when: not 'HealthCheck' in (item.suspended_processes | map(attribute='process_name'))
+            - name: Suspend HealthCheck and ReplaceUnhealthy processes
               community.aws.ec2_asg:
-                name: "{{ item.name }}"
-                suspend_processes: "{{ item.suspended_processes | union(['HealthCheck']) }}"
+                name: "{{ item.auto_scaling_group_name }}"
+                suspend_processes: "{{ item.suspended_processes | union(['HealthCheck', 'ReplaceUnhealthy']) }}"
                 region: "{{ aws_region }}"
               loop_control:
-                label: "{{ item.name }}"
-              loop: "{{ asg_facts }}"
+                label: "{{ item.auto_scaling_group_name }}"
+              loop: >-
+                {{ cluster_asgs.results }}
+
+        # Ansible modules don't support `ec2 modify-instance-maintenance-options` command so we use AWS cli
+        - name: Ensure pip3
+          block:
+            - name: Check if pip3 is present
+              command: pip3 --version
+              register: check_pip3
+              changed_when: false
+              failed_when: false
+
+            - name: Install pip3
+              command: python3 -m ensurepip
+              when: check_pip3.rc != 0
+
+        - name: Install AWS cli
+          pip:
+            name: awscli
+          register: install_awscli
+
+        - name: Find cluster instances
+          community.aws.ec2_instance_info:
+            filters:
+              "tag:cluster_name": "{{ cluster_name }}"
+              instance-state-name: ['running']
+            region: "{{ aws_region }}"
+          register: cluster_instances
+
+        - name: Disable auto-recovery for all instances
+          command: >-
+            aws ec2 modify-instance-maintenance-options
+              --instance-id {{ item }} --auto-recovery disabled --region {{ aws_region }}
+          loop: >-
+            {{ cluster_instances.instances | map(attribute='instance_id') }}
 
     - &UPDATE_ALL_PACKAGES
       name: Update all packages in current major version
@@ -558,22 +618,48 @@
 
     ## Fix failed services
 
+    - name: Gather service facts
+      service_facts: ~
+
+    - &SET_FAILED_SERVICES_FACT
+      name: Set list of failed services
+      set_fact:
+        failed_services: "{{ ansible_facts.services | json_query('*[] | [?(@.status==`failed`)].name') }}"
+
+    - name: Print failed services
+      when: failed_services | count > 0
+      debug:
+        var: failed_services
+
+    - name: Fix repmgr10 service
+      when: "'repmgr10.service' in failed_services"
+      block:
+        # upstream node must be running before repmgrd can start
+        - name: Search for PostgreSQL primary node
+          become_user: postgres
+          # command prints primary/standby
+          shell: |-
+            set -o pipefail && \
+            repmgr node status | grep -ioP '(?<=Role:).+' | xargs
+          changed_when: false
+          register: pg_node_role
+          failed_when: pg_node_role.rc != 0 or pg_node_role.stdout == ""
+
+        - name: Wait for PostgreSQL primary node to be reachable
+          when: pg_node_role.stdout == 'primary'
+          wait_for:
+            port: 5432
+            timeout: 30
+
+        - name: Restart repmgr10 service
+          when: pg_node_role.stdout == 'standby'
+          systemd:
+            name: repmgr10
+            state: restarted
+
     - name: Azure specific block
       when: provider == 'azure'
       block:
-        - name: Gather service facts
-          service_facts: ~
-
-        - &SET_FAILED_SERVICES_FACT
-          name: Set list of failed services
-          set_fact:
-            failed_services: "{{ ansible_facts.services | json_query('*[] | [?(@.status==`failed`)].name') }}"
-
-        - name: Print failed services
-          when: failed_services | count > 0
-          debug:
-            var: failed_services
-
         - name: Fix cloud-init.service
           when: "'cloud-init.service' in failed_services"
           block:
@@ -613,6 +699,12 @@
               systemd:
                 name: cloud-init
                 state: restarted
+              # On K8s master with Calico CNI plugin there is error in first attempt:
+              # duplicate mac found! both 'cali770930d50fa' and 'cali67622b483b3' have mac 'ee:ee:ee:ee:ee:ee'
+              register: restart_cloud_init
+              until: restart_cloud_init is succeeded
+              retries: 1
+              delay: 1
 
             - name: Restore cloud-init config file
               when: cloud_init_cfg_ssh_deletekeys.changed
@@ -663,7 +755,8 @@
 
     ## Verify services
 
-    - name: Gather service facts
+    - name: Refresh service facts
+      when: failed_services | count > 0
       service_facts: ~
 
     - *SET_FAILED_SERVICES_FACT
@@ -710,7 +803,7 @@
         path: /etc/dnf/vars/releasever  # file created by upgrade
         state: absent
 
-    # Resume HealthCheck process on AWS
+    # AWS: Resume HealthCheck process
 
     - name: Resume HealthCheck process for auto scaling groups
       when: provider == 'aws'
@@ -725,10 +818,10 @@
             get_mime: false
           register: stat_asg_config_yml
 
-        - name: Restore original configuration
+        - name: Restore original configuration except for ReplaceUnhealthy process
           when: stat_asg_config_yml.stat.exists
           block:
-            - name: Load original configuration from file
+            - name: Load original configuration from backup
               slurp:
                 src: "{{ asg_config_file_path }}"
               register: slurp_asg_config_yml
@@ -739,14 +832,52 @@
 
             - name: Resume HealthCheck process
               community.aws.ec2_asg:
-                name: "{{ item.name }}"
-                suspend_processes: "{{ item.suspended_processes }}"
+                name: "{{ item.auto_scaling_group_name }}"
+                suspend_processes: "{{ item.suspended_processes | union(['ReplaceUnhealthy']) }}"
                 region: "{{ aws_region }}"
               loop_control:
-                label: "{{ item.name }}"
+                label: "{{ item.auto_scaling_group_name }}"
               loop: "{{ asgs_to_restore }}"
 
-            - name: Remove file with original configuration of ASGs
+            - name: Remove backup of original configuration of ASGs
               file:
                 path: "{{ asg_config_file_path }}"
                 state: absent
+
+        - name: Remove AWS credentials file
+          file:
+            path: "{{ aws_config_dir }}/credentials"
+            state: absent
+
+        - name: Restore AWS credentials file
+          vars:
+            _backup_path: "{{ aws_config_dir }}/credentials.rhel-7-upgrade.bak"
+          block:
+            - name: Check if backup of AWS credentials file exists
+              stat:
+                path: "{{ _backup_path }}"
+                get_attributes: false
+                get_checksum: false
+                get_mime: false
+              register: stat_aws_credentials_file_backup
+
+            - name: Restore AWS credentials file
+              when: stat_aws_credentials_file_backup.stat.exists
+              copy:
+                src: "{{ _backup_path }}"
+                dest: "{{ aws_config_dir }}/credentials"
+                remote_src: true
+                mode: preserve
+              no_log: true
+
+            - name: Remove backup of AWS credentials file
+              when: stat_aws_credentials_file_backup.stat.exists
+              file:
+                path: "{{ _backup_path }}"
+                state: absent
+
+        - name: Uninstall AWS cli
+          when: install_awscli.changed
+          pip:
+            name: awscli
+            state: absent
