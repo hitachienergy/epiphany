@@ -1,5 +1,11 @@
 # Changelog 1.0
 
+## [1.0.5] 2022-0X-XX
+
+### Fixed
+
+- [#3198](https://github.com/epiphany-platform/epiphany/issues/3198) - [Ubuntu] download-requirements.sh fails on downloading Erlang packages
+
 ## [1.0.4] 2022-05-30
 
 ### Fixed
