@@ -28,7 +28,7 @@ These need to be installed to run the cluster spec tests from epicli'''
             raise Exception(error_str)
 
 
-    def run(self, spec_output, inventory, user, key, group):
+    def run(self, spec_output, inventory, user, key, groups):
         self.check_dependencies()
 
         env = os.environ.copy()
@@ -37,7 +37,7 @@ These need to be installed to run the cluster spec tests from epicli'''
         env['user'] = user
         env['keypath'] = key
 
-        cmd = f'rake inventory={inventory} user={user} keypath={key} spec_output={spec_output} spec:{group}'
+        cmd = f'rake inventory={inventory} user={user} keypath={key} spec_output={spec_output} spec:{" spec:".join(groups)}'
 
         self.logger.info(f'Running: "{cmd}"')
 
@@ -53,6 +53,8 @@ These need to be installed to run the cluster spec tests from epicli'''
 
     @staticmethod
     def get_spec_groups() -> list[str]:
+        """Get test groups based on directories."""
+
         listdir = os.listdir(f'{SPEC_TEST_PATH}/spec')
         groups = []
         for entry in listdir:
