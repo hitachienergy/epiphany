@@ -22,9 +22,9 @@
             // "args": ["init", "-p", "<PROVIDER>", "-n", "<NAME>", "--full"]
             // "args": ["prepare", "--os", "<OS>", "--arch", "<ARCH>"]
             // "args": ["--auto-approve", "test", "-b", "${workspaceFolder}/clusters/build/<DIR>"]
-            // "args": ["--auto-approve", "test", "-b", "${workspaceFolder}/clusters/build/<DIR>", "-g", "<TEST_GROUP>"]
+            // "args": ["--auto-approve", "test", "-b", "${workspaceFolder}/clusters/build/<DIR>", "-i", "<GROUPS>"]
             // "args": ["upgrade", "-b", "${workspaceFolder}/clusters/build/<DIR>"]
-            // "args": ["upgrade", "-b", "${workspaceFolder}/clusters/build/<DIR>","--upgrade-components","kafka"]
+            // "args": ["upgrade", "-b", "${workspaceFolder}/clusters/build/<DIR>", "--upgrade-components", "kafka"]
         }
     ]
 }
