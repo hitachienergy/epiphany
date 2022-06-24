@@ -5,7 +5,7 @@ versions:
   general: 3.8.9 # required for upgrade
   # packages
   debian:
-    erlang: 1:23.1.*
+    erlang: 1:23.*
     rabbitmq: 3.8.9*
   redhat:
     erlang_filename: erlang-23.1.5-1.el7.x86_64.rpm
