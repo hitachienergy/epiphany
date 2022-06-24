@@ -28,7 +28,7 @@ files:
 
   'https://github.com/prometheus/alertmanager/releases/download/v0.23.0/alertmanager-0.23.0.linux-amd64.tar.gz':
     sha256: 77793c4d9bb92be98f7525f8bc50cb8adb8c5de2e944d5500e90ab13918771fc
-    deps: [alertmanager]
+    deps: [prometheus]
 
   'https://github.com/prometheus/prometheus/releases/download/v2.31.1/prometheus-2.31.1.linux-amd64.tar.gz':
     sha256: 7852dc11cfaa039577c1804fe6f082a07c5eb06be50babcffe29214aedf318b3
