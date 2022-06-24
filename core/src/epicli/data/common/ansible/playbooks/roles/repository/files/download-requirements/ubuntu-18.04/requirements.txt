@@ -21,23 +21,23 @@ elasticsearch-oss 7.10.2 # for opendistroforelasticsearch & logging roles
 # Metapackages such as erlang and erlang-nox must only be used
 # with apt version pinning. They do not pin their dependency versions.
 # List based on: https://www.rabbitmq.com/install-debian.html#installing-erlang-package
-erlang-asn1 1:23.1.5
-erlang-base 1:23.1.5
-erlang-crypto 1:23.1.5
-erlang-eldap 1:23.1.5
-erlang-ftp 1:23.1.5
-erlang-inets 1:23.1.5
-erlang-mnesia 1:23.1.5
-erlang-os-mon 1:23.1.5
-erlang-parsetools 1:23.1.5
-erlang-public-key 1:23.1.5
-erlang-runtime-tools 1:23.1.5
-erlang-snmp 1:23.1.5
-erlang-ssl 1:23.1.5
-erlang-syntax-tools 1:23.1.5
-erlang-tftp 1:23.1.5
-erlang-tools 1:23.1.5
-erlang-xmerl 1:23.1.5
+erlang-asn1 1:23
+erlang-base 1:23
+erlang-crypto 1:23
+erlang-eldap 1:23
+erlang-ftp 1:23
+erlang-inets 1:23
+erlang-mnesia 1:23
+erlang-os-mon 1:23
+erlang-parsetools 1:23
+erlang-public-key 1:23
+erlang-runtime-tools 1:23
+erlang-snmp 1:23
+erlang-ssl 1:23
+erlang-syntax-tools 1:23
+erlang-tftp 1:23
+erlang-tools 1:23
+erlang-xmerl 1:23
 
 ethtool
 filebeat 7.9.2

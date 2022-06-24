@@ -9,8 +9,8 @@ echo "deb https://packages.grafana.com/oss/deb stable main" | tee /etc/apt/sourc
 wget -qO - https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | tee /etc/apt/sources.list.d/kubernetes.list
 
-wget -qO - https://packages.erlang-solutions.com/ubuntu/erlang_solutions.asc | apt-key add -
-echo "deb https://packages.erlang-solutions.com/ubuntu bionic contrib" | tee /etc/apt/sources.list.d/erlang-23.x.list
+wget -qO - https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-erlang/gpg.E495BB49CC4BBE5B.key | sudo gpg --dearmor | sudo tee /usr/share/keyrings/io.cloudsmith.rabbitmq.E495BB49CC4BBE5B.gpg > /dev/null
+echo "deb [signed-by=/usr/share/keyrings/io.cloudsmith.rabbitmq.E495BB49CC4BBE5B.gpg] https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-erlang/deb/ubuntu bionic main" | tee /etc/apt/sources.list.d/rabbitmq-erlang-23.x.list
 
 wget -qO - https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey | apt-key add -
 echo "deb https://packagecloud.io/rabbitmq/rabbitmq-server/ubuntu bionic main" | tee /etc/apt/sources.list.d/rabbitmq.list
