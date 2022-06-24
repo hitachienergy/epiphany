@@ -35,4 +35,4 @@ specification:
       image: rook/ceph:v1.8.8
     cephClusterSpec:
       cephVersion:
-        image: quay.io/ceph/ceph:v16.2.7
+        image: quay.io/ceph/ceph:v16.2.7-20220510

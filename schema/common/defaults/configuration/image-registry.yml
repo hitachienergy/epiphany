@@ -63,8 +63,8 @@ specification:
             file_name: flannel-v0.14.0-amd64.tar
           - name: "quay.io/coreos/flannel:v0.14.0"
             file_name: flannel-v0.14.0.tar
-          - name: "quay.io/ceph/ceph:v16.2.7"
-            file_name: ceph-v16.2.7.tar
+          - name: "quay.io/ceph/ceph:v16.2.7-20220510"
+            file_name: ceph-v16.2.7-20220510.tar
           - name: "quay.io/cephcsi/cephcsi:v3.5.1"
             file_name: cephcsi-v3.5.1.tar
           - name: "quay.io/csiaddons/k8s-sidecar:v0.2.1"
