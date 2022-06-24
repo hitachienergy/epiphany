@@ -52,18 +52,20 @@ class Test(Step):
                 # get available test groups
                 inventory_groups = load_inventory(path_to_inventory).list_groups()
                 effective_inventory_groups = inventory_groups + ['common']
-                included_groups = list(set(self.test_groups) & set(effective_inventory_groups))
+                included_groups = [group for group in self.test_groups if group in effective_inventory_groups]
 
-            selected_test_groups = sorted(set(included_groups) - set(self.excluded_groups))
+            selected_test_groups = [group for group in included_groups if group not in self.excluded_groups]
 
         # run the spec tests
-        spec_command = SpecCommand()
-        if 'all' in selected_test_groups:
-            selected_test_groups = ['all']
-        else:
-            self.logger.info(f'Selected test groups: {", ".join(selected_test_groups)}')
+        if selected_test_groups:
+            spec_command = SpecCommand()
+            if 'all' in selected_test_groups:
+                selected_test_groups = ['all']
+            else:
+                self.logger.info(f'Selected test groups: {", ".join(selected_test_groups)}')
 
-        spec_command.run(spec_output, path_to_inventory, admin_user.name,
-                         admin_user.key_path, selected_test_groups)
+            spec_command.run(spec_output, path_to_inventory, admin_user.name, admin_user.key_path, selected_test_groups)
+        else:
+            raise Exception('No test group to test')
 
         return 0
