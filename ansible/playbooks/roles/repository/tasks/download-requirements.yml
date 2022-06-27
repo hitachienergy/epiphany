@@ -17,7 +17,9 @@
     tee >(systemd-cat --identifier=download-requirements.py)
   args:
     executable: /bin/bash
-  when: not full_download
+  when:
+    - not full_download
+    - download_requirements_manifest
 
 - name: |-
     Run download-requirements script, this can take a long time
@@ -33,7 +35,7 @@
     tee >(systemd-cat --identifier=download-requirements.py)
   args:
     executable: /bin/bash
-  when: full_download
+  when: full_download or not download_requirements_manifest
 
 - name: Create flag file to not re-download requirements next time
   file:

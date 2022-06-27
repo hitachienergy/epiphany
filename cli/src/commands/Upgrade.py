@@ -26,7 +26,7 @@ class Upgrade(Step):
         self.ping_retries: int = input_data.ping_retries
 
         Config().full_download = input_data.full_download
-        Config().input_manifest_path = Path(self.file) if self.file else Path(self.build_dir) / 'manifest.yml'
+        Config().input_manifest_path = Path(self.file) if self.file else None
 
     def __enter__(self):
         super().__enter__()
