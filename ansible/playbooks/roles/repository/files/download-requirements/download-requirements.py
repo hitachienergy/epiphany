@@ -9,7 +9,7 @@ from typing import List
 
 from src.command.toolchain import TOOLCHAINS
 from src.config.config import Config
-from src.error import DownloadRequirementsError
+from src.error import DownloadRequirementsException
 
 
 def install_missing_modules(config: Config):
@@ -79,7 +79,7 @@ def main(argv: List[str]) -> int:
 
         time_end = datetime.datetime.now() - time_begin
         logging.info(f'Total execution time: {str(time_end).split(".")[0]}')
-    except DownloadRequirementsError:
+    except DownloadRequirementsException:
         return 1
 
     return 0
