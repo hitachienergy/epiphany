@@ -61,4 +61,4 @@ kind: KubeletConfiguration
 apiVersion: kubelet.config.k8s.io/v1beta1
 cgroupDriver: systemd
 rotateCertificates: true
-enableControllerAttachDetach: {{ specification.enable_controller_attach_detach }}
+enableControllerAttachDetach: {{ specification.k8s_worker_nodes_capabilities.enable_controller_attach_detach }}
