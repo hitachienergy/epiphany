@@ -13,7 +13,7 @@ pool:
   name: $(agentPoolName)
 
 variables:
-  ansible_lint_error_threshold: 605
+  ansible_lint_error_threshold: 315
   pylint_score_cli_threshold: 9.44
   pylint_score_tests_threshold: 9.78
   rubocop_linter_threshold: 207
@@ -42,7 +42,7 @@ jobs:
           targetType: inline
           script: |
             set -e
-            if ansible-lint --nocolor 1> ansible_lint_stdout 2> ansible_lint_stderr \
+            if ansible-lint -p ansible --show-relpath --nocolor 1> ansible_lint_stdout 2> ansible_lint_stderr \
             || grep 'violation(s) that are fatal' ansible_lint_stderr; then
               # Suppress the next line when the "load-failure" bug in ansible-lint is solved
               # https://github.com/ansible/ansible-lint/issues/2217
