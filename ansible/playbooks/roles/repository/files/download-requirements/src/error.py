@@ -1,13 +1,28 @@
 import logging
 
 
-class DownloadRequirementsError(Exception):
+class DownloadRequirementsException(Exception):
+    """
+    Base class for all exceptions raised during the script runtime.
+    """
+
+
+class DownloadRequirementsError(DownloadRequirementsException):
     """
     Base class for all non standard errors raised during a script run.
     """
     def __init__(self, msg: str):
         super().__init__()
         logging.error(msg)
+
+
+class DownloadRequirementsWarning(DownloadRequirementsException):
+    """
+    Base class for all non critical issues raised during a script run.
+    """
+    def __init__(self, msg: str):
+        super().__init__()
+        logging.warning(msg)
 
 
 class CriticalError(DownloadRequirementsError):
@@ -35,4 +50,12 @@ class ChecksumMismatch(DownloadRequirementsError):
     """
     def __init__(self, msg: str):
         super().__init__(f'{msg} - download failed due to checksum mismatch, '
-                         'WARNING someone might have replaced the file')
+                         'WARNING someone might have replaced the file.')
+
+
+class OldManifestVersion(DownloadRequirementsWarning):
+    """
+    Raised when old manifest version used
+    """
+    def __init__(self, version: str):
+        super().__init__(f'Old manifest version used: `{version}`, no optimization will be performed.')

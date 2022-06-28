@@ -4,23 +4,12 @@ from os import chmod
 from pathlib import Path
 from typing import Any, Dict
 
-import yaml
-
 from src.command.toolchain import Toolchain, TOOLCHAINS
 from src.config.config import Config, OSArch
+from src.config.manifest_reader import load_yaml_file
 from src.crypt import SHA_ALGORITHMS
 from src.downloader import Downloader
 from src.error import CriticalError, ChecksumMismatch
-
-
-def load_yaml_file(filename: Path) -> Any:
-    try:
-        with open(filename, encoding="utf-8") as req_handler:
-            return yaml.safe_load(req_handler)
-    except yaml.YAMLError as yaml_err:
-        raise CriticalError(f'Failed loading: `{yaml_err}`') from yaml_err
-    except Exception as err:
-        raise CriticalError(f'Failed loading: `{filename}`') from err
 
 
 class BaseMode:
@@ -35,6 +24,7 @@ class BaseMode:
         self._repositories: Dict[str, Dict] = self.__parse_repositories()
         self._requirements: Dict[str, Any] = self.__parse_requirements()
         self._tools: Toolchain = TOOLCHAINS[self._cfg.os_type.os_family](self._cfg.retries)
+        self._cfg.read_manifest(self._requirements)
 
     def __parse_repositories(self) -> Dict[str, Dict]:
         """
@@ -191,12 +181,19 @@ class BaseMode:
         Download images under `self._requirements['images']` using Crane.
         """
         platform: str = 'linux/amd64' if self._cfg.os_arch == OSArch.X86_64 else 'linux/arm64'
-        downloader: Downloader = Downloader(self._requirements['images'],
+        images = self._requirements['images']
+
+        images_to_download: Dict[str, Dict] = {}
+        for image_group in images:  # kubernetes-master, rabbitmq, etc.
+            for image, data in images[image_group].items():
+                images_to_download[image] = data
+
+        downloader: Downloader = Downloader(images_to_download,
                                             'sha1',
                                             self._tools.crane.pull,
                                             {'platform': platform})
 
-        for image in self._requirements['images']:
+        for image in images_to_download:
             url, version = image.split(':')
             filename = Path(f'{url.split("/")[-1]}-{version}.tar')  # format: image_version.tar
 
@@ -245,9 +242,11 @@ class BaseMode:
         """
         # add required directories
         self._cfg.dest_files.mkdir(exist_ok=True, parents=True)
-        self._cfg.dest_grafana_dashboards.mkdir(exist_ok=True, parents=True)
         self._cfg.dest_images.mkdir(exist_ok=True, parents=True)
         self._cfg.dest_packages.mkdir(exist_ok=True, parents=True)
+
+        if self._requirements['grafana-dashboards']:
+            self._cfg.dest_grafana_dashboards.mkdir(exist_ok=True, parents=True)
 
         # provides tar which is required for backup
         logging.info('Installing base packages...')
@@ -275,9 +274,10 @@ class BaseMode:
         self.__download_files(self._requirements['files'], self._cfg.dest_files)
         logging.info('Done downloading files.')
 
-        logging.info('Downloading grafana dashboards...')
-        self.__download_grafana_dashboards()
-        logging.info('Done downloading grafana dashboards.')
+        if self._requirements['grafana-dashboards']:
+            logging.info('Downloading grafana dashboards...')
+            self.__download_grafana_dashboards()
+            logging.info('Done downloading grafana dashboards.')
 
         logging.info('Downloading Crane...')
         self.__download_crane()

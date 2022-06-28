@@ -1,0 +1,54 @@
+---
+kind: configuration/features
+title: "Features to be enabled/disabled"
+name: default
+specification:
+  features:
+    - name: repository
+      enabled: true
+    - name: firewall
+      enabled: true
+    - name: image-registry
+      enabled: true
+    - name: kubernetes-master
+      enabled: true
+    - name: kubernetes-node
+      enabled: true
+    - name: helm
+      enabled: true
+    - name: logging
+      enabled: true
+    - name: opensearch
+      enabled: true
+    - name: elasticsearch-curator
+      enabled: true
+    - name: opensearch-dashboards
+      enabled: true
+    - name: filebeat
+      enabled: true
+    - name: prometheus
+      enabled: true
+    - name: grafana
+      enabled: true
+    - name: node-exporter
+      enabled: true
+    - name: jmx-exporter
+      enabled: true
+    - name: zookeeper
+      enabled: true
+    - name: kafka
+      enabled: true
+    - name: rabbitmq
+      enabled: true
+    - name: kafka-exporter
+      enabled: true
+    - name: postgresql
+      enabled: true
+    - name: postgres-exporter
+      enabled: true
+    - name: haproxy
+      enabled: true
+    - name: applications
+      enabled: true
+    - name: rook
+      enabled: true

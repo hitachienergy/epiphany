@@ -1,6 +1,6 @@
 from tests.mocks.command_run_mock import CommandRunMock
 
-from src.command.apt import Apt
+from src.command.debian.apt import Apt
 
 
 def test_interface_update(mocker):

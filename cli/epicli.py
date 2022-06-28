@@ -213,6 +213,8 @@ def apply_parser(subparsers):
                             help='Number of pings after which Ansible will fail.')
     optional.add_argument('--ansible-forks', dest='ansible_forks', type=int, required=False, action='store', default=10,
                             help='Sets the number of forks in ansible.cfg.')
+    optional.add_argument('--full-download', dest='full_download', required=False, action='store_true', default=False,
+                            help='When used epicli will download all the available requirements for each feature supported.')
     sub_parser._action_groups.append(optional)
 
     def run_apply(args):
@@ -306,6 +308,8 @@ def upgrade_parser(subparsers):
                             help='Number of pings after which Ansible will fail.')
     optional.add_argument('--ansible-forks', dest='ansible_forks', type=int, required=False, action='store', default=10,
                             help='Sets the number of forks in ansible.cfg.')
+    optional.add_argument('--full-download', dest='full_download', required=False, action='store_true', default=False,
+                            help='When used epicli will download all the available requirements for each feature supported.')
     sub_parser._action_groups.append(optional)
 
     def run_upgrade(args):

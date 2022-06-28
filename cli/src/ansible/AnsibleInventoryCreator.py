@@ -43,12 +43,12 @@ class AnsibleInventoryCreator(Step):
         return self.group_duplicated(inventory)
 
     def get_roles_for_feature(self, component_key):
-        features_map = select_single(self.config_docs, lambda x: x.kind == 'configuration/feature-mapping')
-        return features_map.specification.roles_mapping[component_key]
+        features_map = select_single(self.config_docs, lambda x: x.kind == 'configuration/feature-mappings')
+        return features_map.specification.mappings[component_key]
 
     def get_available_roles(self):
-        features_map = select_single(self.config_docs, lambda x: x.kind == 'configuration/feature-mapping')
-        return features_map.specification.available_roles
+        features = select_single(self.config_docs, lambda x: x.kind == 'configuration/features')
+        return features.specification.features
 
     def get_enabled_roles(self):
         roles = self.get_available_roles()

@@ -51,17 +51,45 @@
     file: roles/image_registry/vars/main.yml
     name: image_registry_vars
 
+- name: Define images to unpack
+  set_fact:
+    current_schema_images: "{{ image_registry_vars.specification.images_to_load[ansible_architecture].current }}"
+    generic_schema_images: "{{ image_registry_vars.specification.images_to_load[ansible_architecture].generic }}"
+    legacy_schema_images: "{{ image_registry_vars.specification.images_to_load[ansible_architecture].legacy }}"
+
+- name: Initialize image facts
+  set_fact:
+    current_images: []
+    generic_images: []
+    legacy_images: []
+
+- name: Set list of current images to be loaded/pushed
+  set_fact:
+    current_images: "{{ current_schema_images | dict_to_list(only_values='True') | flatten }}"
+
+- name: Set list of generic images to be loaded/pushed
+  set_fact:
+    generic_images: "{{ generic_schema_images | dict_to_list(only_values='True') | flatten }}"
+
+- name: Set list of legacy images to be loaded/pushed
+  set_fact:
+    legacy_images: "{{ legacy_schema_images | dict_to_list(only_values='True') | flatten }}"
+
+- name: Merge current, legacy and generic images
+  set_fact:
+    all_images: >-
+      {{ current_images + generic_images + legacy_images }}
+
 - name: Remove old images from epirepo
   file:
     state: absent
     path: "{{ _apache_epirepo_path }}/images/{{ item }}"
   vars:
     images_found: "{{ files_in_epirepo.results[1].files | map(attribute='path') | map('basename') }}"
-    images_to_load: "{{ image_registry_vars.specification.images_to_load[ansible_architecture] }}"
-    images_to_preserve: "{{ images_to_load | json_query('*[].file_name') + [ image_registry_vars.specification.registry_image.file_name ] }}"
+    images_to_preserve: "{{ all_images | json_query('[*].file_name') + [ image_registry_vars.specification.registry_image.file_name ] }}"
     # images to remove since they may have the same filename but different content (e.g. jboss/keycloak vs epiphanyplatform/keycloak),
     # to be optimized (checksums)
-    replaced_images: "{{ images_to_load | json_query('*[]') | selectattr('name', 'match', 'epiphanyplatform/')
+    replaced_images: "{{ all_images | json_query('[*]') | selectattr('name', 'match', 'epiphanyplatform/')
                                                             | map(attribute='file_name') }}"
     images_to_remove: "{{ images_found | difference(images_to_preserve) + replaced_images }}"
   loop: "{{ images_to_remove }}"

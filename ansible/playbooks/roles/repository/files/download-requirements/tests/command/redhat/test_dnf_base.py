@@ -1,4 +1,4 @@
-from src.command.dnf import DnfBase
+from src.command.redhat.dnf import DnfBase
 
 
 def test_filter_non_critical_errors():

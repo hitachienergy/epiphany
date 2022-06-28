@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import List
 
-from src.command.dnf import DnfBase
+from src.command.redhat.dnf import DnfBase
 from src.error import CriticalError
 
 

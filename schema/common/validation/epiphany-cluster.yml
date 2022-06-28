@@ -144,9 +144,9 @@ properties:
           properties:
             kubernetes_master:
               properties:
-                count: { type: integer, enum: [0] }
+                count: {type: integer, enum: [0]}
         then:
           properties:
             kubernetes_node:
               properties:
-                count: { type: integer, enum: [0] }
+                count: {type: integer, enum: [0]}

@@ -246,12 +246,12 @@ specification:
   prefix: 'prefix'
 title: Epiphany cluster Config
 ---
-kind: configuration/feature-mapping
-title: Feature mapping to roles
+kind: configuration/feature-mappings
+title: "Feature mapping to components"
 provider: azure
 name: default
 specification:
-  roles_mapping:
+  mappings:
     kubernetes_master:
       - kubernetes-master
       - helm

@@ -2,7 +2,7 @@ from pathlib import Path
 
 from tests.mocks.command_run_mock import CommandRunMock
 
-from src.command.apt_key import AptKey
+from src.command.debian.apt_key import AptKey
 
 
 def test_interface_add(mocker):

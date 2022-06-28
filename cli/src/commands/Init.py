@@ -49,6 +49,9 @@ class Init(Step):
                 config_docs = config_appender.run()
 
             docs = [*config_docs, *infra_docs]
+        else:
+            with ConfigurationAppender(docs) as config_appender:
+                config_appender.add_feature_mappings()
 
         # set the provider and version for all docs
         for doc in docs:
