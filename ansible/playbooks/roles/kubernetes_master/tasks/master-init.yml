@@ -1,8 +1,4 @@
 ---
-- debug:
-    msg:
-      - "{{ specification }}"
-
 - name: Load default variables for k8s nodes
   include_vars:
     file: roles/kubernetes_node/vars/main.yml
@@ -18,10 +14,6 @@
 - name: Union 'k8s_worker_nodes_capabilities' with 'specification'
   set_fact:
     specification: "{{ specification | combine(spec, list_merge='append', recursive=True) }}"
-
-- debug:
-    msg:
-      - "{{ specification }}"
 
 - name: Check kubeadm init
   stat:
