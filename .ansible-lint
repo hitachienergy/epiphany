@@ -38,6 +38,7 @@ skip_list:
   - meta-no-info
   - package-latest
   - fqcn-builtins
+  - no-jinja-when
 
 ##################
 # Tags to follow #
