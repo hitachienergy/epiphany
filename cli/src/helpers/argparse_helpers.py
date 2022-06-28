@@ -1,6 +1,7 @@
 import argparse
 
 
+# Used by multiple epicli parsers
 def comma_separated_type(choices):
     """Return a function that splits and checks comma-separated values."""
     def split_arg(arg):

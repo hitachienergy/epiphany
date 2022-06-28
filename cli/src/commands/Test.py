@@ -66,6 +66,6 @@ class Test(Step):
 
             spec_command.run(spec_output, path_to_inventory, admin_user.name, admin_user.key_path, selected_test_groups)
         else:
-            raise Exception('No test group to test')
+            raise Exception('No test group specified to run')
 
         return 0
