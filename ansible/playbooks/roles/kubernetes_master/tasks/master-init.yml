@@ -4,16 +4,16 @@
     file: roles/kubernetes_node/vars/main.yml
     name: kubernetes_node_vars
 
-- name: Set 'enable_controller_attach_detach'
-  set_fact:
-    spec:
-      extensions:
-        k8s_worker_nodes_capabilities:
-          enable_controller_attach_detach: "{{ kubernetes_node_vars.specification.enable_controller_attach_detach }}"
-
-- name: Union 'k8s_worker_nodes_capabilities' with 'specification'
-  set_fact:
-    specification: "{{ specification | combine(spec, list_merge='append', recursive=True) }}"
+#- name: Set 'enable_controller_attach_detach'
+#  set_fact:
+#    spec:
+#      extensions:
+#        k8s_worker_nodes_capabilities:
+#          enable_controller_attach_detach: "{{ kubernetes_node_vars.specification.enable_controller_attach_detach }}"
+#
+#- name: Union 'k8s_worker_nodes_capabilities' with 'specification'
+#  set_fact:
+#    specification: "{{ specification | combine(spec, list_merge='append', recursive=True) }}"
 
 - name: Check kubeadm init
   stat:
