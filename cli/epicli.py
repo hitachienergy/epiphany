@@ -21,6 +21,7 @@ from cli.src.commands.Recovery import Recovery
 from cli.src.commands.Test import Test
 from cli.src.commands.Upgrade import Upgrade
 from cli.src.Config import Config, SUPPORTED_OS
+from cli.src.helpers.argparse_helpers import comma_separated_type
 from cli.src.helpers.build_io import get_output_path, save_to_file
 from cli.src.helpers.cli_helpers import prompt_for_password, query_yes_no
 from cli.src.helpers.time_helpers import format_time
@@ -277,18 +278,6 @@ def upgrade_parser(subparsers):
         'zookeeper',
         ])
 
-    def comma_separated_type(choices):
-        """Return a function that splits and checks comma-separated values."""
-        def splitarg(arg):
-            values = arg.replace(' ','').lower().split(',')
-            for value in values:
-                if value not in choices:
-                    raise argparse.ArgumentTypeError(
-                        'invalid choice: {!r} (choose from {})'
-                        .format(value, ', '.join(map(repr, choices))))
-            return values
-        return splitarg
-
     #required
     required.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
                             help='Absolute path to directory with build artifacts.')
@@ -332,15 +321,21 @@ def test_parser(subparsers):
                             help='Absolute path to directory with build artifacts.')
 
     #optional
-    group_list = '{' + ', '.join(SpecCommand.get_spec_groups()) + '}'
-    optional.add_argument('-g', '--group', choices=SpecCommand.get_spec_groups(), default='all', action='store', dest='group', required=False, metavar=group_list,
-                            help='Group of tests to be run, e.g. kafka.')
+    TEST_GROUPS = SpecCommand.get_spec_groups()
+    include_choices = ['all'] + TEST_GROUPS
+
+    optional.add_argument('-e', '--exclude', type=comma_separated_type(choices=TEST_GROUPS),
+                            dest='excluded_groups', required=False,
+                            help='Group of tests to be skipped, e.g. -e kafka,kafka_exporter.')
+    optional.add_argument('-i', '--include', default='all', type=comma_separated_type(choices=include_choices),
+                            dest='included_groups', required=False,
+                            help='Group of tests to be run, e.g. -i kafka,kafka_exporter.')
     sub_parser._action_groups.append(optional)
 
     def run_test(args):
         experimental_query()
         adjust_paths_from_build(args)
-        with Test(args) as cmd:
+        with Test(args, TEST_GROUPS) as cmd:
             return cmd.test()
 
     sub_parser.set_defaults(func=run_test)

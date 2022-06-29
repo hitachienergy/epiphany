@@ -173,13 +173,13 @@ The serverspec tests are integrated in Epicli. To run them you can extend the la
         "pythonPath": "${config:python.pythonPath}",
         "env": { "PYTHONPATH": "${workspaceFolder}" },
         "console": "integratedTerminal",
-        "args": ["test", "-b", "${workspaceFolder}/clusters/buildfolder/", "-g", "postgresql"]
+        "args": ["test", "-b", "${workspaceFolder}/clusters/buildfolder/", "-i", "kafka,postgresql"]
     },
 
     ...
   ```
 
-Where the ```-b``` argument points to the build folder of a cluster. The ```-g``` argument can be used to execute a subset of tests and is optional. Omitting ```-g``` will execute all tests.
+Where the ```-b``` argument points to the build folder of a cluster. The ```-i``` argument can be used to execute a subset of tests and is optional. Omitting ```-i``` will execute all tests.
 
 ## Epicli Python dependencies
 

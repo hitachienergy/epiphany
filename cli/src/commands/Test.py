@@ -2,16 +2,19 @@ import os
 
 from cli.src.helpers.build_io import (ANSIBLE_INVENTORY_FILE, SPEC_OUTPUT_DIR,
                                       load_manifest)
+from cli.src.helpers.build_io import load_inventory
 from cli.src.helpers.doc_list_helpers import select_single
 from cli.src.spec.SpecCommand import SpecCommand
 from cli.src.Step import Step
 
 
 class Test(Step):
-    def __init__(self, input_data):
+    def __init__(self, input_data, test_groups):
         super().__init__(__name__)
         self.build_directory = input_data.build_directory
-        self.group = input_data.group
+        self.excluded_groups = input_data.excluded_groups
+        self.included_groups = input_data.included_groups
+        self.test_groups = test_groups
 
     def __enter__(self):
         super().__enter__()
@@ -40,8 +43,29 @@ class Test(Step):
         if not os.path.exists(spec_output):
             os.makedirs(spec_output)
 
+        selected_test_groups = self.included_groups
+
+        # exclude test groups
+        if self.excluded_groups:
+            included_groups = self.included_groups
+            if 'all' in included_groups:
+                # get available test groups
+                inventory_groups = load_inventory(path_to_inventory).list_groups()
+                effective_inventory_groups = inventory_groups + ['common']
+                included_groups = [group for group in self.test_groups if group in effective_inventory_groups]
+
+            selected_test_groups = [group for group in included_groups if group not in self.excluded_groups]
+
         # run the spec tests
-        spec_command = SpecCommand()
-        spec_command.run(spec_output, path_to_inventory, admin_user.name, admin_user.key_path, self.group)
+        if selected_test_groups:
+            spec_command = SpecCommand()
+            if 'all' in selected_test_groups:
+                selected_test_groups = ['all']
+            else:
+                self.logger.info(f'Selected test groups: {", ".join(selected_test_groups)}')
+
+            spec_command.run(spec_output, path_to_inventory, admin_user.name, admin_user.key_path, selected_test_groups)
+        else:
+            raise Exception('No test group specified to run')
 
         return 0
