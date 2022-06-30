@@ -1,6 +1,7 @@
 require 'net/ssh'
 require 'rake'
 require 'rspec/core/rake_task'
+require 'yaml'
 
 unless ENV['inventory']
   print "ERROR: Inventory file must be specified by 'inventory' environment variable\n"
@@ -91,8 +92,6 @@ if groups.key?('postgresql')
   ENV['pg_primary_node_ip'] = groups['postgresql'].keys[0]
 end
 
-puts groups
-
 task spec:    'spec:all'
 task default: :spec
 
@@ -108,6 +107,7 @@ namespace :spec do
       task_name = "#{group}:#{host}"
       RSpec::Core::RakeTask.new(task_name) do |t|
         ENV['TARGET_HOST'] = host
+        puts '---'
         puts "Testing #{task_name}"
         t.pattern = "spec/#{group}/*_spec.rb"
         t.fail_on_error = true  # to detect RuntimeError (when error occured outside of example)
@@ -117,4 +117,15 @@ namespace :spec do
       end
     end
   end
+
+  # Print selected groups
+  selected_groups = {}
+  if Rake.application.top_level_tasks.include? 'spec:all'
+    selected_groups = groups
+  else
+    groups.each_key do |group|
+      selected_groups[group] = groups[group] if Rake.application.top_level_tasks.include? "spec:#{group}"
+    end
+  end
+  puts selected_groups.to_yaml.gsub("---\n", '')
 end
