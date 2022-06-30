@@ -20,5 +20,6 @@
     "ruby.lint": {
         "rubocop": true
     },
+    "solargraph.diagnostics": false,
     "solargraph.formatting": true,
 }

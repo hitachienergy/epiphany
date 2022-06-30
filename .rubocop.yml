@@ -11,3 +11,10 @@
 AllCops:
   Include:
     - tests/spec/**/*.rb
+
+Naming/FileName:
+  Exclude:
+    - tests/spec/Rakefile
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
