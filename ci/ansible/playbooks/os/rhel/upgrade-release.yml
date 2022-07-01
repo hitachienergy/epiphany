@@ -631,9 +631,14 @@
       debug:
         var: failed_services
 
-    - name: Fix repmgr10 service
-      when: "'repmgr10.service' in failed_services"
+    - name: Fix repmgr service
+      when: failed_services | select('match', 'repmgr[0-9]{2}\.service')
       block:
+        - name: Set repmgr service name
+          set_fact:
+            repmgr_service_name: >-
+              {{ failed_services | select('match', 'repmgr[0-9]{2}\.service') | first }}
+
         # upstream node must be running before repmgrd can start
         - name: Search for PostgreSQL primary node
           become_user: postgres
@@ -651,10 +656,26 @@
             port: 5432
             timeout: 30
 
-        - name: Restart repmgr10 service
+        - name: Restart repmgr service
           when: pg_node_role.stdout == 'standby'
           systemd:
-            name: repmgr10
+            name: "{{ repmgr_service_name }}"
+            state: restarted
+
+    - name: Fix filebeat service
+      when: "'filebeat.service' in failed_services"
+      block:
+        - name: Wait for Kibana port
+          when: groups.kibana[0] is defined
+          delegate_to: "{{ groups.kibana[0] }}"
+          wait_for:
+            host: "{{ hostvars[groups.kibana.0].ansible_default_ipv4.address }}"
+            port: 5601
+            timeout: 30
+
+        - name: Restart filebeat service
+          systemd:
+            name: filebeat
             state: restarted
 
     - name: Azure specific block
