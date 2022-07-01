@@ -330,6 +330,9 @@ def test_parser(subparsers):
     optional.add_argument('-i', '--include', default='all', type=comma_separated_type(choices=include_choices),
                             dest='included_groups', required=False,
                             help='Group of tests to be run, e.g. -i kafka,kafka_exporter.')
+    optional.add_argument('-k', '--kubeconfig-remote-path', type=os.path.abspath,
+                            dest='kubeconfig_remote_path', required=False,
+                            help='Absolute path to kubeconfig file on K8s master host, e.g. /etc/kubernetes/admin.conf.')
     sub_parser._action_groups.append(optional)
 
     def run_test(args):
