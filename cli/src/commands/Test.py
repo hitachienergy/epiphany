@@ -1,14 +1,12 @@
 import os
-from pathlib import Path
 
 from cli.src.ansible.AnsibleCommand import AnsibleCommand
 from cli.src.helpers.build_io import (SPEC_OUTPUT_DIR,
                                       get_inventory_path_for_build, load_inventory, load_manifest)
 from cli.src.helpers.doc_list_helpers import select_single
-from cli.src.spec.SpecCommand import SPEC_TEST_PATH, SpecCommand
+from cli.src.spec.SpecCommand import SPEC_TESTS_PATH, SpecCommand
 from cli.src.Step import Step
 
-SPEC_TEST_ANSIBLE_PATH = Path(SPEC_TEST_PATH).resolve() / 'ansible'
 
 class Test(Step):
     def __init__(self, input_data, test_groups):
@@ -21,6 +19,7 @@ class Test(Step):
         self.all_groups = test_groups
         self.available_groups = self.__get_available_test_groups()
         self.selected_groups = self.__get_selected_test_groups()
+        self.ansible_command = None
 
     def __enter__(self):
         super().__enter__()
@@ -57,28 +56,28 @@ class Test(Step):
         return selected_groups
 
     def __is_env_preparation_needed(self) -> bool:
-        kubectl_groups = ['applications', 'kubernetes_master']
-        if any(group in kubectl_groups for group in self.selected_groups):
-            return True
-        elif 'all' in self.selected_groups and any(group in kubectl_groups for group in self.available_groups):
-            return True
+        if self.kubeconfig_remote_path:
+            kubectl_groups = ['applications', 'kubernetes_master']
+            if any(group in kubectl_groups for group in self.selected_groups):
+                return True
+            if 'all' in self.selected_groups and any(group in kubectl_groups for group in self.available_groups):
+                return True
+
         return False
 
     def __prepare_env(self):
         if self.__is_env_preparation_needed():
-            ansible_command = AnsibleCommand()
-            playbook_path = SPEC_TEST_ANSIBLE_PATH / 'kubernetes_master' / 'copy-kubeconfig.yml'
-            ansible_command.run_playbook(inventory=self.inventory_path,
-                                         playbook_path=str(playbook_path),
-                                         extra_vars=[('kubeconfig_remote_path', self.kubeconfig_remote_path)])
+            self.ansible_command = AnsibleCommand()
+            playbook_path = str(SPEC_TESTS_PATH) + '/pre_run/ansible/kubernetes_master/copy-kubeconfig.yml'
+            self.ansible_command.run_playbook(inventory=self.inventory_path,
+                                              playbook_path=playbook_path,
+                                              extra_vars=[f'kubeconfig_remote_path={self.kubeconfig_remote_path}'])
 
-    def __revert_prepare_env(self):
+    def __clean_up_env(self):
         if self.__is_env_preparation_needed():
-            ansible_command = AnsibleCommand()
-            playbook_path = SPEC_TEST_ANSIBLE_PATH / 'kubernetes_master' / 'revert-kubeconfig.yml'
-            ansible_command.run_playbook(inventory=self.inventory_path,
-                                         playbook_path=str(playbook_path),
-                                         extra_vars=[('kubeconfig_remote_path', self.kubeconfig_remote_path)])
+            playbook_path = str(SPEC_TESTS_PATH) + '/post_run/ansible/kubernetes_master/undo-copy-kubeconfig.yml'
+            self.ansible_command.run_playbook(inventory=self.inventory_path,
+                                              playbook_path=playbook_path)
 
     def test(self):
         # get manifest documents
@@ -104,7 +103,7 @@ class Test(Step):
                 self.logger.info(f'Selected test groups: {", ".join(self.selected_groups)}')
 
             spec_command.run(spec_output, self.inventory_path, admin_user.name, admin_user.key_path, self.selected_groups)
-            self.__revert_prepare_env()
+            self.__clean_up_env()
         else:
             raise Exception('No test group specified to run')
 
