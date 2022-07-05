@@ -16,7 +16,7 @@ variables:
   ansible_lint_error_threshold: 338
   pylint_score_cli_threshold: 9.44
   pylint_score_tests_threshold: 9.78
-  rubocop_linter_threshold: 207
+  rubocop_linter_threshold: 183
 
 jobs:
   - job: Run_linters
