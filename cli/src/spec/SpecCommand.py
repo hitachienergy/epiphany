@@ -56,6 +56,6 @@ These need to be installed to run the cluster spec tests from epicli'''
     def get_spec_groups() -> list[str]:
         """Get test groups based on directories."""
         groups_path = SPEC_TESTS_PATH / 'spec'
-        groups = [str(item) for item in groups_path.iterdir() if item.is_dir()]
+        groups = [str(item.name) for item in groups_path.iterdir() if item.is_dir()]
 
         return sorted(groups)
