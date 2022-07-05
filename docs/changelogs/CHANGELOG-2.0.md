@@ -15,6 +15,7 @@
 - [#3140](https://github.com/epiphany-platform/epiphany/issues/3140) - Allow to disable OpenSearch audit logs
 - [#3218](https://github.com/epiphany-platform/epiphany/issues/3218) - Add support for original output coloring
 - [#3079](https://github.com/epiphany-platform/epiphany/issues/3079) - OpenSearch improvement - add dedicated user for Filebeat
+- [#3207](https://github.com/epiphany-platform/epiphany/issues/3207) - Add filtering mechanism for the sensitive data
 
 ### Fixed
 
