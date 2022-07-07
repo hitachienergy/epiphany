@@ -19,7 +19,6 @@ class Test(Step):
         self.all_groups = test_groups
         self.available_groups = self.__get_available_test_groups()
         self.selected_groups = self.__get_selected_test_groups()
-        self.ansible_command = None
 
     def __enter__(self):
         super().__enter__()
@@ -29,33 +28,40 @@ class Test(Step):
         pass
 
     def __get_inventory_groups(self, append_implicit: bool) -> list[str]:
+        """
+        Get list of groups from Ansible inventory
+
+        :param append_implicit: if True, `common` group, which is not present in inventory, is appended
+        """
         inventory_groups = load_inventory(self.inventory_path).list_groups()
         if append_implicit:
             inventory_groups.append('common')
         return inventory_groups
 
     def __get_available_test_groups(self) -> list[str]:
+        """
+        Get list of all test groups that can be run
+        """
         inventory_groups = self.__get_inventory_groups(True)
         return [group for group in self.all_groups if group in inventory_groups]
 
-
     def __get_selected_test_groups(self) -> list[str]:
-        selected_groups = self.included_groups
-
-        if 'all' in selected_groups:
-            selected_groups = ['all']
+        """
+        Get list of test groups selected to be run
+        """
+        selected_groups = ['all'] if 'all' in self.included_groups else self.included_groups
 
         # exclude test groups
         if self.excluded_groups:
-            included_groups = self.included_groups
-            if 'all' in included_groups:
-                included_groups = self.available_groups
-
+            included_groups = self.available_groups if 'all' in self.included_groups else self.included_groups
             selected_groups = [group for group in included_groups if group not in self.excluded_groups]
 
         return selected_groups
 
     def __is_env_preparation_needed(self) -> bool:
+        """
+        Check whether additional actions are needed in order to run selected test groups
+        """
         if self.kubeconfig_remote_path:
             kubectl_groups = ['applications', 'kubernetes_master']
             if any(group in kubectl_groups for group in self.selected_groups):
@@ -67,19 +73,25 @@ class Test(Step):
 
     def __prepare_env(self):
         if self.__is_env_preparation_needed():
-            self.ansible_command = AnsibleCommand()
             playbook_path = str(SPEC_TESTS_PATH) + '/pre_run/ansible/kubernetes_master/copy-kubeconfig.yml'
-            self.ansible_command.run_playbook(inventory=self.inventory_path,
-                                              playbook_path=playbook_path,
-                                              extra_vars=[f'kubeconfig_remote_path={self.kubeconfig_remote_path}'])
+            ansible_command = AnsibleCommand()
+            ansible_command.run_playbook(inventory=self.inventory_path,
+                                         playbook_path=playbook_path,
+                                         extra_vars=[f'kubeconfig_remote_path={self.kubeconfig_remote_path}'])
 
     def __clean_up_env(self):
         if self.__is_env_preparation_needed():
             playbook_path = str(SPEC_TESTS_PATH) + '/post_run/ansible/kubernetes_master/undo-copy-kubeconfig.yml'
-            self.ansible_command.run_playbook(inventory=self.inventory_path,
-                                              playbook_path=playbook_path)
+            ansible_command = AnsibleCommand()
+            ansible_command.run_playbook(inventory=self.inventory_path, playbook_path=playbook_path)
 
     def test(self):
+        """
+        Run spec tests for selected groups
+        """
+        if not self.selected_groups:
+            raise Exception('No test group specified to run')
+
         # get manifest documents
         docs = load_manifest(self.build_directory)
         cluster_model = select_single(docs, lambda x: x.kind == 'epiphany-cluster')
@@ -94,17 +106,15 @@ class Test(Step):
         if not os.path.exists(spec_output):
             os.makedirs(spec_output)
 
-        # run the spec tests
-        if self.selected_groups:
-            self.__prepare_env()
-            spec_command = SpecCommand()
+        self.__prepare_env()
 
-            if 'all' not in self.selected_groups:
-                self.logger.info(f'Selected test groups: {", ".join(self.selected_groups)}')
+        if 'all' not in self.selected_groups:
+            self.logger.info(f'Selected test groups: {", ".join(self.selected_groups)}')
 
-            spec_command.run(spec_output, self.inventory_path, admin_user.name, admin_user.key_path, self.selected_groups)
-            self.__clean_up_env()
-        else:
-            raise Exception('No test group specified to run')
+        # run tests
+        spec_command = SpecCommand()
+        spec_command.run(spec_output, self.inventory_path, admin_user.name, admin_user.key_path, self.selected_groups)
+
+        self.__clean_up_env()
 
         return 0
