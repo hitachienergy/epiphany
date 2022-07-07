@@ -106,10 +106,10 @@ class Test(Step):
         if not os.path.exists(spec_output):
             os.makedirs(spec_output)
 
-        self.__prepare_env()
-
         if 'all' not in self.selected_groups:
             self.logger.info(f'Selected test groups: {", ".join(self.selected_groups)}')
+
+        self.__prepare_env()
 
         # run tests
         spec_command = SpecCommand()
