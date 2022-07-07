@@ -112,6 +112,9 @@ class AptCache(Command):
                 dep = dep.split('Depends:')[-1]  # remove "Depends:
 
             if not virt_pkg and dep != package:  # avoid adding package itself
+                # workaround for https://elixirforum.com/t/installing-erlang-elixir-on-ubuntu-20-04-is-failing-esl-erlang-25-0-2-1-ubuntu-focal-amd64-deb-file-has-unexpected-size/48754
+                # TODO: verify after issues 3210 and 3209 are fixed  # pylint: disable=fixme
+                if dep != 'esl-erlang':  # for rabbitmq-server
                     deps.append(dep)
 
         return list(set(deps))
