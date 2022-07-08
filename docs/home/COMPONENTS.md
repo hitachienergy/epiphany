@@ -156,6 +156,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | cffi | 1.15.0 | http://cffi.readthedocs.org | MIT |
 | chardet | 3.0.4 | https://github.com/chardet/chardet | [GNU Lesser General Public License v2.1](https://api.github.com/repos/chardet/chardet/license) |
 | charset-normalizer | 2.0.12 | https://github.com/ousret/charset_normalizer | [MIT License](https://api.github.com/repos/ousret/charset_normalizer/license) |
+| click | 8.1.3 | https://palletsprojects.com/p/click/ | BSD-3-Clause |
 | colorama | 0.4.4 | https://github.com/tartley/colorama | [BSD 3-Clause "New" or "Revised" License](https://api.github.com/repos/tartley/colorama/license) |
 | cryptography | 37.0.2 | https://github.com/pyca/cryptography | [Other](https://api.github.com/repos/pyca/cryptography/license) |
 | Deprecated | 1.2.13 | https://github.com/tantale/deprecated | [MIT License](https://api.github.com/repos/tantale/deprecated/license) |
