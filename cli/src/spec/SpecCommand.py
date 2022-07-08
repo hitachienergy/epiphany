@@ -1,12 +1,13 @@
 import os
 import shutil
 import subprocess
+from pathlib import Path
 from subprocess import PIPE, Popen
 
 from cli.src.helpers.data_loader import BASE_DIR
 from cli.src.Log import Log, LogPipe
 
-SPEC_TEST_PATH = BASE_DIR + '/tests/spec'
+SPEC_TESTS_PATH = Path(BASE_DIR).resolve() / 'tests' / 'spec'
 
 class SpecCommand:
     def __init__(self):
@@ -42,7 +43,7 @@ These need to be installed to run the cluster spec tests from epicli'''
         self.logger.info(f'Running: "{cmd}"')
 
         logpipe = LogPipe(__name__)
-        with Popen(cmd.split(' '), cwd=SPEC_TEST_PATH, env=env, stdout=logpipe, stderr=logpipe) as sp:
+        with Popen(cmd.split(' '), cwd=SPEC_TESTS_PATH, env=env, stdout=logpipe, stderr=logpipe) as sp:
             logpipe.close()
 
         if sp.returncode != 0:
@@ -54,10 +55,7 @@ These need to be installed to run the cluster spec tests from epicli'''
     @staticmethod
     def get_spec_groups() -> list[str]:
         """Get test groups based on directories."""
+        groups_path = SPEC_TESTS_PATH / 'spec'
+        groups = [str(item.name) for item in groups_path.iterdir() if item.is_dir()]
 
-        listdir = os.listdir(f'{SPEC_TEST_PATH}/spec')
-        groups = []
-        for entry in listdir:
-            if os.path.isdir(f'{SPEC_TEST_PATH}/spec/{entry}'):
-                groups = groups + [entry]
-        return sorted(groups, key=str.lower)
+        return sorted(groups)

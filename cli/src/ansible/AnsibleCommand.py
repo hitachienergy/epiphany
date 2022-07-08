@@ -41,7 +41,7 @@ class AnsibleCommand:
         else:
             self.logger.info('Done running "' + ' '.join(cmd) + '"')
 
-    def run_task_with_retries(self, inventory, module, hosts, retries, timeout=10, args=None):
+    def run_task_with_retries(self, inventory, module, hosts, retries, delay=10, args=None):
         for i in range(retries):
             try:
                 self.run_task(hosts=hosts, inventory=inventory, module=module,
@@ -50,11 +50,14 @@ class AnsibleCommand:
             except Exception as e:
                 self.logger.error(e)
                 self.logger.warning('Retry running task: ' + str(i + 1) + '/' + str(retries))
-                time.sleep(timeout)
+                time.sleep(delay)
         else:
             raise Exception(f'Failed running task after {str(retries)} retries')
 
-    def run_playbook(self, inventory, playbook_path, vault_file=None):
+    def run_playbook(self, inventory, playbook_path, vault_file=None, extra_vars:list[str]=None):
+        """
+        :param extra_vars: playbook's variables passed via `--extra-vars` option
+        """
         cmd = ['ansible-playbook']
 
         if inventory is not None and len(inventory) > 0:
@@ -62,6 +65,10 @@ class AnsibleCommand:
 
         if vault_file is not None:
             cmd.extend(["--vault-password-file", vault_file])
+
+        if extra_vars:
+            for var in extra_vars:
+                cmd.extend(['--extra-vars', var])
 
         cmd.append(playbook_path)
 
@@ -79,15 +86,16 @@ class AnsibleCommand:
         else:
             self.logger.info('Done running "' + ' '.join(cmd) + '"')
 
-    def run_playbook_with_retries(self, inventory, playbook_path, retries, timeout=10):
+    def run_playbook_with_retries(self, inventory, playbook_path, retries, delay=10, extra_vars:list[str]=None):
         for i in range(retries):
             try:
                 self.run_playbook(inventory=inventory,
-                                  playbook_path=playbook_path)
+                                  playbook_path=playbook_path,
+                                  extra_vars=extra_vars)
                 break
             except Exception as e:
                 self.logger.error(e)
                 self.logger.warning('Retry running playbook: ' + str(i + 1) + '/' + str(retries))
-                time.sleep(timeout)
+                time.sleep(delay)
         else:
             raise Exception(f'Failed running playbook after {str(retries)} retries')

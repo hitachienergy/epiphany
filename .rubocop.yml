@@ -11,3 +11,17 @@
 AllCops:
   Include:
     - tests/spec/**/*.rb
+
+Layout/ExtraSpacing:
+  AllowBeforeTrailingComments: true
+
+Metrics/BlockLength:
+  Exclude:
+    - tests/spec/Rakefile
+
+Naming/FileName:
+  Exclude:
+    - tests/spec/Rakefile
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
