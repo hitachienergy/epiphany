@@ -9,3 +9,4 @@ discovery:
 nodeRegistration:
   kubeletExtraArgs:
     node-labels: {{ specification.node_labels }}
+    enable_controller_attach_detach: {{ kubernetes_node_vars.specification.enable_controller_attach_detach }}
