@@ -274,3 +274,18 @@ Notice: Setting `specification.kibana.dashboards.enabled` to `true` not providin
 
 ---
 <sup>[1] More information about migrating from Elasticsearch & Kibana to OpenSearch & OpenSearch Dashboards can be found [here](./UPGRADE.md#migration-from-open-distro-for-elasticsearch--kibana-to-opensearch-and-opensearch-dashboards).</sup>
+
+## Audit logs
+
+There is an [option](https://opensearch.org/docs/latest/security-plugin/audit-logs/) to enable
+OpenSearch audit logs which is switched on in Epiphany by default using the following configuration part:
+
+```yaml
+kind: configuration/logging
+specification:
+  opensearch_security:
+    audit:
+      type: internal_opensearch
+```
+
+Use the empty string value to switch audit logging off.

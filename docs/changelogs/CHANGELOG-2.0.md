@@ -11,6 +11,7 @@
 - [#3131](https://github.com/epiphany-platform/epiphany/issues/3131) - Optimize Grafana dashboards downloading
 - [#3116](https://github.com/epiphany-platform/epiphany/issues/3116) - Optimize files downloading
 - [#3106](https://github.com/epiphany-platform/epiphany/issues/3106) - Add image-registry configuration reading
+- [#3140](https://github.com/epiphany-platform/epiphany/issues/3140) - Allow to disable OpenSearch audit logs
 
 ### Fixed
 
