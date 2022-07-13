@@ -43,7 +43,9 @@ class AnsibleInventoryCreator(Step):
 
     def get_roles_for_feature(self, component_key):
         features_map = select_single(self.config_docs, lambda x: x.kind == 'configuration/feature-mapping')
-        return features_map.specification.roles_mapping[component_key]
+        feature_roles = features_map.specification.roles_mapping[component_key]
+        enabled_roles = self.get_enabled_roles()
+        return [role for role in feature_roles if role in enabled_roles]
 
     def get_available_roles(self):
         features_map = select_single(self.config_docs, lambda x: x.kind == 'configuration/feature-mapping')

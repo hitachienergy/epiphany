@@ -1,5 +1,11 @@
 # Changelog 1.0
 
+## [1.0.6] 2022-xx-xx
+
+### Fixed
+
+- [#3189](https://github.com/epiphany-platform/epiphany/issues/3189) - Fix configuration/feature-mapping enabling
+
 ## [1.0.5] 2022-06-24
 
 ### Fixed
