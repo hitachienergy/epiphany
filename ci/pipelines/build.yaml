@@ -31,8 +31,8 @@ jobs:
         inputs:
           targetType: inline
           script: |
-            pip install boto3 click jinja2 jsonschema pytest pytest_mock python-json-logger pyyaml ruamel.yaml \
-                        setuptools twine wheel
+            python3 -m pip install boto3 click jinja2 jsonschema pytest pytest_mock python-json-logger pyyaml \
+                                   ruamel.yaml setuptools twine wheel
 
       - task: Bash@3
         displayName: Run unit tests
