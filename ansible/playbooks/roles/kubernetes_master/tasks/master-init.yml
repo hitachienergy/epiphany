@@ -1,4 +1,9 @@
 ---
+- name: Load default variables for k8s nodes
+  include_vars:
+    file: roles/kubernetes_node/vars/main.yml
+    name: kubernetes_node_vars
+
 - name: Check kubeadm init
   stat:
     path: /etc/kubernetes/manifests/kube-apiserver.yaml

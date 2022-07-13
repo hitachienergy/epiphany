@@ -10,3 +10,4 @@ nodeRegistration:
   kubeletExtraArgs:
     enable-controller-attach-detach: "false"
     node-labels: {{ specification.node_labels }}
+    enable_controller_attach_detach: "{{ specification.enable_controller_attach_detach }}"
