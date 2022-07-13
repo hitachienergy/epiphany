@@ -4,6 +4,7 @@ import subprocess
 from pathlib import Path
 from subprocess import PIPE, Popen
 
+from cli.src.Config import Config
 from cli.src.helpers.data_loader import BASE_DIR
 from cli.src.Log import Log, LogPipe
 
@@ -37,6 +38,9 @@ These need to be installed to run the cluster spec tests from epicli'''
         env['inventory'] = inventory
         env['user'] = user
         env['keypath'] = key
+
+        if not Config().no_color:
+            env['rspec_extra_opts'] = '--force-color'
 
         cmd = f'rake inventory={inventory} user={user} keypath={key} spec_output={spec_output} spec:{" spec:".join(groups)}'
 

@@ -45,7 +45,8 @@ class TerraformCommand:
         if auto_approve:
             cmd.append('-auto-approve')
 
-        cmd.append('-no-color')
+        if Config().no_color:
+            cmd.append('-no-color')
 
         cmd = ' '.join(cmd)
         self.logger.info(f'Running: "{cmd}"')

@@ -3,6 +3,7 @@ import logging.handlers
 import os
 import threading
 
+import click
 from pythonjsonlogger import jsonlogger
 
 from cli.src.Config import Config
@@ -32,6 +33,22 @@ class ColorFormatter(logging.Formatter):
         return formatter.format(record)
 
 
+class UncolorFormatter(logging.Formatter):
+    """
+    Formatter that removes ANSI styling information (escape sequences).
+    """
+    def format(self, record: logging.LogRecord) -> str:
+        return click.unstyle(super().format(record))
+
+
+class UncolorJsonFormatter(jsonlogger.JsonFormatter):
+    """
+    JSON formatter that removes ANSI styling information (escape sequences).
+    """
+    def format(self, record: logging.LogRecord) -> str:
+        return click.unstyle(super().format(record))
+
+
 class Log:
     class __LogBase:
         stream_handler = None
@@ -55,10 +72,10 @@ class Log:
 
             # attach propper formatter to file_handler (plain|json)
             if config.log_type == 'plain':
-                file_formatter = logging.Formatter(config.log_format, datefmt=config.log_date_format)
+                file_formatter = UncolorFormatter(config.log_format, datefmt=config.log_date_format)
                 self.file_handler.setFormatter(file_formatter)
             elif config.log_type == 'json':
-                json_formatter = jsonlogger.JsonFormatter(config.log_format, datefmt=config.log_date_format)
+                json_formatter = UncolorJsonFormatter(config.log_format, datefmt=config.log_date_format)
                 self.file_handler.setFormatter(json_formatter)
 
 

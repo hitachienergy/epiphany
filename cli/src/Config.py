@@ -42,6 +42,7 @@ class Config:
             self._wait_for_pods = False
             self._upgrade_components = []
             self._vault_password_location = os.path.join(expanduser("~"), '.epicli/vault.cfg')
+            self._no_color: bool = False
 
         @property
         def full_download(self) -> bool:
@@ -187,6 +188,14 @@ class Config:
         @upgrade_components.setter
         def upgrade_components(self, upgrade_components):
             self._upgrade_components = upgrade_components
+
+        @property
+        def no_color(self) -> bool:
+            return self._no_color
+
+        @no_color.setter
+        def no_color(self, no_color: bool):
+            self._no_color = no_color
 
     instance = None
 
