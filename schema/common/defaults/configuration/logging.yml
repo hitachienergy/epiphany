@@ -16,7 +16,7 @@ specification:
     - readall
     - snapshotrestore
     # - logstash
-    # - kibanaservers
+    # - kibanaserver
   paths:
     opensearch_home: /usr/share/opensearch
     opensearch_conf_dir: /usr/share/opensearch/config
