@@ -12,4 +12,3 @@ properties:
     type: string
   enable_controller_attach_detach:
     type: boolean
-
