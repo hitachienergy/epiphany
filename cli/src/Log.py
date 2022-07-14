@@ -11,18 +11,12 @@ from cli.src.helpers.build_io import get_output_path
 
 
 class ColorFormatter(logging.Formatter):
-    grey = '\x1b[38;21m'
-    yellow = '\x1b[33;21m'
-    red = '\x1b[31;21m'
-    bold_red = '\x1b[31;1m'
-    reset = '\x1b[0m'
-
     FORMATS = {
-        logging.DEBUG: grey + 'format' + reset,
-        logging.INFO: grey + 'format' + reset,
-        logging.WARNING: yellow + 'format' + reset,
-        logging.ERROR: red + 'format' + reset,
-        logging.CRITICAL: bold_red + 'format' + reset
+        logging.DEBUG:    click.style('format', fg=8), # grey
+        logging.INFO:     click.style('format'),
+        logging.WARNING:  click.style('format', fg='yellow'),
+        logging.ERROR:    click.style('format', fg='red'),
+        logging.CRITICAL: click.style('format', fg='red', bold=True)
     }
 
     def format(self, record):
