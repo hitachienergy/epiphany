@@ -40,7 +40,9 @@ class UncolorJsonFormatter(jsonlogger.JsonFormatter):
     JSON formatter that removes ANSI styling information (escape sequences).
     """
     def format(self, record: logging.LogRecord) -> str:
-        return click.unstyle(super().format(record))
+        if isinstance(record.msg, str):
+            record.msg = click.unstyle(record.msg)
+        return super().format(record)
 
 
 class Log:
