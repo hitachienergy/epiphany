@@ -12,7 +12,7 @@ from cli.src.helpers.build_io import get_output_path
 
 class ColorFormatter(logging.Formatter):
     FORMATS = {
-        logging.DEBUG:    click.style('format', fg=8), # grey
+        logging.DEBUG:    click.style('format', fg='bright_black'), # grey
         logging.INFO:     click.style('format'),
         logging.WARNING:  click.style('format', fg='yellow'),
         logging.ERROR:    click.style('format', fg='red'),
