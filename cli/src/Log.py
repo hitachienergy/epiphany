@@ -96,22 +96,32 @@ class LogPipe(threading.Thread):
         self.start()
         self.error_strings = ['error', 'Error', 'ERROR', 'fatal', 'FAILED']
         self.warning_strings = ['warning', 'warning', 'WARNING']
-        self.stderr_strings = []
+        self.output_error_lines = []
 
     def fileno(self):
         return self.fd_write
 
     def run(self):
         """Run thread logging everything."""
+        colored_loggers = ['AnsibleCommand', 'SpecCommand', 'TerraformCommand']
+        logger_short_name = self.logger.name.split('.')[-1]
+        with_error_detection = logger_short_name in ['TerraformCommand']
+        with_level_detection = logger_short_name not in colored_loggers
+
         for line in iter(self.pipe_reader.readline, ''):
             line = line.strip('\n')
-            if any([substring in line for substring in self.error_strings]):
-                self.stderr_strings.append(line)
-                self.logger.error(line)
-            elif any([substring in line for substring in self.warning_strings]):
-                self.logger.warning(line)
+            if with_error_detection and any(string in line for string in self.error_strings):
+                self.output_error_lines.append(line)
+            if with_level_detection:
+                if any(string in line for string in self.error_strings):
+                    self.logger.error(line)
+                elif any(string in line for string in self.warning_strings):
+                    self.logger.warning(line)
+                else:
+                    self.logger.info(line)
             else:
                 self.logger.info(line)
+
         self.pipe_reader.close()
 
     def close(self):
