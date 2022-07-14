@@ -91,27 +91,28 @@ class LogPipe(threading.Thread):
         threading.Thread.__init__(self)
         self.logger = Log(logger_name)
         self.daemon = False
-        self.fdRead, self.fdWrite = os.pipe()
-        self.pipeReader = os.fdopen(self.fdRead)
+        self.fd_read, self.fd_write = os.pipe()
+        self.pipe_reader = os.fdopen(self.fd_read)
         self.start()
-        self.errorStrings = ['error', 'Error', 'ERROR', 'fatal', 'FAILED']
-        self.warningStrings = ['warning', 'warning', 'WARNING']
-        self.stderrstrings = []
+        self.error_strings = ['error', 'Error', 'ERROR', 'fatal', 'FAILED']
+        self.warning_strings = ['warning', 'warning', 'WARNING']
+        self.stderr_strings = []
 
     def fileno(self):
-        return self.fdWrite
+        return self.fd_write
 
     def run(self):
-        for line in iter(self.pipeReader.readline, ''):
+        """Run thread logging everything."""
+        for line in iter(self.pipe_reader.readline, ''):
             line = line.strip('\n')
-            if any([substring in line for substring in self.errorStrings]):
-                self.stderrstrings.append(line)
+            if any([substring in line for substring in self.error_strings]):
+                self.stderr_strings.append(line)
                 self.logger.error(line)
-            elif any([substring in line for substring in self.warningStrings]):
-                    self.logger.warning(line)
+            elif any([substring in line for substring in self.warning_strings]):
+                self.logger.warning(line)
             else:
                 self.logger.info(line)
-        self.pipeReader.close()
+        self.pipe_reader.close()
 
     def close(self):
-        os.close(self.fdWrite)
+        os.close(self.fd_write)

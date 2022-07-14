@@ -61,7 +61,7 @@ class TerraformCommand:
             with subprocess.Popen(cmd, stdout=logpipe, stderr=logpipe, env=env,  shell=True) as sp:
                 logpipe.close()
             retries = retries + 1
-            do_retry = next((True for s in logpipe.stderrstrings if 'RetryableError' in s), False)
+            do_retry = next((True for s in logpipe.stderr_strings if 'RetryableError' in s), False)
             if do_retry and retries <= auto_retries:
                 self.logger.warning(f'Terraform failed with "RetryableError" error. Retry: {str(retries)}/{str(auto_retries)}')
 
