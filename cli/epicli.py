@@ -124,7 +124,7 @@ Terraform : 1..4 map to the following Terraform verbosity levels:
         config.upgrade_components = args.upgrade_components
     config.debug = args.debug
     config.auto_approve = args.auto_approve
-    config.no_color = args.no_color
+    config.no_color = args.no_color or os.getenv('NO_COLOR', '') != ''
 
     try:
         return args.func(args)
