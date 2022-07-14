@@ -16,7 +16,7 @@ specification:
     - readall
     - snapshotrestore
     # - logstash
-    # - kibanaservers
+    # - kibanaserver
   paths:
     opensearch_home: /usr/share/opensearch
     opensearch_conf_dir: /usr/share/opensearch/config
@@ -27,6 +27,8 @@ specification:
   jvm_options:
     Xmx: 1g
   opensearch_security:
+    audit:
+      type: internal_opensearch # https://opensearch.org/docs/latest/security-plugin/audit-logs
     ssl:
       transport:
         enforce_hostname_verification: true
