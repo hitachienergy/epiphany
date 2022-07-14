@@ -19,7 +19,7 @@ RUN : INSTALL APT REQUIREMENTS \
     make musl-dev openssh-client procps \
     psmisc rsync ruby-full sudo tar \
     unzip vim \
-    openjdk-11-jdk \
+    openjdk-11-jdk-headless \
  && apt-get -q autoremove -y \
  && apt-get -q clean -y \
  && rm -rf /var/lib/apt/lists/* \
