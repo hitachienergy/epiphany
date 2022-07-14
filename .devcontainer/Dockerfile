@@ -19,6 +19,7 @@ RUN : INSTALL APT REQUIREMENTS \
     make musl-dev openssh-client procps \
     psmisc rsync ruby-full sudo tar \
     unzip vim \
+    openjdk-11-jdk-headless \
  && apt-get -q autoremove -y \
  && apt-get -q clean -y \
  && rm -rf /var/lib/apt/lists/*
@@ -57,6 +58,9 @@ RUN : SETUP USER AND OTHERS \
  && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
  && chmod ug=r,o= /etc/sudoers.d/$USERNAME \
  && setcap 'cap_net_bind_service=+ep' /usr/bin/ssh
+
+RUN : SETUP JAVE_HOME
+ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64/
 
 RUN : SETUP EPICLI ALIAS \
  && echo alias epicli='"export PYTHONPATH=/workspaces/epiphany && python3 -m cli.epicli"' >> /etc/bash.bashrc
