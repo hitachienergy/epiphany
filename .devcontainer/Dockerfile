@@ -19,9 +19,11 @@ RUN : INSTALL APT REQUIREMENTS \
     make musl-dev openssh-client procps \
     psmisc rsync ruby-full sudo tar \
     unzip vim \
+    openjdk-11-jdk \
  && apt-get -q autoremove -y \
  && apt-get -q clean -y \
- && rm -rf /var/lib/apt/lists/*
+ && rm -rf /var/lib/apt/lists/* \
+ && rm -rf /var/cache/oracle-jdk11-installer
 
 RUN : INSTALL HELM BINARY \
  && curl -fsSLO https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz \
@@ -57,6 +59,10 @@ RUN : SETUP USER AND OTHERS \
  && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
  && chmod ug=r,o= /etc/sudoers.d/$USERNAME \
  && setcap 'cap_net_bind_service=+ep' /usr/bin/ssh
+
+RUN : SETUP JAVE_HOME
+ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64/
+RUN export JAVA_HOME
 
 RUN : SETUP EPICLI ALIAS \
  && echo alias epicli='"export PYTHONPATH=/workspaces/epiphany && python3 -m cli.epicli"' >> /etc/bash.bashrc
