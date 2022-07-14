@@ -2,6 +2,8 @@
     "recommendations": [
         // Ansible
         "redhat.ansible",
+        // Black Duck Scan
+        "synopsyscodesight.vscode-codesight",
         // Common
         "shardulm94.trailing-spaces",
         // Git
