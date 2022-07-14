@@ -55,8 +55,8 @@ class Log:
 
             # create stream handler with color formatter
             self.stream_handler = logging.StreamHandler()
-            formatter = logging.Formatter(
-                config.log_format, datefmt=config.log_date_format) if config.no_color else ColorFormatter()
+            formatter = logging.Formatter(config.log_format,
+                                          datefmt=config.log_date_format) if config.no_color else ColorFormatter()
             self.stream_handler.setFormatter(formatter)
 
             # create file handler
