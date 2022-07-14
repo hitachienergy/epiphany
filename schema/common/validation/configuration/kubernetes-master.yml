@@ -144,6 +144,8 @@ properties:
     - certificates
     - etcd_args
     - kubeconfig
+  enable_controller_attach_detach:
+    type: boolean
 required:
 - version
 - cni_version

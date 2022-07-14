@@ -10,5 +10,3 @@ properties:
     type: string
   node_labels:
     type: string
-  enable_controller_attach_detach:
-    type: boolean
