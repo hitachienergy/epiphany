@@ -238,57 +238,21 @@
         - kibanaserver_check_response is defined
         - kibanaserver_check_response.status == 200
 
-    - name: Check if default logstash user exists
+    - name: Create dedicated {{ specification.filebeat_user }} user
       uri:
         <<: *uri
-        url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/logstash"
-        method: GET
-        status_code: [200, 404]
-      register: logstash_check_response
-      when: specification.logstash_user_active
-
-    - name: Create default logstash user
-      uri:
-        <<: *uri
-        url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/logstash"
+        url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/{{ specification.filebeat_user }}"
         method: PUT
         status_code: [200]
         body:
-          password: "{{ specification.logstash_password }}"
+          password: "{{ specification.filebeat_password }}"
           reserved: "true"
-          description: "OpenSearch logstash user"
+          description: "OpenSearch {{ specification.filebeat_user }} user"
       register: uri_response
       until: uri_response is success
       retries: 5
       delay: 1
       run_once: true
-      when:
-        - logstash_check_response is defined
-        - logstash_check_response.status == 404
-
-    - name: Set OpenSearch logstash user password
-      uri:
-        <<: *uri
-        url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/"
-        method: PATCH
-        status_code: [200]
-        body:
-          - op: "replace"
-            path: "/logstash"
-            value:
-              password: "{{ specification.logstash_password }}"
-              reserved: "true"
-              backend_roles:
-                - "logstash"
-              description: "OpenSearch logstash user"
-      register: uri_response
-      until: uri_response is success
-      retries: 3
-      delay: 5
-      run_once: true
-      when:
-        - logstash_check_response is defined
-        - kibanaserver_check_response.status == 200
 
     - name: Remove OpenSearch demo users
       uri:

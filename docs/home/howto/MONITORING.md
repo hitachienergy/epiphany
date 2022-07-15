@@ -253,18 +253,20 @@ By default OpenSearch Dashoboards adjusts the UTC time in `@timestamp` to the br
 ## How to configure default passwords for service users in OpenSearch Dashboards, OpenSearch and Filebeat 
 
 To configure admin password for OpenSearch Dashoboards ( previously Kibana ) and OpenSearch you need to follow the procedure below.
-There are separate procedures for `logging` and `opensearch` roles since for most of the time `opensearch`, `kibanaserver` and `logstash` users are not required to be present.
+There are separate procedures for `logging` and `opensearch` roles since for most of the time `opensearch` and `kibanaserver` users are not required to be present.
 
 ### Logging component
 
 #### Logging role
 
 By default Epiphany removes users that are listed in `demo_users_to_remove` section of `configuration/logging` manifest document.
-Additionally, `kibanaserver`<sup>[1]</sup> user (needed by default Epiphany installation of Dashboards) and `logstash` user (needed by default Epiphany installation of Filebeat) are not removed. If you want to perform configuration by Epiphany, set `kibanaserver_user_active` to `true`
-for `kibanaserver` user and/or `logstash_user_active` to `true` for `logstash` user. For `logging` role, those settings are already set to `true` by default.
+Additionally, `kibanaserver`<sup>[1]</sup> user (needed by default Epiphany installation of Dashboards) is not removed. If you want to perform configuration by Epiphany, set `kibanaserver_user_active` to `true` for `kibanaserver` user. For `logging` role, this setting is already set to `true` by default.
 We strongly advice to set different password for each user.
 
-To change `admin` user's password, you need to change the value for `admin_password` key ( see the example below ). For `kibanaserver` and `logstash`, you need to change values for `kibanaserver_password` and `logstash_password` keys respectively. Changes from logging role will be propagated to OpenSearch Dashboards and Filebeat configuration accordingly.
+Note that `logstash` user (needed in earlier versions of Epiphany for installation of Filebeat) has been replaced by dedicated filebeat user.
+By default in Epiphany name of that user is set to `filebeatadmin`, but can be changed by modifying the value for `filebeat_user` key.
+
+To change `admin` user's password, you need to change the value for `admin_password` key ( see the example below ). For `kibanaserver` and `filebeatadmin`, you need to change values for `kibanaserver_password` and `filebeat_password` keys respectively. Changes from logging role will be propagated to OpenSearch Dashboards and Filebeat configuration accordingly.
 
 ```yaml
 kind: configuration/logging
@@ -275,11 +277,12 @@ specification:
   admin_password: YOUR_PASSWORD
   kibanaserver_password: YOUR_PASSWORD
   kibanaserver_user_active: true
-  logstash_password: YOUR_PASSWORD
-  logstash_user_active: true
+  filebeat_user: filebeatadmin
+  filebeat_password: PASSWORD_TO_CHANGE
   demo_users_to_remove:
   - kibanaro
   - readall
+  - logstash
   - snapshotrestore
 ```
 
@@ -289,14 +292,14 @@ To set password for `kibanaserver` user, which is used by Dashboards for communi
 
 #### Filebeat role
 
-To set password of `logstash` user, which is used by Filebeat for communication with OpenSearch Dashboards backend follow the procedure described in  [Logging role](#-logging-role).
+To set password of `filebeatadmin` user, which is used by Filebeat for communication with OpenSearch Dashboards backend follow the procedure described in  [Logging role](#-logging-role).
 
 ### OpenSearch component
 
 By default Epiphany removes all demo users except `admin` user. Those users are listed in `demo_users_to_remove` section of `configuration/opensearch` manifest doc ( see example below ). If you want to keep `kibanaserver` user (needed by default Epiphany installation of OpenSearch Dashboards), you need to exclude it from `demo_users_to_remove` list and set `kibanaserver_user_active` to `true` in order to change the default password.
 We strongly advice to set different password for each user.
 
-To change `admin` user's password, change value for the `admin_password` key. For `kibanaserver` and `logstash`, change values for `kibanaserver_password` and `logstash_password` keys respectively.
+To change `admin` user's password, change value for the `admin_password` key. For `kibanaserver` and `filebeatadmin`, change values for `kibanaserver_password` and `filebeat_password` keys respectively.
 
 ```yaml
 kind: configuration/opensearch
@@ -307,8 +310,8 @@ specification:
   admin_password: YOUR_PASSWORD
   kibanaserver_password: YOUR_PASSWORD
   kibanaserver_user_active: false
-  logstash_password: YOUR_PASSWORD
-  logstash_user_active: false
+  filebeat_user: filebeatadmin
+  filebeat_password: PASSWORD_TO_CHANGE
   demo_users_to_remove:
   - kibanaro
   - readall
