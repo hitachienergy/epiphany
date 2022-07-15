@@ -50,17 +50,15 @@ class DebianFamilyMode(BaseMode):
 
     def _add_third_party_repositories(self):
         # add third party keys
-        for repo in self._repositories:
-            data = self._repositories[repo]
+        for repo, data in self._repositories.items():
             key_file = Path(f'/tmp/{repo}')
             self._tools.wget.download(data['key'], key_file)
             self._tools.apt_key.add(key_file)
 
         # create repo files
-        for repo in self._repositories:
-            data = self._repositories[repo]
-            with data['path'].open(mode='a') as repo_handler:
-                repo_handler.write(data['content'])
+        for repo_file in self._repositories.values():
+            with repo_file['path'].open(mode='a') as repo_handler:
+                repo_handler.write(repo_file['content'])
 
         self._tools.apt.update()
 

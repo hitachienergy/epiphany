@@ -105,7 +105,7 @@ class AptCache(Command):
 
                 if virt_pkgs:  # previous choices cached
                     # avoid conflicts by choosing only non-cached dependency:
-                    if not any(map(lambda elem: elem in deps, virt_pkgs)):
+                    if not any(item in deps for item in virt_pkgs):
                         deps.append(virt_pkgs[0].split('Depends:')[-1])  # pick first from the list
                     virt_pkgs.clear()
 
