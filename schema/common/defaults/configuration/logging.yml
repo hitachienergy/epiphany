@@ -9,8 +9,7 @@ specification:
   admin_password: PASSWORD_TO_CHANGE
   kibanaserver_password: PASSWORD_TO_CHANGE
   kibanaserver_user_active: true
-  filebeat_user: filebeatadmin
-  filebeat_password: PASSWORD_TO_CHANGE
+  filebeatservice_password: PASSWORD_TO_CHANGE
   demo_users_to_remove:
     - kibanaro
     - readall

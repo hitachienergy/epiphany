@@ -238,21 +238,58 @@
         - kibanaserver_check_response is defined
         - kibanaserver_check_response.status == 200
 
-    - name: Create dedicated {{ specification.filebeat_user }} user
+    - name: Check if filebeatservice user exists  # for re-apply scenario
       uri:
         <<: *uri
-        url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/{{ specification.filebeat_user }}"
+        url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/filebeatservice"
+        method: GET
+        status_code: [200, 404]
+      register: filebeatservice_check_response
+
+    - name: Create dedicated filebeatservice user
+      uri:
+        <<: *uri
+        url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/filebeatservice"
         method: PUT
         status_code: [200]
         body:
-          password: "{{ specification.filebeat_password }}"
+          password: "{{ specification.filebeatservice_password }}"
           reserved: "true"
-          description: "OpenSearch {{ specification.filebeat_user }} user"
+          backend_roles:
+            - "logstash"
+          description: "OpenSearch filebeatservice user"
       register: uri_response
       until: uri_response is success
       retries: 5
       delay: 1
       run_once: true
+      when:
+        - filebeatservice_check_response is defined
+        - filebeatservice_check_response.status == 404
+
+    - name: Set filebeatservice user password
+      uri:
+        <<: *uri
+        url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/"
+        method: PATCH
+        status_code: [200]
+        body:
+          - op: "replace"
+            path: "/filebeatservice"
+            value:
+              password: "{{ specification.filebeatservice_password }}"
+              reserved: "true"
+              backend_roles:
+                - "logstash"
+              description: "OpenSearch filebeatservice user"
+      register: uri_response
+      until: uri_response is success
+      retries: 15
+      delay: 1
+      run_once: true
+      when:
+        - filebeatservice_check_response is defined
+        - filebeatservice_check_response.status == 200
 
     - name: Remove OpenSearch demo users
       uri:

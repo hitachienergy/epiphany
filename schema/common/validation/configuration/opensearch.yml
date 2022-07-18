@@ -16,10 +16,8 @@ properties:
     type: string
   kibanaserver_user_active:
     type: boolean
-  logstash_password:
+  filebeatservice_password:
     type: string
-  logstash_user_active:
-    type: boolean
   demo_users_to_remove:
     type: array
     items:

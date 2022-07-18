@@ -16,9 +16,7 @@ properties:
     type: string
   kibanaserver_user_active:
     type: boolean
-  filebeat_user:
-    type: string
-  filebeat_password:
+  filebeatservice_password:
     type: string
   demo_users_to_remove:
     type: array
