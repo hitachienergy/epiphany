@@ -10,6 +10,7 @@ specification:
   kibanaserver_password: PASSWORD_TO_CHANGE
   kibanaserver_user_active: true
   filebeatservice_password: PASSWORD_TO_CHANGE
+  filebeatservice_user_active: true
   demo_users_to_remove:
     - kibanaro
     - readall

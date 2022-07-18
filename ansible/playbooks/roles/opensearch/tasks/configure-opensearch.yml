@@ -245,6 +245,7 @@
         method: GET
         status_code: [200, 404]
       register: filebeatservice_check_response
+      when: specification.filebeatservice_user_active
 
     - name: Create dedicated filebeatservice user
       uri:

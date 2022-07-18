@@ -260,10 +260,10 @@ There are separate procedures for `logging` and `opensearch` roles since for mos
 #### Logging role
 
 By default Epiphany removes users that are listed in `demo_users_to_remove` section of `configuration/logging` manifest document.
-Additionally, `kibanaserver`<sup>[1]</sup> user (needed by default Epiphany installation of Dashboards) is not removed. If you want to perform configuration by Epiphany, set `kibanaserver_user_active` to `true` for `kibanaserver` user. For `logging` role, this setting is already set to `true` by default.
+Additionally, `kibanaserver`<sup>[1]</sup> user (needed by default Epiphany installation of Dashboards )and `filebeatservice` user (needed by default Epiphany installation of Filebeat) are not removed. If you want to perform configuration by Epiphany, set `kibanaserver_user_active` to `true` for `kibanaserver` user and/or `filebeatservice_user_active` to `true` for `filebeatservice` user. For `logging` role, this setting is already set to `true` by default.
 We strongly advice to set different password for each user.
 
-Note that `logstash` user (needed in earlier versions of Epiphany for installation of Filebeat) has been replaced by dedicated `filebeatservice` user.
+Note that `logstash` user from earlier versions of Epiphany, has been replaced by dedicated `filebeatservice` user.
 
 To change `admin` user's password, you need to change the value for `admin_password` key ( see the example below ). For `kibanaserver` and `filebeatservice`, you need to change values for `kibanaserver_password` and `filebeatservice_password` keys respectively. Changes from logging role will be propagated to OpenSearch Dashboards and Filebeat configuration accordingly.
 
@@ -277,6 +277,7 @@ specification:
   kibanaserver_password: YOUR_PASSWORD
   kibanaserver_user_active: true
   filebeatservice_password: PASSWORD_TO_CHANGE
+  filebeatservice_user_active: true
   demo_users_to_remove:
   - kibanaro
   - readall
@@ -309,6 +310,7 @@ specification:
   kibanaserver_password: YOUR_PASSWORD
   kibanaserver_user_active: false
   filebeatservice_password: PASSWORD_TO_CHANGE
+  filebeatservice_user_active: true
   demo_users_to_remove:
   - kibanaro
   - readall

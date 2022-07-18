@@ -18,6 +18,8 @@ properties:
     type: boolean
   filebeatservice_password:
     type: string
+  filebeatservice_user_active:
+    type: boolean
   demo_users_to_remove:
     type: array
     items:
