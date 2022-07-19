@@ -76,7 +76,7 @@ jobs:
         inputs:
           targetType: inline
           script: |
-            pylint ./cli \
+            python3 -m pylint ./cli \
             --rcfile .pylintrc \
             --fail-under=$(pylint_score_cli_threshold) \
             --output cli_code_results.xml
@@ -93,7 +93,7 @@ jobs:
         inputs:
           targetType: inline
           script: |
-            pylint ./tests \
+            python3 -m pylint ./tests \
             --rcfile .pylintrc \
             --fail-under=$(pylint_score_tests_threshold) \
             --output test_code_results.xml \
