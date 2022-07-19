@@ -34,7 +34,7 @@ jobs:
         inputs:
           targetType: inline
           script: |
-            pip install --upgrade ansible==5.2.0 ansible-lint ansible-lint-junit==0.16 lxml pip setuptools
+            python3 -m pip install --upgrade ansible==5.2.0 ansible-lint ansible-lint-junit==0.16 lxml pip setuptools
 
       - task: Bash@3
         displayName: Run Ansible Lint
@@ -67,7 +67,7 @@ jobs:
         inputs:
           targetType: inline
           script: |
-            pip install --upgrade pylint pylint-fail-under pylint-junit
+            python3 -m pip install --upgrade pylint pylint-fail-under pylint-junit
 
       - task: Bash@3
         displayName: Run Pylint on CLI code
