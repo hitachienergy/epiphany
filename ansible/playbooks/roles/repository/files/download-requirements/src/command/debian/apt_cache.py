@@ -26,6 +26,7 @@ class AptCache(Command):
 
         output_lines: List[str] = policy_output.split('\n')
         if version:  # confirm that the wanted version is available
+            version = version.rstrip('*')
             for line in output_lines:
                 if version in line:
                     return version
@@ -44,7 +45,7 @@ class AptCache(Command):
         :param version: optional argument to use specific `package`'s version
         :returns: structured cached `package` info
         """
-        show_args: List[str] = ['show', package]
+        show_args: List[str] = ['show', f'{package}={version}' if version else package]
         show_output = self.run(show_args).stdout
 
         version_info: str = ''
@@ -65,11 +66,12 @@ class AptCache(Command):
 
         return info
 
-    def get_package_dependencies(self, package: str) -> List[str]:
+    def get_package_dependencies(self, package: str, version: str = '') -> List[str]:
         """
         Interface for `apt-cache depends`
 
         :param package: for which dependencies will be gathered
+        :param version: optional argument to use specific `package`'s version
         :returns: all required dependencies for `package`
         """
         args: List[str] = ['depends',
@@ -80,7 +82,7 @@ class AptCache(Command):
                            '--no-replaces',
                            '--no-enhances',
                            '--no-pre-depends',
-                           package]
+                           f'{package}={version}' if version else package]
 
         raw_output = self.run(args).stdout
 
