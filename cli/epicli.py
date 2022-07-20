@@ -39,30 +39,32 @@ def main():
         formatter_class=argparse.RawTextHelpFormatter)
 
     # setup some root arguments
-    parser.add_argument('--version', action='version', help='Shows the CLI version', version=VERSION)
-    parser.add_argument('--licenses', action='version',
-                        help='Shows the third party packages and their licenses the CLI is using.',
-                        version=json.dumps(LICENSES, indent=4))
-    parser.add_argument('-l', '--log-file', dest='log_name', type=str,
-                        help='The name of the log file written to the output directory')
-    parser.add_argument('--log-format', dest='log_format', type=str,
-                        help='''Format for the logging string. Uses the default Python log formatting,
-more information here: https://docs.python.org/3.7/library/logging.html''')
+    parser.add_argument('--auto-approve', dest='auto_approve', action="store_true",
+                        help='Auto approve any user input queries asked by epicli.')
+    parser.add_argument('--licenses', action='version', version=json.dumps(LICENSES, indent=4),
+                        help='Shows the third party packages and their licenses the CLI is using.')
+    parser.add_argument('--log-count', dest='log_count', type=str,
+                        help='Roleover count where each CLI run will generate a new log.')
     parser.add_argument('--log-date-format', dest='log_date_format', type=str,
                         help='''Format for the logging date/time. Uses the default Python strftime formatting,
 more information here: https://docs.python.org/3.7/library/time.html#time.strftime''')
-    parser.add_argument('--log-count', dest='log_count', type=str,
-                        help='Roleover count where each CLI run will generate a new log.')
-    parser.add_argument('--log-type', choices=['plain', 'json'], default='plain',
-                        dest='log_type', action='store', help='''Type of logs that will be written to the output file.
+    parser.add_argument('-l', '--log-file', dest='log_name', type=str,
+                        help='The name of the log file written to the output directory.')
+    parser.add_argument('--log-format', dest='log_format', type=str,
+                        help='''Format for the logging string. Uses the default Python log formatting,
+more information here: https://docs.python.org/3.7/library/logging.html''')
+    parser.add_argument('--log-type', choices=['plain', 'json'], default='plain', dest='log_type', action='store',
+                        help='''Type of logs that will be written to the output file.
 Currently supported formats are plain text or JSON''')
+    parser.add_argument('--no-color', dest='no_color', action="store_true",
+                        help='Disables output coloring.')
     parser.add_argument('--validate-certs', choices=['true', 'false'], default='true', action='store',
                         dest='validate_certs',
                         help='''[Experimental]: Disables certificate checks for certain Ansible operations
 which might have issues behind proxies (https://github.com/ansible/ansible/issues/32750).
 Should NOT be used in production for security reasons.''')
-    parser.add_argument('--auto-approve', dest='auto_approve', action="store_true",
-                        help='Auto approve any user input queries asked by Epicli')
+    parser.add_argument('--version', action='version', version=VERSION,
+                        help='Shows the CLI version.')
 
     # set debug verbosity level.
     def debug_level(x):
@@ -122,6 +124,7 @@ Terraform : 1..4 map to the following Terraform verbosity levels:
         config.upgrade_components = args.upgrade_components
     config.debug = args.debug
     config.auto_approve = args.auto_approve
+    config.no_color = args.no_color or os.getenv('NO_COLOR', '') != ''
 
     try:
         return args.func(args)

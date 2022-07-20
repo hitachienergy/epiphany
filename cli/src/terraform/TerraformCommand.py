@@ -45,7 +45,8 @@ class TerraformCommand:
         if auto_approve:
             cmd.append('-auto-approve')
 
-        cmd.append('-no-color')
+        if Config().no_color:
+            cmd.append('-no-color')
 
         cmd = ' '.join(cmd)
         self.logger.info(f'Running: "{cmd}"')
@@ -60,7 +61,7 @@ class TerraformCommand:
             with subprocess.Popen(cmd, stdout=logpipe, stderr=logpipe, env=env,  shell=True) as sp:
                 logpipe.close()
             retries = retries + 1
-            do_retry = next((True for s in logpipe.stderrstrings if 'RetryableError' in s), False)
+            do_retry = next((True for line in logpipe.output_error_lines if 'RetryableError' in line), False)
             if do_retry and retries <= auto_retries:
                 self.logger.warning(f'Terraform failed with "RetryableError" error. Retry: {str(retries)}/{str(auto_retries)}')
 

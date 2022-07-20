@@ -14,7 +14,7 @@ pool:
 
 variables:
   ansible_lint_error_threshold: 338
-  pylint_score_cli_threshold: 9.44
+  pylint_score_cli_threshold: 9.50
   pylint_score_tests_threshold: 9.78
   rubocop_linter_threshold: 183
 
@@ -34,7 +34,7 @@ jobs:
         inputs:
           targetType: inline
           script: |
-            pip install --upgrade ansible==5.2.0 ansible-lint ansible-lint-junit==0.16 lxml pip setuptools
+            python3 -m pip install --upgrade ansible==5.2.0 ansible-lint ansible-lint-junit==0.16 lxml pip setuptools
 
       - task: Bash@3
         displayName: Run Ansible Lint
@@ -67,14 +67,16 @@ jobs:
         inputs:
           targetType: inline
           script: |
-            pip install --upgrade pylint pylint-fail-under pylint-junit
+            # epicli deps: click
+            python3 -m pip install --upgrade pylint pylint-fail-under pylint-junit \
+                                             click
 
       - task: Bash@3
         displayName: Run Pylint on CLI code
         inputs:
           targetType: inline
           script: |
-            pylint ./cli \
+            python3 -m pylint ./cli \
             --rcfile .pylintrc \
             --fail-under=$(pylint_score_cli_threshold) \
             --output cli_code_results.xml
@@ -91,7 +93,7 @@ jobs:
         inputs:
           targetType: inline
           script: |
-            pylint ./tests \
+            python3 -m pylint ./tests \
             --rcfile .pylintrc \
             --fail-under=$(pylint_score_tests_threshold) \
             --output test_code_results.xml \
