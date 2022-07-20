@@ -1,0 +1,164 @@
+---
+trigger: none
+pr: none
+
+resources:
+  pipelines:
+    - pipeline: _source-pipeline
+      source: yaml-pipelines\epiphany-platform.epiphany [build]
+
+pool:
+  name: $(agentPoolName)
+
+variables:
+  _ansible_forks: 30
+  _ping_retries: 20
+  cluster_name: testawsinitfull
+  repository: epicli
+
+stages:
+- stage: DeployAWS
+  jobs:
+    - job: SetVariables
+      steps:
+        - checkout: none
+
+        - task: Bash@3
+          displayName: Set variables
+          inputs:
+            targetType: inline
+            script: |
+              set -e
+              sourceBranch=$(resources.pipeline._source-pipeline.sourceBranch)
+              sourceBranchName=${sourceBranch##*/}
+              echo "##vso[task.setvariable variable=image_tag;isOutput=true;]${sourceBranchName}.$(resources.pipeline._source-pipeline.runId)"
+          name: setVarStep
+
+    - job: Deploy
+      condition: eq(variables['runDeployJob'], 'true')
+      dependsOn:
+        - SetVariables
+      variables:
+        image_tag: $[ dependencies.SetVariables.outputs['setvarStep.image_tag'] ]
+      steps:
+        - checkout: none
+
+        - task: Bash@3
+          displayName: Install aws cli
+          inputs:
+            targetType: inline
+            script: |
+              apt-get update && apt-get install awscli
+
+        - task: Bash@3
+          displayName: Check if build directory already exists
+          inputs:
+            targetType: inline
+            script: |
+              if [ -f "/build/epi-cli/build/$(cluster_name)/manifest.yml" ]; then echo "##vso[task.setvariable variable=directoryExists;]true"; fi
+
+        - task: Docker@1
+          displayName: Destroy environment
+          inputs:
+            azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+            azureContainerRegistry: $(azureContainerRegistry)
+            command: Run an image
+            imageName: $(repository):$(image_tag)
+            volumes: /tmp/build/epi-cli:/shared
+            containerCommand: -c "cd ~ && epicli -l ~/log.log --auto-approve delete -b /shared/build/$(cluster_name)"
+            runInBackground: false
+          condition: eq(variables['directoryExists'], true)
+
+        - task: Bash@3
+          displayName: Clean up
+          inputs:
+            targetType: inline
+            script: |
+              rm -rf /build/epi-cli/build/$(cluster_name)/*
+
+        - task: Docker@1
+          displayName: Epicli init
+          inputs:
+            azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+            azureContainerRegistry: $(azureContainerRegistry)
+            command: Run an image
+            imageName: $(repository):$(image_tag)
+            volumes: /tmp/build/epi-cli:/shared
+            containerCommand: -c "epicli init -p aws -n $(cluster_name) --full"
+            runInBackground: false
+
+        - task: Bash@3
+          displayName: Set prefix, key path, public ips, credentials
+          inputs:
+            targetType: inline
+            script: |
+              set -e
+              sed -i -e '0,/---/s~prefix:.*~prefix: ci~' \
+                     -e '0,/---/s~key_path:.*~key_path: $(key_path)~' \
+                     -e '0,/---/s~use_public_ips:.*~use_public_ips: true~' \
+                     -e '0,/---/s~access_key_id:.*~access_key_id: $(aws_key)~' \
+                     -e '0,/---/s~secret_access_key:.*~secret_access_key: $(aws_secret)~' \
+                     /build/epi-cli/build/$(cluster_name)/$(cluster_name).yml
+              chown -R 1000:1000 /build/epi-cli/build/$(cluster_name)
+
+        - task: Docker@1
+          displayName: Epicli apply
+          inputs:
+            azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+            azureContainerRegistry: $(azureContainerRegistry)
+            command: Run an image
+            imageName: $(repository):$(image_tag)
+            volumes: /tmp/build/epi-cli:/shared
+            containerCommand: -c "cd ~ && epicli -l ~/log.log apply --vault-password $(vault_password) -f /shared/build/$(cluster_name)/$(cluster_name).yml --ping-retries $(_ping_retries) --ansible-forks $(_ansible_forks)"
+            runInBackground: false
+
+        - task: Docker@1
+          displayName: Run tests
+          inputs:
+            azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+            azureContainerRegistry: $(azureContainerRegistry)
+            command: Run an image
+            imageName: $(repository):$(image_tag)
+            volumes: /tmp/build/epi-cli:/shared
+            containerCommand: -c "cd ~ && epicli --auto-approve -l ~/log.log test -b /shared/build/$(cluster_name) -k /etc/kubernetes/admin.conf"
+            runInBackground: false
+
+        - task: PublishTestResults@2
+          displayName: 'Publish Test Results'
+          inputs:
+            testResultsFiles: '*.xml'
+            searchFolder: '/build/epi-cli/build/$(cluster_name)/spec_tests'
+            mergeTestResults: true
+            failTaskOnFailedTests: true
+            testRunTitle: 'CI Test Run for $(cluster_name)'
+            buildPlatform: '$(cluster_name)'
+          continueOnError: true
+
+    - job: Destroy
+      condition: eq(variables['runDestroyJob'], 'true')
+      dependsOn:
+        - SetVariables
+        - Deploy
+      variables:
+        image_tag: $[ dependencies.SetVariables.outputs['setvarStep.image_tag'] ]
+      steps:
+        - checkout: none
+
+        - task: Bash@3
+          displayName: Check if build directory already exists
+          inputs:
+            targetType: inline
+            script: |
+              if [ -f "/build/epi-cli/build/$(cluster_name)/manifest.yml" ]; then echo "##vso[task.setvariable variable=directoryExists;]true"; fi
+
+        - task: Docker@1
+          displayName: Destroy environment
+          inputs:
+            azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+            azureContainerRegistry: $(azureContainerRegistry)
+            command: Run an image
+            imageName: $(repository):$(image_tag)
+            volumes: /tmp/build/epi-cli:/shared
+            containerCommand: -c "cd ~ && epicli -l ~/log.log --auto-approve delete -b /shared/build/$(cluster_name)"
+            runInBackground: false
+          condition: eq(variables['directoryExists'], true)
