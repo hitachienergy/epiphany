@@ -3845,6 +3845,11 @@ spec:
             # Set Felix endpoint to host default action to ACCEPT.
             - name: FELIX_DEFAULTENDPOINTTOHOSTACTION
               value: "ACCEPT"
+            # Can be set to default (auto) after upgrading to RHEL9
+{% if 'arm64' in canal_arch %}
+            - name: FELIX_IPTABLESBACKEND
+              value: "Legacy"
+{% endif %}
             # Disable IPv6 on Kubernetes.
             - name: FELIX_IPV6SUPPORT
               value: "false"
