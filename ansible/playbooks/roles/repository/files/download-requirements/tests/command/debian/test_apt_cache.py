@@ -1,6 +1,6 @@
-from tests.mocks.command_run_mock import CommandRunMock
-
 from src.command.debian.apt_cache import AptCache
+
+from tests.mocks.command_run_mock import CommandRunMock
 
 
 def test_interface_get_package_dependencies(mocker):
