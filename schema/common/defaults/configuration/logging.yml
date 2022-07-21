@@ -8,15 +8,12 @@ specification:
   opensearch_os_group: opensearch
   admin_password: PASSWORD_TO_CHANGE
   kibanaserver_password: PASSWORD_TO_CHANGE
-  kibanaserver_user_active: true
   filebeatservice_password: PASSWORD_TO_CHANGE
-  filebeatservice_user_active: true
   demo_users_to_remove:
     - kibanaro
     - readall
     - snapshotrestore
     - logstash
-    # - kibanaserver
   paths:
     opensearch_home: /usr/share/opensearch
     opensearch_conf_dir: /usr/share/opensearch/config
