@@ -486,8 +486,10 @@ specification:
   cluster_name: EpiphanyOpenSearch
 ```
 
-By default, OpenSearch Dashboards ( previously Kibana component )  is deployed only for `logging` component. If you want to deploy it
-for `opensearch` component you have to modify feature mapping. Use below configuration in your manifest:
+By default, OpenSearch Dashboards (previously Kibana component) is deployed only for `logging` component. If you want to deploy it
+for `opensearch` component you have to:
+- modify feature mapping by adding `opensearch-dashboards` under `opensearch` component (see configuration below)
+- setup `kibanaserver` user and its password in `configuration/opensearch`, see [Opensearch user and password configuration](./MONITORING.md#opensearch-component)
 
 ```yaml
 kind: configuration/feature-mappings

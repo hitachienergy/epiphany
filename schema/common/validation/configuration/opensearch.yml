@@ -12,6 +12,8 @@ properties:
     type: string
   admin_password:
     type: string
+  kibanaserver_password:
+    type: string
   demo_users_to_remove:
     type: array
     items:

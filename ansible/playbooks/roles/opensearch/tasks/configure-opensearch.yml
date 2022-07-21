@@ -196,8 +196,8 @@
         status_code: [200, 404]
       register: kibanaserver_check_response
       when:
-      - groups.opensearch_dashboards[0] is defined
-      - inventory_hostname in groups.opensearch_dashboards
+        - groups.opensearch_dashboards[0] is defined
+        - inventory_hostname in groups.opensearch_dashboards
 
     - name: Create default kibanaserver user
       uri:
@@ -248,8 +248,8 @@
         status_code: [200, 404]
       register: filebeatservice_check_response
       when:
-      - groups.logging[0] is defined
-      - inventory_hostname in groups.logging
+        - groups.logging[0] is defined
+        - inventory_hostname in groups.logging
 
     - name: Create dedicated filebeatservice user
       uri:

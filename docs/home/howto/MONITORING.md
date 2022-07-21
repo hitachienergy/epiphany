@@ -252,10 +252,10 @@ By default OpenSearch Dashoboards adjusts the UTC time in `@timestamp` to the br
 
 ## How to configure default passwords for service users in OpenSearch Dashboards, OpenSearch and Filebeat
 
-Epiphany provides two roles that inclue OpenSearch installation: `logging` (includes OpenSearch-Dashboards) and `opensearch`.
-In order to learn more about both roles, please look through documentation:
-- [logging role](./LOGGING.md#centralized-logging-setup)
-- [opensearch role](./DATABASES.md#how-to-start-working-with-opensearch)
+Epiphany provides two componenets that include OpenSearch installation: `logging` (by default includes OpenSearch-Dashboards as well) and `opensearch`.
+In order to learn more about both components, please look through documentation:
+- [logging](./LOGGING.md#centralized-logging-setup)
+- [opensearch](./DATABASES.md#how-to-start-working-with-opensearch)
 
 To configure admin password for OpenSearch Dashoboards ( previously Kibana ) and OpenSearch you need to follow the procedure below.
 
@@ -294,10 +294,11 @@ specification:
 
 Default user provided by Epiphany for OpenSearch role is `admin`. Additionally, Epiphany removes all demo users except `admin` user.
 Those users are listed in `demo_users_to_remove` section of `configuration/opensearch` manifest doc ( see example below ).
+To change `admin` user's password, change value for the `admin_password` key.
 
 **We strongly advice to set different password for admin user.**
 
-To change `admin` user's password, change value for the `admin_password` key.
+Note that adding `opensearch-dashboards` mapping in `configuration/feature-mappings` under `opensearch` component requires commenting out `kibanaserver` user form `demo_users_to_remove` section (as presented in configuration below). This step should be followed by changing default password for `kibanaserver` user by modifying value for `kibanaserver_password` key.
 
 ```yaml
 kind: configuration/opensearch
@@ -306,12 +307,13 @@ name: default
 specification:
   [...]
   admin_password: YOUR_PASSWORD
+  kibanaserver_password: YOUR_PASSWPRD
   demo_users_to_remove:
   - kibanaro
   - readall
   - snapshotrestore
   - logstash
-  - kibanaserver
+  # - kibanaserver
 ```
 
 ### Upgrade of OpenSearch, OpenSearch Dashboards and Filebeat
