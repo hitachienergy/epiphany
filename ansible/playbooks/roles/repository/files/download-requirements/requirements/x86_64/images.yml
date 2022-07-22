@@ -146,9 +146,6 @@ images:
     'quay.io/coreos/flannel:v0.14.0-amd64':
       sha1: cff47465996a51de4632b53abf1fca873f147027
 
-    'quay.io/coreos/flannel:v0.14.0':
-      sha1: a487a36f7b31677e50e74b96b944f27fbce5ac13
-
     'calico/cni:v3.20.3':
       sha1: 95e4cf79e92715b13e500a0efcfdb65590de1e04
 
@@ -160,6 +157,18 @@ images:
 
     'calico/pod2daemon-flexvol:v3.20.3':
       sha1: 97c1b7ac90aa5a0f5c52e7f137549e598ff80f3e
+
+    'quay.io/coreos/flannel:v0.15.1-amd64':
+      sha1: 4189b460462c50082e670955ab584e6d887be209
+
+    'calico/cni:v3.23.3':
+      sha1: 6bd0ee90316b2dcd0575f0a6a756a3cd976d4819
+
+    'calico/kube-controllers:v3.23.3':
+      sha1: fd643d783279e76ede70361e6246a4cdd99f4221
+
+    'calico/node:v3.23.3':
+      sha1: 85a3499d4fb7e93ab6334beed57b635d09f02d1f
 
   rook:
     'k8s.gcr.io/sig-storage/csi-attacher:v3.4.0':
