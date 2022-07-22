@@ -25,6 +25,24 @@ specification:
           - name: "kubernetesui/metrics-scraper:v1.0.7"
             file_name: metrics-scraper-v1.0.7.tar
         rook:
+          - name: "k8s.gcr.io/sig-storage/csi-attacher:v3.4.0"
+            file_name: csi-attacher-v3.4.0.tar
+          - name: "k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.5.0"
+            file_name: csi-node-driver-registrar-v2.5.0.tar
+          - name: "k8s.gcr.io/sig-storage/csi-provisioner:v3.1.0"
+            file_name: csi-provisioner-v3.1.0.tar
+          - name: "k8s.gcr.io/sig-storage/csi-resizer:v1.4.0"
+            file_name: csi-resizer-v1.4.0.tar
+          - name: "k8s.gcr.io/sig-storage/csi-snapshotter:v5.0.1"
+            file_name: csi-snapshotter-v5.0.1.tar
+          - name: "quay.io/ceph/ceph:v16.2.7-20220510"
+            file_name: ceph-v16.2.7-20220510.tar
+          - name: "quay.io/cephcsi/cephcsi:v3.5.1"
+            file_name: cephcsi-v3.5.1.tar
+          - name: "quay.io/csiaddons/k8s-sidecar:v0.2.1"
+            file_name: k8s-sidecar-v0.2.1.tar
+          - name: "quay.io/csiaddons/volumereplication-operator:v0.3.0"
+            file_name: volumereplication-operator-v0.3.0.tar
           - name: "rook/ceph:v1.8.8"
             file_name: ceph-v1.8.8.tar
       current:
@@ -48,29 +66,11 @@ specification:
             file_name: etcd-3.5.0-0.tar
           - name: "k8s.gcr.io/pause:3.5"
             file_name: pause-3.5.tar
-          - name: "k8s.gcr.io/sig-storage/csi-attacher:v3.4.0"
-            file_name: csi-attacher-v3.4.0.tar
-          - name: "k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.5.0"
-            file_name: csi-node-driver-registrar-v2.5.0.tar
-          - name: "k8s.gcr.io/sig-storage/csi-provisioner:v3.1.0"
-            file_name: csi-provisioner-v3.1.0.tar
-          - name: "k8s.gcr.io/sig-storage/csi-resizer:v1.4.0"
-            file_name: csi-resizer-v1.4.0.tar
-          - name: "k8s.gcr.io/sig-storage/csi-snapshotter:v5.0.1"
-            file_name: csi-snapshotter-v5.0.1.tar
           # flannel
           - name: "quay.io/coreos/flannel:v0.14.0-amd64"
             file_name: flannel-v0.14.0-amd64.tar
           - name: "quay.io/coreos/flannel:v0.14.0"
             file_name: flannel-v0.14.0.tar
-          - name: "quay.io/ceph/ceph:v16.2.7-20220510"
-            file_name: ceph-v16.2.7-20220510.tar
-          - name: "quay.io/cephcsi/cephcsi:v3.5.1"
-            file_name: cephcsi-v3.5.1.tar
-          - name: "quay.io/csiaddons/k8s-sidecar:v0.2.1"
-            file_name: k8s-sidecar-v0.2.1.tar
-          - name: "quay.io/csiaddons/volumereplication-operator:v0.3.0"
-            file_name: volumereplication-operator-v0.3.0.tar
           # canal & calico
           - name: "calico/cni:v3.20.3"
             file_name: cni-v3.20.3.tar
