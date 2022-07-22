@@ -215,7 +215,7 @@
       delay: 1
       run_once: true
       when:
-        - kibanaserver_check_response is defined
+        - kibanaserver_check_response.status is defined
         - kibanaserver_check_response.status == 404
 
     - name: Set kibanaserver user password
@@ -237,7 +237,7 @@
       delay: 1
       run_once: true
       when:
-        - kibanaserver_check_response is defined
+        - kibanaserver_check_response.status is defined
         - kibanaserver_check_response.status == 200
 
     - name: Check if filebeatservice user exists  # for re-apply scenario
@@ -269,7 +269,7 @@
       delay: 1
       run_once: true
       when:
-        - filebeatservice_check_response is defined
+        - filebeatservice_check_response.status is defined
         - filebeatservice_check_response.status == 404
 
     - name: Set filebeatservice user password
@@ -293,7 +293,7 @@
       delay: 1
       run_once: true
       when:
-        - filebeatservice_check_response is defined
+        - filebeatservice_check_response.status is defined
         - filebeatservice_check_response.status == 200
 
     - name: Remove OpenSearch demo users
