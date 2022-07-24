@@ -5,6 +5,9 @@
       - update is defined
     fail_msg: Variable 'update' must be defined.
 
+- debug:
+    var: update
+
 - name: Collect kubeadm-config
   command: |
     kubectl get configmap kubeadm-config \
@@ -16,6 +19,11 @@
   register: kubeadm_config
   changed_when: false
 
+- debug:
+    msg:
+      - "{{ kubeadm_config }}"
+
+
 - name: Extend kubeadm config
   set_fact:
     kubeadm_config: >-
@@ -24,9 +32,17 @@
     original: >-
       {{ kubeadm_config.stdout | from_yaml }}
 
+- debug:
+    msg:
+      - "{{ kubeadm_config }}"
+
+- name: Pause until you can verify updates to an application were successful
+  ansible.builtin.pause:
+
 - name: Render /etc/kubeadm/kubeadm-config.yml
   copy:
     dest: /etc/kubeadm/kubeadm-config.yml
     mode: u=rw,go=
+    backup: yes
     content: >-
       {{ kubeadm_config | to_nice_yaml }}
