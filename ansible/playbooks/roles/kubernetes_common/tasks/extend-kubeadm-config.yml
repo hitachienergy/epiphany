@@ -36,8 +36,8 @@
     msg:
       - "{{ kubeadm_config }}"
 
-- name: Pause until you can verify updates to an application were successful
-  ansible.builtin.pause:
+#- name: Pause until you can verify updates to an application were successful
+#  ansible.builtin.pause:
 
 - name: Render /etc/kubeadm/kubeadm-config.yml
   copy:
@@ -46,3 +46,9 @@
     backup: yes
     content: >-
       {{ kubeadm_config | to_nice_yaml }}
+
+- name: Merge /etc/kubeadm/kubeadm-config.yml with baseline (2 Kinds) file.
+  shell: >-
+    cd /etc/kubeadm &&
+    sed -n -e '/---/,$p' kubeadm-config.yml.* >> kubeadm-config.yml
+  register: result
