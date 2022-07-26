@@ -31,6 +31,7 @@
 - [#2870](https://github.com/epiphany-platform/epiphany/issues/2870) - OpenDistro for ElasticSearch replaced by OpenSearch
 - [#3163](https://github.com/epiphany-platform/epiphany/issues/3163) - Upgrade Python dependencies
 - [#3097](https://github.com/epiphany-platform/epiphany/issues/3097) - Split available_roles and roles_mapping into separate yaml documents
+- [#3229](https://github.com/epiphany-platform/epiphany/issues/3229) - Update crane to v0.11.0
 
 ### Deprecated
 
