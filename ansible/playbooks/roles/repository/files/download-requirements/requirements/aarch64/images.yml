@@ -49,7 +49,7 @@ images:
       sha1: 098ec78af9bf3a70afbd1a9743ff352f72fb036d
 
     'quay.io/coreos/flannel:v0.15.1':
-      sha1: 394ca6f233cf612274ab0cb7600e4ac3d033c368
+      sha1: 378513c030a1d42754abb5160016e6b1ae2a1c64
 
     'calico/cni:v3.23.3':
       sha1: 7539e19d46f4c5786f9a5cbcf8234ece7920c01d
