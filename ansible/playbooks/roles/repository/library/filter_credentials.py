@@ -3,7 +3,8 @@
 from __future__ import (absolute_import, division, print_function)
 
 from pathlib import Path
-from typing import List
+from typing import Callable, Dict, List
+import yaml
 
 __metaclass__ = type
 
@@ -26,7 +27,7 @@ options:
     in_place:
         description: When set to True will modify existing manifest passed as `src`
         required: false
-        type: false
+        type: bool
 """
 
 EXAMPLES = r"""
@@ -49,8 +50,28 @@ EXAMPLES = r"""
 """
 
 
-import yaml
 from ansible.module_utils.basic import AnsibleModule
+
+
+def _filter_common(docs: List[Dict]):
+    # remove admin user info from epiphany-cluster doc:
+    del next(filter(lambda doc: doc['kind'] == 'epiphany-cluster', docs))['specification']['admin_user']
+
+
+def _filter_aws(docs: List[Dict]):
+    _filter_common(docs)
+
+    # filter epiphany-cluster doc
+    epiphany_cluster = next(filter(lambda doc: doc['kind'] == 'epiphany-cluster', docs))
+    del epiphany_cluster['specification']['cloud']['credentials']
+
+
+def _filter_azure(docs: List[Dict]):
+    _filter_common(docs)
+
+    # filter epiphany-cluster doc
+    epiphany_cluster = next(filter(lambda doc: doc['kind'] == 'epiphany-cluster', docs))
+    del epiphany_cluster['specification']['cloud']['subscription_name']
 
 
 def _get_filtered_manifest(manifest_path: Path) -> str:
@@ -58,26 +79,22 @@ def _get_filtered_manifest(manifest_path: Path) -> str:
     Load the manifest file and remove any sensitive data.
 
     :param manifest_path: manifest file which will be loaded
-    :returns: filtered manifset doc
+    :returns: filtered manifset
     """
+    docs = yaml.safe_load_all(manifest_path.open())
+    filtered_docs = [doc for doc in docs if doc['kind'] in ['epiphany-cluster',
+                                                            'configuration/feature-mappings',
+                                                            'configuration/image-registry']]
 
-    # remove passwords:
-    lines: List[str] = []
-    with manifest_path.open(mode='r', encoding='utf-8') as mhandler:
-        for line in mhandler.readlines():
-            if 'password' not in line.lower():
-                lines.append(line)
+    FILTER_DATA: Dict[str, Callable] = {
+        'any': _filter_common,
+        'azure': _filter_azure,
+        'aws': _filter_aws
+    }
 
-    docs = yaml.safe_load_all(''.join(lines))
-    epiphany_cluster = next(docs)
+    FILTER_DATA[filtered_docs[0]['provider']](filtered_docs)
 
-    # remove provider credentials:
-    try:
-        del epiphany_cluster['specification']['cloud']
-    except KeyError:
-        pass  # cloud key is optional
-
-    return yaml.dump_all([epiphany_cluster] + list(docs))
+    return yaml.dump_all(filtered_docs)
 
 def run_module():
     # define available arguments/parameters a user can pass to the module

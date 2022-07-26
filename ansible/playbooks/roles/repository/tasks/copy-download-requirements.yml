@@ -55,18 +55,19 @@
         dest: "{{ download_requirements_dir }}/{{ item }}"
       loop: "{{ _files }}"
 
-    - name: Filter sensitive data from the manifest
-      filter_credentials:
-        src: "{{ input_manifest_path }}"
-        dest: /tmp/filtered_manifest.yml
-      delegate_to: localhost
+    - name: Manifest handling
       when: not full_download and input_manifest_path
+      block:
+      - name: Filter sensitive data from the manifest
+        filter_credentials:
+          src: "{{ input_manifest_path }}"
+          dest: /tmp/filtered_manifest.yml
+        delegate_to: localhost
 
-    - name: Copy the manifest file
-      synchronize:
-        src: /tmp/filtered_manifest.yml
-        dest: "{{ download_requirements_dir }}/manifest.yml"
-      when: not full_download and input_manifest_path
+      - name: Copy the manifest file
+        synchronize:
+          src: /tmp/filtered_manifest.yml
+          dest: "{{ download_requirements_dir }}/manifest.yml"
 
     - name: Copy RedHat family specific download requirements file
       synchronize:
