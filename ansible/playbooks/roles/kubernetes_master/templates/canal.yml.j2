@@ -4314,21 +4314,8 @@ spec:
       labels:
         k8s-app: canal
     spec:
-{# BEGIN Customized by Epiphany #}
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: kubernetes.io/os
-                    operator: In
-                    values:
-                      - linux
-                  - key: kubernetes.io/arch
-                    operator: In
-                    values:
-                      - {{ canal_arch }}
-{# END #}
+      nodeSelector:
+        kubernetes.io/os: linux
       hostNetwork: true
       tolerations:
         # Make sure canal gets scheduled on all nodes.
@@ -4534,7 +4521,7 @@ spec:
         # This container runs flannel using the kube-subnet-mgr backend
         # for allocating subnets.
         - name: kube-flannel
-          image: {{ image_registry_address }}/quay.io/coreos/flannel:v0.15.1-{{ canal_arch }}
+          image: {{ image_registry_address }}/quay.io/coreos/flannel:v0.15.1
           command: [ "/opt/bin/flanneld", "--ip-masq", "--kube-subnet-mgr" ]
           securityContext:
             privileged: true
