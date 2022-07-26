@@ -161,6 +161,7 @@ images:
     'calico/pod2daemon-flexvol:v3.20.3':
       sha1: 97c1b7ac90aa5a0f5c52e7f137549e598ff80f3e
 
+  rook:
     'k8s.gcr.io/sig-storage/csi-attacher:v3.4.0':
       sha1: f076bd75359c6449b965c48eb8bad96c6d40790d
 
@@ -188,6 +189,5 @@ images:
     'quay.io/csiaddons/volumereplication-operator:v0.3.0':
       sha1: d3cd17f14fcbf09fc6c8c2c5c0419f098f87a70f
 
-  rook:
     'rook/ceph:v1.8.8':
       sha1: f34039b17b18f5a855b096d48ff787b4013615e4

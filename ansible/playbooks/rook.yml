@@ -4,7 +4,9 @@
   gather_facts: true
   tasks: []
 
-- hosts: kubernetes_master[0]
+# rook is not supported when k8s_as_cloud_service == True
+- hosts: rook
+  run_once: true
   become: true
   become_method: sudo
   roles:
