@@ -28,7 +28,7 @@
     extra_opts:
       - --strip-components=1
 
-# if opensearch-dashboards is enabled for groups 'logging' and 'opensearch', form dashoards cluster
+# if opensearch-dashboards is enabled for groups 'logging' and 'opensearch', form dashboards cluster
 # on the basis of belonging to a given group
 - name: Set opensearch dashboards hosts as fact
   set_fact:

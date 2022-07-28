@@ -8,7 +8,7 @@ end
 
 # Configurable passwords for ES users were introduced in v0.10.0.
 # For testing upgrades, we use default passwords for now but they should be read from filebeat.yml (remote host).
-es_filebeatservice_user_password  = readDataYaml('configuration/logging')['specification']['filebeatservice_password'] || 'filebeatservice'
+es_filebeatservice_user_password  = readDataYaml('configuration/logging')['specification']['filebeatservice_password'] || 'PASSWORD_TO_CHANGE'
 es_filebeatservice_user_is_active = !listInventoryHosts('logging').empty?
 
 es_kibanaserver_user_password  = readDataYaml('configuration/logging')['specification']['kibanaserver_password'] || 'kibanaserver'

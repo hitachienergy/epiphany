@@ -262,7 +262,7 @@
           reserved: "true"
           backend_roles:
             - "logstash"
-          description: "OpenSearch filebeatservice user"
+          description: "Epiphany user for Filebeat service"
       register: uri_response
       until: uri_response is success
       retries: 5
@@ -286,7 +286,7 @@
               reserved: "true"
               backend_roles:
                 - "logstash"
-              description: "OpenSearch filebeatservice user"
+              description: "Epiphany user for Filebeat service"
       register: uri_response
       until: uri_response is success
       retries: 15
