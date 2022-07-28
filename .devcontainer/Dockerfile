@@ -44,7 +44,7 @@ RUN : INSTALL HELM BINARY \
  && curl -fsSLO https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWS_CLI_VERSION}.zip \
  && unzip awscli-exe-linux-x86_64-${AWS_CLI_VERSION}.zip \
  && ./aws/install -i /usr/local/aws-cli -b /usr/local/bin \
- && rm -rf awscliv2.zip ./aws \
+ && rm -rf awscli-exe-linux-x86_64-${AWS_CLI_VERSION}.zip ./aws \
  && aws --version
 
 RUN : INSTALL GEM REQUIREMENTS \
