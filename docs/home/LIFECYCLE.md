@@ -34,8 +34,8 @@ The LTS version will be released once a year and will be supported for up to 3 y
 | [1.2.x STS](../changelogs/CHANGELOG-1.2.md) | 30 Sep 2021 | 1.2.0 | 30 Sep 2021 | 30 Mar 2022 |
 | [1.3.x STS](../changelogs/CHANGELOG-1.3.md) | 19 Jan 2022 | 1.3.0 | 19 Jan 2022 | 30 Jun 2022 |
 | [2.0.x LTS](../changelogs/CHANGELOG-2.0.md) | 09 May 2022 | 2.0.0 | 09 May 2022 | 09 May 2025 |
-| :arrow_right: 2.0.1 LTS | est. 30 Jun 2022 | --- | --- | 09 May 2025 |
-| :arrow_right: 2.0.2 LTS | est. 30 Sep 2022 | --- | --- | 09 May 2025 |
+| :arrow_right: 2.0.1 LTS | est. 30 Aug 2022 | --- | --- | 09 May 2025 |
+| :arrow_right: 2.0.2 LTS | est. 30 Oct 2022 | --- | --- | 09 May 2025 |
 
 ```mermaid
 gantt
@@ -67,6 +67,6 @@ section 1.3.x
 1.3.x - 6 months     :active, 2022-01-19, 2022-06-30
 section 2.0.x
 2.0.x support cycle (LTS - 3 years)     :crit, 2022-05-09, 2025-05-09
-2.0.1 patch for LTS     :crit, 2022-06-30, 2025-05-09
-2.0.2 patch for LTS     :crit, 2022-09-30, 2025-05-09
+2.0.1 patch for LTS     :crit, 2022-08-30, 2025-05-09
+2.0.2 patch for LTS     :crit, 2022-10-30, 2025-05-09
 ```
