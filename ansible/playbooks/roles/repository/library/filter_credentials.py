@@ -25,10 +25,6 @@ options:
         description: Path to the newly created, filtered manifest
         required: false
         type: str
-    in_place:
-        description: When set to True will modify existing manifest passed as `src`
-        required: false
-        type: bool
 """
 
 EXAMPLES = r"""
@@ -36,12 +32,6 @@ EXAMPLES = r"""
 - name: Filter out manifest file and set result to stdout
   filter_credentials:
     src: /some/where/manifest.yml
-
-# Pass in a manifest file and modify it in place
-- name: Filter out manifest file and replace the original file
-  filter_credentials:
-    src: /some/where/manifest.yml
-    in_place: true
 
 # Pass in a manifest file and save it to `dest` location
 - name: Filter out manifest file and save it as a new file
@@ -102,9 +92,10 @@ def _get_filtered_manifest(manifest_path: Path) -> str:
     docs = yaml.safe_load_all(manifest_path.open())
     filtered_docs = [doc for doc in docs if doc['kind'] in ['epiphany-cluster',
                                                             'configuration/feature-mappings',
+                                                            'configuration/features',
                                                             'configuration/image-registry']]
 
-    FILTER_DATA: list[str, Callable] = {
+    FILTER_DATA: dict[str, Callable] = {
         'any': _filter_common,
         'azure': _filter_azure,
         'aws': _filter_aws
@@ -119,7 +110,6 @@ def run_module():
     module_args = dict(
         src=dict(type=str, required=True),
         dest=dict(type=str, required=False, default=None),
-        in_place=dict(type=bool, required=False, default=False)
     )
 
     # seed the result dict in the object
@@ -139,24 +129,15 @@ def run_module():
 
     manifest = _get_filtered_manifest(input_manifest)
 
-    if module.params['in_place'] and module.params['dest']:
-        module.fail_json(msg='Cannot use `in_place` and `dest` at the same time', **result)
-
-    if not module.params['in_place'] and not module.params['dest']:  # to stdout
+    if not module.params['dest']:  # to stdout
         result['manifest'] = manifest
-    else:
+    else:  # write to a new location
         orig_hash_value = _get_hash(input_manifest)  # hash value prior to change
 
-        if module.params['in_place']:  # overwrite existing manifest
-            with input_manifest.open(mode='w', encoding='utf-8') as mhandler:
-                mhandler.write(manifest)
+        with output_manifest.open(mode='w', encoding='utf-8') as output_manifest_file:
+            output_manifest_file.write(manifest)
 
-            new_hash_value = _get_hash(input_manifest)  # hash value post change
-        elif module.params['dest']:  # write to a new location
-            with output_manifest.open(mode='w', encoding='utf-8') as output_manifest_file:
-                output_manifest_file.write(manifest)
-
-            new_hash_value = _get_hash(output_manifest)  # hash value post change
+        new_hash_value = _get_hash(output_manifest)  # hash value post change
 
         if orig_hash_value != new_hash_value:
             result['changed'] = True
