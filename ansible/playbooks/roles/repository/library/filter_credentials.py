@@ -2,8 +2,9 @@
 
 from __future__ import (absolute_import, division, print_function)
 
+from hashlib import sha256
 from pathlib import Path
-from typing import Callable, Dict, List
+from typing import Callable
 import yaml
 
 __metaclass__ = type
@@ -53,25 +54,42 @@ EXAMPLES = r"""
 from ansible.module_utils.basic import AnsibleModule
 
 
-def _filter_common(docs: List[Dict]):
+def _get_hash(filepath: Path) -> str:
+    with filepath.open(mode='rb') as file_handler:
+        hashgen = sha256()
+        hashgen.update(file_handler.read())
+        return hashgen.hexdigest()
+
+
+def _filter_common(docs: list[dict]):
     # remove admin user info from epiphany-cluster doc:
-    del next(filter(lambda doc: doc['kind'] == 'epiphany-cluster', docs))['specification']['admin_user']
+    try:
+        del next(filter(lambda doc: doc['kind'] == 'epiphany-cluster', docs))['specification']['admin_user']
+    except KeyError:
+        pass  # ok, key already doesn't exist
 
 
-def _filter_aws(docs: List[Dict]):
+def _filter_aws(docs: list[dict]):
     _filter_common(docs)
 
     # filter epiphany-cluster doc
     epiphany_cluster = next(filter(lambda doc: doc['kind'] == 'epiphany-cluster', docs))
-    del epiphany_cluster['specification']['cloud']['credentials']
+
+    try:
+        del epiphany_cluster['specification']['cloud']['credentials']
+    except KeyError:
+        pass  # ok, key already doesn't exist
 
 
-def _filter_azure(docs: List[Dict]):
+def _filter_azure(docs: list[dict]):
     _filter_common(docs)
 
     # filter epiphany-cluster doc
     epiphany_cluster = next(filter(lambda doc: doc['kind'] == 'epiphany-cluster', docs))
-    del epiphany_cluster['specification']['cloud']['subscription_name']
+    try:
+        del epiphany_cluster['specification']['cloud']['subscription_name']
+    except KeyError:
+        pass  # ok, key already doesn't exist
 
 
 def _get_filtered_manifest(manifest_path: Path) -> str:
@@ -86,7 +104,7 @@ def _get_filtered_manifest(manifest_path: Path) -> str:
                                                             'configuration/feature-mappings',
                                                             'configuration/image-registry']]
 
-    FILTER_DATA: Dict[str, Callable] = {
+    FILTER_DATA: list[str, Callable] = {
         'any': _filter_common,
         'azure': _filter_azure,
         'aws': _filter_aws
@@ -116,11 +134,9 @@ def run_module():
         supports_check_mode=True
     )
 
-    # initialize check mode
-    if module.check_mode:
-        module.exit_json(**result)
-
     input_manifest = Path(module.params['src'])
+    output_manifest = Path(module.params['dest']) if module.params['dest'] else None
+
     manifest = _get_filtered_manifest(input_manifest)
 
     if module.params['in_place'] and module.params['dest']:
@@ -128,14 +144,22 @@ def run_module():
 
     if not module.params['in_place'] and not module.params['dest']:  # to stdout
         result['manifest'] = manifest
-    elif module.params['in_place']:  # overwrite existing manifest
-        with input_manifest.open(mode='w', encoding='utf-8') as mhandler:
-            mhandler.write(manifest)
-    elif module.params['dest']:  # write to a new location
-        with Path(module.params['dest']).open(mode='w', encoding='utf-8') as output_manifest:
-            output_manifest.write(manifest)
+    else:
+        orig_hash_value = _get_hash(input_manifest)  # hash value prior to change
 
-    result['changed'] = True
+        if module.params['in_place']:  # overwrite existing manifest
+            with input_manifest.open(mode='w', encoding='utf-8') as mhandler:
+                mhandler.write(manifest)
+
+            new_hash_value = _get_hash(input_manifest)  # hash value post change
+        elif module.params['dest']:  # write to a new location
+            with output_manifest.open(mode='w', encoding='utf-8') as output_manifest_file:
+                output_manifest_file.write(manifest)
+
+            new_hash_value = _get_hash(output_manifest)  # hash value post change
+
+        if orig_hash_value != new_hash_value:
+            result['changed'] = True
 
     module.exit_json(**result)
 
