@@ -205,7 +205,7 @@
         url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/kibanaserver"
         method: PUT
         status_code: [200]
-        body:
+        body: &kibanaserver_data
           password: "{{ specification.kibanaserver_password }}"
           reserved: "true"
           description: "Demo OpenSearch Dashboards user"
@@ -228,9 +228,7 @@
           - op: "replace"
             path: "/kibanaserver"
             value:
-              password: "{{ specification.kibanaserver_password }}"
-              reserved: "true"
-              description: "Demo OpenSearch Dashboards user"
+              <<: *kibanaserver_data
       register: uri_response
       until: uri_response is success
       retries: 15
@@ -257,7 +255,7 @@
         url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/filebeatservice"
         method: PUT
         status_code: [200]
-        body:
+        body: &filebeatservice_data
           password: "{{ specification.filebeatservice_password }}"
           reserved: "true"
           backend_roles:
@@ -282,11 +280,7 @@
           - op: "replace"
             path: "/filebeatservice"
             value:
-              password: "{{ specification.filebeatservice_password }}"
-              reserved: "true"
-              backend_roles:
-                - "logstash"
-              description: "Epiphany user for Filebeat service"
+              <<: *filebeatservice_data
       register: uri_response
       until: uri_response is success
       retries: 15
