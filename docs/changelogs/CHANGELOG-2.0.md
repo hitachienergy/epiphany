@@ -23,6 +23,7 @@
 - [#3189](https://github.com/epiphany-platform/epiphany/issues/3189) - Fix configuration/feature-mapping enabling
 - [#3152](https://github.com/epiphany-platform/epiphany/issues/3152) - Use a stable tag for the quay.io/ceph/ceph:v16.2.7 image
 - [#3209](https://github.com/epiphany-platform/epiphany/issues/3209) - [Ubuntu] download-requirements.py ignores package version when resolving dependencies
+- [#3190](https://github.com/epiphany-platform/epiphany/issues/3190) - Enable configuration of kubelet enable-controller-attach-detach argument via input manifest
 
 ### Updated
 
