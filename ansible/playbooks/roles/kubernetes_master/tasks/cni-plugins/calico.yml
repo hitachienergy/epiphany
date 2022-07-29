@@ -37,5 +37,4 @@
 - name: Include Calico deployment tasks
   include_tasks: deployments/deploy-template.yml
   vars:
-    calico_arch: "{{ global_architecture_alias[ansible_architecture] }}"
     file_name: calico.yml.j2

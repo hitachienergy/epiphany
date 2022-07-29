@@ -45,20 +45,17 @@ images:
     'k8s.gcr.io/pause:3.5':
       sha1: 8f3be7cc532c25b01a2e5e0943b4d55bce0b0f1c
 
-    'quay.io/coreos/flannel:v0.14.0-arm64':
-      sha1: 342b806ab5da6133438f925e22ced802e0e56861
-
     'quay.io/coreos/flannel:v0.14.0':
       sha1: 098ec78af9bf3a70afbd1a9743ff352f72fb036d
 
-    'calico/cni:v3.20.3':
-      sha1: 5338d670e01558dd053768fb3cdc39c8568d6f4c
+    'quay.io/coreos/flannel:v0.15.1':
+      sha1: 378513c030a1d42754abb5160016e6b1ae2a1c64
 
-    'calico/kube-controllers:v3.20.3':
-      sha1: 24615f8f9c0cac651401cc633ba4850b8f17e175
+    'calico/cni:v3.23.3':
+      sha1: 7539e19d46f4c5786f9a5cbcf8234ece7920c01d
 
-    'calico/node:v3.20.3':
-      sha1: c0432602b9e8dd47d3c869759f210305d9d87d90
+    'calico/kube-controllers:v3.23.3':
+      sha1: 9161bba287310c872b4580e35dd7f630ce1e9963
 
-    'calico/pod2daemon-flexvol:v3.20.3':
-      sha1: 6e1e59ad1cf6af46d4ce8c8b16f4014337c22411
+    'calico/node:v3.23.3':
+      sha1: c0fb935d1d50fca65cd75eb8836c86a963ca8dc7
