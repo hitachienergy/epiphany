@@ -45,6 +45,7 @@ from ansible.module_utils.basic import AnsibleModule
 
 
 def _get_hash(filepath: Path) -> str:
+    # calculate sha256 for `filepath`
     with filepath.open(mode='rb') as file_handler:
         hashgen = sha256()
         hashgen.update(file_handler.read())
