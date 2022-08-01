@@ -27,6 +27,15 @@ To add Rook/Ceph support in Epiphany you need to add to your cluster configurati
 
 Adding the storage is described below in separate sections for Azure, AWS and on premise environments. Rook/Ceph configuration in Epiphany is described after add disk paragraphs.
 
+#### Parameter `enable_controller_attach_detach`
+
+Rook requires Kubelet parameter `--enable-controller-attach-detach` set to `true`. From Epiphany v2.0.1 by default this parameter is set to `true`. Users who would like to change its value, can achieve that by modifying `specification.advanced.enable_controller_attach_detach under` value under `configuration/kubernetes-master`.
+*Note*: In Epiphany v2.0.0 `--enable-controller-attach-detach` parameter is set by default to `false`. In order to change its value, manual steps on each of affected kubernetes nodes are required:
+- modify file `/var/lib/kubelet/kubeadm-flags.env` by removing attach-detach flag
+- add flag to `/var/lib/kubelet/config.yaml` file and set its value to `true`
+- restart kubelet with `systemctl restart kubelet`
+See [Set Kubelet parameters via a config file](https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/) for more information about Kubelet parameters.
+
 #### Create disks for Rook/Ceph Cluster Storage - Azure
 
 To create Rook/Ceph Cluster Storage on Azure first you need to add empty disk resource to Kubernetes cluster in key `specification.additional_disks`, under `kind: infrastructure/virtual-machine` for configuration of kubernetes node machine:
