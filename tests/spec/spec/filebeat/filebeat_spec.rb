@@ -8,8 +8,14 @@ end
 
 # Configurable passwords for ES users were introduced in v0.10.0.
 # For testing upgrades, we use default passwords for now but they should be read from filebeat.yml (remote host).
-es_filebeatservice_user_password  = readDataYaml('configuration/logging')['specification']['filebeatservice_password'] || 'PASSWORD_TO_CHANGE'
-es_filebeatservice_user_is_active = !listInventoryHosts('logging').empty?
+es_filebeat_user_password  = readDataYaml('configuration/logging')['specification']['filebeatservice_password'] || 'PASSWORD_TO_CHANGE'
+es_filebeat_user_is_active = !listInventoryHosts('logging').empty?
+
+filebeat_user = if upgradeRun?
+                  'logstash'
+                else
+                  'filebeatservice'
+                end
 
 es_kibanaserver_user_password  = readDataYaml('configuration/logging')['specification']['kibanaserver_password'] || 'kibanaserver'
 es_kibanaserver_user_is_active = !listInventoryHosts('logging').empty?
@@ -42,11 +48,11 @@ describe 'Check Filebeat directories and config files' do
   end
 end
 
-if es_filebeatservice_user_is_active
+if es_filebeat_user_is_active
   listInventoryHosts('logging').each do |val|
     describe 'Check the connection to the Elasticsearch hosts' do
       let(:disable_sudo) { false }
-      describe command("curl -k -u filebeatservice:#{es_filebeatservice_user_password} -o /dev/null -s -w '%{http_code}' https://#{val}:#{es_api_port}") do
+      describe command("curl -k -u #{filebeat_user}:#{es_filebeat_user_password} -o /dev/null -s -w '%{http_code}' https://#{val}:#{es_api_port}") do
         it 'is expected to be equal' do
           expect(subject.stdout.to_i).to eq 200
         end
