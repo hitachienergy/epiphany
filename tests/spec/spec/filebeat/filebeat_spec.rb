@@ -11,11 +11,7 @@ end
 es_filebeat_user_password  = readDataYaml('configuration/logging')['specification']['filebeatservice_password'] || 'PASSWORD_TO_CHANGE'
 es_filebeat_user_is_active = !listInventoryHosts('logging').empty?
 
-filebeat_user = if upgradeRun?
-                  'logstash'
-                else
-                  'filebeatservice'
-                end
+filebeat_user = upgradeRun? ? 'logstash' : 'filebeatservice'
 
 es_kibanaserver_user_password  = readDataYaml('configuration/logging')['specification']['kibanaserver_password'] || 'kibanaserver'
 es_kibanaserver_user_is_active = !listInventoryHosts('logging').empty?
