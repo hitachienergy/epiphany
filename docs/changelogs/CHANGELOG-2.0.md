@@ -14,6 +14,7 @@
 - [#3106](https://github.com/epiphany-platform/epiphany/issues/3106) - Add image-registry configuration reading
 - [#3140](https://github.com/epiphany-platform/epiphany/issues/3140) - Allow to disable OpenSearch audit logs
 - [#3218](https://github.com/epiphany-platform/epiphany/issues/3218) - Add support for original output coloring
+- [#3079](https://github.com/epiphany-platform/epiphany/issues/3079) - OpenSearch improvement - add dedicated user for Filebeat
 
 ### Fixed
 
