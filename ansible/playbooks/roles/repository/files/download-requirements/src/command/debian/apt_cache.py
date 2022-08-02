@@ -66,8 +66,7 @@ class AptCache(Command):
 
         return info
 
-    @staticmethod
-    def __parse_apt_cache_depends(stdout: str) -> List[str]:
+    def __parse_apt_cache_depends(self, stdout: str) -> List[str]:
         """
         Parse output from `apt-cache depends`.
         For deps with alternative, only the first package is choosen.
@@ -76,9 +75,9 @@ class AptCache(Command):
         :param stdout: output from `apt-cache depends` command
         :returns: required dependencies
         """
-        alternative_found = False
-        is_alternative = False
-        virt_pkg_found = False
+        alternative_found: bool = False
+        is_alternative: bool = False
+        virt_pkg_found: bool = False
         deps: List[str] = []
         for dep in stdout.strip().splitlines():
 
