@@ -29,8 +29,8 @@ Adding the storage is described below in separate sections for Azure, AWS and on
 
 #### Parameter `enable_controller_attach_detach`
 
-Rook requires Kubelet parameter `--enable-controller-attach-detach` set to `true`. From Epiphany v2.0.1 by default this parameter is set to `true`. Users who would like to change its value, can achieve that by modifying `specification.advanced.enable_controller_attach_detach under` value under `configuration/kubernetes-master`.
-*Note*: In Epiphany v2.0.0 `--enable-controller-attach-detach` parameter is set by default to `false`. In order to change its value, manual steps on each of affected kubernetes nodes are required:
+Rook requires Kubelet parameter `--enable-controller-attach-detach` set to `true`. From Epiphany v2.0.1 by default this parameter is set to `true`. Users who would like to change its value, can achieve that by modifying `specification.advanced.enable_controller_attach_detach under` setting in `configuration/kubernetes-master` doc.
+*Note*: In Epiphany v2.0.0 `--enable-controller-attach-detach` parameter is set by default to `false`. In order to change its value, manual steps on each of affected kubernetes node are required:
 - modify file `/var/lib/kubelet/kubeadm-flags.env` by removing attach-detach flag
 - add flag to `/var/lib/kubelet/config.yaml` file and set its value to `true`
 - restart kubelet with `systemctl restart kubelet`

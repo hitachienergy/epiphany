@@ -12,9 +12,9 @@
   command: |
     kubectl get configmap kubeadm-config \
       --namespace kube-system \
-      --output jsonpath={{ jsonpath }}
+      --output jsonpath={{ _jsonpath }}
   vars:
-    jsonpath: >-
+    _jsonpath: >-
       '{.data.ClusterConfiguration}'
   register: kubeadm_config
   changed_when: false
@@ -31,9 +31,9 @@
   command: |-
     kubectl get cm kubelet-config-{{ cluster_version_major }}.{{ cluster_version_minor }} \
       --namespace kube-system \
-      --output=jsonpath={{ jsonpath }}
+      --output=jsonpath={{ _jsonpath }}
   vars:
-    jsonpath: >-
+    _jsonpath: >-
       '{.data.kubelet}'
   register: kubelet_config
   changed_when: false
