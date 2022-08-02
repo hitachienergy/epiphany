@@ -4,7 +4,7 @@ from unittest.mock import Mock, patch
 import pytest
 from src.command.debian.apt_cache import AptCache
 
-from tests.data.apt_cache import APT_CACHE_DEPENDS_DATA
+from tests.data.apt_cache import APT_CACHE_DEPENDS_RABBITMQ_STDOUT, APT_CACHE_DEPENDS_SOLR_STDOUT
 from tests.mocks.command_run_mock import CommandRunMock
 
 
@@ -22,6 +22,11 @@ def test_interface_get_package_dependencies(mocker):
                              '--no-pre-depends',
                              'vim']
 
+
+APT_CACHE_DEPENDS_DATA = [
+    ('tar', 'tar\n', []),
+    ('rabbitmq-server', APT_CACHE_DEPENDS_RABBITMQ_STDOUT, ['adduser', 'erlang-base', 'erlang-crypto', 'python3']),
+    ('solr-common', APT_CACHE_DEPENDS_SOLR_STDOUT, ['curl', 'debconf', 'default-jre-headless', 'libjs-jquery'])]
 
 @pytest.mark.parametrize('PACKAGE_NAME, CMD_STDOUT, EXPECTED_DEPS', APT_CACHE_DEPENDS_DATA)
 def test_get_package_dependencies_return_value(PACKAGE_NAME, CMD_STDOUT, EXPECTED_DEPS):
