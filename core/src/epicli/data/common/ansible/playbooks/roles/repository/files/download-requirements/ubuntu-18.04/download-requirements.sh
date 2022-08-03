@@ -172,7 +172,7 @@ else
     # be verbose, show what will be downloaded
     # TODO: this is the list of all files shows on every run, not only the files that will be downloaded this run
     echol "Packages from URL to be downloaded:"
-    cat -n <<< "${files}"
+    cat -n <<< "${packagesfromurl}"
 
     printf "\n"
     # download files using wget
