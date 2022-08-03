@@ -544,12 +544,12 @@ echo $$ > $PID_FILE_PATH || exit_with_error "Command failed: echo $$ > $PID_FILE
 
 # --- Parse requirements file ---
 
-# Requirements are grouped using sections: [packages-repo-prereqs], [packages], [files], [filesaspackages], [images]
+# Requirements are grouped using sections: [packages-repo-prereqs], [packages], [packagesfromurl], [files], [images]
 get_requirements_from_group 'REPO_PREREQ_PACKAGES' 'packages-repo-prereqs' "$REQUIREMENTS_FILE_PATH"
 get_requirements_from_group 'CRANE'                'crane'                 "$REQUIREMENTS_FILE_PATH"
 get_requirements_from_group 'PACKAGES'             'packages'              "$REQUIREMENTS_FILE_PATH"
+get_requirements_from_group 'PACKAGESFROMURL'      'packagesfromurl'       "$REQUIREMENTS_FILE_PATH"
 get_requirements_from_group 'FILES'                'files'                 "$REQUIREMENTS_FILE_PATH"
-get_requirements_from_group 'FILESASPACKAGES'      'filesaspackages'       "$REQUIREMENTS_FILE_PATH"
 get_requirements_from_group 'IMAGES'               'images'                "$REQUIREMENTS_FILE_PATH"
 
 # === Packages ===
@@ -804,6 +804,16 @@ else
 	exit_with_error "Extracting tar failed: $YUM_CONFIG_BACKUP_FILE_PATH"
 fi
 
+# === Packages from URL ===
+
+check_connection wget $PACKAGESFROMURL
+
+create_directory "$PACKAGES_DIR"
+
+for file in $PACKAGESFROMURL; do
+	download_file "$file" "$PACKAGES_DIR"
+done
+
 # === Files ===
 
 check_connection wget $FILES
@@ -812,16 +822,6 @@ create_directory "$FILES_DIR"
 
 for file in $FILES; do
 	download_file "$file" "$FILES_DIR"
-done
-
-# === Files as Packages ===
-
-check_connection wget $FILESASPACKAGES
-
-create_directory "$PACKAGES_DIR"
-
-for file in $FILESASPACKAGES; do
-	download_file "$file" "$PACKAGES_DIR"
 done
 
 # === Images ===

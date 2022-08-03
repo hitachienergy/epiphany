@@ -561,12 +561,12 @@ echo $$ > $PID_FILE_PATH || exit_with_error "Command failed: echo $$ > $PID_FILE
 
 # --- Parse requirements file ---
 
-# Requirements are grouped using sections: [packages-repo-prereqs], [packages], [files], [filesaspackages], [images]
+# Requirements are grouped using sections: [packages-repo-prereqs], [packages], [packagesfromurl], [files], [images]
 get_requirements_from_group 'REPO_PREREQ_PACKAGES' 'packages-repo-prereqs' "$REQUIREMENTS_FILE_PATH"
 get_requirements_from_group 'CRANE'                'crane'                 "$REQUIREMENTS_FILE_PATH"
 get_requirements_from_group 'PACKAGES'             'packages'              "$REQUIREMENTS_FILE_PATH"
+get_requirements_from_group 'PACKAGESFROMURL'      'packagesfromurl'       "$REQUIREMENTS_FILE_PATH"
 get_requirements_from_group 'FILES'                'files'                 "$REQUIREMENTS_FILE_PATH"
-get_requirements_from_group 'FILESASPACKAGES'      'filesaspackages'       "$REQUIREMENTS_FILE_PATH"
 get_requirements_from_group 'IMAGES'               'images'                "$REQUIREMENTS_FILE_PATH"
 
 # === Packages ===
@@ -832,6 +832,34 @@ else
 	exit_with_error "Extracting tar failed: $YUM_CONFIG_BACKUP_FILE_PATH"
 fi
 
+# === Packages from URL  ===
+
+create_directory "$PACKAGES_DIR"
+
+check_connection wget $PACKAGESFROMURL
+
+if [[ -z "$PACKAGESFROMURL" ]]; then
+    echol "No packages from URL to download"
+else
+
+    # list of all files that will be downloaded
+    echol "Package from URL to be downloaded:"
+    cat -n <<< "${PACKAGESFROMURL}"
+
+    printf "\n"
+
+    while IFS=' ' read -r url new_filename; do
+        # download files, check if new filename is provided
+        if [[ -z $new_filename ]]; then
+            download_file "$url" "$PACKAGES_DIR"
+        elif [[ $new_filename = *" "* ]]; then
+            exit_with_error "wrong new filename for file: $url"
+        else
+            download_file "$url" "$PACKAGES_DIR" "$new_filename"
+        fi
+    done <<< "$PACKAGESFROMURL"
+fi
+
 # === Files ===
 
 create_directory "$FILES_DIR"
@@ -858,34 +886,6 @@ else
             download_file "$url" "$FILES_DIR" "$new_filename"
         fi
     done <<< "$FILES"
-fi
-
-# === Files as Packages ===
-
-create_directory "$PACKAGES_DIR"
-
-check_connection wget $FILESASPACKAGES
-
-if [[ -z "$FILESASPACKAGES" ]]; then
-    echol "No files as packages to download"
-else
-
-    # list of all files that will be downloaded
-    echol "Files as packages to be downloaded:"
-    cat -n <<< "${FILESASPACKAGES}"
-
-    printf "\n"
-
-    while IFS=' ' read -r url new_filename; do
-        # download files, check if new filename is provided
-        if [[ -z $new_filename ]]; then
-            download_file "$url" "$PACKAGES_DIR"
-        elif [[ $new_filename = *" "* ]]; then
-            exit_with_error "wrong new filename for file: $url"
-        else
-            download_file "$url" "$PACKAGES_DIR" "$new_filename"
-        fi
-    done <<< "$FILESASPACKAGES"
 fi
 
 # === Images ===
