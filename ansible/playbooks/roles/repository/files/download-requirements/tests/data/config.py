@@ -41,19 +41,19 @@ files:
   # --- Helm charts ---
   'https://charts.bitnami.com/bitnami/node-exporter-2.3.17.tgz':
     sha256: ec586fabb775a4f05510386899cf348391523c89ff5a1d4097b0592e675ade7f
-    deps: [kubernetes-master]
+    deps: [kubernetes-master, k8s-as-cloud-service]
 
   'https://helm.elastic.co/helm/filebeat/filebeat-7.12.1.tgz':
     sha256: 5838058fe06372390dc335900a7707109cc7287a84164ca245d395af1f9c0a79
-    deps: [kubernetes-master]
+    deps: [kubernetes-master, k8s-as-cloud-service]
 
   'https://charts.rook.io/release/rook-ceph-v1.8.8.tgz':
     sha256: f67e474dedffd4004f3a0b7b40112694a7f1c2b1a0048b03b3083d0a01e86b14
-    deps: [kubernetes-master]
+    deps: [kubernetes-master, k8s-as-cloud-service]
 
   'https://charts.rook.io/release/rook-ceph-cluster-v1.8.8.tgz':
     sha256: df4e1f2125af41fb84c72e4d12aa0cb859dddd4f37b3d5979981bd092040bd16
-    deps: [kubernetes-master]
+    deps: [kubernetes-master, k8s-as-cloud-service]
 
   # --- OpenSearch Bundle ---
   'https://artifacts.opensearch.org/releases/bundle/opensearch/1.2.4/opensearch-1.2.4-linux-x64.tar.gz':
@@ -463,6 +463,7 @@ Features requested:
 - filebeat
 - firewall
 - image-registry
+- k8s-as-cloud-service
 - node-exporter
 - repository
 
@@ -470,6 +471,7 @@ Files to download:
 - https://charts.bitnami.com/bitnami/node-exporter-2.3.17.tgz
 - https://charts.rook.io/release/rook-ceph-cluster-v1.8.8.tgz
 - https://charts.rook.io/release/rook-ceph-v1.8.8.tgz
+- https://github.com/prometheus/node_exporter/releases/download/v1.3.1/node_exporter-1.3.1.linux-amd64.tar.gz
 - https://helm.elastic.co/helm/filebeat/filebeat-7.12.1.tgz
 --------------------------------------------------
 """

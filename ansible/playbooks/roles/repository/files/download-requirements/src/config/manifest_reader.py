@@ -38,10 +38,6 @@ class ManifestReader:
         self.__requested_features: Set = set()
         self.__requested_images: Set = set()
 
-    @property
-    def is_k8s_as_cloud_service(self) -> bool:
-        return self.__k8s_as_cloud_service
-
     def __parse_cluster_doc(self, cluster_doc: Dict):
         """
         Parse `epiphany-cluster` document and extract only used components.
@@ -73,6 +69,9 @@ class ManifestReader:
         for mapping in mappings.keys() & self.__requested_components:
             for feature in mappings[mapping]:
                 self.__requested_features.add(feature)
+
+        if self.__k8s_as_cloud_service:
+            self.__requested_features.add('k8s-as-cloud-service')
 
     def __parse_image_registry_doc(self, image_registry_doc: Dict):
         """
