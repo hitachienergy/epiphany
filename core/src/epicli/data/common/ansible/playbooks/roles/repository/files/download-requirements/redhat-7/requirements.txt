@@ -61,14 +61,6 @@ logstash-oss-7.8.1
 net-tools
 nfs-utils
 nmap-ncat
-# Open Distro for Elasticsearch plugins are installed individually to not download them twice in different versions (as dependencies of opendistroforelasticsearch package)
-opendistro-alerting-1.13.1.*
-opendistro-index-management-1.13.1.*
-opendistro-job-scheduler-1.13.0.*
-opendistro-performance-analyzer-1.13.0.*
-opendistro-security-1.13.1.*
-opendistro-sql-1.13.0.*
-opendistroforelasticsearch-kibana-1.13.1 # kibana has shorter version
 openssl
 perl # for vim
 perl-Getopt-Long # for vim
@@ -166,6 +158,15 @@ https://github.com/wrouesnel/postgres_exporter/releases/download/v0.8.0/postgres
 https://charts.bitnami.com/bitnami/node-exporter-1.1.2.tgz
 https://helm.elastic.co/helm/filebeat/filebeat-7.9.2.tgz
 https://archive.apache.org/dist/logging/log4j/2.17.1/apache-log4j-2.17.1-bin.tar.gz
+
+[filesaspackages]
+https://github.com/epiphany-platform/alternative-repo/raw/main/1.0.x/redhat/packages/opendistro-alerting-1.13.1.0.rpm
+https://github.com/epiphany-platform/alternative-repo/raw/main/1.0.x/redhat/packages/opendistro-index-management-1.13.1.0.rpm
+https://github.com/epiphany-platform/alternative-repo/raw/main/1.0.x/redhat/packages/opendistro-job-scheduler-1.13.0.0.rpm
+https://github.com/epiphany-platform/alternative-repo/raw/main/1.0.x/redhat/packages/opendistro-performance-analyzer-1.13.0.0.rpm
+https://github.com/epiphany-platform/alternative-repo/raw/main/1.0.x/redhat/packages/opendistro-security-1.13.1.0.rpm
+https://github.com/epiphany-platform/alternative-repo/raw/main/1.0.x/redhat/packages/opendistro-sql-1.13.0.0.rpm
+https://github.com/epiphany-platform/alternative-repo/raw/main/1.0.x/redhat/packages/opendistroforelasticsearch-kibana-1.13.1-linux-x64.rpm
 
 [images]
 haproxy:2.2.2-alpine
