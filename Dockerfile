@@ -4,6 +4,7 @@ ARG USERNAME=epiuser
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
+ARG AWS_CLI_VERSION=2.0.30
 ARG HELM_VERSION=3.3.1
 ARG KUBECTL_VERSION=1.22.4
 ARG TERRAFORM_VERSION=1.1.3
@@ -15,7 +16,7 @@ COPY . /epicli
 RUN : INSTALL APT REQUIREMENTS \
     && apt-get update \
     && apt-get install --no-install-recommends -y \
-        autossh curl gcc jq libcap2-bin libc6-dev libffi-dev make musl-dev openssh-client procps psmisc rsync ruby-full sudo tar unzip vim \
+        autossh curl gcc git jq libcap2-bin libc6-dev libffi-dev make musl-dev openssh-client procps psmisc rsync ruby-full sudo tar unzip vim \
 \
     && : INSTALL HELM BINARY \
     && curl -fsSLO https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz \
@@ -32,6 +33,13 @@ RUN : INSTALL APT REQUIREMENTS \
     && unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /usr/local/bin \
     && rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
     && terraform version \
+\
+    && : INSTALL AWS CLI BINARY \
+    && curl -fsSLO https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWS_CLI_VERSION}.zip \
+    && unzip awscli-exe-linux-x86_64-${AWS_CLI_VERSION}.zip \
+    && ./aws/install -i /usr/local/aws-cli -b /usr/local/bin \
+    && rm -rf awscli-exe-linux-x86_64-${AWS_CLI_VERSION}.zip ./aws \
+    && aws --version \
 \
     && : INSTALL GEM REQUIREMENTS \
     && gem install \
