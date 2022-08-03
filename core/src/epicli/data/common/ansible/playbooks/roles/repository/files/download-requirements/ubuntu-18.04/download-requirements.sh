@@ -171,7 +171,7 @@ if [[ -z "${packagesfromurl}" ]]; then
 else
     # be verbose, show what will be downloaded
     # TODO: this is the list of all files shows on every run, not only the files that will be downloaded this run
-    echol "Package from URL to be downloaded:"
+    echol "Packages from URL to be downloaded:"
     cat -n <<< "${files}"
 
     printf "\n"
