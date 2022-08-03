@@ -84,9 +84,10 @@ shopt -u nullglob
 check_connection apt $(ls /etc/apt/sources.list.d)
 apt update
 
-# parse the input file, separete by tags: [crane], [packages], [files], [images]
+# parse the input file, separete by tags: [crane], [packages], [packagesfromurl], [files], [images]
 crane=$(awk '/^$/ || /^#/ {next}; /\[crane\]/ {f=1; next}; /^\[/ {f=0}; f {print $0}' "${input_file}")
 packages=$(awk '/^$/ || /^#/ {next}; /\[packages\]/ {f=1; next}; /^\[/ {f=0}; f {print $0}' "${input_file}")
+packagesfromurl=$(awk '/^$/ || /^#/ {next}; /\[packagesfromurl\]/ {f=1; next}; /^\[/ {f=0}; f {print $0}' "${input_file}")
 files=$(awk '/^$/ || /^#/ {next}; /\[files\]/ {f=1; next}; /^\[/ {f=0}; f {print $0}' "${input_file}")
 images=$(awk '/^$/ || /^#/ {next}; /\[images\]/ {f=1; next}; /^\[/ {f=0}; f {print $0}' "${input_file}")
 
@@ -159,10 +160,36 @@ fi
 
 printf "\n"
 
-check_connection wget $(for file in $files; do echo "$file"; done)
+# PACKAGES AS URL
+# process files
+
+check_connection wget $(for file in $packagesfromurl; do echo "$file"; done)
+
+
+if [[ -z "${packagesfromurl}" ]]; then
+    echol "No packages from URL to download"
+else
+    # be verbose, show what will be downloaded
+    # TODO: this is the list of all files shows on every run, not only the files that will be downloaded this run
+    echol "Package from URL to be downloaded:"
+    cat -n <<< "${files}"
+
+    printf "\n"
+    # download files using wget
+    while IFS= read -r file; do
+        # download files, skip if exists
+        #wget --no-verbose --continue --directory-prefix="${dst_dir_files}" "${file}"
+        #wget --continue --show-progress --directory-prefix="${dst_dir_files}" "${file}"
+        download_file "${file}" "${dst_dir_packages}"
+    done <<< "${files}"
+fi
 
 # FILES
 # process files
+
+check_connection wget $(for file in $files; do echo "$file"; done)
+
+
 if [[ -z "${files}" ]]; then
     echol "No files to download"
 else
