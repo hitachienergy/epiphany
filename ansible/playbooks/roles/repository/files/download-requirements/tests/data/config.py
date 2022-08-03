@@ -138,6 +138,9 @@ images:
       sha1: c64408bf5bb522f47d5323652dd5e60560dcb5bc
 
   kubernetes-master:
+    'haproxy:2.2.2-alpine':
+      sha1: dff8993b065b7f7846adb553548bcdcfcd1b6e8e
+
     'kubernetesui/dashboard:v2.3.1':
       sha1: 8c8a4ac7a643f9c5dd9e5d22876c434187312db8
 

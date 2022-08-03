@@ -283,19 +283,23 @@ class Config:
         # prepare image groups:
         images = requirements['images']
         images_to_download: Dict[str, Dict] = {}
+        all_images = set()
         for image_group in images:
             images_to_download[image_group] = {}
 
         if len(manifest['requested-images']):  # if image-registry document used:
             for image_group in images:
                 for image, data in images[image_group].items():
-                    if image in manifest['requested-images']:
+                    if image in manifest['requested-images'] and image not in all_images:
                         images_to_download[image_group][image] = data
+                        all_images.add(image)
         else:                                  # otherwise check features used:
             for image_group in images:
                 if image_group in manifest['requested-features']:
                     for image, data in images[image_group].items():
-                        images_to_download[image_group][image] = data
+                        if image not in all_images:
+                            images_to_download[image_group][image] = data
+                            all_images.add(image)
 
         if images_to_download:
             requirements['images'] = images_to_download
