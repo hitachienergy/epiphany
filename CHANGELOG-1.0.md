@@ -5,6 +5,7 @@
 ### Fixed
 
 - [#3189](https://github.com/epiphany-platform/epiphany/issues/3189) - Fix configuration/feature-mapping enabling
+- [#3243](https://github.com/epiphany-platform/epiphany/issues/3243) - Repositories for OpenDistro are shutdown
 
 ## [1.0.5] 2022-06-24
 
