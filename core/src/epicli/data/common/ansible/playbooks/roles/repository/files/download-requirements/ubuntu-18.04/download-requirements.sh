@@ -181,7 +181,7 @@ else
         #wget --no-verbose --continue --directory-prefix="${dst_dir_files}" "${file}"
         #wget --continue --show-progress --directory-prefix="${dst_dir_files}" "${file}"
         download_file "${file}" "${dst_dir_packages}"
-    done <<< "${files}"
+    done <<< "${packagesfromurl}"
 fi
 
 # FILES
