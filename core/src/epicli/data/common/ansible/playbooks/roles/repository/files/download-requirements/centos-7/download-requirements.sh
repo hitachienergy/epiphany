@@ -544,10 +544,11 @@ echo $$ > $PID_FILE_PATH || exit_with_error "Command failed: echo $$ > $PID_FILE
 
 # --- Parse requirements file ---
 
-# Requirements are grouped using sections: [packages-repo-prereqs], [packages], [files], [images]
+# Requirements are grouped using sections: [packages-repo-prereqs], [packages], [packagesfromurl], [files], [images]
 get_requirements_from_group 'REPO_PREREQ_PACKAGES' 'packages-repo-prereqs' "$REQUIREMENTS_FILE_PATH"
 get_requirements_from_group 'CRANE'                'crane'                 "$REQUIREMENTS_FILE_PATH"
 get_requirements_from_group 'PACKAGES'             'packages'              "$REQUIREMENTS_FILE_PATH"
+get_requirements_from_group 'PACKAGESFROMURL'      'packagesfromurl'       "$REQUIREMENTS_FILE_PATH"
 get_requirements_from_group 'FILES'                'files'                 "$REQUIREMENTS_FILE_PATH"
 get_requirements_from_group 'IMAGES'               'images'                "$REQUIREMENTS_FILE_PATH"
 
@@ -681,19 +682,6 @@ gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cl
 EOF
 )
 
-OPENDISTRO_REPO_CONF=$(cat <<'EOF'
-[opendistroforelasticsearch-artifacts-repo]
-name=Release RPM artifacts of OpenDistroForElasticsearch
-baseurl=https://d3g5vo6xdbdb9a.cloudfront.net/yum/noarch/
-enabled=1
-gpgkey=https://d3g5vo6xdbdb9a.cloudfront.net/GPG-KEY-opendistroforelasticsearch
-gpgcheck=1
-repo_gpgcheck=1
-autorefresh=1
-type=rpm-md
-EOF
-)
-
 POSTGRESQL_REPO_CONF=$(cat <<'EOF'
 [pgdg10]
 name=PostgreSQL 10 for RHEL/CentOS $releasever - $basearch
@@ -729,7 +717,6 @@ add_repo_as_file 'elasticsearch-7' "$ELASTICSEARCH_7_REPO_CONF"
 add_repo_as_file 'elasticsearch-curator-5' "$ELASTICSEARCH_CURATOR_REPO_CONF"
 add_repo_as_file 'grafana' "$GRAFANA_REPO_CONF"
 add_repo_as_file 'kubernetes' "$KUBERNETES_REPO_CONF"
-add_repo_as_file 'opendistroforelasticsearch' "$OPENDISTRO_REPO_CONF"
 add_repo_as_file 'postgresql-10' "$POSTGRESQL_REPO_CONF"
 add_repo_as_file 'bintray-rabbitmq-rpm' "$RABBITMQ_SERVER_REPO_CONF"
 add_repo_from_script 'https://dl.2ndquadrant.com/default/release/get/10/rpm'
@@ -816,6 +803,16 @@ if tar --extract --verbose --file "$YUM_CONFIG_BACKUP_FILE_PATH" --directory /et
 else
 	exit_with_error "Extracting tar failed: $YUM_CONFIG_BACKUP_FILE_PATH"
 fi
+
+# === Packages from URL ===
+
+check_connection wget $PACKAGESFROMURL
+
+create_directory "$PACKAGES_DIR"
+
+for file in $PACKAGESFROMURL; do
+	download_file "$file" "$PACKAGES_DIR"
+done
 
 # === Files ===
 
