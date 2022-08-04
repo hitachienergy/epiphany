@@ -27,22 +27,20 @@ class CommandRunMock:
         """
         :return: list of arguments passed to the subprocess.run() function
         """
-        mock = Mock()
-        mock.returncode = 0
+        mock_completed_proc = Mock(spec=subprocess.CompletedProcess)
+        mock_completed_proc.returncode = 0
 
-        self.__mocker.patch('src.command.command.subprocess.run', side_effect=lambda args, encoding, stdout, stderr: mock)
-
-        spy = self.__mocker.spy(subprocess, 'run')
+        mock_run = self.__mocker.patch('src.command.command.subprocess.run', return_value=mock_completed_proc)
 
         try:
             if self.__args:
                 self.__func(**self.__args)
             else:
                 self.__func()
-        except Exception:
+        except Exception:  # pylint: disable=broad-except
             pass
 
-        return spy.call_args[0][0]
+        return mock_run.call_args[0][0]
 
     def __exit__(self, *args):
         pass
