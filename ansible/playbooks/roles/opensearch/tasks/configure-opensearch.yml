@@ -195,7 +195,9 @@
         method: GET
         status_code: [200, 404]
       register: kibanaserver_check_response
-      when: specification.kibanaserver_user_active
+      when:
+        - groups.opensearch_dashboards[0] is defined
+        - inventory_hostname in groups.opensearch_dashboards
 
     - name: Create default kibanaserver user
       uri:
@@ -203,7 +205,7 @@
         url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/kibanaserver"
         method: PUT
         status_code: [200]
-        body:
+        body: &kibanaserver_data
           password: "{{ specification.kibanaserver_password }}"
           reserved: "true"
           description: "Demo OpenSearch Dashboards user"
@@ -213,7 +215,7 @@
       delay: 1
       run_once: true
       when:
-        - kibanaserver_check_response is defined
+        - kibanaserver_check_response.status is defined
         - kibanaserver_check_response.status == 404
 
     - name: Set kibanaserver user password
@@ -226,47 +228,49 @@
           - op: "replace"
             path: "/kibanaserver"
             value:
-              password: "{{ specification.kibanaserver_password }}"
-              reserved: "true"
-              description: "Demo OpenSearch Dashboards user"
+              <<: *kibanaserver_data
       register: uri_response
       until: uri_response is success
       retries: 15
       delay: 1
       run_once: true
       when:
-        - kibanaserver_check_response is defined
+        - kibanaserver_check_response.status is defined
         - kibanaserver_check_response.status == 200
 
-    - name: Check if default logstash user exists
+    - name: Check if filebeatservice user exists  # for re-apply scenario
       uri:
         <<: *uri
-        url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/logstash"
+        url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/filebeatservice"
         method: GET
         status_code: [200, 404]
-      register: logstash_check_response
-      when: specification.logstash_user_active
+      register: filebeatservice_check_response
+      when:
+        - groups.logging[0] is defined
+        - inventory_hostname in groups.logging
 
-    - name: Create default logstash user
+    - name: Create dedicated filebeatservice user
       uri:
         <<: *uri
-        url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/logstash"
+        url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/filebeatservice"
         method: PUT
         status_code: [200]
-        body:
-          password: "{{ specification.logstash_password }}"
+        body: &filebeatservice_data
+          password: "{{ specification.filebeatservice_password }}"
           reserved: "true"
-          description: "OpenSearch logstash user"
+          backend_roles:
+            - "logstash"
+          description: "Epiphany user for Filebeat service"
       register: uri_response
       until: uri_response is success
       retries: 5
       delay: 1
       run_once: true
       when:
-        - logstash_check_response is defined
-        - logstash_check_response.status == 404
+        - filebeatservice_check_response.status is defined
+        - filebeatservice_check_response.status == 404
 
-    - name: Set OpenSearch logstash user password
+    - name: Set filebeatservice user password
       uri:
         <<: *uri
         url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/"
@@ -274,21 +278,17 @@
         status_code: [200]
         body:
           - op: "replace"
-            path: "/logstash"
+            path: "/filebeatservice"
             value:
-              password: "{{ specification.logstash_password }}"
-              reserved: "true"
-              backend_roles:
-                - "logstash"
-              description: "OpenSearch logstash user"
+              <<: *filebeatservice_data
       register: uri_response
       until: uri_response is success
-      retries: 3
-      delay: 5
+      retries: 15
+      delay: 1
       run_once: true
       when:
-        - logstash_check_response is defined
-        - kibanaserver_check_response.status == 200
+        - filebeatservice_check_response.status is defined
+        - filebeatservice_check_response.status == 200
 
     - name: Remove OpenSearch demo users
       uri:

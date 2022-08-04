@@ -10,9 +10,9 @@ Note that versions are default versions and can be changed in certain cases thro
 | Kubernetes Dashboard       | 2.3.1    | https://github.com/kubernetes/dashboard               | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Kubernetes metrics-scraper | 1.0.7    | https://github.com/kubernetes-sigs/dashboard-metrics-scraper | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | containerd                 | 1.5.11   | https://github.com/containerd/containerd | [Apache License 2.0](https://github.com/containerd/containerd/blob/main/LICENSE) |
-| Calico                     | 3.20.3   | https://github.com/projectcalico/calico               | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
+| Calico                     | 3.23.3   | https://github.com/projectcalico/calico               | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Flannel                    | 0.14.0   | https://github.com/coreos/flannel/                    | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)     |
-| Canal                      | 3.20.3   | https://github.com/projectcalico/calico               | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
+| Canal                      | 3.23.3   | https://github.com/projectcalico/calico               | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Coredns                    | 1.8.4    | https://github.com/coredns/coredns                    | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Kafka                      | 2.8.1    | https://github.com/apache/kafka                       | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Zookeeper                  | 3.5.8    | https://github.com/apache/zookeeper                   | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
@@ -43,8 +43,10 @@ Note that versions are default versions and can be changed in certain cases thro
 | ------------------------- | ------- | ----------------------------------------------------- | ----------------------------------------------------------------- |
 | Terraform                 | 1.1.3   | https://www.terraform.io/                             | [Mozilla Public License 2.0](https://github.com/hashicorp/terraform/blob/master/LICENSE) |
 | Terraform AzureRM provider | 2.91.0  | https://github.com/terraform-providers/terraform-provider-azurerm | [Mozilla Public License 2.0](https://github.com/terraform-providers/terraform-provider-azurerm/blob/master/LICENSE) |
-| Terraform AWS provider    | 3.71.0  | https://github.com/terraform-providers/terraform-provider-aws | [Mozilla Public License 2.0](https://github.com/terraform-providers/terraform-provider-aws/blob/master/LICENSE) |
-| Crane                     | 0.11.0  | https://github.com/google/go-containerregistry/tree/main/cmd/crane     | [Apache License 2.0](https://github.com/google/go-containerregistry/blob/main/LICENSE) |
+| Terraform AWS provider     | 3.71.0  | https://github.com/terraform-providers/terraform-provider-aws | [Mozilla Public License 2.0](https://github.com/terraform-providers/terraform-provider-aws/blob/master/LICENSE) |
+| Crane                      | 0.11.0  | https://github.com/google/go-containerregistry/tree/main/cmd/crane     | [Apache License 2.0](https://github.com/google/go-containerregistry/blob/main/LICENSE) |
+| Git                        | latest | https://github.com/git/git | [GNU GENERAL PUBLIC LICENSE Version 2](https://github.com/git/git/blob/master/COPYING) |
+| aws-cli                    | 2.0.30  | https://github.com/aws/aws-cli | [Apache License 2.0](https://github.com/aws/aws-cli/blob/develop/LICENSE.txt) |
 
 ## Epicli Python dependencies
 

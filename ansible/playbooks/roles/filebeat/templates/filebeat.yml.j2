@@ -314,10 +314,11 @@ output.elasticsearch:
   {% endfor %}
 
   # Authentication credentials - either API key or username/password.
-  username: logstash
   {% if not is_upgrade_run %}
-  password: {{ "'%s'" % logging_vars.specification.logstash_password | replace("'","''") }}
+  username: filebeatservice
+  password: {{ "'%s'" % logging_vars.specification.filebeatservice_password | replace("'","''") }}
   {% else %}
+  username: logstash
   password: {{ "'%s'" % existing_output_es_password | replace("'","''") }}
   {% endif %}
 

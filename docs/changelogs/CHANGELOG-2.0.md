@@ -14,6 +14,8 @@
 - [#3106](https://github.com/epiphany-platform/epiphany/issues/3106) - Add image-registry configuration reading
 - [#3140](https://github.com/epiphany-platform/epiphany/issues/3140) - Allow to disable OpenSearch audit logs
 - [#3218](https://github.com/epiphany-platform/epiphany/issues/3218) - Add support for original output coloring
+- [#3079](https://github.com/epiphany-platform/epiphany/issues/3079) - OpenSearch improvement - add dedicated user for Filebeat
+- [#3207](https://github.com/epiphany-platform/epiphany/issues/3207) - Add filtering mechanism for the sensitive data
 
 ### Fixed
 
@@ -23,6 +25,7 @@
 - [#3189](https://github.com/epiphany-platform/epiphany/issues/3189) - Fix configuration/feature-mapping enabling
 - [#3152](https://github.com/epiphany-platform/epiphany/issues/3152) - Use a stable tag for the quay.io/ceph/ceph:v16.2.7 image
 - [#3209](https://github.com/epiphany-platform/epiphany/issues/3209) - [Ubuntu] download-requirements.py ignores package version when resolving dependencies
+- [#3210](https://github.com/epiphany-platform/epiphany/issues/3210) - [Ubuntu] download-requirements.py downloads redundant package dependencies
 - [#3190](https://github.com/epiphany-platform/epiphany/issues/3190) - Enable configuration of kubelet enable-controller-attach-detach argument via input manifest
 
 ### Updated

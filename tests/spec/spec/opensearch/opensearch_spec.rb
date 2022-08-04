@@ -1,9 +1,6 @@
 require 'spec_helper'
 # Configurable passwords for ES users were introduced in v0.10.0.
 # For testing upgrades, we use the default password for now but we're going to switch to TLS auth.
-es_kibanaserver_user_password  = readDataYaml('configuration/opensearch')['specification']['kibanaserver_password'] || 'kibanaserver'
-es_kibanaserver_user_is_active = readDataYaml('configuration/opensearch')['specification']['kibanaserver_user_active']
-es_kibanaserver_user_is_active = true if es_kibanaserver_user_is_active.nil?
 es_admin_password = readDataYaml('configuration/opensearch')['specification']['admin_password'] || 'admin'
 es_rest_api_port  = 9200
 es_transport_port = 9300

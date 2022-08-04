@@ -28,12 +28,16 @@
     extra_opts:
       - --strip-components=1
 
+# if opensearch-dashboards is enabled for groups 'logging' and 'opensearch', form dashboards cluster
+# on the basis of belonging to a given group
 - name: Set opensearch dashboards hosts as fact
   set_fact:
     opensearch_nodes_dashboards: |-
-        {% for item in groups['opensearch_dashboards'] -%}
-          https://{{ item }}:{{ opensearch_api_port }}{% if not loop.last %}","{% endif %}
-        {%- endfor %}
+      {%- set current_host_group = groups[(group_names | intersect(['logging', 'opensearch'])) | first] -%}
+      {%- set hosts = groups['opensearch_dashboards'] | intersect(current_host_group) -%}
+      {%- for item in hosts -%}
+        https://{{ item }}:{{ opensearch_api_port }}{%- if not loop.last -%}","{%- endif -%}
+      {%- endfor -%}
 
 - name: Copy configuration file
   template:
