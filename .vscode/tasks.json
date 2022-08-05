@@ -31,6 +31,16 @@
       "group": "test",
     },
     {
+      "label": "Pylint repository modules",
+      "command": "pylint",
+      "args": [
+        "--rcfile", ".pylintrc",
+        "--output-format", "text",
+        "./ansible/playbooks/roles/repository/library/tests",
+      ],
+      "group": "test",
+    },
+    {
       "label": "Pylint download-requirements",
       "command": "pylint",
       "args": [

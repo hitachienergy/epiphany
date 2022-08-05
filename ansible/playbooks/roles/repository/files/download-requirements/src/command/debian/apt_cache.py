@@ -66,6 +66,38 @@ class AptCache(Command):
 
         return info
 
+    def __parse_apt_cache_depends(self, stdout: str) -> List[str]:
+        """
+        Parse output from `apt-cache depends`.
+        For deps with alternative, only the first package is choosen.
+        Virtual packages are replaced by the first candidate.
+
+        :param stdout: output from `apt-cache depends` command
+        :returns: required dependencies
+        """
+        alternative_found: bool = False
+        is_alternative: bool = False
+        virt_pkg_found: bool = False
+        deps: List[str] = []
+        for dep in stdout.strip().splitlines():
+
+            dep = dep.replace(' ', '')  # remove white spaces
+
+            if virt_pkg_found and not is_alternative:
+                deps.append(dep)  # pick first from the list
+                virt_pkg_found = False
+
+            if 'Depends:' in dep:  # dependency found
+                is_alternative = alternative_found
+                alternative_found = dep.startswith('|Depends:')
+                virt_pkg_found = '<' in dep and '>' in dep
+
+                if not virt_pkg_found and not is_alternative:
+                    dep = dep.split('Depends:')[-1]  # remove "Depends:
+                    deps.append(dep)
+
+        return deps
+
     def get_package_dependencies(self, package: str, version: str = '') -> List[str]:
         """
         Interface for `apt-cache depends`
@@ -85,38 +117,4 @@ class AptCache(Command):
                            f'{package}={version}' if version else package]
 
         raw_output = self.run(args).stdout
-
-        virt_pkg: bool = False  # True - virtual package detected, False - otherwise
-        virt_pkgs: List[str] = []  # cached virtual packages options
-        deps: List[str] = []
-        for dep in raw_output.split('\n'):
-            if not dep:  # skip empty lines
-                continue
-
-            dep = dep.replace(' ', '')  # remove white spaces
-
-            if virt_pkg:
-                virt_pkgs.append(dep)  # cache virtual package option
-
-            if '<' in dep and '>' in dep:  # virtual package, more than one dependency to choose
-                virt_pkg = True
-                continue
-
-            if 'Depends:' in dep:  # new dependency found
-                virt_pkg = False
-
-                if virt_pkgs:  # previous choices cached
-                    # avoid conflicts by choosing only non-cached dependency:
-                    if not any(item in deps for item in virt_pkgs):
-                        deps.append(virt_pkgs[0].split('Depends:')[-1])  # pick first from the list
-                    virt_pkgs.clear()
-
-                dep = dep.split('Depends:')[-1]  # remove "Depends:
-
-            if not virt_pkg and dep != package:  # avoid adding package itself
-                # workaround for https://elixirforum.com/t/installing-erlang-elixir-on-ubuntu-20-04-is-failing-esl-erlang-25-0-2-1-ubuntu-focal-amd64-deb-file-has-unexpected-size/48754
-                # TODO: verify after issues 3210 and 3209 are fixed  # pylint: disable=fixme
-                if dep != 'esl-erlang':  # for rabbitmq-server
-                    deps.append(dep)
-
-        return list(set(deps))
+        return self.__parse_apt_cache_depends(raw_output)

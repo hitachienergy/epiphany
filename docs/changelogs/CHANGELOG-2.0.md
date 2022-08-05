@@ -15,6 +15,7 @@
 - [#3140](https://github.com/epiphany-platform/epiphany/issues/3140) - Allow to disable OpenSearch audit logs
 - [#3218](https://github.com/epiphany-platform/epiphany/issues/3218) - Add support for original output coloring
 - [#3079](https://github.com/epiphany-platform/epiphany/issues/3079) - OpenSearch improvement - add dedicated user for Filebeat
+- [#3207](https://github.com/epiphany-platform/epiphany/issues/3207) - Add filtering mechanism for the sensitive data
 
 ### Fixed
 
@@ -25,6 +26,7 @@
 - [#3152](https://github.com/epiphany-platform/epiphany/issues/3152) - Use a stable tag for the quay.io/ceph/ceph:v16.2.7 image
 - [#3209](https://github.com/epiphany-platform/epiphany/issues/3209) - [Ubuntu] download-requirements.py ignores package version when resolving dependencies
 - [#3231](https://github.com/epiphany-platform/epiphany/issues/3231) - epicli may fail on "Download image haproxy-2.2.2-alpine.tar" task
+- [#3210](https://github.com/epiphany-platform/epiphany/issues/3210) - [Ubuntu] download-requirements.py downloads redundant package dependencies
 
 ### Updated
 
