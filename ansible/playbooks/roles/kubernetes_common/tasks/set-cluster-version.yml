@@ -1,6 +1,6 @@
 ---
 - name: k8s | Include get-cluster-version.yml
-  include_tasks: kubernetes/get-cluster-version.yml
+  include_tasks: get-cluster-version.yml
 
 - name: Set cluster version as fact
   set_fact:

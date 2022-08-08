@@ -5,13 +5,16 @@
       - update is defined
     fail_msg: Variable 'update' must be defined.
 
-- name: Collect kubeadm-config
+- name: Include set-cluster-version.yml
+  include_tasks: set-cluster-version.yml
+
+- name: Collect kubeadm-config from ConfigMap
   command: |
     kubectl get configmap kubeadm-config \
       --namespace kube-system \
-      --output jsonpath={{ jsonpath }}
+      --output jsonpath={{ _jsonpath }}
   vars:
-    jsonpath: >-
+    _jsonpath: >-
       '{.data.ClusterConfiguration}'
   register: kubeadm_config
   changed_when: false
@@ -24,9 +27,22 @@
     original: >-
       {{ kubeadm_config.stdout | from_yaml }}
 
+- name: Collect kubelet-config from ConfigMap
+  command: |-
+    kubectl get cm kubelet-config-{{ cluster_version_major }}.{{ cluster_version_minor }} \
+      --namespace kube-system \
+      --output=jsonpath={{ _jsonpath }}
+  vars:
+    _jsonpath: >-
+      '{.data.kubelet}'
+  register: kubelet_config
+  changed_when: false
+
 - name: Render /etc/kubeadm/kubeadm-config.yml
   copy:
     dest: /etc/kubeadm/kubeadm-config.yml
     mode: u=rw,go=
-    content: >-
-      {{ kubeadm_config | to_nice_yaml }}
+    content: |
+      {{ kubeadm_config | to_nice_yaml(indent=2) }}
+      ---
+      {{ kubelet_config.stdout | from_yaml | to_nice_yaml(indent=2) }}

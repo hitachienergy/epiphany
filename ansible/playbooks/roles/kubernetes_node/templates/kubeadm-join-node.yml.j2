@@ -8,5 +8,4 @@ discovery:
     - sha256:{{ kubernetes_common.kubeadm_cert_hash }}
 nodeRegistration:
   kubeletExtraArgs:
-    enable-controller-attach-detach: "false"
     node-labels: {{ specification.node_labels }}

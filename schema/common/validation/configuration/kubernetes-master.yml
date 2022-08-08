@@ -135,6 +135,8 @@ properties:
             - api_server
         required:
         - local
+      enable_controller_attach_detach:
+        type: boolean
     required:
     - api_server_args
     - controller_manager_args

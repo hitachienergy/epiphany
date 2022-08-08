@@ -1,6 +1,8 @@
 ---
 - name: k8s/kubelet-cm | Include set-cluster-version.yml
-  include_tasks: set-cluster-version.yml # sets cluster_version
+  import_role:
+    name: kubernetes_common
+    tasks_from: set-cluster-version.yml # sets cluster_version
 
 - name: k8s/kubelet-cm | Get kubelet config from ConfigMap
   command: |-
