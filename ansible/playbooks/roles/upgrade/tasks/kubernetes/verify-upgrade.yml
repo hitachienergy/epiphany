@@ -6,8 +6,10 @@
     - name: k8s/verify | Include wait-for-kube-apiserver.yml
       include_tasks: utils/wait-for-kube-apiserver.yml
 
-    - name: k8s/verify | Include set-cluster-version.yml
-      include_tasks: set-cluster-version.yml
+    - name: k8s/kubelet-cm | Include set-cluster-version.yml
+      import_role:
+        name: kubernetes_common
+        tasks_from: set-cluster-version.yml # sets cluster_version
 
     - name: k8s/verify | Verify cluster version
       assert:

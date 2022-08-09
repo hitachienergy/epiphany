@@ -1,0 +1,137 @@
+#jinja2: lstrip_blocks: True
+# {{ ansible_managed }}
+# ======================== OpenSearch Configuration =========================
+#
+# ------------------- Legacy Clients Compability Flag -------------------------
+# https://opensearch.org/docs/latest/clients/agents-and-ingestion-tools/index/
+compatibility.override_main_response_version: true
+#
+# ---------------------------------- Cluster -----------------------------------
+#
+# Use a descriptive name for your cluster:
+#
+cluster.name: {{ specification.cluster_name }}
+#
+# ------------------------------------ Node ------------------------------------
+#
+# Use a descriptive name for the node:
+#
+node.name: {{ ansible_hostname }}
+#
+# Add custom attributes to the node:
+#
+#node.attr.rack: r1
+#
+# ----------------------------------- Paths ------------------------------------
+#
+# Path to directory where to store the data (separate multiple locations by comma):
+#
+path.data: {{ specification.paths.opensearch_data_dir }}
+#
+# Path to directory where the shared storage should be mounted:
+#
+path.repo: {{ specification.paths.opensearch_snapshots_dir }}
+#
+# Path to log files:
+#
+path.logs: {{ specification.paths.opensearch_log_dir }}
+#
+# ----------------------------------- Memory -----------------------------------
+#
+# Lock the memory on startup:
+#
+#bootstrap.memory_lock: true
+#
+# Make sure that the heap size is set to about half the memory available
+# on the system and that the owner of the process is allowed to use this
+# limit.
+#
+# OpenSearch performs poorly when the system is swapping the memory.
+#
+# ---------------------------------- Network -----------------------------------
+#
+# Set the bind address to a specific IP (IPv4 or IPv6):
+#
+network.host: {{ ansible_hostname }}
+#
+# Set a custom port for HTTP:
+#
+{# defaults to range but we want static port #}
+http.port: {{ http_port }}
+#
+{# defaults to range but we want static port #}
+transport.port: {{ transport_port }}
+#
+# For more information, consult the network module documentation.
+#
+# --------------------------------- Discovery ----------------------------------
+#
+# Pass an initial list of hosts to perform discovery when this node is started:
+# The default list of hosts is ["127.0.0.1", "[::1]"]
+#
+{% if groups[current_group_name] | length > 1 -%}
+discovery.seed_hosts: [{% for host in groups[current_group_name] %}"{{ hostvars[host]['ansible_hostname'] }}"{%- if not loop.last -%},{% endif %}{% endfor %}]
+{% else %}
+discovery.seed_hosts: ["{{ ansible_hostname }}"]
+{% endif %}
+#
+# Bootstrap the cluster using an initial set of master-eligible nodes:
+#
+{% if is_upgrade_run | default(False) %}
+cluster.initial_master_nodes: []
+{% else %}
+  {% if groups[current_group_name] | length > 1 %}
+cluster.initial_master_nodes: [{% for host in groups[current_group_name] %}"{{ hostvars[host]['ansible_hostname'] }}"{%- if not loop.last -%},{% endif %}{% endfor %}]
+  {% else %}
+cluster.initial_master_nodes: ["{{ ansible_hostname }}"]
+  {% endif %}
+{% endif %}
+#
+# For more information, consult the discovery and cluster formation module documentation.
+#
+# ---------------------------------- Gateway -----------------------------------
+#
+# Block initial recovery after a full cluster restart until N nodes are started:
+#
+#gateway.recover_after_nodes: 3
+#
+# For more information, consult the gateway module documentation.
+#
+# ---------------------------------- Various -----------------------------------
+#
+# Require explicit names when deleting indices:
+#
+#action.destructive_requires_name: true
+
+######## OpenSearch Security Configuration ########
+# WARNING: revise all the lines below before you go into production
+plugins.security.ssl.transport.pemcert_filepath: "{{ certificates.dirs.certs }}/{{ node_cert_filename.transport }}"
+plugins.security.ssl.transport.pemkey_filepath: "{{ certificates.dirs.ca_key }}/{{ node_key_filename.transport }}"
+plugins.security.ssl.transport.pemtrustedcas_filepath: "{{ certificates.dirs.certs }}/{{ root_ca_cert_filename.transport }}"
+plugins.security.ssl.transport.enforce_hostname_verification: {{ specification.opensearch_security.ssl.transport.enforce_hostname_verification | lower }}
+plugins.security.ssl.http.enabled: true
+plugins.security.ssl.http.pemcert_filepath: "{{ certificates.dirs.certs }}/{{ node_cert_filename.http }}"
+plugins.security.ssl.http.pemkey_filepath: "{{ certificates.dirs.ca_key }}/{{ node_key_filename.http }}"
+plugins.security.ssl.http.pemtrustedcas_filepath: "{{ certificates.dirs.certs }}/{{ root_ca_cert_filename.http }}"
+plugins.security.allow_unsafe_democertificates: {{ opensearch_security_allow_unsafe_democertificates | lower }}
+plugins.security.allow_default_init_securityindex: true
+plugins.security.authcz.admin_dn:
+{% for dn in admin_dn %}
+  - '{{ dn }}'
+{% endfor %}
+{% if nodes_dn | count > 0 %}
+plugins.security.nodes_dn:
+  {% for dn in nodes_dn %}
+  - '{{ dn }}'
+  {% endfor %}
+{% endif %}
+
+{% if specification.opensearch_security.audit.type is defined and specification.opensearch_security.audit.type|length %}
+plugins.security.audit.type: {{ specification.opensearch_security.audit.type }}
+{% endif %}
+plugins.security.enable_snapshot_restore_privilege: true
+plugins.security.check_snapshot_restore_write_privileges: true
+plugins.security.restapi.roles_enabled: ["all_access", "security_rest_api_access"]
+cluster.routing.allocation.disk.threshold_enabled: false
+node.max_local_storage_nodes: 3
+######## End OpenSearch Security Configuration ########

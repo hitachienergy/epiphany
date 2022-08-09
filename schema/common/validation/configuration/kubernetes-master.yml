@@ -1,3 +1,4 @@
+---
 "$id": "#/specification"
 title: "K8s-master specification schema"
 description: "K8s-master specification schema"
@@ -134,6 +135,8 @@ properties:
             - api_server
         required:
         - local
+      enable_controller_attach_detach:
+        type: boolean
     required:
     - api_server_args
     - controller_manager_args

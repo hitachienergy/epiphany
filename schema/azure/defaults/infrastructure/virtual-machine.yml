@@ -1,3 +1,4 @@
+---
 kind: infrastructure/virtual-machine
 title: "Virtual Machine Infra"
 provider: azure
@@ -389,8 +390,8 @@ specification:
         destination_port_range: "9300"
         source_address_prefix: "10.1.0.0/20"
         destination_address_prefix: "0.0.0.0/0"
-      - name: Kibana
-        description: Allow Kibana
+      - name: OpenSearchDashboards
+        description: Allow OpenSearch Dashboards
         priority: 203
         direction: Inbound
         access: Allow

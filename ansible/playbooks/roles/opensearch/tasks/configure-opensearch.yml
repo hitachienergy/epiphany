@@ -1,0 +1,304 @@
+---
+# This file is meant to be also used by upgrade role
+
+- name: Ensure snapshot folder exists
+  file:
+    path: "{{ specification.paths.opensearch_snapshots_dir }}/"
+    state: directory
+    owner: "{{ specification.opensearch_os_user }}"
+    group: "{{ specification.opensearch_os_group }}"
+    mode: u=rwx,go=
+
+- name: Provide JVM configuration file
+  template:
+    backup: true
+    src: jvm.options.j2
+    dest: "{{ specification.paths.opensearch_conf_dir }}/jvm.options"
+    owner: "{{ specification.opensearch_os_user }}"
+    group: "{{ specification.opensearch_os_group }}"
+    mode: ug=rw,o=
+  register: change_jvm_config
+  vars:
+    xmx: "{{ specification.jvm_options.Xmx }}"
+
+- name: Generate certificates
+  when: not is_upgrade_run # in upgrade mode certs are required at early stage and should be already generated
+  block:
+    - name: Install requirements for Ansible certificate modules
+      include_role:
+        name: certificate
+        tasks_from: install-packages.yml
+
+    - include_tasks: generate-certs.yml
+
+- name: Provide OpenSearch configuration file
+  template:
+    backup: true
+    src: opensearch.yml.j2
+    dest: "{{ specification.paths.opensearch_conf_dir }}/opensearch.yml"
+    owner: "{{ specification.opensearch_os_user }}"
+    group: "{{ specification.opensearch_os_group }}"
+    mode: ug=rw,o=
+  register: change_config
+  vars:
+    node_cert_filename:
+      http: >-
+        {{ existing_es_config['opensearch_security.ssl.http.pemcert_filepath'] if (is_upgrade_run) else
+           certificates.files.node.cert.filename }}
+      transport: >-
+        {{ existing_es_config['opensearch_security.ssl.transport.pemcert_filepath'] if (is_upgrade_run) else
+           certificates.files.node.cert.filename }}
+    node_key_filename:
+      http: >-
+        {{ existing_es_config['opensearch_security.ssl.http.pemkey_filepath'] if (is_upgrade_run) else
+           certificates.files.node.key.filename }}
+      transport: >-
+        {{ existing_es_config['opensearch_security.ssl.transport.pemkey_filepath'] if (is_upgrade_run) else
+           certificates.files.node.key.filename }}
+    root_ca_cert_filename:
+      http: >-
+        {{ existing_es_config['opensearch_security.ssl.http.pemtrustedcas_filepath'] if (is_upgrade_run) else
+           certificates.files.root_ca.cert.filename }}
+      transport: >-
+        {{ existing_es_config['opensearch_security.ssl.transport.pemtrustedcas_filepath'] if (is_upgrade_run) else
+           certificates.files.root_ca.cert.filename }}
+    _epiphany_subjects:
+      admin: "{{ certificates.files.admin.cert.subject }}"
+      node: "{{ certificates.files.node.cert.subject }}"
+    _epiphany_dn_attributes:
+      admin: "{{ certificates.dn_attributes_order | intersect(_epiphany_subjects.admin.keys()) }}"
+      node: "{{ certificates.dn_attributes_order | intersect(_epiphany_subjects.node.keys()) }}"
+    _epiphany_dns:
+      admin: >-
+        {{ _epiphany_dn_attributes.admin | zip(_epiphany_dn_attributes.admin | map('extract', _epiphany_subjects.admin))
+                                         | map('join','=') | join(',') }}
+      node: >-
+        {{ _epiphany_dn_attributes.node | zip(_epiphany_dn_attributes.node | map('extract', _epiphany_subjects.node))
+                                        | map('join','=') | join(',') }}
+    admin_dn: >-
+      {{ existing_es_config['opensearch_security.authcz.admin_dn'] if (is_upgrade_run) else
+         [ _epiphany_dns.admin ] }}
+    _epiphany_nodes_dn: >-
+      {%- if groups[current_group_name] | length > 1 -%}
+        {%- set nodes_to_iterate = ansible_play_hosts_all -%}
+      {%- else -%}
+        {%- set nodes_to_iterate = [ inventory_hostname ] -%}
+      {%- endif -%}
+      {%- for node in nodes_to_iterate -%}
+        {%- if loop.first -%}[{%- endif -%}
+          '{{ _epiphany_dns.node.split(',') | map('regex_replace', '^CN=.+$', 'CN=' + hostvars[node].ansible_nodename) | join(',') }}'
+        {%- if not loop.last -%},{%- else -%}]{%- endif -%}
+      {%- endfor -%}
+    nodes_dn: >-
+      {{ existing_es_config['opensearch_security.nodes_dn'] if (is_upgrade_run) else
+         _epiphany_nodes_dn }}
+    opensearch_security_allow_unsafe_democertificates: "{{ certificates.files.demo.opensearch_security.allow_unsafe_democertificates }}"
+    http_port: "{{ is_upgrade_run | ternary(existing_es_config['http.port'], ports.http) }}"
+    transport_port: "{{ is_upgrade_run | ternary(existing_es_config['transport.port'], ports.transport) }}"
+
+# When 'opensearch_security.allow_unsafe_democertificates' is set to 'false' all demo certificate files must be removed,
+# otherwise opensearch service doesn't start.
+# For apply mode, demo certificate files are removed based only on their names. For upgrade mode,
+# public key fingerprints are checked to protect against unintentional deletion (what takes additional time).
+
+- name: Remove demo certificate files
+  include_tasks:
+    file: "{{ is_upgrade_run | ternary('remove-known-demo-certs.yml', 'remove-demo-certs.yml') }}"
+  when: not certificates.files.demo.opensearch_security.allow_unsafe_democertificates
+
+- name: Restart OpenSearch service
+  systemd:
+    name: opensearch
+    state: restarted
+    enabled: true
+  register: restart_opensearch
+  when: change_config.changed
+    or change_jvm_config.changed
+
+- name: Change default users
+  when: not is_upgrade_run
+  block:
+    - name: Wait for opensearch service to start up
+      when: restart_opensearch.changed
+      wait_for:
+        port: "{{ ports.http }}"
+        host: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
+
+    - name: Set helper facts
+      set_fact:
+        opensearch_endpoint: https://{{ ansible_default_ipv4.address }}:{{ ports.http }}
+      vars:
+        uri_template: &uri
+          client_cert: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert.filename }}"
+          client_key: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key.filename }}"
+          validate_certs: false
+          body_format: json
+
+    - name: Check if default admin user exists
+      uri:
+        <<: *uri
+        url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/admin"
+        method: GET
+        # 404 code is used there as someone can remove admin user on its own.
+        status_code: [200, 404]
+      register: admin_check_response
+      until: admin_check_response is success
+      retries: 60
+      delay: 1
+      run_once: true
+
+    - name: Create OpenSearch admin user
+      uri:
+        <<: *uri
+        url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/admin"
+        method: PUT
+        status_code: [200]
+        body:
+          password: "{{ specification.admin_password }}"
+          reserved: "true"
+          backend_roles:
+            - "admin"
+          description: "Admin user"
+      register: uri_response
+      until: uri_response is success
+      retries: 5
+      delay: 1
+      run_once: true
+      when: admin_check_response.status == 404
+
+    - name: Set OpenSearch admin password
+      uri:
+        <<: *uri
+        url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/"
+        method: PATCH
+        status_code: [200]
+        body:
+          - op: "replace"
+            path: "/admin"
+            value:
+              password: "{{ specification.admin_password }}"
+              reserved: "true"
+              backend_roles:
+                - "admin"
+              description: "Admin user"
+      register: uri_response
+      until: uri_response is success
+      retries: 15
+      delay: 1
+      run_once: true
+      when: admin_check_response.status == 200
+
+    - name: Check if default kibanaserver user exists
+      uri:
+        <<: *uri
+        url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/kibanaserver"
+        method: GET
+        status_code: [200, 404]
+      register: kibanaserver_check_response
+      when:
+        - groups.opensearch_dashboards[0] is defined
+        - inventory_hostname in groups.opensearch_dashboards
+
+    - name: Create default kibanaserver user
+      uri:
+        <<: *uri
+        url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/kibanaserver"
+        method: PUT
+        status_code: [200]
+        body: &kibanaserver_data
+          password: "{{ specification.kibanaserver_password }}"
+          reserved: "true"
+          description: "Demo OpenSearch Dashboards user"
+      register: uri_response
+      until: uri_response is success
+      retries: 5
+      delay: 1
+      run_once: true
+      when:
+        - kibanaserver_check_response.status is defined
+        - kibanaserver_check_response.status == 404
+
+    - name: Set kibanaserver user password
+      uri:
+        <<: *uri
+        url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/"
+        method: PATCH
+        status_code: [200]
+        body:
+          - op: "replace"
+            path: "/kibanaserver"
+            value:
+              <<: *kibanaserver_data
+      register: uri_response
+      until: uri_response is success
+      retries: 15
+      delay: 1
+      run_once: true
+      when:
+        - kibanaserver_check_response.status is defined
+        - kibanaserver_check_response.status == 200
+
+    - name: Check if filebeatservice user exists  # for re-apply scenario
+      uri:
+        <<: *uri
+        url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/filebeatservice"
+        method: GET
+        status_code: [200, 404]
+      register: filebeatservice_check_response
+      when:
+        - groups.logging[0] is defined
+        - inventory_hostname in groups.logging
+
+    - name: Create dedicated filebeatservice user
+      uri:
+        <<: *uri
+        url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/filebeatservice"
+        method: PUT
+        status_code: [200]
+        body: &filebeatservice_data
+          password: "{{ specification.filebeatservice_password }}"
+          reserved: "true"
+          backend_roles:
+            - "logstash"
+          description: "Epiphany user for Filebeat service"
+      register: uri_response
+      until: uri_response is success
+      retries: 5
+      delay: 1
+      run_once: true
+      when:
+        - filebeatservice_check_response.status is defined
+        - filebeatservice_check_response.status == 404
+
+    - name: Set filebeatservice user password
+      uri:
+        <<: *uri
+        url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/"
+        method: PATCH
+        status_code: [200]
+        body:
+          - op: "replace"
+            path: "/filebeatservice"
+            value:
+              <<: *filebeatservice_data
+      register: uri_response
+      until: uri_response is success
+      retries: 15
+      delay: 1
+      run_once: true
+      when:
+        - filebeatservice_check_response.status is defined
+        - filebeatservice_check_response.status == 200
+
+    - name: Remove OpenSearch demo users
+      uri:
+        <<: *uri
+        url: "{{ opensearch_endpoint }}/_opendistro/_security/api/internalusers/{{ item }}"
+        method: DELETE
+        status_code: [200, 404]
+      register: uri_response
+      until: uri_response is success
+      retries: 15
+      delay: 1
+      run_once: true
+      loop: "{{ specification.demo_users_to_remove }}"

@@ -1,5 +1,45 @@
 # Upgrade
 
+- [Upgrade](#upgrade)
+  - [Introduction](#introduction)
+  - [Online upgrade](#online-upgrade)
+    - [Online prerequisites](#online-prerequisites)
+    - [Start the online upgrade](#start-the-online-upgrade)
+  - [Offline upgrade](#offline-upgrade)
+    - [Offline prerequisites](#offline-prerequisites)
+    - [Start the offline upgrade](#start-the-offline-upgrade)
+  - [Additional parameters](#additional-parameters)
+  - [Run *apply* after *upgrade*](#run-apply-after-upgrade)
+  - [Kubernetes applications](#kubernetes-applications)
+  - [How to upgrade Kafka](#how-to-upgrade-kafka)
+    - [Kafka upgrade](#kafka-upgrade)
+    - [ZooKeeper upgrade](#zookeeper-upgrade)
+  - [Migration from Open Distro for Elasticsearch & Kibana to OpenSearch and OpenSearch Dashboards](#migration-from-open-distro-for-elasticsearch--kibana-to-opensearch-and-opensearch-dashboards)
+  - [Open Distro for Elasticsearch upgrade](#open-distro-for-elasticsearch-upgrade)
+  - [Node exporter upgrade](#node-exporter-upgrade)
+  - [RabbitMQ upgrade](#rabbitmq-upgrade)
+  - [Kubernetes upgrade](#kubernetes-upgrade)
+    - [Prerequisites](#prerequisites)
+  - [PostgreSQL upgrade](#postgresql-upgrade)
+    - [Versions](#versions)
+    - [Prerequisites](#prerequisites-1)
+    - [Upgrade](#upgrade-1)
+    - [Manual actions](#manual-actions)
+      - [Post-upgrade processing](#post-upgrade-processing)
+      - [Statistics](#statistics)
+      - [Delete old cluster](#delete-old-cluster)
+  - [Terraform upgrade from Epiphany 1.x to 2.x](#terraform-upgrade-from-epiphany-1x-to-2x)
+    - [Azure](#azure)
+      - [v0.12.6 => v0.13.x](#v0126--v013x)
+      - [v0.13.x => v0.14.x](#v013x--v014x)
+      - [v0.14.x => v1.0.x](#v014x--v10x)
+      - [v1.0.x => v1.1.3](#v10x--v113)
+    - [AWS](#aws)
+      - [v0.12.6 => v0.13.x](#v0126--v013x-1)
+      - [v0.13.x => v0.14.x](#v013x--v014x-1)
+      - [v0.14.x => v1.0.x](#v014x--v10x-1)
+      - [v1.0.x => v1.1.3](#v10x--v113-1)
+
 ## Introduction
 
 From Epicli 0.4.2 and up the CLI has the ability to perform upgrades on certain components on a cluster. The components
@@ -51,10 +91,10 @@ Your airgapped existing cluster should meet the following requirements:
 3. The cluster machines/vm`s should be accessible through SSH with a set of SSH keys you provided and configured on each
    machine yourself.
 4. A provisioning machine that:
-  - Has access to the SSH keys
-  - Has access to the build output from when the cluster was first created.
-  - Is on the same network as your cluster machines
-  - Has Epicli 0.4.2 or up running.
+- Has access to the SSH keys
+- Has access to the build output from when the cluster was first created.
+- Is on the same network as your cluster machines
+- Has Epicli 0.4.2 or up running.
     *Note. To run Epicli check the [Prerequisites](./PREREQUISITES.md)*
 
 ### Start the online upgrade
@@ -86,10 +126,10 @@ Your airgapped existing cluster should meet the following requirements:
   - Runs the same distribution as the airgapped cluster machines/vm`s (AlmaLinux 8, RedHat 8, Ubuntu 20.04)
   - Has access to the internet.
 5. A provisioning machine that:
-  - Has access to the SSH keys
-  - Has access to the build output from when the cluster was first created.
-  - Is on the same network as your cluster machines
-  - Has Epicli 0.4.2 or up running.
+- Has access to the SSH keys
+- Has access to the build output from when the cluster was first created.
+- Is on the same network as your cluster machines
+- Has Epicli 0.4.2 or up running.
 
 ---
 **NOTE**
@@ -200,18 +240,18 @@ specification:
       count: 1
     rabbitmq:
       count: 0
-    opendistro_for_elasticsearch:
+    opensearch:
       count: 0
   name: clustername
   prefix: 'prefix'
 title: Epiphany cluster Config
 ---
-kind: configuration/feature-mapping
-title: Feature mapping to roles
+kind: configuration/feature-mappings
+title: "Feature mapping to components"
 provider: azure
 name: default
 specification:
-  roles_mapping:
+  mappings:
     kubernetes_master:
       - kubernetes-master
       - helm
@@ -260,18 +300,30 @@ then start with the rest **one by one**.
 More detailed information about ZooKeeper you can find
 in  [ZooKeeper documentation](https://cwiki.apache.org/confluence/display/ZOOKEEPER).
 
-## Open Distro for Elasticsearch upgrade
+## Migration from Open Distro for Elasticsearch & Kibana to OpenSearch and OpenSearch Dashboards
 
 ---
 **NOTE**
 
-Before upgrade procedure make sure you have a data backup!
+Make sure you have a backup before proceeding to migration steps described below!
 
 ---
+Following the decision of Elastic NV<sup>[1]</sup> on ceasing open source options available for Elasticsearch and Kibana and releasing them under the Elastic license (more info [here](https://github.com/epiphany-platform/epiphany/issues/2870)) Epiphany team decided to implement a mechanism of automatic migration from ElasticSearch 7.10.2 to OpenSearch 1.2.4.
 
-Since Epiphany v1.0.0 we provide upgrade elasticsearch-oss package to v7.10.2 and opendistro-\* plugins package to
-v1.13.\*. Upgrade will be performed automatically when the upgrade procedure detects your `logging`
-, `opendistro_for_elasticsearch` or `kibana` hosts.
+It is important to remember, that while the new platform makes an effort to continue to support a broad set of third party tools (ie. Beats) there can be some drawbacks or even malfunctions as not everything has been tested or has explicitly been added to OpenSearch compatibility scope<sup>[2]</sup>.
+Additionally some of the components (ie. ElasticSearch Curator) or some embedded service accounts ( ie. *kibanaserver*) can be still found in OpenSearch environment but they will be phased out.
+
+Keep in mind, that for the current version of OpenSearch and OpenSearch Dashboards it is necessary to include the `filebeat` component along with the loggging one in order to implement the workaround for *Kibana API not available* [bug](https://github.com/opensearch-project/OpenSearch-Dashboards/issues/656#issuecomment-978036236).
+
+Upgrade of the ESS/ODFE versions not shipped with the previous Epiphany releases is not supported. If your environment is customized it needs to be standardized ( as described in [this](https://opensearch.org/docs/latest/upgrade-to/upgrade-to/#upgrade-paths) table ) prior to running the subject migration.
+
+Migration of Elasticsearch Curator is not supported. More info on use of Curator in OpenSearch environment can be found [here](https://github.com/opensearch-project/OpenSearch/issues/1352).
+
+<sup>[1]</sup> https://www.elastic.co/pricing/faq/licensing#what-are-the-key-changes-being-made-to-the-elastic-license
+
+<sup>[2]</sup> https://opensearch.org/docs/latest/clients/agents-and-ingestion-tools/index/
+
+Upgrade will be performed automatically when the upgrade procedure detects your `logging`, `opensearch` or `kibana` hosts.
 
 Upgrade of Elasticsearch uses API calls (GET, PUT, POST) which requires an admin TLS certificate. By default, Epiphany
 generates self-signed certificates for this purpose but if you use your own, you have to provide the admin certificate's
@@ -284,7 +336,7 @@ logging:
       cert_path: /etc/elasticsearch/custom-admin.pem
       key_path: /etc/elasticsearch/custom-admin-key.pem
 
-opendistro_for_elasticsearch:
+opensearch:
   upgrade_config:
     custom_admin_certificate:
       cert_path: /etc/elasticsearch/custom-admin.pem

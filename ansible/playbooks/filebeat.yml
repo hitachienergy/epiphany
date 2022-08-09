@@ -1,7 +1,7 @@
 ---
 # Ansible playbook that installs and configures Filebeat
 
-- hosts: opendistro_for_elasticsearch:logging:kibana # to gather facts
+- hosts: opensearch:logging:opensearch_dashboards # to gather facts
   tasks: []
 
 - hosts: filebeat

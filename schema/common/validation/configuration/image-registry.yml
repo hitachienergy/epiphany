@@ -1,3 +1,4 @@
+---
 "$id": "#/specification"
 title: "Image-registry specification schema"
 description: "Image-registry specification schema"
@@ -19,54 +20,72 @@ properties:
         type: object
         properties:
           generic:
-            type: array
-            items:
-              type: object
-              properties:
-                name:
-                  type: string
-                file_name:
-                  type: string
+            type: object
+            properties:
+              [applications, rabbitmq, kubernetes-master, postgresql, rook]:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    file_name:
+                      type: string
           current:
-            type: array
-            items:
-              type: object
-              properties:
-                name:
-                  type: string
-                file_name:
-                  type: string
+            type: object
+            properties:
+              [haproxy, kubernetes-master]:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    file_name:
+                      type: string
           legacy:
-            type: array
-            items:
-              type: object
-              properties:
-                name:
-                  type: string
-                file_name:
-                  type: string
+            type: object
+            properties:
+              kubernetes-master:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    file_name:
+                      type: string
       aarch64:
         type: object
         properties:
           generic:
-            type: array
-            items:
-              type: object
-              properties:
-                name:
-                  type: string
-                file_name:
-                  type: string
+            type: object
+            properties:
+              [applications, rabbitmq, kubernetes-master]:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    file_name:
+                      type: string
           current:
-            type: array
-            items:
-              type: object
-              properties:
-                name:
-                  type: string
-                file_name:
-                  type: string
+            type: object
+            properties:
+              [haproxy, kubernetes-master]:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    file_name:
+                      type: string
           legacy:
-            type: array
-            items:
-              items: {}
+            type: object
+            properties:
+              kubernetes-master:
+                type: array
+                items:
+                  items: {}

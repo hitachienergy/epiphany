@@ -1,0 +1,111 @@
+---
+- name: Kibana migration | Load deafults from OpenSearch Dashboards role
+  include_vars:
+    name: os_dashboards_defaults
+    file: roles/opensearch_dashboards/defaults/main.yml
+
+- name: Kibana migration | Load vars from OpenSearch Dashboards role
+  include_vars:
+    name: os_dashboards_variables
+    file: roles/opensearch_dashboards/vars/main.yml
+
+- name: Kibana migration | Download OpenSearch Dashboards binary
+  include_role:
+    name: download
+    tasks_from: download_file
+  vars:
+    file_name: >-
+      {{ os_dashboards_defaults.file_name_version.opensearch_dashboards[ansible_architecture] }}
+
+- name: Kibana migration | Create OpenSearch Dashboards OS group
+  group:
+    name: "{{ os_dashboards_variables.specification.dashboards_os_group }}"
+    state: present
+
+- name: Kibana migration | Create OpenSearch Dashboards OS user
+  user:
+    name: "{{ os_dashboards_variables.specification.dashboards_os_user }}"
+    state: present
+    shell: /bin/bash
+    group: "{{ os_dashboards_variables.specification.dashboards_os_group }}"
+    home: "{{ os_dashboards_variables.specification.paths.dashboards_home }}"
+    create_home: false
+
+- name: Kibana migration | Create OpenSearch Dashboards directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ os_dashboards_variables.specification.dashboards_os_user }}"
+    group: "{{ os_dashboards_variables.specification.dashboards_os_group }}"
+    mode: ug=rwx,o=rx
+  loop:
+    - "{{ os_dashboards_variables.specification.paths.dashboards_log_dir }}"
+    - "{{ os_dashboards_variables.specification.paths.dashboards_home }}"
+
+- name: Kibana migration | Extract the tar file
+  unarchive:
+    src: "{{ download_directory }}/{{ os_dashboards_defaults.file_name_version.opensearch_dashboards[ansible_architecture] }}"
+    dest: "{{ os_dashboards_variables.specification.paths.dashboards_home }}"
+    owner: "{{ os_dashboards_variables.specification.dashboards_os_user }}"
+    group: "{{ os_dashboards_variables.specification.dashboards_os_group }}"
+    remote_src: true
+    extra_opts:
+      - --strip-components=1
+
+- name: Kibana migration | Clone Kibana settings
+  copy:
+    src: /etc/kibana/kibana.yml
+    dest: "{{ os_dashboards_variables.specification.paths.dashboards_conf_dir }}/opensearch_dashboards.yml"
+    remote_src: true
+    owner: "{{ os_dashboards_variables.specification.dashboards_os_user }}"
+    group: "{{ os_dashboards_variables.specification.dashboards_os_group }}"
+    mode: ug=rw,o=
+
+- name: Kibana migration | Porting Kibana settings to OpenSearch Dashboards
+  replace:
+    path: "{{ os_dashboards_variables.specification.paths.dashboards_conf_dir }}/opensearch_dashboards.yml"
+    regexp: "{{ item.1 }}"
+    replace: "{{ item.2 }}"
+  loop:
+    - { 1: "elasticsearch", 2: "opensearch" }
+    - { 1: "/kibana", 2: "/opensearch-dashboards" }
+    - { 1: "opendistro_security", 2: "opensearch_security" }
+    # OPS claims to not recognize these 3 following Kibana variables
+    - { 1: "newsfeed.enabled", 2: "#newsfeed.enabled" }
+    - { 1: "telemetry.optIn", 2: "#telemetry.optIn" }
+    - { 1: "telemetry.enabled", 2: "#telemetry.enabled" }
+
+- name: Kibana migration | Create OpenSearch Dashboards service
+  template:
+    src: roles/opensearch_dashboards/templates/opensearch-dashboards.service.j2
+    dest: /etc/systemd/system/opensearch-dashboards.service
+    mode: u=rw,go=r
+  vars:
+    specification: "{{ os_dashboards_variables.specification }}"
+
+- name: Kibana migration | Stop Kibana service
+  systemd:
+    name: kibana
+    enabled: false
+    state: stopped
+
+- name: Kibana migration | Assure OpenSearch Dashboards service is started
+  service:
+    name: opensearch-dashboards
+    state: started
+    enabled: true
+
+- name: Kibana migration | Get all the installed dashboards plugins
+  command: "{{ os_dashboards_variables.specification.paths.dashboards_plugin_bin_path }} list"
+  become: false # This command can not be run as root user
+  register: list_plugins
+
+- name: Kibana migration | Show all the installed dashboards plugins
+  debug:
+    msg: "{{ list_plugins.stdout }}"
+
+- name: Kibana migration | Prevent Filebeat API access problem # Workaround for https://github.com/opensearch-project/OpenSearch-Dashboards/issues/656
+  replace:
+    path: /etc/filebeat/filebeat.yml
+    regexp: "setup.dashboards.enabled: true"
+    replace: "setup.dashboards.enabled: false"

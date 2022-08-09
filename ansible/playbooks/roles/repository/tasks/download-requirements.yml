@@ -3,6 +3,25 @@
 # this is to be optimized in the future
 
 - name: |-
+    Run download-requirements script, this can take a long time (optimized with manifest)
+    You can check progress on repository host with: journalctl -f -t download-requirements.py
+  shell: >-
+    set -o pipefail &&
+    "{{ download_requirements_script }}" \
+        /var/www/html/epirepo \
+        "{{ download_requirements_os_name }}" \
+        --manifest "{{ download_requirements_manifest }}" \
+        --no-logfile \
+        --repos-backup-file /var/tmp/enabled-system-repos.tar \
+        --verbose |&
+    tee >(systemd-cat --identifier=download-requirements.py)
+  args:
+    executable: /bin/bash
+  when:
+    - not full_download
+    - input_manifest_path
+
+- name: |-
     Run download-requirements script, this can take a long time
     You can check progress on repository host with: journalctl -f -t download-requirements.py
   shell: >-
@@ -10,13 +29,29 @@
     "{{ download_requirements_script }}" \
         /var/www/html/epirepo \
         "{{ download_requirements_os_name }}" \
+        --no-logfile \
         --repos-backup-file /var/tmp/enabled-system-repos.tar \
-        --no-logfile |&
+        --verbose |&
     tee >(systemd-cat --identifier=download-requirements.py)
   args:
     executable: /bin/bash
+  when: full_download or not input_manifest_path
+
+# This is to check whether input configuration has changed
+- name: Get checksum of remote input manifest file
+  when:
+    - not full_download
+    - input_manifest_path
+  stat:
+    path: "{{ download_requirements_manifest }}"
+    get_checksum: true
+    get_attributes: false
+    get_mime: false
+    checksum_algorithm: sha1
+  register: stat_remote_manifest
 
 - name: Create flag file to not re-download requirements next time
-  file:
-    path: "{{ download_requirements_flag }}"
-    state: touch
+  copy:
+    dest: "{{ download_requirements_flag }}"
+    content: >
+      manifest_sha1: {{ stat_remote_manifest.stat.checksum if stat_remote_manifest.stat.checksum is defined else 'null' }}

@@ -1,17 +1,17 @@
 import logging
 from typing import Dict
 
-from src.command.apt import Apt
-from src.command.apt_cache import AptCache
-from src.command.apt_key import AptKey
 from src.command.crane import Crane
-from src.command.dnf_repoquery import DnfRepoquery
-from src.command.rpm import Rpm
+from src.command.debian.apt import Apt
+from src.command.debian.apt_cache import AptCache
+from src.command.debian.apt_key import AptKey
+from src.command.redhat.dnf import Dnf
+from src.command.redhat.dnf_config_manager import DnfConfigManager
+from src.command.redhat.dnf_download import DnfDownload
+from src.command.redhat.dnf_repoquery import DnfRepoquery
+from src.command.redhat.rpm import Rpm
 from src.command.tar import Tar
 from src.command.wget import Wget
-from src.command.dnf import Dnf
-from src.command.dnf_config_manager import DnfConfigManager
-from src.command.dnf_download import DnfDownload
 from src.config.os_type import OSFamily
 
 

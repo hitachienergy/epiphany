@@ -21,6 +21,7 @@ from cli.src.commands.Recovery import Recovery
 from cli.src.commands.Test import Test
 from cli.src.commands.Upgrade import Upgrade
 from cli.src.Config import Config, SUPPORTED_OS
+from cli.src.helpers.argparse_helpers import comma_separated_type
 from cli.src.helpers.build_io import get_output_path, save_to_file
 from cli.src.helpers.cli_helpers import prompt_for_password, query_yes_no
 from cli.src.helpers.time_helpers import format_time
@@ -38,30 +39,32 @@ def main():
         formatter_class=argparse.RawTextHelpFormatter)
 
     # setup some root arguments
-    parser.add_argument('--version', action='version', help='Shows the CLI version', version=VERSION)
-    parser.add_argument('--licenses', action='version',
-                        help='Shows the third party packages and their licenses the CLI is using.',
-                        version=json.dumps(LICENSES, indent=4))
-    parser.add_argument('-l', '--log-file', dest='log_name', type=str,
-                        help='The name of the log file written to the output directory')
-    parser.add_argument('--log-format', dest='log_format', type=str,
-                        help='''Format for the logging string. Uses the default Python log formatting,
-more information here: https://docs.python.org/3.7/library/logging.html''')
+    parser.add_argument('--auto-approve', dest='auto_approve', action="store_true",
+                        help='Auto approve any user input queries asked by epicli.')
+    parser.add_argument('--licenses', action='version', version=json.dumps(LICENSES, indent=4),
+                        help='Shows the third party packages and their licenses the CLI is using.')
+    parser.add_argument('--log-count', dest='log_count', type=str,
+                        help='Roleover count where each CLI run will generate a new log.')
     parser.add_argument('--log-date-format', dest='log_date_format', type=str,
                         help='''Format for the logging date/time. Uses the default Python strftime formatting,
 more information here: https://docs.python.org/3.7/library/time.html#time.strftime''')
-    parser.add_argument('--log-count', dest='log_count', type=str,
-                        help='Roleover count where each CLI run will generate a new log.')
-    parser.add_argument('--log-type', choices=['plain', 'json'], default='plain',
-                        dest='log_type', action='store', help='''Type of logs that will be written to the output file.
+    parser.add_argument('-l', '--log-file', dest='log_name', type=str,
+                        help='The name of the log file written to the output directory.')
+    parser.add_argument('--log-format', dest='log_format', type=str,
+                        help='''Format for the logging string. Uses the default Python log formatting,
+more information here: https://docs.python.org/3.7/library/logging.html''')
+    parser.add_argument('--log-type', choices=['plain', 'json'], default='plain', dest='log_type', action='store',
+                        help='''Type of logs that will be written to the output file.
 Currently supported formats are plain text or JSON''')
+    parser.add_argument('--no-color', dest='no_color', action="store_true",
+                        help='Disables output coloring.')
     parser.add_argument('--validate-certs', choices=['true', 'false'], default='true', action='store',
                         dest='validate_certs',
                         help='''[Experimental]: Disables certificate checks for certain Ansible operations
 which might have issues behind proxies (https://github.com/ansible/ansible/issues/32750).
 Should NOT be used in production for security reasons.''')
-    parser.add_argument('--auto-approve', dest='auto_approve', action="store_true",
-                        help='Auto approve any user input queries asked by Epicli')
+    parser.add_argument('--version', action='version', version=VERSION,
+                        help='Shows the CLI version.')
 
     # set debug verbosity level.
     def debug_level(x):
@@ -113,14 +116,15 @@ Terraform : 1..4 map to the following Terraform verbosity levels:
     config.log_type = args.log_type
     config.log_count = args.log_count
     config.validate_certs = True if args.validate_certs == 'true' else False
-    if 'offline_requirements' in args and not args.offline_requirements is None:
+    if 'offline_requirements' in args and args.offline_requirements is not None:
         config.offline_requirements = args.offline_requirements
-    if 'wait_for_pods' in args and not args.wait_for_pods is None:
+    if 'wait_for_pods' in args and args.wait_for_pods is not None:
         config.wait_for_pods = args.wait_for_pods
     if 'upgrade_components' in args and args.upgrade_components:
         config.upgrade_components = args.upgrade_components
     config.debug = args.debug
     config.auto_approve = args.auto_approve
+    config.no_color = args.no_color or os.getenv('NO_COLOR', '') != ''
 
     try:
         return args.func(args)
@@ -213,6 +217,8 @@ def apply_parser(subparsers):
                             help='Number of pings after which Ansible will fail.')
     optional.add_argument('--ansible-forks', dest='ansible_forks', type=int, required=False, action='store', default=10,
                             help='Sets the number of forks in ansible.cfg.')
+    optional.add_argument('--full-download', dest='full_download', required=False, action='store_true', default=False,
+                            help='When used epicli will download all the available requirements for each feature supported.')
     sub_parser._action_groups.append(optional)
 
     def run_apply(args):
@@ -262,30 +268,18 @@ def upgrade_parser(subparsers):
         'jmx_exporter',
         'kafka',
         'kafka_exporter',
-        'kibana',
+        'opensearch_dashboards',
         'kubernetes',
         'load_balancer',
         'logging',
         'node_exporter',
-        'opendistro_for_elasticsearch',
+        'opensearch',
         'postgresql',
         'postgres_exporter',
         'prometheus',
         'rabbitmq',
         'zookeeper',
         ])
-
-    def comma_separated_type(choices):
-        """Return a function that splits and checks comma-separated values."""
-        def splitarg(arg):
-            values = arg.replace(' ','').lower().split(',')
-            for value in values:
-                if value not in choices:
-                    raise argparse.ArgumentTypeError(
-                        'invalid choice: {!r} (choose from {})'
-                        .format(value, ', '.join(map(repr, choices))))
-            return values
-        return splitarg
 
     #required
     required.add_argument('-b', '--build', dest='build_directory', type=str, required=True,
@@ -306,6 +300,8 @@ def upgrade_parser(subparsers):
                             help='Number of pings after which Ansible will fail.')
     optional.add_argument('--ansible-forks', dest='ansible_forks', type=int, required=False, action='store', default=10,
                             help='Sets the number of forks in ansible.cfg.')
+    optional.add_argument('--full-download', dest='full_download', required=False, action='store_true', default=False,
+                            help='When used epicli will download all the available requirements for each feature supported.')
     sub_parser._action_groups.append(optional)
 
     def run_upgrade(args):
@@ -328,15 +324,24 @@ def test_parser(subparsers):
                             help='Absolute path to directory with build artifacts.')
 
     #optional
-    group_list = '{' + ', '.join(SpecCommand.get_spec_groups()) + '}'
-    optional.add_argument('-g', '--group', choices=SpecCommand.get_spec_groups(), default='all', action='store', dest='group', required=False, metavar=group_list,
-                            help='Group of tests to be run, e.g. kafka.')
+    TEST_GROUPS = SpecCommand.get_spec_groups()
+    include_choices = ['all'] + TEST_GROUPS
+
+    optional.add_argument('-e', '--exclude', type=comma_separated_type(choices=TEST_GROUPS),
+                            dest='excluded_groups', required=False,
+                            help='Group of tests to be skipped, e.g. -e kafka,kafka_exporter.')
+    optional.add_argument('-i', '--include', default='all', type=comma_separated_type(choices=include_choices),
+                            dest='included_groups', required=False,
+                            help='Group of tests to be run, e.g. -i kafka,kafka_exporter.')
+    optional.add_argument('-k', '--kubeconfig-remote-path', type=os.path.abspath,
+                            dest='kubeconfig_remote_path', required=False,
+                            help='Absolute path to kubeconfig file on K8s master host, e.g. /etc/kubernetes/admin.conf.')
     sub_parser._action_groups.append(optional)
 
     def run_test(args):
         experimental_query()
         adjust_paths_from_build(args)
-        with Test(args) as cmd:
+        with Test(args, TEST_GROUPS) as cmd:
             return cmd.test()
 
     sub_parser.set_defaults(func=run_test)

@@ -1,0 +1,57 @@
+---
+"$id": "#/specification"
+title: "Feature-mappings specification schema"
+description: "Feature-mappings specification schema"
+type: object
+properties:
+  mappings:
+    type: object
+    properties:
+      kafka:
+        type: array
+        items:
+          type: string
+      rabbitmq:
+        type: array
+        items:
+          type: string
+      logging:
+        type: array
+        items:
+          type: string
+      load_balancer:
+        type: array
+        items:
+          type: string
+      monitoring:
+        type: array
+        items:
+          type: string
+      postgresql:
+        type: array
+        items:
+          type: string
+      custom:
+        type: array
+        items:
+          type: string
+      single_machine:
+        type: array
+        items:
+          type: string
+      kubernetes_master:
+        type: array
+        items:
+          type: string
+      kubernetes_node:
+        type: array
+        items:
+          type: string
+      opensearch:
+        type: array
+        items:
+          type: string
+      repository:
+        type: array
+        items:
+          type: string

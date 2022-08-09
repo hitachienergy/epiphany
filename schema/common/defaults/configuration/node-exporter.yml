@@ -1,3 +1,4 @@
+---
 kind: configuration/node-exporter
 title: "Node exporter"
 name: default

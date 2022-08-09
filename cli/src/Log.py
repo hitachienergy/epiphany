@@ -3,6 +3,7 @@ import logging.handlers
 import os
 import threading
 
+import click
 from pythonjsonlogger import jsonlogger
 
 from cli.src.Config import Config
@@ -10,18 +11,12 @@ from cli.src.helpers.build_io import get_output_path
 
 
 class ColorFormatter(logging.Formatter):
-    grey = '\x1b[38;21m'
-    yellow = '\x1b[33;21m'
-    red = '\x1b[31;21m'
-    bold_red = '\x1b[31;1m'
-    reset = '\x1b[0m'
-
     FORMATS = {
-        logging.DEBUG: grey + 'format' + reset,
-        logging.INFO: grey + 'format' + reset,
-        logging.WARNING: yellow + 'format' + reset,
-        logging.ERROR: red + 'format' + reset,
-        logging.CRITICAL: bold_red + 'format' + reset
+        logging.DEBUG:    click.style('format', fg='bright_black'), # grey
+        logging.INFO:     click.style('format'),
+        logging.WARNING:  click.style('format', fg='yellow'),
+        logging.ERROR:    click.style('format', fg='red'),
+        logging.CRITICAL: click.style('format', fg='red', bold=True)
     }
 
     def format(self, record):
@@ -30,6 +25,24 @@ class ColorFormatter(logging.Formatter):
         log_fmt = log_fmt.replace('format', config.log_format)
         formatter = logging.Formatter(log_fmt, datefmt=config.log_date_format)
         return formatter.format(record)
+
+
+class UncolorFormatter(logging.Formatter):
+    """
+    Formatter that removes ANSI styling information (escape sequences).
+    """
+    def format(self, record: logging.LogRecord) -> str:
+        return click.unstyle(super().format(record))
+
+
+class UncolorJsonFormatter(jsonlogger.JsonFormatter):
+    """
+    JSON formatter that removes ANSI styling information (escape sequences).
+    """
+    def format(self, record: logging.LogRecord) -> str:
+        if isinstance(record.msg, str):
+            record.msg = click.unstyle(record.msg)
+        return super().format(record)
 
 
 class Log:
@@ -42,8 +55,9 @@ class Log:
 
             # create stream handler with color formatter
             self.stream_handler = logging.StreamHandler()
-            color_formatter = ColorFormatter()
-            self.stream_handler.setFormatter(color_formatter)
+            formatter = logging.Formatter(config.log_format,
+                                          datefmt=config.log_date_format) if config.no_color else ColorFormatter()
+            self.stream_handler.setFormatter(formatter)
 
             # create file handler
             log_path = os.path.join(get_output_path(), config.log_file)
@@ -55,10 +69,10 @@ class Log:
 
             # attach propper formatter to file_handler (plain|json)
             if config.log_type == 'plain':
-                file_formatter = logging.Formatter(config.log_format, datefmt=config.log_date_format)
+                file_formatter = UncolorFormatter(config.log_format, datefmt=config.log_date_format)
                 self.file_handler.setFormatter(file_formatter)
             elif config.log_type == 'json':
-                json_formatter = jsonlogger.JsonFormatter(config.log_format, datefmt=config.log_date_format)
+                json_formatter = UncolorJsonFormatter(config.log_format, datefmt=config.log_date_format)
                 self.file_handler.setFormatter(json_formatter)
 
 
@@ -80,27 +94,38 @@ class LogPipe(threading.Thread):
         threading.Thread.__init__(self)
         self.logger = Log(logger_name)
         self.daemon = False
-        self.fdRead, self.fdWrite = os.pipe()
-        self.pipeReader = os.fdopen(self.fdRead)
+        self.fd_read, self.fd_write = os.pipe()
+        self.pipe_reader = os.fdopen(self.fd_read)
         self.start()
-        self.errorStrings = ['error', 'Error', 'ERROR', 'fatal', 'FAILED']
-        self.warningStrings = ['warning', 'warning', 'WARNING']
-        self.stderrstrings = []
+        self.error_strings = ['error', 'Error', 'ERROR', 'fatal', 'FAILED']
+        self.warning_strings = ['warning', 'warning', 'WARNING']
+        self.output_error_lines = []
 
     def fileno(self):
-        return self.fdWrite
+        return self.fd_write
 
     def run(self):
-        for line in iter(self.pipeReader.readline, ''):
+        """Run thread logging everything."""
+        colored_loggers = ['AnsibleCommand', 'SpecCommand', 'TerraformCommand']
+        logger_short_name = self.logger.name.split('.')[-1]
+        with_error_detection = logger_short_name in ['TerraformCommand']
+        with_level_detection = logger_short_name not in colored_loggers
+
+        for line in iter(self.pipe_reader.readline, ''):
             line = line.strip('\n')
-            if any([substring in line for substring in self.errorStrings]):
-                self.stderrstrings.append(line)
-                self.logger.error(line)
-            elif any([substring in line for substring in self.warningStrings]):
+            if with_error_detection and any(string in line for string in self.error_strings):
+                self.output_error_lines.append(line)
+            if with_level_detection:
+                if any(string in line for string in self.error_strings):
+                    self.logger.error(line)
+                elif any(string in line for string in self.warning_strings):
                     self.logger.warning(line)
+                else:
+                    self.logger.info(line)
             else:
                 self.logger.info(line)
-        self.pipeReader.close()
+
+        self.pipe_reader.close()
 
     def close(self):
-        os.close(self.fdWrite)
+        os.close(self.fd_write)

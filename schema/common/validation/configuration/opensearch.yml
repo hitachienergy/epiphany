@@ -1,0 +1,56 @@
+---
+"$id": "#/specification"
+title: "opensearch schema"
+description: "OpenSearch specification schema"
+type: object
+properties:
+  cluster_name:
+    type: string
+  opensearch_os_user:
+    type: string
+  opensearch_os_group:
+    type: string
+  admin_password:
+    type: string
+  kibanaserver_password:
+    type: string
+  demo_users_to_remove:
+    type: array
+    items:
+      type: string
+  paths:
+    type: object
+    properties:
+      opensearch_home:
+        type: string
+      opensearch_conf_dir:
+        type: string
+      opensearch_log_dir:
+        type: string
+      opensearch_snapshots_dir:
+        type: string
+      opensearch_data_dir:
+        type: string
+      opensearch_perftop_dir:
+        type: string
+  jvm_options:
+    type: object
+    properties:
+      Xmx:
+        type: string
+  opensearch_security:
+    type: object
+    properties:
+      audit:
+        type: object
+        properties:
+          type:
+            type: string
+      ssl:
+        type: object
+        properties:
+          transport:
+            type: object
+            properties:
+              enforce_hostname_verification:
+                type: boolean

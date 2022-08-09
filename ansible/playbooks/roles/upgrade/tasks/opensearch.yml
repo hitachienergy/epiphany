@@ -1,0 +1,39 @@
+---
+- name: OpenSearch | Get information about installed packages as facts
+  package_facts:
+    manager: auto
+  when: ansible_facts.packages is undefined
+
+- name: OpenSearch | Run migration from ODFE
+  when:
+    - ansible_facts.packages['elasticsearch-oss'] is defined
+  block:
+    - name: OpenSearch | Include defaults from OpenSearch role
+      include_vars:
+        name: opensearch_defaults
+        file: roles/opensearch/defaults/main.yml
+
+    - name: OpenSearch | Include vars from OpenSearch role
+      include_vars:
+        name: opensearch_variables
+        file: roles/opensearch/vars/main.yml
+
+    - name: OpenSearch | Run pre ODFE migration tasks
+      include_role:
+        name: upgrade
+        tasks_from: opensearch/pre-migrate
+
+    - name: OpenSearch | Run ODFE migration tasks
+      include_role:
+        name: upgrade
+        tasks_from: opensearch/migrate-odfe
+
+    - name: OpenSearch | Run Kibana migration tasks
+      include_role:
+        name: upgrade
+        tasks_from: opensearch/migrate-kibana
+
+    - name: OpenSearch | Cleanup
+      include_role:
+        name: upgrade
+        tasks_from: opensearch/cleanup

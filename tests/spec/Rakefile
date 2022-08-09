@@ -1,6 +1,7 @@
-require 'rake'
 require 'net/ssh'
+require 'rake'
 require 'rspec/core/rake_task'
+require 'yaml'
 
 unless ENV['inventory']
   print "ERROR: Inventory file must be specified by 'inventory' environment variable\n"
@@ -31,21 +32,23 @@ all_hosts = {}
 ungrouped_hosts = {}
 current_group = nil
 
-File::open(ENV['inventory']) do |f|
-  while line = f.gets
+File.open(ENV['inventory']) do |f|
+  while (line = f.gets)
 
     md = line.match(/^([^#]+)/) # matches lines not starting with a '#' character
     next unless md
+
     line = md[0]
 
-    if line =~ /^\[([^\]]+)\]/
-      current_group = $1
-    elsif line =~ /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/ # regex for IP address
-      host_ip = $1
+    case line
+    when /^\[([^\]]+)\]/
+      current_group = Regexp.last_match(1)
+    when /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/ # regex for IP address
+      host_ip = Regexp.last_match(1)
       host_name = line.split.first
       if current_group
         groups[current_group] ||= {}
-        groups[current_group][host_ip] = host_name  # e.g. "zookeeper"=>{"192.168.0.1"=>"vm-01.localdomain"}
+        groups[current_group][host_ip] = host_name # e.g. "zookeeper"=>{"192.168.0.1"=>"vm-01.localdomain"}
       else
         ungrouped_hosts[host_ip] = host_name
       end
@@ -55,14 +58,10 @@ File::open(ENV['inventory']) do |f|
 end
 
 # Add hosts for 'common' group (not present in inventory)
-if all_hosts.length
-  groups['common'] = all_hosts
-end
+groups['common'] = all_hosts if all_hosts.length
 
-groups.keys.each do |group|
-  if !File.directory?("spec/#{group}") || Dir.empty?("spec/#{group}")
-    groups.delete(group)
-  end
+groups.each_key do |group|
+  groups.delete(group) if !File.directory?("spec/#{group}") || Dir.empty?("spec/#{group}")
 end
 
 # Re-order postgres hosts to put primary node at the start of the host listing.
@@ -72,51 +71,63 @@ end
 # pg_primary_node_host: primary node host.
 # pg_primary_node_ip: primary node ip.
 # pg_last_node_host: last standby node host (if present)
-if groups.has_key?("postgresql")
-  if groups["postgresql"].size > 1
+if groups.key?('postgresql')
+  if groups['postgresql'].size > 1
     pg_primary = {}
     pg_standy = {}
-    groups["postgresql"].keys.each do |host|
+    groups['postgresql'].each_key do |host|
       Net::SSH.start(host, ENV['user'], keys: [ENV['keypath']], use_agent: false) do |ssh|
-        result = ssh.exec!("sudo su - postgres -c \"repmgr node check --role\"")
-        if result.include? "primary"
-          pg_primary[host] = groups["postgresql"][host]
+        result = ssh.exec!('sudo su - postgres -c "repmgr node check --role"')
+        if result.include? 'primary'
+          pg_primary[host] = groups['postgresql'][host]
         else
-          pg_standy[host] = groups["postgresql"][host]
+          pg_standy[host] = groups['postgresql'][host]
         end
       end
     end
-    groups["postgresql"] = pg_primary.merge(pg_standy)
-    ENV['pg_last_node_host'] = groups["postgresql"].values[-1]
+    groups['postgresql'] = pg_primary.merge(pg_standy)
+    ENV['pg_last_node_host'] = groups['postgresql'].values[-1]
   end
-  ENV['pg_primary_node_host'] = groups["postgresql"].values[0]
-  ENV['pg_primary_node_ip'] = groups["postgresql"].keys[0]
+  ENV['pg_primary_node_host'] = groups['postgresql'].values[0]
+  ENV['pg_primary_node_ip'] = groups['postgresql'].keys[0]
 end
 
-puts groups
-
-task :spec    => 'spec:all'
-task :default => :spec
+task spec:    'spec:all'
+task default: :spec
 
 namespace :spec do
-  task :all     => groups.keys.map {|group| 'spec:' + group }
-  task :default => :all
+  task all:     groups.keys.map { |group| "spec:#{group}" }
+  task default: :all
 
   # Tasks for groups
-  groups.keys.each do |group|
-    task group.to_sym => groups[group].keys.map {|host| 'spec:' + group + ':' + host }
-    groups[group].keys.each do |host|
+  groups.each_key do |group|
+    task group.to_sym => groups[group].keys.map { |host| "spec:#{group}:#{host}" }
+    groups[group].each_key do |host|
       desc "Run tests for group '#{group}'"
-      task_name = group + ':' + host
-      RSpec::Core::RakeTask.new(task_name) do |t|
+      task_name = "#{group}:#{host}"
+      RSpec::Core::RakeTask.new(task_name) do |task|
         ENV['TARGET_HOST'] = host
-        puts "Testing " + task_name
-        t.pattern = "spec/#{group}/*_spec.rb"
-        t.fail_on_error = true  # to detect RuntimeError (when error occured outside of example)
-        t.rspec_opts = "--format documentation --format RspecJunitFormatter " \
-                       "--out " + ENV['spec_output'] +
-                                  Time.now.strftime("%Y-%m-%d_%H-%M-%S") + "_#{group}_#{groups[group][host]}.xml"
-       end
+        puts '---'
+        puts "Testing #{task_name}"
+        task.pattern = "spec/#{group}/*_spec.rb"
+        task.fail_on_error = true  # to detect RuntimeError (when error occured outside of example)
+        task.rspec_opts = '--format documentation --format RspecJunitFormatter ' \
+                          '--out ' + ENV['spec_output'] +
+                          Time.now.strftime('%Y-%m-%d_%H-%M-%S') + "_#{group}_#{groups[group][host]}.xml"
+        # Append extra options
+        task.rspec_opts += " #{ENV['rspec_extra_opts']}" if ENV['rspec_extra_opts']
+      end
     end
   end
+
+  # Print selected groups
+  selected_groups = {}
+  if Rake.application.top_level_tasks.include? 'spec:all'
+    selected_groups = groups
+  else
+    groups.each_key do |group|
+      selected_groups[group] = groups[group] if Rake.application.top_level_tasks.include? "spec:#{group}"
+    end
+  end
+  puts selected_groups.to_yaml.gsub("---\n", '')
 end

@@ -1,0 +1,61 @@
+---
+# This file is meant to be also used by upgrade role
+file_name_version:
+  opensearch:
+    x86_64: opensearch-1.2.4-linux-x64.tar.gz
+    aarch64: opensearch-1.2.4-linux-arm64.tar.gz
+  opensearch_perftop:
+    x86_64: opensearch-perf-top-1.2.0.0-linux-x64.zip
+    # Perftop is not supported on ARM (https://github.com/opensearch-project/perftop/issues/26)
+certificates:
+  dirs:
+    certs: /usr/share/opensearch/config
+    ca_key: /usr/share/opensearch/config
+    csr: /usr/share/opensearch/config
+  dn_attributes_order: ['CN', 'OU', 'O', 'L', 'S', 'C', 'DC']
+  files:
+    demo:
+      root_ca:
+        cert: root-ca.pem
+      admin:
+        cert: kirk.pem
+        key: kirk-key.pem
+      node:
+        cert: esnode.pem
+        key: esnode-key.pem
+      opensearch_security:
+        allow_unsafe_democertificates: false  # if 'false' all demo files must be removed to start OpenSearch
+    common:
+      subject: &common-subject
+        O: Epiphany
+        OU: R&D
+    root_ca:
+      cert:
+        filename: epiphany-root-ca.pem
+        selfsigned_not_after: 20311231235959Z  # relative time, such as '+3650d', is NOT idempotent
+        subject:
+          <<: *common-subject
+          CN: Epiphany Managed ODFE Root CA
+      key:
+        filename: epiphany-root-ca-key.pem
+    admin:
+      cert:
+        filename: epiphany-admin.pem
+        ownca_not_after: 20221231235959Z  # relative time, such as '+3650d', is NOT idempotent
+        subject:
+          <<: *common-subject
+          CN: Epiphany Admin
+      key:
+        filename: epiphany-admin-key.pem
+    node:
+      cert:
+        filename: epiphany-node-{{ ansible_nodename }}.pem
+        ownca_not_after: 20311231235959Z  # relative time, such as '+3650d', is NOT idempotent
+        subject:
+          <<: *common-subject
+          CN: "{{ ansible_nodename }}"
+      key:
+        filename: epiphany-node-{{ ansible_nodename }}-key.pem
+ports:
+  http: 9200
+  transport: 9300

@@ -6,7 +6,8 @@
 
 # Python code to execute, usually for sys.path manipulation such as
 # pygtk.require().
-#init-hook=
+# The following line fixes 'import-error' issues in VS Code, like "Unable to import 'cli.src.ansible.AnsibleCommand'"
+init-hook='from pylint.config import find_pylintrc; import os, sys; sys.path.append(os.path.dirname(find_pylintrc()))'
 
 # Files or directories to be skipped. They should be base names, not
 # paths.
@@ -55,7 +56,6 @@ confidence=
 # multiple time. See also the "--disable" option for examples.
 enable=
     use-symbolic-message-instead,
-    useless-supression,
     fixme
 
 # Disable the message, report, category or checker with the given id(s). You
@@ -85,11 +85,6 @@ disable=
 # (visual studio) and html. You can also give a reporter class, eg
 # mypackage.mymodule.MyReporterClass.
 output-format=junit
-
-# Put messages in a separate file for each module / package specified on the
-# command line instead of printing them on stdout. Reports (if any) will be
-# written in a file name "pylint_global.[txt|html]".
-files-output=yes
 
 # Tells whether to display a full report or only the messages
 reports=no
@@ -167,9 +162,6 @@ ignore-long-lines=^\s*(# )?<?https?://\S+>?$
 # else.
 single-line-if-stmt=no
 
-# List of optional constructs for which whitespace checking is disabled
-no-space-check=trailing-comma,dict-separator
-
 # Maximum number of lines in a module
 max-module-lines=2000
 
@@ -202,62 +194,32 @@ include-naming-hint=no
 # Regular expression matching correct function names
 function-rgx=[a-z_][a-z0-9_]{2,30}$
 
-# Naming hint for function names
-function-name-hint=[a-z_][a-z0-9_]{2,30}$
-
 # Regular expression matching correct variable names
 variable-rgx=[a-z_][a-z0-9_]{2,30}$
-
-# Naming hint for variable names
-variable-name-hint=[a-z_][a-z0-9_]{2,30}$
 
 # Regular expression matching correct constant names
 const-rgx=(([A-Z_][A-Z0-9_]*)|(__.*__))$
 
-# Naming hint for constant names
-const-name-hint=(([A-Z_][A-Z0-9_]*)|(__.*__))$
-
 # Regular expression matching correct attribute names
 attr-rgx=[a-z_][a-z0-9_]{2,}$
-
-# Naming hint for attribute names
-attr-name-hint=[a-z_][a-z0-9_]{2,}$
 
 # Regular expression matching correct argument names
 argument-rgx=[a-z_][a-z0-9_]{2,30}$
 
-# Naming hint for argument names
-argument-name-hint=[a-z_][a-z0-9_]{2,30}$
-
 # Regular expression matching correct class attribute names
 class-attribute-rgx=([A-Za-z_][A-Za-z0-9_]{2,30}|(__.*__))$
-
-# Naming hint for class attribute names
-class-attribute-name-hint=([A-Za-z_][A-Za-z0-9_]{2,30}|(__.*__))$
 
 # Regular expression matching correct inline iteration names
 inlinevar-rgx=[A-Za-z_][A-Za-z0-9_]*$
 
-# Naming hint for inline iteration names
-inlinevar-name-hint=[A-Za-z_][A-Za-z0-9_]*$
-
 # Regular expression matching correct class names
 class-rgx=[A-Z_][a-zA-Z0-9]+$
-
-# Naming hint for class names
-class-name-hint=[A-Z_][a-zA-Z0-9]+$
 
 # Regular expression matching correct module names
 module-rgx=(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+))$
 
-# Naming hint for module names
-module-name-hint=(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+))$
-
 # Regular expression matching correct method names
 method-rgx=[a-z_][a-z0-9_]{2,}$
-
-# Naming hint for method names
-method-name-hint=[a-z_][a-z0-9_]{2,}$
 
 # Regular expression which should only match function or class names that do
 # not require a docstring.

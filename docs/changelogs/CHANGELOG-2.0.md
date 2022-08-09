@@ -1,4 +1,57 @@
+<!-- markdownlint-disable-file no-duplicate-header -->
 # Changelog 2.0
+
+## [2.0.1] YYYY-MM-DD
+
+### Added
+
+- [#2932](https://github.com/epiphany-platform/epiphany/issues/2932) - Support `epicli upgrade` for RHEL/AlmaLinux 8
+- [#3057](https://github.com/epiphany-platform/epiphany/issues/3057) - Additional AWS authentication option
+- [#3101](https://github.com/epiphany-platform/epiphany/issues/3101) - Add support for ARM architecture for AlmaLinux 8
+- [#3105](https://github.com/epiphany-platform/epiphany/issues/3105) - Add manifest file parsing
+- [#3131](https://github.com/epiphany-platform/epiphany/issues/3131) - Optimize Grafana dashboards downloading
+- [#3116](https://github.com/epiphany-platform/epiphany/issues/3116) - Optimize files downloading
+- [#3106](https://github.com/epiphany-platform/epiphany/issues/3106) - Add image-registry configuration reading
+- [#3140](https://github.com/epiphany-platform/epiphany/issues/3140) - Allow to disable OpenSearch audit logs
+- [#3218](https://github.com/epiphany-platform/epiphany/issues/3218) - Add support for original output coloring
+- [#3079](https://github.com/epiphany-platform/epiphany/issues/3079) - OpenSearch improvement - add dedicated user for Filebeat
+- [#3207](https://github.com/epiphany-platform/epiphany/issues/3207) - Add filtering mechanism for the sensitive data
+
+### Fixed
+
+- [#3153](https://github.com/epiphany-platform/epiphany/issues/3153) - AlmaLinux 8.5 installation fails resolving dependencies
+- [#3164](https://github.com/epiphany-platform/epiphany/issues/3164) - Specify version and allow containerd.io package downgrade in haproxy_runc role
+- [#3179](https://github.com/epiphany-platform/epiphany/issues/3179) - terraform fails when `use_network_security_groups` is set to `false`
+- [#3165](https://github.com/epiphany-platform/epiphany/issues/3165) - download-requirements.py may fail due to expired certificate
+- [#3189](https://github.com/epiphany-platform/epiphany/issues/3189) - Fix configuration/feature-mapping enabling
+- [#3152](https://github.com/epiphany-platform/epiphany/issues/3152) - Use a stable tag for the quay.io/ceph/ceph:v16.2.7 image
+- [#3209](https://github.com/epiphany-platform/epiphany/issues/3209) - [Ubuntu] download-requirements.py ignores package version when resolving dependencies
+- [#3231](https://github.com/epiphany-platform/epiphany/issues/3231) - epicli may fail on "Download image haproxy-2.2.2-alpine.tar" task
+- [#3210](https://github.com/epiphany-platform/epiphany/issues/3210) - [Ubuntu] download-requirements.py downloads redundant package dependencies
+- [#3190](https://github.com/epiphany-platform/epiphany/issues/3190) - Enable configuration of kubelet enable-controller-attach-detach argument via input manifest
+
+### Updated
+
+- [#3080](https://github.com/epiphany-platform/epiphany/issues/3080) - update Filebeat to the latest compatible version with OpenSearch
+- [#2982](https://github.com/epiphany-platform/epiphany/issues/2982) - Using AKS and EKS Terraform configuration directly with Epiphany.
+- [#2870](https://github.com/epiphany-platform/epiphany/issues/2870) - OpenDistro for ElasticSearch replaced by OpenSearch
+- [#3163](https://github.com/epiphany-platform/epiphany/issues/3163) - Upgrade Python dependencies
+- [#3097](https://github.com/epiphany-platform/epiphany/issues/3097) - Split available_roles and roles_mapping into separate yaml documents
+- [#3229](https://github.com/epiphany-platform/epiphany/issues/3229) - Update crane to v0.11.0
+
+### Deprecated
+
+- Support for Modules:
+  [Azure Basic Infrastructure](https://github.com/epiphany-platform/m-azure-basic-infrastructure) (AzBI) module
+  [Azure AKS](https://github.com/epiphany-platform/m-azure-kubernetes-service) (AzKS) module
+  [AWS Basic Infrastructure](https://github.com/epiphany-platform/m-aws-basic-infrastructure) (AwsBI) module
+  [AWS EKS](https://github.com/epiphany-platform/m-aws-kubernetes-service) (AwsKS) module
+
+### Breaking changes
+
+- Schema `configuration/feature-mapping` changed. The document was splitted into two separate docs `configuration/features` and `configuration/feature-mappings`.
+
+- AWS credentials configuration parameters are renamed from `specification.cloud.credentials.key` and `specification.cloud.credentials.secret` to `specification.cloud.credentials.access_key_id` and `specification.cloud.credentials.secret_access_key`.
 
 ## [2.0.0] 2022-05-09
 
@@ -54,7 +107,7 @@
 - [#2803](https://github.com/epiphany-platform/epiphany/issues/2803) - Refactor: rename 'kafka_var' setting
 - [#2995](https://github.com/epiphany-platform/epiphany/issues/2995) - Update expired RHUI client certificate before installing any RHEL packages
 - [#3049](https://github.com/epiphany-platform/epiphany/issues/3049) - HAProxy upgrade fails on re-run trying to remove haproxy_exporter
-- [#3006](https://github.com/epiphany-platform/epiphany/issues/3006) - install 'containerd.io=1.4.12-*' failed, when upgrade from v1.3.0 to 2.0.0dev
+- [#3006](https://github.com/epiphany-platform/epiphany/issues/3006) - install `containerd.io=1.4.12-*` failed, when upgrade from v1.3.0 to 2.0.0dev
 - [#3065](https://github.com/epiphany-platform/epiphany/issues/3065) - Flag `delete_os_disk_on_termination` has no effect when removing cluster
 
 ### Updated

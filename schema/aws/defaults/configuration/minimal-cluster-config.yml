@@ -1,3 +1,4 @@
+---
 kind: epiphany-cluster
 title: "Epiphany cluster Config"
 provider: aws
@@ -12,8 +13,8 @@ specification:
     k8s_as_cloud_service: False
     use_public_ips: False # When not using public IPs you have to provide connectivity via private IPs (VPN)
     credentials:
-      key: XXXX-XXXX-XXXX
-      secret: XXXXXXXXXXXXXXXX
+      access_key_id: XXXX-XXXX-XXXX
+      secret_access_key: XXXXXXXXXXXXXXXX
     default_os_image: default
   components:
     repository:
@@ -34,5 +35,5 @@ specification:
       count: 1
     rabbitmq:
       count: 1
-    opendistro_for_elasticsearch:
+    opensearch:
       count: 1

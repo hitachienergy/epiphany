@@ -33,8 +33,40 @@ The LTS version will be released once a year and will be supported for up to 3 y
 | [1.1.x STS](../changelogs/CHANGELOG-1.1.md) | 30 Jun 2021 | 1.1.0 | 30 Jun 2021 | 30 Dec 2021 |
 | [1.2.x STS](../changelogs/CHANGELOG-1.2.md) | 30 Sep 2021 | 1.2.0 | 30 Sep 2021 | 30 Mar 2022 |
 | [1.3.x STS](../changelogs/CHANGELOG-1.3.md) | 19 Jan 2022 | 1.3.0 | 19 Jan 2022 | 30 Jun 2022 |
-| 2.0.x LTS | est. 01 Apr 2022 | - | - | est. 01 Apr 2025 |
+| [2.0.x LTS](../changelogs/CHANGELOG-2.0.md) | 09 May 2022 | 2.0.0 | 09 May 2022 | 09 May 2025 |
+| :arrow_right: 2.0.1 LTS | est. 31 Aug 2022 | --- | --- | 09 May 2025 |
+| :arrow_right: 2.0.2 LTS | est. 31 Oct 2022 | --- | --- | 09 May 2025 |
 
-![lifecycle](../assets/images/lifecycle.png)
-
-source: [LIFECYCLE_GANTT.md](LIFECYCLE_GANTT.md)
+```mermaid
+gantt
+title Epiphany Platform lifecycle
+dateFormat  YYYY-MM-DD
+section 0.2.x
+0.2.x support cycle     :a, 2019-02-19, 2020-04-06
+section 0.3.x
+0.3.x support cycle     :a, 2019-08-02, 2020-07-01
+section 0.4.x
+0.4.x support cycle     :a, 2019-10-11, 2020-10-22
+section 0.5.x
+0.5.x support cycle     :a, 2020-01-17, 2021-01-02
+section 0.6.x
+0.6.x support cycle     :a, 2020-04-06, 2021-04-01
+section 0.7.x
+0.7.x support cycle     :a, 2020-07-01, 2021-06-30
+section 0.8.x
+0.8.x support cycle     :a, 2020-10-22, 2021-09-30
+section 0.9.x
+0.9.x support cycle      :a, 2021-01-19, 2021-12-30
+section 1.0.x
+1.0.x support cycle (LTS - 3 years)    :crit, 2021-04-01, 2024-04-01
+section 1.1.x
+1.1.x - 6 months     :a, 2021-06-30, 2021-12-30
+section 1.2.x
+1.2.x - 6 months     :a, 2021-09-30, 2022-03-30
+section 1.3.x
+1.3.x - 6 months     :active, 2022-01-19, 2022-06-30
+section 2.0.x
+2.0.x support cycle (LTS - 3 years)     :crit, 2022-05-09, 2025-05-09
+2.0.1 patch for LTS     :crit, 2022-08-31, 2025-05-09
+2.0.2 patch for LTS     :crit, 2022-10-31, 2025-05-09
+```

@@ -1,6 +1,7 @@
 import os
 from collections import OrderedDict
 
+from cli.src.Config import Config
 from cli.src.helpers.build_io import save_ansible_config_file
 from cli.src.Step import Step
 
@@ -50,6 +51,8 @@ class AnsibleConfigFileCreator(Step):
         self.add_setting('defaults', 'forks', self.ansible_options['forks'])
         # Ubuntu 18 upgraded to 20 has Python 2 and 3 so 'auto_legacy' doesn't work for PostgreSQL Ansible modules
         self.add_setting('defaults', 'interpreter_python', 'auto')
+        if not Config().no_color:
+            self.add_setting('defaults', 'force_color', 'true')
 
     def create(self):
         self.logger.info('Creating ansible.cfg')

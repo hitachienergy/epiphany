@@ -1,3 +1,4 @@
+---
 kind: configuration/grafana
 title: "Grafana"
 name: default

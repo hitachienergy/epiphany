@@ -1,0 +1,12 @@
+---
+- name: Set open files limit in sysctl.conf
+  sysctl:
+    name: fs.file-max
+    value: "65536"
+    state: present
+
+- name: Set maximum number of memory map areas limit in sysctl.conf
+  sysctl:
+    name: vm.max_map_count
+    value: "262144"
+    state: present

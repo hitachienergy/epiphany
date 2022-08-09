@@ -1,9 +1,10 @@
+---
 "$id": "#/specification"
 title: "Filebeat specification schema"
 description: "Filebeat specification schema"
 type: object
 properties:
-  kibana:
+  opensearch:
     type: object
     properties:
       dashboards:

@@ -1,3 +1,4 @@
+---
 kind: configuration/kubernetes-master
 title: Kubernetes Master Config
 name: default
@@ -41,6 +42,7 @@ specification:
           hostname: 127.0.0.1
           # change if you want a custom port
           port: 6443
+    enable_controller_attach_detach: true
 #  image_registry_secrets:
 #  - email: emaul@domain.com
 #    name: secretname

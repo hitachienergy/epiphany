@@ -53,9 +53,7 @@
   become: true
   become_method: sudo
   post_tasks:
-    - name: Run copy-kubeconfig from kubernetes_master role
+    - name: Run generate-kubeconfig from kubernetes_master role
       import_role:
         name: kubernetes_master
-        tasks_from: copy-kubeconfig
-  environment:
-    KUBECONFIG: "{{ kubeconfig.remote }}"
+        tasks_from: generate-kubeconfig

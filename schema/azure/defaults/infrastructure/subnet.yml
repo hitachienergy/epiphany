@@ -1,3 +1,4 @@
+---
 kind: infrastructure/subnet
 title: "Subnet Config"
 provider: azure

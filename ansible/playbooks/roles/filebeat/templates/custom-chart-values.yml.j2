@@ -64,10 +64,10 @@ filebeatConfig:
 
       processors:
         - add_kubernetes_metadata:
-          in_cluster: true
-          matchers:
-          - logs_path:
-              logs_path: "/var/log/containers/"
+            in_cluster: true
+            matchers:
+            - logs_path:
+                logs_path: "/var/log/containers/"
 {% endif %}
 
 {# -------------------------- Filebeat modules -------------------------- #}
@@ -95,8 +95,8 @@ filebeatConfig:
       - "https://{{hostvars[host]['ansible_default_ipv4']['address']}}:9200"
       {% endfor %}
 
-      username: logstash
-      password: {{ "'%s'" % opendistro_for_logging_vars.specification.logstash_password | replace("'","''") }}
+      username: filebeatservice
+      password: {{ "'%s'" % logging_vars.specification.filebeatservice_password | replace("'","''") }}
 
 {#    Controls the verification of certificates #}
       ssl.verification_mode: none

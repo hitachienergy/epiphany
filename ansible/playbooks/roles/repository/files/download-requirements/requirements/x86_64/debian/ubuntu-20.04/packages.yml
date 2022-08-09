@@ -14,7 +14,8 @@ packages:
     - 'docker-ce-cli=5:20.10.8*'
     - 'docker-ce-rootless-extras=5:20.10.8*'
     - 'ebtables'
-    # for opendistroforelasticsearch & logging roles
+
+    # for opensearch & logging roles
     - 'elasticsearch-oss=7.10.2*'
 
     # Erlang packages must be compatible with RabbitMQ version.
@@ -39,7 +40,7 @@ packages:
     - 'erlang-tools=1:23.1.5*'
     - 'erlang-xmerl=1:23.1.5*'
     - 'ethtool'
-    - 'filebeat=7.9.2*'
+    - 'filebeat=7.12.1*'
     - 'firewalld'
     - 'fping'
     - 'gnupg2'
@@ -57,13 +58,6 @@ packages:
 
     # for nfs-common
     - 'libtirpc3'
-    - 'opendistro-alerting=1.13.1*'
-    - 'opendistro-index-management=1.13.1*'
-    - 'opendistro-job-scheduler=1.13.0*'
-    - 'opendistro-performance-analyzer=1.13.0*'
-    - 'opendistro-security=1.13.1*'
-    - 'opendistro-sql=1.13.0*'
-    - 'opendistroforelasticsearch-kibana=1.13.1*'
     - 'openjdk-8-jre-headless'
     - 'openssl'
     - 'postgresql-13'

@@ -1,3 +1,4 @@
+---
 kind: epiphany-cluster
 title: "Epiphany cluster Config"
 provider: azure
@@ -32,5 +33,5 @@ specification:
       count: 1
     rabbitmq:
       count: 1
-    opendistro_for_elasticsearch:
+    opensearch:
       count: 1

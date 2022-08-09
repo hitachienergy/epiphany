@@ -1,0 +1,31 @@
+---
+kind: configuration/opensearch
+title: OpenSearch Config
+name: default
+specification:
+  cluster_name: EpiphanyOpenSearch
+  opensearch_os_user: opensearch
+  opensearch_os_group: opensearch
+  admin_password: PASSWORD_TO_CHANGE
+  kibanaserver_password: PASSWORD_TO_CHANGE
+  demo_users_to_remove:
+    - kibanaro
+    - readall
+    - snapshotrestore
+    - logstash
+    - kibanaserver
+  paths:
+    opensearch_home: /usr/share/opensearch
+    opensearch_conf_dir: /usr/share/opensearch/config
+    opensearch_log_dir: /var/log/opensearch
+    opensearch_snapshots_dir: /var/lib/opensearch-snapshots
+    opensearch_data_dir: /var/lib/opensearch
+    opensearch_perftop_dir: /usr/share/opensearch/perftop
+  jvm_options:
+    Xmx: 1g
+  opensearch_security:
+    audit:
+      type: internal_opensearch # https://opensearch.org/docs/latest/security-plugin/audit-logs
+    ssl:
+      transport:
+        enforce_hostname_verification: true

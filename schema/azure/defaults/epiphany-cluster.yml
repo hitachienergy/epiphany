@@ -1,3 +1,4 @@
+---
 kind: epiphany-cluster
 title: "Epiphany cluster Config"
 provider: azure
@@ -76,7 +77,7 @@ specification:
       configuration: default
       subnets:
         - address_pool: 10.1.8.0/24
-    opendistro_for_elasticsearch:
+    opensearch:
       count: 0
       alt_component_name: ''
       machine: logging-machine

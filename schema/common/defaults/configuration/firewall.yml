@@ -1,3 +1,4 @@
+---
 kind: configuration/firewall
 title: OS level firewall
 name: default
@@ -45,7 +46,7 @@ specification:
       enabled: true
       ports:
         - 9308/tcp
-    kibana:
+    opensearch_dashboards:
       enabled: true
       ports:
         - 5601/tcp
@@ -71,7 +72,7 @@ specification:
       enabled: true
       ports:
         - 9100/tcp
-    opendistro_for_elasticsearch:
+    opensearch:
       enabled: true
       ports:
         - 9200/tcp

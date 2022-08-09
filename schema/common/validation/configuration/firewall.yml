@@ -1,3 +1,4 @@
+---
 "$id": "#/specification"
 title: "Firewall specification schema"
 description: "Firewall specification schema"
@@ -89,7 +90,7 @@ properties:
             type: array
             items:
               type: string
-      kibana:
+      opensearch_dashboards:
         type: object
         properties:
           enabled:
@@ -134,7 +135,7 @@ properties:
             type: array
             items:
               type: string
-      opendistro_for_elasticsearch:
+      opensearch:
         type: object
         properties:
           enabled:

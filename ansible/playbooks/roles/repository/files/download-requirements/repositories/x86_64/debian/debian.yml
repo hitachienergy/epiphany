@@ -24,10 +24,6 @@ repositories:
     content: 'deb https://artifacts.elastic.co/packages/oss-7.x/apt stable main'
     key: 'https://artifacts.elastic.co/GPG-KEY-elasticsearch'
 
-  opendistroforelasticsearch:
-    content: 'deb https://d3g5vo6xdbdb9a.cloudfront.net/apt stable main'
-    key: 'https://d3g5vo6xdbdb9a.cloudfront.net/GPG-KEY-opendistroforelasticsearch'
-
   # postgresql
   pgdg:
     content: 'deb http://apt.postgresql.org/pub/repos/apt focal-pgdg main'

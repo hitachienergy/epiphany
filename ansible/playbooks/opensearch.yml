@@ -1,0 +1,10 @@
+---
+# Ansible playbook for installing OpenSearch
+
+- hosts: opensearch
+  become: true
+  become_method: sudo
+  roles:
+    - opensearch
+  vars:
+    current_group_name: "opensearch"

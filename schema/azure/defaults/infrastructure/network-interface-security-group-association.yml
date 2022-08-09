@@ -1,3 +1,4 @@
+---
 kind: infrastructure/network-interface-security-group-association
 title: "Network Interface Security Group Association"
 provider: azure

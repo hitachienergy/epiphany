@@ -1,8 +1,9 @@
+---
 kind: configuration/filebeat
 title: Filebeat
 name: default
 specification:
-  kibana:
+  opensearch:
     dashboards:
       index: filebeat-*
       enabled: auto

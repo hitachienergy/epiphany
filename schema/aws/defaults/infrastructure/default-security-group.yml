@@ -1,3 +1,4 @@
+---
 kind: infrastructure/default-security-group
 title: "Default Security Group Config"
 provider: aws

@@ -1,3 +1,4 @@
+---
 kind: epiphany-cluster
 title: "Epiphany cluster Config"
 provider: aws
@@ -14,8 +15,9 @@ specification:
     use_public_ips: False # When not using public IPs you have to provide connectivity via private IPs (VPN)
     region: eu-west-2
     credentials: # todo change it to get credentials from vault
-      key: 3124-4124-4124
-      secret: DADFAFHCJHCAUYEAk
+      access_key_id: 3124-4124-4124
+      secret_access_key: DADFAFHCJHCAUYEAk
+      session_token: ''
     network:
       use_network_security_groups: True
     default_os_image: default
@@ -76,7 +78,7 @@ specification:
       subnets:
         - address_pool: 10.1.8.0/24
           availability_zone: eu-west-2a
-    opendistro_for_elasticsearch:
+    opensearch:
       count: 0
       machine: logging-machine
       configuration: default

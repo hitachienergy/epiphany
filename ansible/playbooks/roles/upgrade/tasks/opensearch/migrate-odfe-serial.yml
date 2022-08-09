@@ -1,0 +1,114 @@
+---
+# Below tasks need to be run in serial
+- name: ODFE migration | Stop Elasticsearch service
+  systemd:
+    name: elasticsearch
+    enabled: false
+    state: stopped
+  register: elasticsearch_state
+
+- name: ODFE migration | Install OpenSearch binaries
+  include_tasks: roles/opensearch/tasks/install-opensearch.yml
+  vars:
+    specification: "{{ opensearch_variables.specification }}"
+    file_name_version: "{{ opensearch_defaults.file_name_version }}"
+
+- name: ODFE migration | Copy Elasticsearch directories to OpenSearch directories
+  copy:
+    src: "{{ item.1 }}"
+    dest: "{{ item.2 }}"
+    remote_src: true
+    owner: "{{ opensearch_variables.specification.opensearch_os_user }}"
+    group: "{{ opensearch_variables.specification.opensearch_os_group }}"
+    mode: u=rw,go=r
+  loop:
+    - {
+        1: "/var/lib/elasticsearch-snapshots/",
+        2: "{{ opensearch_variables.specification.paths.opensearch_snapshots_dir }}/",
+      }
+    - {
+        1: "/var/lib/elasticsearch/",
+        2: "{{ opensearch_variables.specification.paths.opensearch_data_dir }}",
+      }
+
+- name: ODFE migration | Prepare a list of Elasticsearch certs and keys
+  find:
+    paths: "/etc/elasticsearch/"
+    patterns: "*pem"
+  register: pem_files
+
+- name: ODFE migration | Copy a list of certs and keys to OpenSearch directories
+  copy:
+    src: "{{ item.path }}"
+    dest: "{{ opensearch_variables.specification.paths.opensearch_conf_dir }}"
+    remote_src: true
+  with_items: "{{ pem_files.files }}"
+
+- name: ODFE migration | Clone JVM configuration file
+  copy:
+    src: /etc/elasticsearch/jvm.options
+    dest: "{{ opensearch_variables.specification.paths.opensearch_conf_dir }}/jvm.options"
+    remote_src: true
+    owner: root
+    group: opensearch
+    mode: ug=rw,o=
+    backup: true
+
+- name: ODFE migration | Update JVM configuration file
+  replace:
+    path: "{{ opensearch_variables.specification.paths.opensearch_conf_dir }}/jvm.options"
+    regexp: "{{ item.1 }}"
+    replace: "{{ item.2 }}"
+  loop:
+    - { 1: 'elasticsearch', 2: 'opensearch' }
+    - { 1: '\${ES_TMPDIR}', 2: '${OPENSEARCH_TMPDIR}' }
+
+- name: ODFE migration | Clone main configuration file
+  copy:
+    src: /etc/elasticsearch/elasticsearch.yml
+    dest: "{{ opensearch_variables.specification.paths.opensearch_conf_dir }}/opensearch.yml"
+    remote_src: true
+    owner: root
+    group: opensearch
+    mode: ug=rw,o=
+    backup: true
+
+- name: ODFE migration | Update main configuration file
+  replace:
+    path: "{{ opensearch_variables.specification.paths.opensearch_conf_dir }}/opensearch.yml"
+    regexp: "{{ item.1 }}"
+    replace: "{{ item.2 }}"
+  loop:
+    - { 1: "elasticsearch", 2: "opensearch" }
+    - { 1: "EpiphanyElastic", 2: "EpiphanyOpensearch" }
+    - { 1: "opendistro_security.", 2: "plugins.security." }
+
+- name: Set fact with batch_metrics_enabled.conf path
+  set_fact:
+    _batch_metrics_enabled: >-
+      /usr/share/elasticsearch/data/batch_metrics_enabled.conf
+
+- name: Check if batch_metrics_enabled.conf exist
+  stat:
+    path: "{{ _batch_metrics_enabled }}"
+  register: batch_metrics_enabled
+
+# TODO: make this configurable
+- name: Create batch_metrics_enabled.conf
+  copy:
+    dest: "{{ _batch_metrics_enabled }}"
+    content: "false"
+  when: not batch_metrics_enabled.stat.exists
+
+- name: ODFE migration | Start OpenSearch service
+  systemd:
+    name: opensearch
+    state: started
+    enabled: true
+  register: restart_opensearch
+
+- name: ODFE migration | Wait for OpenSearch to be reachable
+  wait_for:
+    port: "{{ opensearch_defaults.ports.http }}"
+    host: "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
+    sleep: 6

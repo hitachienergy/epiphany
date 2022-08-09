@@ -5,7 +5,7 @@
 - name: Load variables from logging role  # needed to get passwords for both installation types
   include_vars:
     file: roles/logging/vars/main.yml
-    name: opendistro_for_logging_vars
+    name: logging_vars
   when: groups.logging is defined
 
 - name: Include installation tasks for Filebeat as DaemonSet for "k8s as cloud service"

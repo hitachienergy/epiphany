@@ -479,7 +479,8 @@ if pgaudit_enabled && countInventoryHosts('logging') > 0 && (!replicated || (rep
       _source: ['message', '@timestamp'],
       query: {
         query_string: {
-          query: "log.file.path:(\\/var\\/log\\/postgresql\\/postgresql\\-13\\-main.log OR \\/var\\/log\\/postgresql\\/postgresql.log) AND message:#{message_pattern} AND @timestamp:[now-30m TO now]"
+          query: 'log.file.path:(\\/var\\/log\\/postgresql\\/postgresql\\-13\\-main.log OR \\/var\\/log\\/postgresql\\/postgresql.log)'\
+                 " AND message:#{message_pattern} AND message:\"LOG:  AUDIT\" AND @timestamp:[now-30m TO now]"
         }
       },
       size: size

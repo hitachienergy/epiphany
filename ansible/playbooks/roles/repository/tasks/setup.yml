@@ -59,7 +59,7 @@
     - not custom_repository_url
     - inventory_hostname in target_repository_hostnames
 
-- include_tasks: check-whether-to-run-download.yml  # sets 'stat_flag_file'
+- include_tasks: check-whether-to-run-download.yml  # sets 'skip_download_requirements_script'
   when:
     - not offline_mode
     - not custom_repository_url
@@ -94,7 +94,7 @@
     - inventory_hostname in target_repository_hostnames
     - custom_repository_url or
       offline_mode or
-      not stat_flag_file.stat.exists  # do not clean up when skipping download
+      not skip_download_requirements_script  # do not clean up when skipping download
 
 - name: |-
     Copy requirements for offline installation to repository host, this can take a long time
@@ -116,11 +116,13 @@
     - not offline_mode
     - not custom_repository_url
     - inventory_hostname in target_repository_hostnames
-    - not stat_flag_file.stat.exists
+    - not skip_download_requirements_script
 
 - name: Set up repositories
   include_tasks: "{{ ansible_os_family }}/setup.yml"
 
 - name: Include Helm repository creation
   include_tasks: "create-helm-repo.yml"
-  when: inventory_hostname == target_repository_hostnames[0]
+  when:
+    - inventory_hostname == target_repository_hostnames[0]
+    - (groups['kubernetes_master'] is defined and inventory_hostname in groups['kubernetes_master'])

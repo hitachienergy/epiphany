@@ -1,3 +1,4 @@
+---
 kind: infrastructure/resource-group
 title: "Resource Group"
 provider: azure

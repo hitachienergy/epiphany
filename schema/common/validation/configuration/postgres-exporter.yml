@@ -1,3 +1,4 @@
+---
 "$id": "#/specification"
 title: "Postgres-exporter specification schema"
 description: "Postgres-exporter specification schema"
