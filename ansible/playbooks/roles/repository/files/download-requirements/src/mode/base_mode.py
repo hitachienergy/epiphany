@@ -198,7 +198,9 @@ class BaseMode:
             filename = Path(f'{url.split("/")[-1]}-{version}.tar')  # format: image_version.tar
 
             image_file = self._cfg.dest_images / filename
-            downloader.download(image, image_file)
+            additional_args = { 'legacy_format': 'legacy_format' in images_to_download[image] }
+
+            downloader.download(image, image_file, additional_args=additional_args)
 
     def _cleanup(self):
         """
