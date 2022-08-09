@@ -19,6 +19,7 @@
 
 ### Fixed
 
+- [#3153](https://github.com/epiphany-platform/epiphany/issues/3153) - AlmaLinux 8.5 installation fails resolving dependencies
 - [#3164](https://github.com/epiphany-platform/epiphany/issues/3164) - Specify version and allow containerd.io package downgrade in haproxy_runc role
 - [#3179](https://github.com/epiphany-platform/epiphany/issues/3179) - terraform fails when `use_network_security_groups` is set to `false`
 - [#3165](https://github.com/epiphany-platform/epiphany/issues/3165) - download-requirements.py may fail due to expired certificate
@@ -108,7 +109,6 @@
 - [#3049](https://github.com/epiphany-platform/epiphany/issues/3049) - HAProxy upgrade fails on re-run trying to remove haproxy_exporter
 - [#3006](https://github.com/epiphany-platform/epiphany/issues/3006) - install `containerd.io=1.4.12-*` failed, when upgrade from v1.3.0 to 2.0.0dev
 - [#3065](https://github.com/epiphany-platform/epiphany/issues/3065) - Flag `delete_os_disk_on_termination` has no effect when removing cluster
-- [#3153](https://github.com/epiphany-platform/epiphany/issues/3153) - AlmaLinux 8.5 installation fails resolving dependencies
 
 ### Updated
 
