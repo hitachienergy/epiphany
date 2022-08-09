@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 from typing import List
 
@@ -15,8 +16,8 @@ class Crane(Command):
     def pull(self, image_name: str,
              destination: Path,
              platform: str,
-             legacy_format: bool = True,
-             insecure: bool = True):
+             legacy_format: bool = False,
+             insecure: bool = False):
         """
         Download target image file
 
@@ -35,8 +36,9 @@ class Crane(Command):
 
         if legacy_format:
             crane_params.append('--format=legacy')
+        else:
+            crane_params.append('--format=tarball')  # by default use `tarball` format
 
         crane_params.append(image_name)
         crane_params.append(str(destination))
-
         self.run(crane_params)
