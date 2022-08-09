@@ -37,7 +37,21 @@
     executable: /bin/bash
   when: full_download or not input_manifest_path
 
+# This is to check whether input configuration has changed
+- name: Get checksum of remote input manifest file
+  when:
+    - not full_download
+    - input_manifest_path
+  stat:
+    path: "{{ download_requirements_manifest }}"
+    get_checksum: true
+    get_attributes: false
+    get_mime: false
+    checksum_algorithm: sha1
+  register: stat_remote_manifest
+
 - name: Create flag file to not re-download requirements next time
-  file:
-    path: "{{ download_requirements_flag }}"
-    state: touch
+  copy:
+    dest: "{{ download_requirements_flag }}"
+    content: >
+      manifest_sha1: {{ stat_remote_manifest.stat.checksum if stat_remote_manifest.stat.checksum is defined else 'null' }}

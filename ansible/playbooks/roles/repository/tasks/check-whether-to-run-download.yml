@@ -7,15 +7,44 @@
     path: "{{ download_requirements_flag }}"
   register: stat_flag_file
 
-- name: Remove download-requirements-done.flag file if expired
+- name: Remove download-requirements flag file if expired
   file:
     path: "{{ download_requirements_flag }}"
     state: absent
+  register: remove_download_requirements_flag
   when:
     - stat_flag_file.stat.exists
     - (ansible_date_time.epoch|int - stat_flag_file.stat.mtime) > (60 * specification.download_done_flag_expire_minutes)
 
 - name: Check whether to run download script
-  stat:
-    path: "{{ download_requirements_flag }}"
-  register: stat_flag_file
+  when:
+    - stat_flag_file.stat.exists
+    - not remove_download_requirements_flag.changed
+  block:
+    - name: Load download-requirements flag file
+      slurp:
+        path: "{{ download_requirements_flag }}"
+      register: slurp_download_requirements_flag
+
+    - name: Get checksum of remote input manifest file
+      when:
+        - not full_download
+        - input_manifest_path
+      stat:
+        path: "{{ download_requirements_manifest }}"
+        get_checksum: true
+        get_attributes: false
+        get_mime: false
+        checksum_algorithm: sha1
+      register: stat_remote_manifest
+
+# Skip download script when flag file exists and checksums are equal
+- name: Set skip_download_requirements_script fact
+  set_fact:
+    skip_download_requirements_script: >-
+      {{ True if slurp_download_requirements_flag.content is defined and (
+                   not (slurp_download_requirements_flag.content | b64decode | from_yaml).manifest_sha1
+                   or (stat_remote_manifest.stat.checksum is defined and
+                       stat_remote_manifest.stat.checksum == (slurp_download_requirements_flag.content | b64decode | from_yaml).manifest_sha1)
+                 )
+              else False }}
