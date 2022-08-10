@@ -1,4 +1,3 @@
-import logging
 from pathlib import Path
 from typing import List
 
@@ -34,10 +33,8 @@ class Crane(Command):
 
         crane_params.append(f'--platform={platform}')
 
-        if legacy_format:
-            crane_params.append('--format=legacy')
-        else:
-            crane_params.append('--format=tarball')  # by default use `tarball` format
+        crane_format = 'legacy' if legacy_format else 'tarball'
+        crane_params.append(f'--format={crane_format}')
 
         crane_params.append(image_name)
         crane_params.append(str(destination))

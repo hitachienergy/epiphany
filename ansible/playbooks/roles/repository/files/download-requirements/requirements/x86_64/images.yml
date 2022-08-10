@@ -6,7 +6,7 @@ images:
 
   image-registry:
     'registry:2.8.0':
-      sha1: 89795c17099199c752d02ad8797c1d4565a08aff
+      sha1: 6ea6f9ae768c0f7a10913fcbb92481dc58963232
       allow_mismatch: true
 
   applications:
