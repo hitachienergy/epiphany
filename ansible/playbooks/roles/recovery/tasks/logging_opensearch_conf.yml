@@ -1,13 +1,8 @@
 ---
-- name: Include vars from opensearch role
-  include_vars:
-    file: roles/opensearch/vars/main.yml
-    name: opensearch_vars
-
 - name: Find snapshot archive
   import_tasks: common/find_snapshot_archive.yml
   vars:
-    snapshot_prefix: "opensearch_conf"
+    snapshot_prefix: logging_opensearch_conf
     snapshot_name: "{{ specification.components.logging.snapshot_name }}"
 
 - name: Transfer the archive via rsync
@@ -29,11 +24,11 @@
   import_tasks: common/clear_directories.yml
   vars:
     dirs_to_clear:
-      - "{{ opensearch_vars.specification.paths.opensearch_conf_dir }}"
+      - "{{ component_vars.specification.paths.opensearch_conf_dir }}"
 
 - name: Extract the archive
   unarchive:
-    dest: "{{ opensearch_vars.specification.paths.opensearch_conf_dir }}"
+    dest: "{{ component_vars.specification.paths.opensearch_conf_dir }}"
     src: "{{ recovery_dir }}/{{ snapshot_path | basename }}"
     remote_src: true
 
