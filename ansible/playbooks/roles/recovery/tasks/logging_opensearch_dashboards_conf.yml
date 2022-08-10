@@ -1,5 +1,5 @@
 ---
-- name: Include vars from opensearch role
+- name: Include vars from opensearch_dashboards role
   include_vars:
     file: roles/opensearch_dashboards/vars/main.yml
     name: opensearch_dashboards_vars
@@ -7,7 +7,7 @@
 - name: Find snapshot archive
   import_tasks: common/find_snapshot_archive.yml
   vars:
-    snapshot_prefix: "opsd_conf_dir"
+    snapshot_prefix: logging_opensearch_dashboards_conf
     snapshot_name: "{{ specification.components.logging.snapshot_name }}"
 
 - name: Transfer the archive via rsync
@@ -29,11 +29,11 @@
   import_tasks: common/clear_directories.yml
   vars:
     dirs_to_clear:
-      - "{{ opensearch_dashboards_vars.specification.paths.opsd_conf_dir }}"
+      - "{{ opensearch_dashboards_vars.specification.paths.dashboards_conf_dir }}"
 
 - name: Extract the archive
   unarchive:
-    dest: "{{ opensearch_dashboards_vars.specification.paths.opsd_conf_dir }}"
+    dest: "{{ opensearch_dashboards_vars.specification.paths.dashboards_conf_dir }}"
     src: "{{ recovery_dir }}/{{ snapshot_path | basename }}"
     remote_src: true
 
