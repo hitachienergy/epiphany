@@ -1,6 +1,16 @@
 <!-- markdownlint-disable-file no-duplicate-header -->
 # Changelog 2.0
 
+## [2.0.2] YYYY-MM-DD
+
+### Added
+
+- [#3232](https://github.com/epiphany-platform/epiphany/issues/3232) - Use tarball format insted of legacy for downloading Docker images
+
+### Fixed
+
+### Updated
+
 ## [2.0.1] YYYY-MM-DD
 
 ### Added
