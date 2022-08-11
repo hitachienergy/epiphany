@@ -11,17 +11,22 @@
         - include_vars:
             file: roles/logging/vars/main.yml
             name: component_vars
+
         - import_role:
             name: recovery
             tasks_from: logging_opensearch_conf
+
         - import_role:
             name: recovery
             tasks_from: logging_opensearch_snapshot
 
-        # OpenSearch Dashboards
-        - include_vars:
-            file: roles/opensearch_dashboards/vars/main.yml
-            name: component_vars
-        - import_role:
-            name: recovery
-            tasks_from: logging_opensearch_dashboards_conf
+        - name: OpenSearch Dashboards
+          when: "'opensearch_dashboards' in group_names"
+          block:
+            - include_vars:
+                file: roles/opensearch_dashboards/vars/main.yml
+                name: component_vars
+
+            - import_role:
+                name: recovery
+                tasks_from: logging_opensearch_dashboards_conf

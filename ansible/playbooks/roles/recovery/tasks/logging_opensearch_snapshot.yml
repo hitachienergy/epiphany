@@ -2,7 +2,7 @@
 - name: Include default vars from opensearch role
   include_vars:
     file: roles/opensearch/defaults/main.yml
-    name: odfe
+    name: opensearch_defaults
 
 - name: Set helper facts
   set_fact:
@@ -10,8 +10,8 @@
       https://{{ ansible_default_ipv4.address }}:9200
   vars:
     uri_template: &uri
-      client_cert: "{{ odfe.certificates.dirs.certs }}/{{ odfe.certificates.files.admin.cert.filename }}"
-      client_key:  "{{ odfe.certificates.dirs.certs }}/{{ odfe.certificates.files.admin.key.filename }}"
+      client_cert: "{{ opensearch_defaults.certificates.dirs.certs }}/{{ opensearch_defaults.certificates.files.admin.cert.filename }}"
+      client_key:  "{{ opensearch_defaults.certificates.dirs.certs }}/{{ opensearch_defaults.certificates.files.admin.key.filename }}"
       validate_certs: false
       body_format: json
 
@@ -28,7 +28,7 @@
 - name: Find snapshot archive
   import_tasks: common/find_snapshot_archive.yml
   vars:
-    snapshot_prefix: "opensearch_snapshot"
+    snapshot_prefix: logging_opensearch_snapshot
     snapshot_name: "{{ specification.components.logging.snapshot_name }}"
 
 - name: Transfer the archive via rsync
@@ -63,14 +63,14 @@
 - name: Reconstruct the snapshot_name
   set_fact:
     snapshot_name: >-
-      {{ snapshot_path | basename | regex_replace('^opensearch_snapshot_(.*).tar.gz$', '\1') }}
+      {{ snapshot_path | basename | regex_replace('^logging_opensearch_snapshot_(.*).tar.gz$', '\1') }}
 
 - name: Display snapshot name
   debug: var=snapshot_name
 
 - name: Ensure all OPSD and filebeat instances are stopped, then restore the snapshot
   block:
-    - name: Stop allOpenSearch Dashboards instances
+    - name: Stop all OpenSearch Dashboards instances
       delegate_to: "{{ item }}"
       systemd:
         name: opensearch-dashboards
