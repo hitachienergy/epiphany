@@ -81,7 +81,7 @@
     - name: Create snapshot archive
       import_tasks: common/create_snapshot_archive.yml
       vars:
-        snapshot_prefix: "opensearch_snapshot"
+        snapshot_prefix: logging_opensearch_snapshot
         dirs_to_archive:
           - "{{ opensearch_snapshot_repository_location }}/"
 

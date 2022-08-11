@@ -18,9 +18,9 @@
 - name: Create snapshot archive
   import_tasks: common/create_snapshot_archive.yml
   vars:
-    snapshot_prefix: "opensearch_dashboards_conf_dir"
+    snapshot_prefix: logging_opensearch_dashboards_conf
     dirs_to_archive:
-      - "{{ opensearch_dashboards_vars.specification.paths.opensearch_dashboards_conf_dir }}"
+      - "{{ opensearch_dashboards_vars.specification.paths.dashboards_conf_dir }}"
 
 - name: Create snapshot checksum
   import_tasks: common/create_snapshot_checksum.yml
