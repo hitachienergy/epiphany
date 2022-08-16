@@ -257,7 +257,7 @@ In order to learn more about both components, please look through documentation:
 - [logging](./LOGGING.md#centralized-logging-setup)
 - [opensearch](./DATABASES.md#how-to-start-working-with-opensearch)
 
-If your configuration include both components enabled, please note that these OpenSearch instances are separate and can be configured independently, e.g. having different passwords for default users.
+If your configuration includes both components enabled, please note that these OpenSearch instances are separate and can be configured independently, e.g. having different passwords for default users.
 
 To configure admin password for OpenSearch Dashoboards ( previously Kibana ) and OpenSearch you need to follow the procedure below.
 
