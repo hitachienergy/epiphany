@@ -40,16 +40,9 @@ class AnsibleVarsGenerator(Step):
                     self.config_docs.append(default)
                 else:
                     self.config_docs.append(config_doc)
-            self.mhandler: ManifestHandler = inventory_upgrade.manifest_docs
+            self.mhandler: ManifestHandler = inventory_upgrade.mhandler
         else:
             raise Exception('Invalid AnsibleVarsGenerator configuration')
-
-    def __enter__(self):
-        super().__enter__()
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        pass
 
     def generate(self):
         self.logger.info('Generate Ansible vars')
@@ -119,13 +112,12 @@ class AnsibleVarsGenerator(Step):
             self.roles_with_generated_vars.append(to_role_name(role))
 
     def write_role_manifest_vars(self, ansible_dir, role, kind):
-        try:
-            cluster_model = self.mhandler['epiphany-cluster']
-        except IndexError:
-            return  # skip
+        cluster_model = self.mhandler.cluster_model
 
-        document = self.mhandler[kind]
-        if document is None:
+        document = {}
+        try:
+            document = self.mhandler[kind][0]
+        except IndexError:
             # If there is no document provided by the user, then fallback to defaults
             document = load_schema_obj(schema_types.DEFAULT, 'common', kind)
             # Inject the required "version" attribute
@@ -205,12 +197,12 @@ class AnsibleVarsGenerator(Step):
         # Reuse shared config from existing manifest
         # Shared config contains the use_ha_control_plane flag which is required during upgrades
 
-        cluster_model = self.mhandler['epiphany-cluster']
+        cluster_model = self.mhandler.cluster_model
 
         try:
-            shared_config_doc = self.mhandler['configuration/shared-config']
+            shared_config_doc = self.mhandler['configuration/shared-config'][0]
             shared_config_doc['provider'] = cluster_model['provider']
-        except ExpectedSingleResultException:
+        except IndexError:
             # If there is no shared-config doc inside the manifest file, this is probably a v0.3 cluster
             # Returning None here (there is nothing to merge at this point) and
             # hoping that the shared-config doc from defaults will be enough

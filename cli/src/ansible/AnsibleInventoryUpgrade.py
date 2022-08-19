@@ -19,13 +19,6 @@ class AnsibleInventoryUpgrade(Step):
         self.config_docs = config_docs
         self.mhandler: ManifestHandler = ManifestHandler(build_path=Path(build_dir))
 
-    def __enter__(self):
-        super().__enter__()
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        pass
-
     def get_role(self, inventory, role_name):
         for role in inventory:
             if role.role == role_name:
@@ -69,9 +62,9 @@ class AnsibleInventoryUpgrade(Step):
         self.logger.info('Upgrading Ansible inventory')
 
         # load cluster model from manifest
-        mhandler = ManifestHandler(build_path=Path(self.backup_build_dir))
-        mhandler.read_manifest()
-        self.cluster_model = mhandler.cluster_model
+        self.mhandler = ManifestHandler(build_path=Path(self.backup_build_dir))
+        self.mhandler.read_manifest()
+        self.cluster_model = self.mhandler.cluster_model
 
         # Merge manifest cluster config with newer defaults
         default_cluster_model = load_schema_obj(schema_types.DEFAULT, self.cluster_model.provider, 'epiphany-cluster')
