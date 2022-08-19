@@ -11,32 +11,6 @@ class AptCache(Command):
     def __init__(self, retries: int):
         super().__init__('apt-cache', retries)
 
-    def __get_package_candidate_version(self, package: str, version: str = '') -> str:
-        """
-        Use cache to find out `package` candidate version number.
-
-        :param package: for which candidate version to return
-        :param version: optional argument to use specific `package`'s version
-        :raises:
-            :class:`CriticalError`: can be raised when package candidate was not found
-        :returns: candidate version number
-        """
-        policy_args: List[str] = ['policy', package]
-        policy_output = self.run(policy_args).stdout
-
-        output_lines: List[str] = policy_output.split('\n')
-        if version:  # confirm that the wanted version is available
-            version = version.rstrip('*')
-            for line in output_lines:
-                if version in line:
-                    return version
-        else:
-            for line in output_lines:  # get candidate version
-                if 'Candidate' in line:
-                    return line.split(': ')[-1]
-
-        raise CriticalError(f'Candidate for {package} not found, command: `{self.command()}`')
-
     def get_package_info(self, package: str, version: str = '') -> Dict[str, str]:
         """
         Get cached data for `package` and return it in a formatted form.
@@ -49,9 +23,9 @@ class AptCache(Command):
         show_output = self.run(show_args).stdout
 
         version_info: str = ''
-        candidate_version: str = self.__get_package_candidate_version(package, version)
+        candidate_version: str = [line for line in show_output.split('\n\n') if 'Version' in line][0]
         for ver_info in show_output.split('\n\n'):
-            if  candidate_version in ver_info:
+            if candidate_version in ver_info:
                 version_info = ver_info
                 break
 

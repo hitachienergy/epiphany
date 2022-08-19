@@ -7,6 +7,7 @@
 
 - [#3186](https://github.com/epiphany-platform/epiphany/issues/3186) - Refactor manifest file handling in cli
 - [#3238](https://github.com/epiphany-platform/epiphany/issues/3238) - Make OpenSearch Dashboards user configurable
+- [#3241](https://github.com/epiphany-platform/epiphany/issues/3241) - Simplify APT commands flow in download-requirements.py
 
 ### Fixed
 
