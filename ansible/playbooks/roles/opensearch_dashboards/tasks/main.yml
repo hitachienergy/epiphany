@@ -1,4 +1,13 @@
 ---
+# Collect configuration for opensearch cluster required to update dashboards template
+# with proper kibanaserver user credentials. Cluster can be withing group logging or opeansearch
+- name: Include opensearch configuration
+  include_vars:
+    file: roles/{{ _group }}/vars/main.yml
+    name: opensearch_configuration
+  vars:
+    _group: "{{ group_names | intersect(['logging', 'opensearch']) | first }}"
+
 - name: Include dashboards installation
   include_tasks: dashboards.yml
 

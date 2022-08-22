@@ -8,10 +8,6 @@ properties:
     type: string
   dashboards_os_group:
     type: string
-  dashboards_user:
-    type: string
-  dashboards_user_password:
-    type: string
   paths:
     type: object
     properties:

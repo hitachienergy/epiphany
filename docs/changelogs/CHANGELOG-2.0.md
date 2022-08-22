@@ -1,6 +1,16 @@
 <!-- markdownlint-disable-file no-duplicate-header -->
 # Changelog 2.0
 
+## [2.0.2] YYYY-MM-DD
+
+### Added
+
+- [#3238](https://github.com/epiphany-platform/epiphany/issues/3238) - Make OpenSearch Dashboards user configurable
+
+### Fixed
+
+### Updated
+
 ## [2.0.1] YYYY-MM-DD
 
 ### Added

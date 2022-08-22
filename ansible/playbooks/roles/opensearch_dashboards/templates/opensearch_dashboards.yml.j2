@@ -2,8 +2,8 @@ server.port: 5601
 server.host: "{{ inventory_hostname }}"
 opensearch.hosts: ["{{ opensearch_nodes_dashboards }}"]
 opensearch.ssl.verificationMode: none
-opensearch.username: "{{ specification.dashboards_user }}"
-opensearch.password: "{{ specification.dashboards_user_password }}"
+opensearch.username: "kibanaserver"
+opensearch.password: "{{ opensearch_configuration.specification.kibanaserver_password }}"
 opensearch.requestHeadersWhitelist: [ authorization,securitytenant ]
 
 opensearch_security.multitenancy.enabled: true
