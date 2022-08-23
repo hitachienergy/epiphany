@@ -5,16 +5,16 @@ description = "Epiphany Dev Container"
 authors = ["Epiphany Platform"]
 
 [tool.poetry.dependencies]
-python = "3.10.4"
+python = "3.10.6"
 pyyaml = "*"
 jinja2 = "*"
 boto3 = "*"
 jsonschema = "*"
 python-json-logger = "*"
 "ruamel.yaml" = "*"
-ansible = "5.2.0"
 azure-cli = "2.32.0"
 click = "*"
+ansible = "6.2.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
