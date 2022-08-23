@@ -39,6 +39,7 @@ skip_list:
   - package-latest
   - fqcn-builtins
   - no-jinja-when
+  - jinja[spacing]
 
 ##################
 # Tags to follow #

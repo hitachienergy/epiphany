@@ -121,7 +121,7 @@
             src: "{{ pg.config_dir[ansible_os_family] }}/{{ item }}"
             dest: "/var/tmp/postgresql_temp_config/"
             remote_src: yes
-          loop: "{{ config_files.stdout_lines|flatten(levels=1) }}"
+          loop: "{{ config_files.stdout_lines | flatten(levels=1) }}"
 
     - name: Stop database service
       systemd:
