@@ -53,8 +53,8 @@ Note that versions are default versions and can be changed in certain cases thro
 | Component | Version | Repo/Website | License |
 | --------- | ------- | ------------ | ------- |
 | adal | 1.2.7 | https://github.com/AzureAD/azure-activedirectory-library-for-python | [Other](https://api.github.com/repos/azuread/azure-activedirectory-library-for-python/license) |
-| ansible-core | 2.12.6 | https://ansible.com/ | GPLv3+ |
-| ansible | 5.2.0 | https://ansible.com/ | GPLv3+ |
+| ansible-core | 2.13.3 | https://ansible.com/ | GPLv3+ |
+| ansible | 6.2.0 | https://ansible.com/ | GPLv3+ |
 | antlr4-python3-runtime | 4.7.2 | http://www.antlr.org | BSD |
 | applicationinsights | 0.11.10 | https://github.com/Microsoft/ApplicationInsights-Python | [MIT License](https://api.github.com/repos/microsoft/applicationinsights-python/license) |
 | argcomplete | 1.12.3 | https://github.com/kislyuk/argcomplete | [Apache License 2.0](https://api.github.com/repos/kislyuk/argcomplete/license) |
@@ -152,14 +152,14 @@ Note that versions are default versions and can be changed in certain cases thro
 | azure-synapse-managedprivateendpoints | 0.3.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-synapse-spark | 0.2.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | bcrypt | 3.2.2 | https://github.com/pyca/bcrypt/ | [Apache License 2.0](https://api.github.com/repos/pyca/bcrypt/license) |
-| boto3 | 1.23.10 | https://github.com/boto/boto3 | [Apache License 2.0](https://api.github.com/repos/boto/boto3/license) |
-| botocore | 1.26.10 | https://github.com/boto/botocore | [Apache License 2.0](https://api.github.com/repos/boto/botocore/license) |
+| boto3 | 1.24.57 | https://github.com/boto/boto3 | [Apache License 2.0](https://api.github.com/repos/boto/boto3/license) |
+| botocore | 1.27.57 | https://github.com/boto/botocore | [Apache License 2.0](https://api.github.com/repos/boto/botocore/license) |
 | certifi | 2022.5.18.1 | https://github.com/certifi/python-certifi | [Other](https://api.github.com/repos/certifi/python-certifi/license) |
 | cffi | 1.15.0 | http://cffi.readthedocs.org | MIT |
 | chardet | 3.0.4 | https://github.com/chardet/chardet | [GNU Lesser General Public License v2.1](https://api.github.com/repos/chardet/chardet/license) |
 | charset-normalizer | 2.0.12 | https://github.com/ousret/charset_normalizer | [MIT License](https://api.github.com/repos/ousret/charset_normalizer/license) |
 | click | 8.1.3 | https://palletsprojects.com/p/click/ | BSD-3-Clause |
-| colorama | 0.4.4 | https://github.com/tartley/colorama | [BSD 3-Clause "New" or "Revised" License](https://api.github.com/repos/tartley/colorama/license) |
+| colorama | 0.4.5 | https://github.com/tartley/colorama | [BSD 3-Clause "New" or "Revised" License](https://api.github.com/repos/tartley/colorama/license) |
 | cryptography | 37.0.2 | https://github.com/pyca/cryptography | [Other](https://api.github.com/repos/pyca/cryptography/license) |
 | Deprecated | 1.2.13 | https://github.com/tantale/deprecated | [MIT License](https://api.github.com/repos/tantale/deprecated/license) |
 | Antergos Linux | 2015.10 (ISO-Rolling) | https://github.com/python-distro/distro | [Apache License 2.0](https://api.github.com/repos/python-distro/distro/license) |
@@ -172,7 +172,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | Jinja2 | 3.1.2 | https://palletsprojects.com/p/jinja/ | BSD-3-Clause |
 | jmespath | 1.0.0 | https://github.com/jmespath/jmespath.py | [Other](https://api.github.com/repos/jmespath/jmespath.py/license) |
 | jsondiff | 1.3.1 | https://github.com/ZoomerAnalytics/jsondiff | [MIT License](https://api.github.com/repos/zoomeranalytics/jsondiff/license) |
-| jsonschema | 4.5.1 | https://github.com/python-jsonschema/jsonschema | [MIT License](https://api.github.com/repos/python-jsonschema/jsonschema/license) |
+| jsonschema | 4.14.0 |  | MIT |
 | knack | 0.9.0 | https://github.com/microsoft/knack | [MIT License](https://api.github.com/repos/microsoft/knack/license) |
 | MarkupSafe | 2.1.1 | https://palletsprojects.com/p/markupsafe/ | BSD-3-Clause |
 | msal-extensions | 0.3.1 | https://github.com/AzureAD/microsoft-authentication-extensions-for-python | MIT |
@@ -184,7 +184,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | paramiko | 2.11.0 | https://paramiko.org | LGPL |
 | pathlib2 | 2.3.7.post1 | https://github.com/jazzband/pathlib2 | [MIT License](https://api.github.com/repos/jazzband/pathlib2/license) |
 | pkginfo | 1.8.2 | https://code.launchpad.net/~tseaver/pkginfo/trunk | MIT |
-| portalocker | 1.7.1 | https://github.com/WoLpH/portalocker | [Other](https://api.github.com/repos/wolph/portalocker/license) |
+| portalocker | 1.7.1 | https://github.com/WoLpH/portalocker | [BSD 3-Clause "New" or "Revised" License](https://api.github.com/repos/wolph/portalocker/license) |
 | psutil | 5.9.1 | https://github.com/giampaolo/psutil | [BSD 3-Clause "New" or "Revised" License](https://api.github.com/repos/giampaolo/psutil/license) |
 | pycparser | 2.21 | https://github.com/eliben/pycparser | [Other](https://api.github.com/repos/eliben/pycparser/license) |
 | PyGithub | 1.55 | https://github.com/pygithub/pygithub | [GNU Lesser General Public License v3.0](https://api.github.com/repos/pygithub/pygithub/license) |
@@ -196,14 +196,14 @@ Note that versions are default versions and can be changed in certain cases thro
 | pyrsistent | 0.18.1 | http://github.com/tobgu/pyrsistent/ | [MIT License](https://api.github.com/repos/tobgu/pyrsistent/license) |
 | PySocks | 1.7.1 | https://github.com/Anorov/PySocks | [Other](https://api.github.com/repos/anorov/pysocks/license) |
 | python-dateutil | 2.8.2 | https://github.com/dateutil/dateutil | [Other](https://api.github.com/repos/dateutil/dateutil/license) |
-| python-json-logger | 2.0.2 | http://github.com/madzak/python-json-logger | [BSD 2-Clause "Simplified" License](https://api.github.com/repos/madzak/python-json-logger/license) |
+| python-json-logger | 2.0.4 | http://github.com/madzak/python-json-logger | [BSD 2-Clause "Simplified" License](https://api.github.com/repos/madzak/python-json-logger/license) |
 | PyYAML | 6.0 | https://pyyaml.org/ | MIT |
 | requests-oauthlib | 1.3.1 | https://github.com/requests/requests-oauthlib | [ISC License](https://api.github.com/repos/requests/requests-oauthlib/license) |
 | requests | 2.27.1 | https://requests.readthedocs.io | Apache 2.0 |
-| resolvelib | 0.5.5 | https://github.com/sarugaku/resolvelib | [ISC License](https://api.github.com/repos/sarugaku/resolvelib/license) |
+| resolvelib | 0.8.1 | https://github.com/sarugaku/resolvelib | [ISC License](https://api.github.com/repos/sarugaku/resolvelib/license) |
 | ruamel.yaml.clib | 0.2.6 | https://sourceforge.net/p/ruamel-yaml-clib/code/ci/default/tree | MIT |
 | ruamel.yaml | 0.17.21 | https://sourceforge.net/p/ruamel-yaml/code/ci/default/tree | MIT license |
-| s3transfer | 0.5.2 | https://github.com/boto/s3transfer | [Apache License 2.0](https://api.github.com/repos/boto/s3transfer/license) |
+| s3transfer | 0.6.0 | https://github.com/boto/s3transfer | [Apache License 2.0](https://api.github.com/repos/boto/s3transfer/license) |
 | scp | 0.13.6 | https://github.com/jbardin/scp.py | [Other](https://api.github.com/repos/jbardin/scp.py/license) |
 | semver | 2.13.0 | https://github.com/python-semver/python-semver | [BSD 3-Clause "New" or "Revised" License](https://api.github.com/repos/python-semver/python-semver/license) |
 | six | 1.16.0 | https://github.com/benjaminp/six | [MIT License](https://api.github.com/repos/benjaminp/six/license) |
