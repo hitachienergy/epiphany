@@ -11,6 +11,8 @@
 
 ### Updated
 
+- [#3257](https://github.com/epiphany-platform/epiphany/issues/3257) - Upgrade ansible-core to 2.13 (ansible 6)
+
 ## [2.0.1] YYYY-MM-DD
 
 ### Added
