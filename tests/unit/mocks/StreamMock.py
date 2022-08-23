@@ -10,8 +10,6 @@ class StreamBuffer:
 
 
 class StreamMock:
-    """
-    """
     def __init__(self):
         self.__sbuffer: StreamBuffer = StreamBuffer()
 
