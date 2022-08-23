@@ -1,14 +1,14 @@
 ---
-- name: k8s/masterN | Drain master in preparation for maintenance
+- name: K8s/masterN | Drain master in preparation for maintenance
   include_tasks: utils/drain.yml
 
 - name: Upgrade packages and perform upgrade
   block:
-    - name: k8s/masterN | Install kubeadm
+    - name: K8s/masterN | Install kubeadm
       include_tasks: "{{ ansible_os_family }}/install-kubeadm.yml"
 
     # Retries needed for HA deployment (random failures)
-    - name: k8s/masterN | Add k8s annotation for containerd
+    - name: K8s/masterN | Add k8s annotation for containerd
       command: >-
         kubectl annotate node {{ inventory_hostname }} --overwrite kubeadm.alpha.kubernetes.io/cri-socket=unix:///run/containerd/containerd.sock
       register: result
@@ -17,7 +17,7 @@
       retries: 30
       delay: 1
 
-    - name: k8s/masterN | Upgrade master {{ inventory_hostname }}
+    - name: K8s/masterN | Upgrade master {{ inventory_hostname }}
       command: >-
         kubeadm upgrade node
       register: result
@@ -27,35 +27,35 @@
       delay: 30
       changed_when: false
 
-    - name: k8s/masterN | Install kubelet and kubectl for {{ version }}
+    - name: K8s/masterN | Install kubelet and kubectl for {{ version }}
       include_tasks: >-
         {{ ansible_os_family }}/install-packages.yml
       when:
         - result is succeeded
 
-- name: k8s/masterN | Upgrade CNI plugin pod
+- name: K8s/masterN | Upgrade CNI plugin pod
   import_tasks: upgrade-cni-plugin-pod.yml
   delegate_to: "{{ groups.kubernetes_master[0] }}"
   when:
     - upgrade_to_final_version
 
-- name: k8s/masterN | Backup kubeadm-config.yml
+- name: K8s/masterN | Backup kubeadm-config.yml
   include_tasks: backup-kubeadm-config.yml
 
-- name: k8s/masterN | Replace cgroupfs driver with systemd driver
+- name: K8s/masterN | Replace cgroupfs driver with systemd driver
   include_tasks: patch-cgroup-driver.yml
   vars: { _requires_restart: false }  # it will be properly restarted anyways
   when:
     - upgrade_to_final_version
 
-- name: k8s/masterN | Restart kubelet
+- name: K8s/masterN | Restart kubelet
   include_tasks: utils/restart-kubelet.yml
 
-- name: k8s/masterN | Wait for cluster's readiness
+- name: K8s/masterN | Wait for cluster's readiness
   include_tasks: utils/wait.yml
 
-- name: k8s/masterN | Uncordon master - mark master as schedulable
+- name: K8s/masterN | Uncordon master - mark master as schedulable
   include_tasks: utils/uncordon.yml
 
-- name: k8s/masterN | Verify component versions and node status
+- name: K8s/masterN | Verify component versions and node status
   include_tasks: kubernetes/verify-upgrade.yml

@@ -1,5 +1,5 @@
 ---
-- name: k8s/master | Patch rabbitmq's statefulset
+- name: K8s/master | Patch rabbitmq's statefulset
   include_role:
     name: upgrade
     tasks_from: kubernetes/utils/patch-statefulset.yml
@@ -27,7 +27,7 @@
       {%- endfor -%}
       {{- output | unique -}}
 
-- name: k8s/master | Patch keycloak's statefulset
+- name: K8s/master | Patch keycloak's statefulset
   include_role:
     name: upgrade
     tasks_from: kubernetes/utils/patch-statefulset.yml

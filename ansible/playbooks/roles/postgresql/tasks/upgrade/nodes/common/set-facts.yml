@@ -37,7 +37,7 @@
         msg: "{{ ansible_failed_result }}"
       when: postgresql_upgrade_status != 'failed'
 
-    - name: rescue | Load '{{ old_version.pg.upgrade.postgresql_info_fallback_file_path }}'
+    - name: Rescue | Load '{{ old_version.pg.upgrade.postgresql_info_fallback_file_path }}'
       slurp:
         src: "{{ old_version.pg.upgrade.postgresql_info_fallback_file_path }}"
       register: postgresql_info_yml
@@ -88,7 +88,7 @@
         msg: "{{ ansible_failed_result }}"
       when: postgresql_upgrade_status != 'failed'
 
-    - name: rescue | Load '{{ old_version.pg.upgrade.custom_tablespaces_fallback_file_path }}'
+    - name: Rescue | Load '{{ old_version.pg.upgrade.custom_tablespaces_fallback_file_path }}'
       slurp:
         src: "{{ old_version.pg.upgrade.custom_tablespaces_fallback_file_path }}"
       register: custom_tablespaces_yml

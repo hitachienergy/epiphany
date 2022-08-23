@@ -1,5 +1,5 @@
 ---
-- name: restart postgres-exporter
+- name: Restart postgres-exporter
   service:
     name: postgres-exporter
     state: restarted
@@ -8,11 +8,11 @@
   retries: 10
   delay: 10
 
-- name: reload systemd daemons
+- name: Reload systemd daemons
   systemd:
     daemon_reload: true
 
-- name: restart prometheus on remote servers
+- name: Restart prometheus on remote servers
   systemd:
     name: prometheus
     state: restarted

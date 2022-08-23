@@ -1,10 +1,10 @@
 ---
-- name: restart ssh
+- name: Restart ssh
   systemd:
     name: sshd
     state: restarted
 
-- name: restart waagent
+- name: Restart waagent
   systemd:
     name: waagent
     state: restarted

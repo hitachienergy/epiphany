@@ -1,5 +1,5 @@
 ---
-- name: k8s/install | Get information about installed packages as facts
+- name: K8s/install | Get information about installed packages as facts
   package_facts:
     manager: auto
   changed_when: false
@@ -40,7 +40,7 @@
     packages_to_hold: "{{ target_packages.keys() | list }}"
 
   block:
-    - name: k8s/install | Include unhold packages task
+    - name: K8s/install | Include unhold packages task
       include_tasks: unhold-packages.yml
       vars:
         packages: "{{ packages_to_unhold }}"
@@ -48,13 +48,13 @@
     # apt module doesn't support --allow-downgrades so we remove packages as workaround (see https://github.com/ansible/ansible/issues/29451).
     # Note: There is no way to remove package using APT without also removing those packages that depend on it.
     # Removing kubernetes-cni may require removing kubeadm and kubelet.
-    - name: k8s/install | Remove newer packages installed as dependency if they exist
+    - name: K8s/install | Remove newer packages installed as dependency if they exist
       apt:
         name: "{{ packages_to_downgrade }}"
         state: absent
       when: packages_to_downgrade | length
 
-    - name: "k8s/install | Install packages: {{ packages_to_install_with_version | join( ', ' ) }}"
+    - name: "K8s/install | Install packages: {{ packages_to_install_with_version | join( ', ' ) }}"
       apt:
         name: "{{ packages_to_install_with_version }}"
         update_cache: true
@@ -63,7 +63,7 @@
         packages_to_install_with_version: >-
           {{ target_packages.items() | map('join', '=') | list }}
 
-    - name: k8s/install | Include hold packages task
+    - name: K8s/install | Include hold packages task
       include_tasks: hold-packages.yml
       vars:
         packages: "{{ packages_to_hold }}"

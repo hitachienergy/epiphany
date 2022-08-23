@@ -4,7 +4,7 @@
   vars:
     _service_name: "{{ old_version.repmgr.service_name[ansible_os_family] }}"
   block:
-    - name: primary | extensions | repmgr | Stop {{ _service_name }} service
+    - name: Primary | extensions | repmgr | Stop {{ _service_name }} service
       systemd:
         name: "{{ _service_name }}"
         state: stopped
@@ -13,7 +13,7 @@
         loop_var: node
       loop: "{{ groups.postgresql }}"
 
-    - name: primary | extensions | repmgr | Disable {{ _service_name }} service
+    - name: Primary | extensions | repmgr | Disable {{ _service_name }} service
       systemd:
         name: "{{ _service_name }}"
         enabled: false
@@ -26,7 +26,7 @@
 
 # Standby servers can remain running until a later step. Check p.8 from https://www.postgresql.org/docs/13/pgupgrade.html
 
-- name: primary | Stop PostgreSQL services
+- name: Primary | Stop PostgreSQL services
   systemd:
     name: "{{ service_name }}"
     state: stopped
@@ -73,7 +73,7 @@
     #   * database user is the install user
     #   * prepared transactions
     #   * new cluster tablespace directories
-    - name: primary | Run pg_upgrade with --check
+    - name: Primary | Run pg_upgrade with --check
       shell: >-
         set -o pipefail &&
         {{ new_version.pg.bin_dir[ansible_os_family] }}/pg_upgrade
@@ -92,11 +92,11 @@
       vars:
         _log_filename: "{{ _pg_upgrade_log_filenames.check }}"
 
-    - name: primary | Print pg_upgrade check output
+    - name: Primary | Print pg_upgrade check output
       debug:
         var: pg_upgrade_check.stdout_lines
 
-    - name: primary | Run pg_upgrade
+    - name: Primary | Run pg_upgrade
       shell: >-
         {{ new_version.pg.bin_dir[ansible_os_family] }}/pg_upgrade
         --old-datadir {{ old_version.pg.data_dir[ansible_os_family] }}
@@ -126,17 +126,17 @@
     - name: Debian | Handle service masking
       when: ansible_os_family == 'Debian'
       block:
-        - name: primary | Debian | Mask {{ old_version.pg.instantiated_service_name.Debian }} service to avoid port conflict
+        - name: Primary | Debian | Mask {{ old_version.pg.instantiated_service_name.Debian }} service to avoid port conflict
           systemd:
             name: "{{ old_version.pg.instantiated_service_name[ansible_os_family] }}"
             masked: true
 
-        - name: primary | Debian | Unmask {{ new_version.pg.instantiated_service_name.Debian }} service
+        - name: Primary | Debian | Unmask {{ new_version.pg.instantiated_service_name.Debian }} service
           systemd:
             name: "{{ new_version.pg.instantiated_service_name[ansible_os_family] }}"
             masked: false
 
-    - name: primary | Start PostgreSQL {{ new_version.pg.version }} service
+    - name: Primary | Start PostgreSQL {{ new_version.pg.version }} service
       systemd:
         name: "{{ service_name }}"
         state: started

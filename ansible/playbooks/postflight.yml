@@ -20,7 +20,7 @@
     - name: Parse history file and update the status
       set_fact:
         history_latest_entry: >-
-          {{ _history_file_yaml.deployments[0] | combine({'status': 'completed'})}}
+          {{ _history_file_yaml.deployments[0] | combine({'status': 'completed'}) }}
         history_other_entries: >-
           {{ _history_file_yaml.deployments[1:] }}
       vars:

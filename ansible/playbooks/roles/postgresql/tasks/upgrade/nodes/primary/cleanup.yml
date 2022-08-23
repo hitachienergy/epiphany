@@ -1,5 +1,5 @@
 ---
-- name: primary | Remove temporary files
+- name: Primary | Remove temporary files
   file:
     path: "{{ item }}"
     state: absent

@@ -1,5 +1,5 @@
 ---
-- name: haproxy/uninstall | Uninstall haproxy family packages
+- name: HAProxy/uninstall | Uninstall haproxy family packages
   yum:
     name:
       - rh-haproxy18

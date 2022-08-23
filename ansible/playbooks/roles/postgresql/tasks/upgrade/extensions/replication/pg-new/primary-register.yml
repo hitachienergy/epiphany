@@ -1,6 +1,6 @@
 ---
 # Done so as after an upgrade there is no possibility to log in
-- name: primary | extensions | repmgr | Alter replication users in PostgreSQL
+- name: Primary | extensions | repmgr | Alter replication users in PostgreSQL
   become_user: postgres
   vars:
     _users:
@@ -16,7 +16,7 @@
 
 # This command needs to be executed before any standby nodes are registered
 # '--force' overwrites existing node record
-- name: primary | extensions | repmgr | Register primary node
+- name: Primary | extensions | repmgr | Register primary node
   become_user: postgres
   command: >-
     {{ new_version.repmgr.bin_dir[ansible_os_family] }}/repmgr primary register

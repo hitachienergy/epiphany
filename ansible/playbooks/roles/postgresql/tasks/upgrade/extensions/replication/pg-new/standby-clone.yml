@@ -1,5 +1,5 @@
 ---
-- name: standby | Stop {{ _service[ansible_os_family] }} service
+- name: Standby | Stop {{ _service[ansible_os_family] }} service
   systemd:
     name: "{{ _service[ansible_os_family] }}"
     state: stopped
@@ -11,7 +11,7 @@
 
 # 'repmgr standby clone' command uses 'pg_basebackup' that requires target directories to be empty
 # tablespace directories on a primary node are untouched
-- name: standby | Clean up tablespace directories
+- name: Standby | Clean up tablespace directories
   vars:
     pattern: '*'
   include_tasks: helpers/rm-dir-content.yml
@@ -21,7 +21,7 @@
 
 # Target data directory cannot contain running PostgreSQL instance
 # '--force' overwrites existing data directory
-- name: standby | extensions | repmgr | Clone standby node
+- name: Standby | extensions | repmgr | Clone standby node
   become_user: postgres
   command: >-
     {{ new_version.repmgr.bin_dir[ansible_os_family] }}/repmgr standby clone
@@ -35,7 +35,7 @@
 
 - name: Stop old PostgreSQL service
   block:
-    - name: standby | Stop PostgreSQL {{ old_version.pg.version }} service
+    - name: Standby | Stop PostgreSQL {{ old_version.pg.version }} service
       systemd:
         name: "{{ service_name }}"
         state: stopped
@@ -47,7 +47,7 @@
           - "{{ old_version.pg.service_name[ansible_os_family] }}"
           - "{{ old_version.pg.instantiated_service_name[ansible_os_family] }}"
 
-    - name: standby | Debian | Mask {{ old_version.pg.instantiated_service_name.Debian }} service to avoid port conflict
+    - name: Standby | Debian | Mask {{ old_version.pg.instantiated_service_name.Debian }} service to avoid port conflict
       when: ansible_os_family == 'Debian'
       systemd:
         name: "{{ old_version.pg.instantiated_service_name[ansible_os_family] }}"
@@ -55,13 +55,13 @@
 
 - name: Start new PostgreSQL service
   block:
-    - name: standby | Debian | Unmask {{ new_version.pg.instantiated_service_name.Debian }} service
+    - name: Standby | Debian | Unmask {{ new_version.pg.instantiated_service_name.Debian }} service
       when: ansible_os_family == 'Debian'
       systemd:
         name: "{{ new_version.pg.instantiated_service_name[ansible_os_family] }}"
         masked: false
 
-    - name: standby | Start PostgreSQL {{ new_version.pg.version }} service
+    - name: Standby | Start PostgreSQL {{ new_version.pg.version }} service
       systemd:
         name: "{{ service_name }}"
         state: started
@@ -74,7 +74,7 @@
           - "{{ new_version.pg.instantiated_service_name[ansible_os_family] }}"
 
 # '--force' overwrites existing node record
-- name: standby | extensions | repmgr | Register standby node
+- name: Standby | extensions | repmgr | Register standby node
   become_user: postgres
   command: >-
     {{ new_version.repmgr.bin_dir[ansible_os_family] }}/repmgr standby register --force

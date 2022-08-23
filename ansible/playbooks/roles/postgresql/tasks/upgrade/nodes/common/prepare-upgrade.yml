@@ -41,7 +41,7 @@
     group: postgres
     mode: u=rwx,g=,o=  # Permissions should be u=rwx (0700) or u=rwx,g=rx (0750)
 
-- name: primary | Initialize database
+- name: Primary | Initialize database
   command: "{{ new_version.pg.bin_dir[ansible_os_family] }}/initdb"
   become_user: postgres
   environment:

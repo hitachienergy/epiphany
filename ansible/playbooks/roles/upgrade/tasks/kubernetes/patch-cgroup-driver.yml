@@ -7,12 +7,12 @@
 
 # This procedure is based on https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/configure-cgroup-driver/#migrating-to-the-systemd-driver
 
-- name: k8s/cgroups | Read /var/lib/kubelet/config.yaml
+- name: K8s/cgroups | Read /var/lib/kubelet/config.yaml
   slurp:
     path: /var/lib/kubelet/config.yaml
   register: slurp_var_lib_kubelet_config_yaml
 
-- name: k8s/cgroups | Process /var/lib/kubelet/config.yaml
+- name: K8s/cgroups | Process /var/lib/kubelet/config.yaml
   set_fact:
     var_lib_kubelet_config_yaml:
       output: "{{ _output_str }}"
@@ -25,12 +25,12 @@
     _output_str: >-
       {{ _input | combine(_cgroup_driver) | to_nice_yaml(indent=2) }}
 
-- name: k8s/cgroups | Perform cgroup driver patching (switch to systemd)
+- name: K8s/cgroups | Perform cgroup driver patching (switch to systemd)
   when: var_lib_kubelet_config_yaml.changed
   block:
     # At this point we assume that currently processed node has been drained already.
 
-    - name: k8s/cgroups | Write /var/lib/kubelet/config.yaml
+    - name: K8s/cgroups | Write /var/lib/kubelet/config.yaml
       copy:
         dest: /var/lib/kubelet/config.yaml
         content: |
@@ -39,7 +39,7 @@
         group: root
         mode: preserve
 
-    - name: k8s/cgroups | Restart kubelet
+    - name: K8s/cgroups | Restart kubelet
       include_tasks: utils/restart-kubelet.yml
       when:
         - (_requires_restart is undefined) or _requires_restart

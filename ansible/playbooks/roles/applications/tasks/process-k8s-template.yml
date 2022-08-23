@@ -3,27 +3,27 @@
 
 - name: Process jinja2/yaml k8s template
   block:
-    - name: "{{ _app_dir_name | capitalize }} | Try rendering template {{ template_path }}"
+    - name: "Application | {{ _app_dir_name | capitalize }} | Try rendering template {{ template_path }}"
       set_fact:
         processed_template: >-
           {{ lookup('template', template_path) }}
 
   rescue:
-    - name: "{{ _app_dir_name | capitalize }} | Save original ansible_failed_result in a fact for later use"
+    - name: "Application | {{ _app_dir_name | capitalize }} | Save original ansible_failed_result in a fact for later use"
       set_fact:
         failed_result: "{{ ansible_failed_result }}"
 
-    - name: "{{ _app_dir_name | capitalize }} | Fallback and load raw template {{ template_path }}"
+    - name: "Application | {{ _app_dir_name | capitalize }} | Fallback and load raw template {{ template_path }}"
       set_fact:
         processed_template: >-
           {{ lookup('file', template_path) }}
 
-    - name: "{{ _app_dir_name | capitalize }} | Re-raise original error"
+    - name: "Application | {{ _app_dir_name | capitalize }} | Re-raise original error"
       fail:
         msg: "{{ failed_result }}"
 
   always:
-    - name: "{{ _app_dir_name | capitalize }} | Append processed template {{ template_path }}"
+    - name: "Application | {{ _app_dir_name | capitalize }} | Append processed template {{ template_path }}"
       set_fact: # noqa var-naming (issue: https://github.com/ansible-community/ansible-lint/issues/1680)
         "{{ output_fact_name }}": >-
           {{ hostvars[inventory_hostname][output_fact_name] ~ _newline ~ processed_template }}
@@ -31,6 +31,6 @@
         # This helps overcoming jinja2 limitations
         _newline: "\n"
 
-    - name: "{{ _app_dir_name | capitalize }} | Make sure sensitive data is removed from facts"
+    - name: "Application | {{ _app_dir_name | capitalize }} | Make sure sensitive data is removed from facts"
       set_fact:
         processed_template: null
