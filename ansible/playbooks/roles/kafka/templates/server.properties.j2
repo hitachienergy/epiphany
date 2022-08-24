@@ -4,7 +4,7 @@
 {% for url in kafka_hosts.split(',') %}
   {%- set url_host = url.split(':')[0] -%}
   {%- if url_host == ansible_fqdn or url_host in ansible_all_ipv4_addresses
-         or url_host == ansible_ssh_host -%}
+         or url_host == ansible_host -%}
 broker.id={{ loop.index0 }}
 
 auto.create.topics.enable=true
