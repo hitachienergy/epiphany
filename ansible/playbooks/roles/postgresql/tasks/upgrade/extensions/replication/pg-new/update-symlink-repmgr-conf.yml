@@ -1,5 +1,5 @@
 ---
-- name: "{{ _node_role }} | extensions | repmgr | Debian | Update symlink to config file"
+- name: "{{ _node_role }} | extensions | repmgr | Debian | Update symlink to config file" # noqa name[casing]
   file:
     src: "{{ new_version.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
     dest: /etc/repmgr.conf

@@ -1,5 +1,5 @@
 ---
-- name: "{{ _node_role }} | extensions | repmgr | Debian | Update REPMGRD_CONF in /etc/default/repmgrd"
+- name: "{{ _node_role }} | extensions | repmgr | Debian | Update REPMGRD_CONF in /etc/default/repmgrd" # noqa name[casing]
   when: ansible_os_family == 'Debian'
   replace:
     path: /etc/default/repmgrd
