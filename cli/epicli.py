@@ -195,7 +195,7 @@ def apply_parser(subparsers):
     required = sub_parser.add_argument_group('required arguments')
 
     #required
-    required.add_argument('-f', '--input-manifest', dest='input_manifest', type=Path, required=True,
+    required.add_argument('-f', '--input-manifest', dest='input_manifest', type=str, required=True,
                             help='File with infrastructure/configuration definitions to use.')
 
     #optional

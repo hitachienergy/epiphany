@@ -25,11 +25,11 @@ class BackupRecoveryBase(Step):
 
     def __init__(self, input_data):
         # super(BackupRecoveryBase, self).__init__(__name__) needs to be called in any subclass
-        self.file = input_data.file
+        self.input_manifest: Path = Path(input_data.input_manifest)
         self.build_directory = input_data.build_directory
         self.mhandler: ManifestHandler = ManifestHandler(build_path=Path(self.build_directory))
-        self.input_docs = list()
-        self.configuration_docs = list()
+        self.input_docs = []
+        self.configuration_docs = []
         self.cluster_model = None
         self.backup_doc = None
         self.recovery_doc = None
@@ -44,8 +44,9 @@ class BackupRecoveryBase(Step):
         self.cluster_model = self.mhandler.cluster_model
 
         # Load only backup / recovery configuration documents
-        loaded_docs = load_yamls_file(self.file)
-        self.input_docs = select_all(loaded_docs, lambda x: x.kind in ['configuration/backup', 'configuration/recovery'])
+        backup_mhandler: ManifestHandler = ManifestHandler(input_file=self.input_manifest)
+        backup_mhandler.read_manifest()
+        self.input_docs = backup_mhandler['configuration/backup'] + backup_mhandler['configuration/recovery']
         if len(self.input_docs) < 1:
             raise Exception('No documents for backup or recovery in input file.')
 

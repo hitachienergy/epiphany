@@ -19,7 +19,7 @@ from cli.src.helpers.build_io import (ANSIBLE_CFG_FILE, ANSIBLE_INVENTORY_FILE,
                                       get_manifest_path, get_output_path,
                                       get_terraform_path, load_manifest,
                                       save_ansible_config_file, save_inventory,
-                                      save_manifest, save_sp)
+                                      save_sp)
 from cli.src.helpers.objdict_helpers import dict_to_objdict
 from cli.src.helpers.yaml_helpers import safe_load, safe_load_all
 from tests.unit.helpers.constants import (CLUSTER_NAME_LOAD, CLUSTER_NAME_SAVE,
@@ -103,14 +103,6 @@ def test_get_ansible_config_file_path_for_build():
     assert get_ansible_config_file_path_for_build(os.path.join(
         OUTPUT_PATH, CLUSTER_NAME_SAVE)) == os.path.join(
         OUTPUT_PATH, CLUSTER_NAME_SAVE, ANSIBLE_OUTPUT_DIR,  ANSIBLE_CFG_FILE)
-
-
-def test_save_manifest():
-    save_manifest(TEST_DOCS, CLUSTER_NAME_SAVE, MANIFEST_FILE_NAME)
-    manifest_path = os.path.join(OUTPUT_PATH, CLUSTER_NAME_SAVE, MANIFEST_FILE_NAME)
-    manifest_stream = open(manifest_path, 'r')
-    manifest_file_content = safe_load_all(manifest_stream)
-    assert TEST_DOCS == manifest_file_content
 
 
 def test_load_manifest():

@@ -186,12 +186,12 @@ class Apply(Step):
                     raise Exception("ControlPlane downscale is not supported yet. Please revert your 'kubernetes_master' count to previous value or increase it to scale up Kubernetes.")
 
     def __load_configuration_doc(self, kind: str) -> dict:
-        try:
-            doc = self.input_mhandler[kind]
+        doc = self.input_mhandler[kind]
 
+        if doc:
             with DefaultMerger(doc) as doc_merger:
                 return doc_merger.run()[0]
-        except KeyError:
+        else:
             return load_schema_obj(schema_types.DEFAULT, 'common', kind)
 
 
