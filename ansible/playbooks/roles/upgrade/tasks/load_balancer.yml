@@ -1,20 +1,20 @@
 ---
-- name: Load_balancer | Remove legacy haproxy
+- name: load_balancer | Remove legacy haproxy # noqa name[casing]
   include_tasks:
     file: "legacy-haproxy/{{ ansible_os_family }}/uninstall-haproxy.yml"
 
-- name: Load_balancer | Populate service facts
+- name: load_balancer | Populate service facts # noqa name[casing]
   service_facts:
   no_log: true
 
-- name: Load_balancer | Remove haproxy-exporter
+- name: load_balancer | Remove haproxy-exporter # noqa name[casing]
   include_tasks:
     file: "legacy-haproxy/remove-haproxy-exporter.yml"
   when:
     - ansible_facts.services['prometheus-haproxy-exporter.service'] is defined
     - ansible_facts.services['prometheus-haproxy-exporter.service']['status'] != 'not-found'
 
-- name: Load_balancer | Upgrade haproxy service (runc)
+- name: load_balancer | Upgrade haproxy service (runc) # noqa name[casing]
   include_role:
     name: haproxy
     vars_from: main

@@ -1,22 +1,22 @@
 ---
-- name: "Application | {{ app_dir_name | capitalize }} | Assert input parameters"
+- name: "{{ app_dir_name | capitalize }} | Assert input parameters" # noqa name[casing]
   assert:
     that:
       - deployment_tmp_root_dir is defined
       - app_dir_name is defined
 
-- name: "Application | {{ app_dir_name | capitalize }} | Create temporary directory (app)"
+- name: "{{ app_dir_name | capitalize }} | Create temporary directory (app)" # noqa name[casing]
   file: # noqa risky-file-permissions (temporary directory)
     path: "{{ deployment_tmp_root_dir }}/{{ app_dir_name }}"
     state: directory
 
-- name: "Application | {{ app_dir_name | capitalize }} | Deploy application"
+- name: "{{ app_dir_name | capitalize }} | Deploy application" # noqa name[casing]
   # Everything executed here is considered sensitive
   no_log: true
 
   always:
     - &cleanup-facts
-      name: "Application | {{ app_dir_name | capitalize }} | Make sure sensitive data is removed from facts"
+      name: "{{ app_dir_name | capitalize }} | Make sure sensitive data is removed from facts" # noqa name[casing]
       set_fact:
         concatenated_templates: ""
         encrypted_templates: ""
@@ -25,7 +25,7 @@
   block:
     - *cleanup-facts
 
-    - name: "Application | {{ app_dir_name | capitalize }} | Decide if internal docker registry will be used"
+    - name: "{{ app_dir_name | capitalize }} | Decide if internal docker registry will be used" # noqa name[casing]
       set_fact:
         use_epiphany_image_registry: >-
           {{ (not _k8s_as_cloud_service) and _use_local_image_registry }}
@@ -37,14 +37,14 @@
         _use_local_image_registry: >-
           {{ (data.use_local_image_registry is undefined) or (data.use_local_image_registry | bool) }}
 
-    - name: "Application | {{ app_dir_name | capitalize }} | Find all template files"
+    - name: "{{ app_dir_name | capitalize }} | Find all template files" # noqa name[casing]
       find:
         path: "{{ role_path }}/templates/{{ app_dir_name }}/"
         patterns: "*.yml.j2"
         recurse: false
       register: find_template_files
 
-    - name: "Application | {{ app_dir_name | capitalize }} | Render or load templates"
+    - name: "{{ app_dir_name | capitalize }} | Render or load templates" # noqa name[casing]
       include_tasks: process-k8s-template.yml
       vars:
         output_fact_name: concatenated_templates
@@ -55,14 +55,14 @@
       loop: >-
         {{ find_template_files.files | map(attribute='path') | sort }}
 
-    - name: "Application | {{ app_dir_name | capitalize }} | Deploy k8s resources"
+    - name: "{{ app_dir_name | capitalize }} | Deploy k8s resources" # noqa name[casing]
       command: kubectl apply -f-
       args:
         # For security reasons we do not store rendered templates on local hdd/ssd drives
         stdin: "{{ concatenated_templates }}"
 
   rescue:
-    - name: "Application | {{ app_dir_name | capitalize }} | Save original ansible_failed_result in a fact for later use"
+    - name: "{{ app_dir_name | capitalize }} | Save original ansible_failed_result in a fact for later use" # noqa name[casing]
       set_fact:
         failed_result: "{{ ansible_failed_result }}"
 
@@ -70,12 +70,12 @@
     # The reason for employing encryption here is that rendered templates may contain sensitive data
     # To decrypt and examine, run:
     #  ansible-vault view ./debug.yml
-    - name: "Application | {{ app_dir_name | capitalize }} | Encrypt and save templates (debug)"
+    - name: "{{ app_dir_name | capitalize }} | Encrypt and save templates (debug)" # noqa name[casing]
       when:
         - concatenated_templates is defined
         - concatenated_templates | length > 0
       block:
-        - name: "Application | {{ app_dir_name | capitalize }} | Encrypt concatenated templates"
+        - name: "{{ app_dir_name | capitalize }} | Encrypt concatenated templates" # noqa name[casing]
           command: ansible-vault encrypt_string --stdin-name concatenated_templates
           args:
             # For security reasons we do not store rendered templates on local hdd/ssd drives
@@ -85,13 +85,13 @@
           register: encrypted_templates
           ignore_errors: true
 
-        - name: "Application | {{ app_dir_name | capitalize }} | Write stderr to logs when encryption failed"
+        - name: "{{ app_dir_name | capitalize }} | Write stderr to logs when encryption failed" # noqa name[casing]
           when: encrypted_templates is failure
           debug:
             var: encrypted_templates.stderr_lines
           no_log: false  # needed for displaying what went wrong
 
-        - name: "Application | {{ app_dir_name | capitalize }} | Save encrypted templates into {{ deployment_tmp_root_dir }}/{{ app_dir_name }}/debug.yml"
+        - name: "{{ app_dir_name | capitalize }} | Save encrypted templates into {{ deployment_tmp_root_dir }}/{{ app_dir_name }}/debug.yml" # noqa name[casing]
           when: encrypted_templates is success
           copy:
             dest: "{{ deployment_tmp_root_dir }}/{{ app_dir_name }}/debug.yml"
@@ -101,12 +101,12 @@
             decrypt: false
             mode: ugo=r
 
-    - name: "Application | {{ app_dir_name | capitalize }} | Print original error and fail"
+    - name: "{{ app_dir_name | capitalize }} | Print original error and fail" # noqa name[casing]
       fail:
         msg: "{{ failed_result }}"
       no_log: false  # needed for displaying what went wrong
 
-- name: "Application | {{ app_dir_name | capitalize }} | Remove temporary directory (app)"
+- name: "{{ app_dir_name | capitalize }} | Remove temporary directory (app)" # noqa name[casing]
   file:
     path: "{{ deployment_tmp_root_dir }}/{{ app_dir_name }}"
     state: absent
