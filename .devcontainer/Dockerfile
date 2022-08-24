@@ -1,4 +1,4 @@
-FROM python:3.10-slim
+FROM python:3.10.6-slim
 
 ARG USERNAME=vscode
 ARG USER_UID=1000
