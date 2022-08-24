@@ -41,7 +41,7 @@
     owner: root
     group: grafana
     mode: ug=rw,o=
-  notify: restart grafana
+  notify: Restart grafana
   no_log: true
 
 - name: Create grafana LDAP configuration file
@@ -54,7 +54,7 @@
   when:
     - "'ldap' in grafana_auth"
     - "'enabled' not in grafana_auth.ldap or grafana_auth.ldap.enabled"
-  notify: restart grafana
+  notify: Restart grafana
   no_log: true
 
 - name: Create grafana directories
