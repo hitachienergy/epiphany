@@ -52,6 +52,6 @@
     group: root
     mode: 0644
   delegate_to: "{{ item }}"
-  notify: restart prometheus
+  notify: Restart prometheus
   with_inventory_hostnames:
     - prometheus

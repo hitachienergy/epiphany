@@ -11,4 +11,4 @@
     owner: root
     group: grafana
     mode: u=rw,g=r,o=
-  notify: restart grafana
+  notify: Restart grafana
