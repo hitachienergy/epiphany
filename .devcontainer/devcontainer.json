@@ -12,6 +12,8 @@
         "eamodio.gitlens",
         // Jinja
         "samuelcolvin.jinjahtml",
+        // Kubernetes
+        "ms-kubernetes-tools.vscode-kubernetes-tools",
         // Markdown
         "davidanson.vscode-markdownlint",
         // Python
