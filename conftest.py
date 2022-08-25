@@ -2,8 +2,9 @@ import json
 import os
 import shutil
 
-from cli.src.helpers.build_io import save_manifest, MANIFEST_FILE_NAME
 from cli.src.Config import Config
+from cli.src.helpers.build_io import MANIFEST_FILE_NAME
+from cli.src.schema.ManifestHandler import ManifestHandler
 from tests.unit.helpers.constants import TEST_DOCS, CLUSTER_NAME_SAVE, CLUSTER_NAME_LOAD, NON_EXISTING_CLUSTER,\
     TEST_JSON, TEST_JSON_NAME
 
@@ -43,6 +44,7 @@ def prepare_test_directory():
 
 
 def prepare_test_data_for_load():
+    mhandler: ManifestHandler = ManifestHandler()
     save_manifest(TEST_DOCS, CLUSTER_NAME_LOAD, MANIFEST_FILE_NAME)
     with open(os.path.join(Config().output_dir, TEST_JSON_NAME), 'w') as out:
         json.dump(TEST_JSON, out)
