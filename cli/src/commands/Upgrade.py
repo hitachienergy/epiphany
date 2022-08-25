@@ -60,6 +60,9 @@ class Upgrade(Step):
         mhandler: ManifestHandler = ManifestHandler(build_path=self.__build_dir)
         mhandler.read_manifest()
 
+        if not mhandler['configuration/feature-mappings']:
+            return  # pre 2.0.1 manifest version
+
         self.__filter_images(mhandler)
 
         mhandler.write_manifest()
