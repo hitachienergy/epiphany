@@ -32,7 +32,7 @@
       replication_enabled: "{{ stat_repmgr_config_file.stat.exists and not (config_file_header.stdout_lines[1] is defined and config_file_header.stdout_lines[1] is match('# repmgr sample configuration file')) }}"
 
 
-- name:  repmgr | prepare service for database recovery
+- name:  Repmgr | prepare service for database recovery
   when: replication_enabled
   block:
   # Actions taken only when replication with repmgr is enabled
@@ -121,7 +121,7 @@
             src: "{{ pg.config_dir[ansible_os_family] }}/{{ item }}"
             dest: "/var/tmp/postgresql_temp_config/"
             remote_src: yes
-          loop: "{{ config_files.stdout_lines|flatten(levels=1) }}"
+          loop: "{{ config_files.stdout_lines | flatten(levels=1) }}"
 
     - name: Stop database service
       systemd:
@@ -203,7 +203,7 @@
 
     - name: Cache existing configuration files
       block:
-        - name: search for existing configuration files (RedHat)
+        - name: Search for existing configuration files (RedHat)
           shell: "find *.conf"
           args:
             chdir: "{{ pg.config_dir[ansible_os_family] }}"

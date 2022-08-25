@@ -1,5 +1,5 @@
 ---
-- name: "{{ _node_role }} | extensions | repmgr | RedHat | Update repmgr symlink"
+- name: "{{ _node_role }} | extensions | repmgr | RedHat | Update repmgr symlink" # noqa name[casing]
   file:
     src: "{{ new_version.repmgr.bin_dir.RedHat }}/repmgr"
     dest: "/usr/bin/repmgr"

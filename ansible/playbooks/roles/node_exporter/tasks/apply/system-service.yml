@@ -48,7 +48,7 @@
     group: node_exporter
   check_mode: false
   notify:
-    - restart prometheus node exporter service
+    - Restart prometheus node exporter service
 
 - name: Install node_exporter service to systemd
   template:
@@ -82,4 +82,4 @@
   with_inventory_hostnames:
     - prometheus
   notify:
-    - restart prometheus on remote servers
+    - Restart prometheus on remote servers

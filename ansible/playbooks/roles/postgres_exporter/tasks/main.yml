@@ -57,7 +57,7 @@
     group: postgres_exporter
   check_mode: false
   notify:
-    - restart postgres-exporter
+    - Restart postgres-exporter
 
 - name: Install postgres_exporter service to systemd
   template:
@@ -96,4 +96,4 @@
   delegate_to: "{{ item }}"
   with_inventory_hostnames:
     - prometheus
-  notify: restart prometheus on remote servers
+  notify: Restart prometheus on remote servers

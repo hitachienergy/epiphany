@@ -127,7 +127,7 @@
     mode: u=rw,go=r
     src: logrotate.conf.j2
 
-- name: configure system settings, file descriptors and number of threads for kafka
+- name: Configure system settings, file descriptors and number of threads for kafka
   pam_limits:
     domain: "{{ specification.user }}"
     limit_type: "{{ item.limit_type }}"
@@ -151,7 +151,7 @@
       limit_item: 'memlock'
       value: unlimited
 
-- name: reload settings from all system configuration files
+- name: Reload settings from all system configuration files
   command: sysctl --system
 
 # SASL Setup

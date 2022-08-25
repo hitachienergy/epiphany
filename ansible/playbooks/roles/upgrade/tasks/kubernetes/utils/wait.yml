@@ -1,12 +1,12 @@
 ---
-- name: k8s/utils | Wait for nodes and pods to be ready
+- name: K8s/utils | Wait for nodes and pods to be ready
   delegate_to: "{{ groups.kubernetes_master[0] }}"
   run_once: true
   block:
-    - name: k8s/utils | Wait for kubectl to find and access K8s cluster
+    - name: K8s/utils | Wait for kubectl to find and access K8s cluster
       include_tasks: kubernetes/utils/wait-for-kube-apiserver.yml
 
-    - name: k8s/utils | Wait for nodes
+    - name: K8s/utils | Wait for nodes
       command: >-
         kubectl get nodes --output json
       register: result
@@ -17,10 +17,10 @@
       delay: 2
       changed_when: false
 
-    - name: k8s/utils | Wait for pods
+    - name: K8s/utils | Wait for pods
       when: wait_for_pods | default(false) | bool
       block:
-        - name: k8s/utils | Wait for all pods to be running
+        - name: K8s/utils | Wait for all pods to be running
           command: >-
             kubectl get pods --all-namespaces --output json
           register: result
@@ -31,7 +31,7 @@
           delay: 2
           changed_when: false
 
-        - name: k8s/utils | Wait for all pods to be ready
+        - name: K8s/utils | Wait for all pods to be ready
           command: >-
             kubectl get pods --all-namespaces --output json
           register: result

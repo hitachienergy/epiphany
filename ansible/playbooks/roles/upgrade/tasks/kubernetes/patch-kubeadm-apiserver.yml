@@ -4,26 +4,26 @@
 
 # kube-apiserver uses --encryption-provider-config parameter to control how data is encrypted in etcd.
 # If this parameter is absent the encryption is not enabled.
-- name: k8s/master | Check if encryption of secret data is enabled
+- name: K8s/master | Check if encryption of secret data is enabled
   command: >-
     grep -- '--encryption-provider-config' /etc/kubernetes/manifests/kube-apiserver.yaml
   register: command_grep_encryption_flag
   changed_when: false
   failed_when: command_grep_encryption_flag.rc > 1
 
-- name: k8s/master | Patch kubeadm-config ConfigMap if needed
+- name: K8s/master | Patch kubeadm-config ConfigMap if needed
   when:
     - command_grep_encryption_flag.rc == 0 # encryption enabled
   run_once: true  # makes no sense to execute it more than once (would be redundant)
   block:
-    - name: k8s | Load defaults from kubernetes_master role
+    - name: K8s | Load defaults from kubernetes_master role
       include_vars:
         file: roles/kubernetes_master/defaults/main.yml
         name: kubernetes_master_defaults
       when:
         - kubernetes_master_defaults.pki.location is undefined
 
-    - name: k8s/master | Get kubeadm-config configmap
+    - name: K8s/master | Get kubeadm-config configmap
       command: |
         kubectl get configmap kubeadm-config \
           --namespace kube-system \
@@ -36,7 +36,7 @@
     #   - DenyEscalatingExec admission plugin is not used as unsupported (it was specified in Epiphany's default values before v1.3)
     #   - apiserver audit logging is enabled
     #   - apiserver certSANs are configured the same way as for apply (GitHub issue #1520)
-    - name: k8s/master | Patch kubeadm-config configmap (patch-kubeadm-apiserver.yml)
+    - name: K8s/master | Patch kubeadm-config configmap (patch-kubeadm-apiserver.yml)
       command: |
         kubectl patch configmap kubeadm-config \
           --namespace kube-system \

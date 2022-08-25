@@ -8,7 +8,7 @@
 - name: Restart zookeeper
   service: name=zookeeper state=restarted
 
-- name: restart prometheus
+- name: Restart prometheus
   become: true
   systemd:
     daemon_reload: true

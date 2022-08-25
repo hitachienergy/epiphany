@@ -1,10 +1,10 @@
 ---
-- name: k8s/kubelet-cm | Include set-cluster-version.yml
+- name: K8s/kubelet-cm | Include set-cluster-version.yml
   import_role:
     name: kubernetes_common
     tasks_from: set-cluster-version.yml # sets cluster_version
 
-- name: k8s/kubelet-cm | Get kubelet config from ConfigMap
+- name: K8s/kubelet-cm | Get kubelet config from ConfigMap
   command: |-
     kubectl get cm kubelet-config-{{ cluster_version_major }}.{{ cluster_version_minor }} \
       --namespace kube-system \
@@ -18,7 +18,7 @@
   retries: 60
   delay: 1
 
-- name: 'k8s/kubelet-cm | Update kubelet ConfigMap with cgroupDriver: systemd'
+- name: 'K8s/kubelet-cm | Update kubelet ConfigMap with cgroupDriver: systemd'
   vars:
     _cgroup_driver:
       cgroupDriver: systemd

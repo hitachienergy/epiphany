@@ -13,7 +13,7 @@
     createhome: false
     system: true
 
-- name: jmx-exporter | create directories
+- name: Create JMX Exporter directories
   become: true
   file:
     path: "{{ item }}"

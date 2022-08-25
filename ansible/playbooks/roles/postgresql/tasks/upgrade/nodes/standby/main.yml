@@ -16,12 +16,12 @@
   vars:
     _service_name: "{{ new_version.repmgr.service_name[ansible_os_family] }}"
   block:
-    - name: standby | extensions | repmgr | Start {{ _service_name }} service
+    - name: Standby | extensions | repmgr | Start {{ _service_name }} service
       systemd:
         name: "{{ _service_name }}"
         state: started
 
-    - name: standby | extensions | repmgr | Enable {{ _service_name }} service
+    - name: Standby | extensions | repmgr | Enable {{ _service_name }} service
       systemd:
         name: "{{ _service_name }}"
         enabled: true

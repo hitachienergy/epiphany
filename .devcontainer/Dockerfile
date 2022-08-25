@@ -1,4 +1,4 @@
-FROM python:3.10-slim
+FROM python:3.10.6-slim
 
 ARG USERNAME=vscode
 ARG USER_UID=1000
@@ -57,7 +57,7 @@ RUN : INSTALL PIP REQUIREMENTS \
  && pip install --disable-pip-version-check --no-cache-dir --default-timeout=100 \
     --requirement /requirements.txt \
  && pip install --disable-pip-version-check --no-cache-dir --default-timeout=100 \
-    poetry pylint pylint_junit ansible-lint ansible-lint-to-junit-xml yamllint pytest pytest_mock setuptools twine wheel
+    poetry pylint pylint_junit ansible-lint==6.5.0 ansible-lint-to-junit-xml yamllint pytest pytest_mock setuptools twine wheel
 
 RUN : SETUP USER AND OTHERS \
  && groupadd --gid $USER_GID $USERNAME \

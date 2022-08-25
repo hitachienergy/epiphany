@@ -1,12 +1,12 @@
 ---
-- name: primary | rollback | Copy rollback script
+- name: Primary | rollback | Copy rollback script
   become_user: postgres
   template:
     src: rollback-upgrade.sh.j2
     dest: "{{ pg_upgrade_working_dir }}/rollback-upgrade.sh"
     mode: u=rwx,g=r,o=
 
-- name: primary | rollback | Print info
+- name: Primary | rollback | Print info
   debug:
     msg:
       - '**************************************'

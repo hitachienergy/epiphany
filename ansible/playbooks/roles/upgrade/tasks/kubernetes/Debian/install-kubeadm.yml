@@ -1,5 +1,5 @@
 ---
-- name: k8s/install | Get information about installed packages as facts
+- name: K8s/install | Get information about installed packages as facts
   package_facts:
     manager: auto
   changed_when: false
@@ -23,12 +23,12 @@
     packages_to_hold: "{{ packages_to_unhold | union(packages_to_install.keys() | list) }}"
 
   block:
-    - name: k8s/install | Include unhold packages task
+    - name: K8s/install | Include unhold packages task
       include_tasks: unhold-packages.yml
       vars:
         packages: "{{ packages_to_unhold }}"
 
-    - name: k8s/install | Install kubeadm {{ version }} package for Debian family
+    - name: K8s/install | Install kubeadm {{ version }} package for Debian family
       apt:
         name: "{{ packages_to_install_with_version }}"
         update_cache: true
@@ -37,7 +37,7 @@
         packages_to_install_with_version: >-
           {{ packages_to_install.items() | map('join', '=') | list }}
 
-    - name: k8s/install | Include hold packages task
+    - name: K8s/install | Include hold packages task
       include_tasks: hold-packages.yml
       vars:
         packages: "{{ packages_to_hold }}"

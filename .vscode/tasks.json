@@ -54,13 +54,13 @@
     },
     {
       "label": "Ansible-lint [junit]",
-      "command": "ansible-lint --nocolor -q -c .ansible-lint -p ${workspaceFolder}/ansible/playbooks/*.yml > ${workspaceFolder}/test_results/ansiblelint_results.txt ; ansible-lint-to-junit-xml ${workspaceFolder}/test_results/ansiblelint_results.txt > ${workspaceFolder}/test_results/ansiblelint_results.xml",
+      "command": "ansible-lint --nocolor -q -c .ansible-lint -p ${workspaceFolder}/ansible > ${workspaceFolder}/test_results/ansiblelint_results.txt ; ansible-lint-to-junit-xml ${workspaceFolder}/test_results/ansiblelint_results.txt > ${workspaceFolder}/test_results/ansiblelint_results.xml",
       "dependsOn": ["Ensure test_results directory"],
       "group": "test",
     },
     {
       "label": "Ansible-lint [terminal]",
-      "command": "ansible-lint -q -c .ansible-lint -p ${workspaceFolder}/ansible/playbooks/*.yml",
+      "command": "ansible-lint -q -c .ansible-lint -p ${workspaceFolder}/ansible",
       "group": "test",
     },
     {

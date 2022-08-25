@@ -4,35 +4,35 @@
   become: false
   run_once: true
   block:
-    - name: "{{ _fail_msg }}"
+    - name: "{{ _fail_msg }}" # noqa name[casing]
       assert:
         that: not promote_to_ha or use_ha_control_plane
         fail_msg: "{{ _fail_msg }}"
       vars:
         _fail_msg: "When promote_to_ha is enabled, use_ha_control_plane must be enabled as well."
 
-    - name: "{{ _fail_msg }}"
+    - name: "{{ _fail_msg }}" # noqa name[casing]
       assert:
         that: not promote_to_ha or ((available_masters | length) == 1)
         fail_msg: "{{ _fail_msg }}"
       vars:
         _fail_msg: "When promote_to_ha is enabled, control plane must contain exactly one master."
 
-    - name: "{{ _fail_msg }}"
+    - name: "{{ _fail_msg }}" # noqa name[casing]
       assert:
         that: not (((registered_masters | length) > 0) and ((control_plane_endpoint | length) == 0) and use_ha_control_plane) or promote_to_ha
         fail_msg: "{{ _fail_msg }}"
       vars:
         _fail_msg: "When kubernetes is not HA yet and use_ha_control_plane is enabled, promote_to_ha must be enabled to force promotion."
 
-    - name: "{{ _fail_msg }}"
+    - name: "{{ _fail_msg }}" # noqa name[casing]
       assert:
         that: not (((registered_masters | length) > 0) and control_plane_endpoint.startswith('localhost')) or use_ha_control_plane
         fail_msg: "{{ _fail_msg }}"
       vars:
         _fail_msg: "When kubernetes is HA already, use_ha_control_plane must be enabled (downgrade is not supported)."
 
-    - name: "{{ _fail_msg }}"
+    - name: "{{ _fail_msg }}" # noqa name[casing]
       assert:
         that: use_ha_control_plane or not ((available_masters | length) > 1)
         fail_msg: "{{ _fail_msg }}"

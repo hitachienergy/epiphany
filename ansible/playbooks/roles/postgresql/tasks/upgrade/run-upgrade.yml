@@ -40,7 +40,7 @@
     _node_role: primary
     pg_upgrade_working_dir: "{{ new_version.pg.base_dir[ansible_os_family] }}/upgrade/{{ new_version.pg.version }}"
   block:
-    - name: primary | Create upgrade working directory
+    - name: Primary | Create upgrade working directory
       become_user: postgres  # must be writable by postgres user
       file:
         path: "{{ pg_upgrade_working_dir }}"
@@ -56,14 +56,14 @@
 
         - include_tasks: upgrade/nodes/primary/rollback.yml
 
-        - name: primary | Fail upgrade with a note
+        - name: Primary | Fail upgrade with a note
           fail:
             msg: PostgreSQL upgrade failed, please check logs
 
     # Disable old PostgreSQL service and enable new one
     - include_tasks: upgrade/nodes/common/switch-to-new-pg-service.yml
 
-    - name: repmgr
+    - name: Repmgr
       when: is_repmgr_used
       block:
         - include_tasks: upgrade/extensions/replication/pg-new/update-symlink-repmgr-conf.yml

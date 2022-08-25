@@ -1,8 +1,8 @@
 ---
-- name: k8s/node | Drain node in preparation for maintenance
+- name: K8s/node | Drain node in preparation for maintenance
   include_tasks: utils/drain.yml
 
-- name: k8s/node | Replace cgroupfs driver with systemd driver
+- name: K8s/node | Replace cgroupfs driver with systemd driver
   include_tasks: patch-cgroup-driver.yml
   vars: { _requires_restart: true }
   when:
@@ -10,10 +10,10 @@
 
 - name: Upgrade packages and perform upgrade
   block:
-    - name: k8s/node | Install kubeadm
+    - name: K8s/node | Install kubeadm
       include_tasks: "{{ ansible_os_family }}/install-kubeadm.yml"
 
-    - name: k8s/node | Upgrade node config
+    - name: K8s/node | Upgrade node config
       command: >-
         kubeadm upgrade node
       register: result
@@ -26,25 +26,25 @@
       include_tasks: >-
         {{ ansible_os_family }}/install-packages.yml
 
-- name: k8s/node | Upgrade CNI plugin pod
+- name: K8s/node | Upgrade CNI plugin pod
   import_tasks: upgrade-cni-plugin-pod.yml
   delegate_to: "{{ groups.kubernetes_master[0] }}"
   when:
     - upgrade_to_final_version
 
-- name: k8s/node | Restart kubelet
+- name: K8s/node | Restart kubelet
   systemd:
     state: restarted
     daemon_reload: true
     name: kubelet
 
-- name: k8s/node | Wait for cluster's readiness
+- name: K8s/node | Wait for cluster's readiness
   include_tasks: utils/wait.yml
 
-- name: k8s/node | Uncordon node - mark node as schedulable
+- name: K8s/node | Uncordon node - mark node as schedulable
   include_tasks: utils/uncordon.yml
 
-- name: k8s/node | Verify component versions and node status
+- name: K8s/node | Verify component versions and node status
   include_tasks:
     file: verify-upgrade.yml
     apply:

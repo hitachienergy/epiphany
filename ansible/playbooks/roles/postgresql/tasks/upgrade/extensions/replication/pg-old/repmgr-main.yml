@@ -4,7 +4,7 @@
     file: defaults/upgrade.yml
     name: upgrade_defaults
 
-- name: repmgr for PG {{ upgrade_defaults.pg.version }} | Get information about installed packages as facts
+- name: Repmgr for PG {{ upgrade_defaults.pg.version }} | Get information about installed packages as facts
   package_facts:
     manager: auto
   when: ansible_facts.packages is undefined
@@ -16,7 +16,7 @@
     _repmgr_config_file_path: "{{ upgrade_defaults.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
     _repmgr_package_name: "{{ upgrade_defaults.repmgr.package_name[ansible_os_family] }}"
   block:
-    - name: repmgr for PG {{ upgrade_defaults.pg.version }} | Check if config file exists
+    - name: Repmgr for PG {{ upgrade_defaults.pg.version }} | Check if config file exists
       stat:
         path: "{{ _repmgr_config_file_path }}"
         get_attributes: false
@@ -24,13 +24,13 @@
         get_mime: false
       register: stat_repmgr_config_file
 
-    - name: repmgr for PG {{ upgrade_defaults.pg.version }} | RedHat | Check if config file is from package
+    - name: Repmgr for PG {{ upgrade_defaults.pg.version }} | RedHat | Check if config file is from package
       command: head -2 {{ _repmgr_config_file_path }}
       register: config_file_header
       changed_when: false
       when: ansible_os_family == 'RedHat'
 
-    - name: repmgr for PG {{ upgrade_defaults.pg.version }} | Remove repmgr package if there is no config file or it is from package
+    - name: Repmgr for PG {{ upgrade_defaults.pg.version }} | Remove repmgr package if there is no config file or it is from package
       package:
         name: "{{ _repmgr_package_name }}"
         state: absent
@@ -41,7 +41,7 @@
       module_defaults:
         yum: { lock_timeout: "{{ yum_lock_timeout }}" }
 
-    - name: repmgr for PG {{ upgrade_defaults.pg.version }} | Refresh facts on installed packages
+    - name: Repmgr for PG {{ upgrade_defaults.pg.version }} | Refresh facts on installed packages
       package_facts:
         manager: auto
       when: remove_repmgr_package.changed
@@ -53,14 +53,14 @@
     _installed_version: "{{ ansible_facts.packages[_repmgr_package_name][0].version }}"
     _target_version: "{{ repmgr.version[ansible_os_family] }}"
   block:
-    - name: repmgr for PG {{ upgrade_defaults.pg.version }} | Print repmgr versions
+    - name: Repmgr for PG {{ upgrade_defaults.pg.version }} | Print repmgr versions
       debug:
         msg:
           - "Installed version: {{ _installed_version }}"
           - "Target version: {{ _target_version }}"
 
     # If state file exists it means the previous run failed
-    - name: repmgr for PG {{ upgrade_defaults.pg.version }} | Check if upgrade state file exists
+    - name: Repmgr for PG {{ upgrade_defaults.pg.version }} | Check if upgrade state file exists
       stat:
         path: "{{ upgrade_defaults.repmgr.upgrade.state_file_path }}"
         get_attributes: false
@@ -68,7 +68,7 @@
         get_mime: false
       register: stat_upgrade_state_file
 
-    - name: repmgr for PG {{ upgrade_defaults.pg.version }} | Upgrade repmgr
+    - name: Repmgr for PG {{ upgrade_defaults.pg.version }} | Upgrade repmgr
       include_tasks: roles/postgresql/tasks/upgrade/extensions/replication/pg-old/repmgr-upgrade.yml
       when: _target_version is version(_installed_version, '>')
          or stat_upgrade_state_file.stat.exists

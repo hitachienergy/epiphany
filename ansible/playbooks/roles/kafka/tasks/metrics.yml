@@ -1,12 +1,12 @@
 ---
 
-- name: prometheus jmx | add kafka user to correct jmx exporter user
+- name: Prometheus jmx | add kafka user to correct jmx exporter user
   user:
     name: "{{ specification.user }}"
     groups: "{{ specification.jmx_exporter_group }}"
     append: true
 
-- name: prometheus jmx | configuration file
+- name: Prometheus jmx | configuration file
   become: true
   copy:
     dest: "{{ specification.prometheus_jmx_config }}"
@@ -18,7 +18,7 @@
 - name: Configure metrics on prometheus machines
   when: groups.prometheus is defined
   block:
-    - name: delegated | create prometheus system group
+    - name: Delegated | create prometheus system group
       group:
         name: prometheus
         system: true
@@ -28,7 +28,7 @@
         loop_var: node
       loop: "{{ groups.prometheus }}"
 
-    - name: delegated | create prometheus system user
+    - name: Delegated | create prometheus system user
       user:
         name: prometheus
         system: true
@@ -40,7 +40,7 @@
         loop_var: node
       loop: "{{ groups.prometheus }}"
 
-    - name: delegated | create file_sd for service discovery configs
+    - name: Delegated | create file_sd for service discovery configs
       file:
         dest: "{{ specification.prometheus_config_dir }}/file_sd"
         state: directory
@@ -52,7 +52,7 @@
         loop_var: node
       loop: "{{ groups.prometheus }}"
 
-    - name: delegated | copy file_sd_config to prometheus hosts
+    - name: Delegated | copy file_sd_config to prometheus hosts
       template:
         dest: "{{ specification.prometheus_config_dir }}/file_sd/kafka-jmx-{{ inventory_hostname }}.yml"
         src: file_sd_config.yml.j2

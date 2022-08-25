@@ -2,19 +2,19 @@
 # Documentation: https://repmgr.org/docs/5.2/upgrading-repmgr-extension.html#UPGRADING-MAJOR-VERSION#
 # Compatibility: https://repmgr.org/docs/5.2/install-requirements.html#INSTALL-COMPATIBILITY-MATRIX
 
-- name: repmgr for PG {{ upgrade_defaults.pg.version }} | Create upgrade state file
+- name: Repmgr for PG {{ upgrade_defaults.pg.version }} | Create upgrade state file
   file:
     path: "{{ upgrade_defaults.repmgr.upgrade.state_file_path }}"
     state: touch
     mode: u=rw,g=r,o=
 
-- name: repmgr for PG {{ upgrade_defaults.pg.version }} | Load postgresql role manifest
+- name: Repmgr for PG {{ upgrade_defaults.pg.version }} | Load postgresql role manifest
   include_vars:
     file: manifest.yml
     name: postgresql_manifest
 
 # repmgr was introduced with epicli v0.6 but the following symlink was added in v0.7 so this task is to ensure it exists
-- name: repmgr for PG {{ upgrade_defaults.pg.version }} | Debian | Ensure symlink to config file exists
+- name: Repmgr for PG {{ upgrade_defaults.pg.version }} | Debian | Ensure symlink to config file exists
   file:
     src: "{{ upgrade_defaults.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
     dest: /etc/repmgr.conf
@@ -23,14 +23,14 @@
     group: postgres
   when: ansible_os_family == 'Debian'
 
-- name: repmgr for PG {{ upgrade_defaults.pg.version }} | RedHat | Ensure symlink to repmgr exists
+- name: Repmgr for PG {{ upgrade_defaults.pg.version }} | RedHat | Ensure symlink to repmgr exists
   file:
     src: "{{ upgrade_defaults.repmgr.bin_dir.RedHat }}/repmgr"
     dest: "/usr/bin/repmgr"
     state: link
   when: ansible_os_family == 'RedHat'
 
-- name: repmgr for PG {{ upgrade_defaults.pg.version }} | Search for primary node
+- name: Repmgr for PG {{ upgrade_defaults.pg.version }} | Search for primary node
   become_user: postgres
   # command prints primary node name (hostname)
   shell: |-
@@ -45,13 +45,13 @@
     executable: /bin/bash
 
 # Step: Stop repmgr service
-- name: repmgr for PG {{ upgrade_defaults.pg.version }} | Stop repmgr service
+- name: Repmgr for PG {{ upgrade_defaults.pg.version }} | Stop repmgr service
   systemd:
     name: "{{ upgrade_defaults.repmgr.service_name[ansible_os_family] }}"
     state: stopped
 
 # Step: Disable repmgr service to prevent packages from prematurely restarting repmgr
-- name: repmgr for PG {{ upgrade_defaults.pg.version }} | Disable repmgr service
+- name: Repmgr for PG {{ upgrade_defaults.pg.version }} | Disable repmgr service
   systemd:
     name: "{{ upgrade_defaults.repmgr.service_name[ansible_os_family] }}"
     enabled: false
@@ -61,7 +61,7 @@
 # On Ubuntu there is dependent 'repmgr-common' package.
 # apt module doesn't support --allow-downgrades (see https://github.com/ansible/ansible/issues/29451)
 # so we keep installed version if it's newer.
-- name: repmgr for PG {{ upgrade_defaults.pg.version }} | Set target version for repmgr-common package
+- name: Repmgr for PG {{ upgrade_defaults.pg.version }} | Set target version for repmgr-common package
   set_fact:
     repmgr_common_target_version: >-
       {{ _installed_version is version(_target_version, '>') | ternary(_installed_version, _target_version + '-*') }}
@@ -71,7 +71,7 @@
     - ansible_os_family == 'Debian'
     - ansible_facts.packages['repmgr-common'] is defined
 
-- name: repmgr for PG {{ upgrade_defaults.pg.version }} | Install repmgr package(s)
+- name: Repmgr for PG {{ upgrade_defaults.pg.version }} | Install repmgr package(s)
   package:
     name: "{{ _packages[ansible_os_family] }}"
     state: present
@@ -85,7 +85,7 @@
   module_defaults:
     yum: {lock_timeout: "{{ yum_lock_timeout }}"}
 
-- name: repmgr for PG {{ upgrade_defaults.pg.version }} | Update postgres user in sudoers file
+- name: Repmgr for PG {{ upgrade_defaults.pg.version }} | Update postgres user in sudoers file
   lineinfile:
     path: /etc/sudoers
     regexp: "^postgres ALL=\\(ALL:ALL\\) NOPASSWD:"
@@ -100,7 +100,7 @@
     validate: 'visudo -cf %s'
 
 # Step: Update /etc/default/repmgrd
-- name: repmgr for PG {{ upgrade_defaults.pg.version }} | Set 'daemonize=false' option in /etc/default/repmgrd
+- name: Repmgr for PG {{ upgrade_defaults.pg.version }} | Set 'daemonize=false' option in /etc/default/repmgrd
   lineinfile:
     path: /etc/default/repmgrd
     regexp: ^[#]?REPMGRD_OPTS=
@@ -109,14 +109,14 @@
 
 # Step: systemctl daemon-reload
 # Step: Restart PostgreSQL
-- name: repmgr for PG {{ upgrade_defaults.pg.version }} | Restart PostgreSQL service
+- name: Repmgr for PG {{ upgrade_defaults.pg.version }} | Restart PostgreSQL service
   systemd:
     name: "{{ upgrade_defaults.pg.service_name[ansible_os_family] }}"
     state: restarted
     daemon_reload: true
 
 # On Ubuntu the previous task indirectly restarts instantiated service but without waiting for the child service
-- name: repmgr for PG {{ upgrade_defaults.pg.version }} | Ensure PostgreSQL instantiated service is running
+- name: Repmgr for PG {{ upgrade_defaults.pg.version }} | Ensure PostgreSQL instantiated service is running
   systemd:
     name: "{{ upgrade_defaults.pg.instantiated_service_name[ansible_os_family] }}"
     state: started
@@ -125,13 +125,13 @@
 # Step: Update config file
 - name: Update repmgr config file
   block:
-    - name: repmgr for PG {{ upgrade_defaults.pg.version }} | Get node id
+    - name: Repmgr for PG {{ upgrade_defaults.pg.version }} | Get node id
       command: >-
         grep -Po '(?<=^node_id=)\d+' "{{ upgrade_defaults.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
       register: pg_node_id
       changed_when: false
 
-    - name: repmgr for PG {{ upgrade_defaults.pg.version }} | Replace repmgr config file
+    - name: Repmgr for PG {{ upgrade_defaults.pg.version }} | Replace repmgr config file
       template:
         src: repmgr.conf.j2
         dest: "{{ upgrade_defaults.repmgr.config_dir[ansible_os_family] }}/repmgr.conf"
@@ -149,7 +149,7 @@
 
 # Step: Execute 'ALTER EXTENSION repmgr UPDATE' (on primary only).
 # On standby it fails with error "cannot execute ALTER EXTENSION in a read-only transaction".
-- name: repmgr for PG {{ upgrade_defaults.pg.version }} | primary | Update extension
+- name: Repmgr for PG {{ upgrade_defaults.pg.version }} | primary | Update extension
   become_user: postgres
   postgresql_ext:
     name: repmgr
@@ -160,7 +160,7 @@
   when: inventory_hostname == find_pg_primary_node.stdout
 
 # Wait for repmgr version propagation to standby
-- name: repmgr for PG {{ upgrade_defaults.pg.version }} | standby | Wait for repmgr version sync with primary
+- name: Repmgr for PG {{ upgrade_defaults.pg.version }} | standby | Wait for repmgr version sync with primary
   become_user: postgres
   postgresql_query:
     db: "{{ postgresql_manifest.specification.extensions.replication.repmgr_database }}"
@@ -173,18 +173,18 @@
   when: inventory_hostname != find_pg_primary_node.stdout
 
 # Step: Re-enable repmgr service
-- name: repmgr for PG {{ upgrade_defaults.pg.version }} | Re-enable repmgr service
+- name: Repmgr for PG {{ upgrade_defaults.pg.version }} | Re-enable repmgr service
   systemd:
     name: "{{ upgrade_defaults.repmgr.service_name[ansible_os_family] }}"
     enabled: true
 
 # Step: Start repmgr service
-- name: repmgr for PG {{ upgrade_defaults.pg.version }} | Start repmgr service
+- name: Repmgr for PG {{ upgrade_defaults.pg.version }} | Start repmgr service
   systemd:
     name: "{{ upgrade_defaults.repmgr.service_name[ansible_os_family] }}"
     state: started
 
-- name: repmgr for PG {{ upgrade_defaults.pg.version }} | Remove upgrade state file
+- name: Repmgr for PG {{ upgrade_defaults.pg.version }} | Remove upgrade state file
   file:
     path: "{{ upgrade_defaults.repmgr.upgrade.state_file_path }}"
     state: absent

@@ -104,7 +104,7 @@
     owner: root
     group: grafana
     mode: u=rw,g=r,o=
-  notify: restart grafana
+  notify: Restart grafana
 
 - name: Register previously copied dashboards
   find:
