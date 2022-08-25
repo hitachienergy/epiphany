@@ -15,7 +15,7 @@ class Crane(Command):
     def pull(self, image_name: str,
              destination: Path,
              platform: str,
-             legacy_format: bool = False,
+             use_legacy_format: bool = False,
              insecure: bool = False):
         """
         Download target image file
@@ -23,7 +23,7 @@ class Crane(Command):
         :param image_name: address to the image
         :param destination: where to store the downloaded image
         :param platform: for which platform file will be downloaded
-        :param legacy_format: use legacy format
+        :param use_legacy_format: use legacy format
         :param insecure: allow image references to be fetched without TLS
         """
         crane_params: List[str] = ['pull']
@@ -33,7 +33,7 @@ class Crane(Command):
 
         crane_params.append(f'--platform={platform}')
 
-        crane_format = 'legacy' if legacy_format else 'tarball'
+        crane_format = 'legacy' if use_legacy_format else 'tarball'
         crane_params.append(f'--format={crane_format}')
 
         crane_params.append(image_name)
