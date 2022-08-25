@@ -8,8 +8,6 @@ import socket
 import subprocess
 import sys
 import time
-from pathlib import Path
-from typing import List
 
 from cli.licenses import LICENSES
 from cli.src.commands.Apply import Apply
@@ -167,11 +165,11 @@ def prepare_parser(subparsers):
     required = sub_parser.add_argument_group('required arguments')
 
     #  required
-    supported_os: List[str] = list(SUPPORTED_OS.keys())
+    supported_os: list[str] = list(SUPPORTED_OS.keys())
     required.add_argument('--os', type=str, required=True, dest='os', choices=supported_os,
                           help=f'The OS to prepare the offline requirements for: {"|".join(supported_os)}')
 
-    supported_arch: List[str] = list(set([arch for archs in SUPPORTED_OS.values() for arch in archs]))
+    supported_arch: list[str] = list(set([arch for archs in SUPPORTED_OS.values() for arch in archs]))
     required.add_argument('--arch', type=str, required=True, dest='arch', choices=supported_arch,
                           help=f'The OS architecture type to be used: {"|".join(supported_arch)}')
 
