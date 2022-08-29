@@ -8,7 +8,7 @@ from cli.src.helpers.build_io import (get_ansible_path,
 from cli.src.helpers.data_loader import (load_all_schema_objs_from_directory,
                                          load_schema_obj, schema_types)
 from cli.src.helpers.doc_list_helpers import (ExpectedSingleResultException,
-                                              select_first, select_single)
+                                              select_first)
 from cli.src.helpers.naming_helpers import to_feature_name, to_role_name
 from cli.src.helpers.ObjDict import ObjDict
 from cli.src.helpers.yaml_helpers import dump

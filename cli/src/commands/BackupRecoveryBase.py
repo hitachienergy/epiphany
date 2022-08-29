@@ -3,15 +3,13 @@ import os
 from pathlib import Path
 
 from cli.src.ansible.AnsibleCommand import AnsibleCommand
-from cli.src.ansible.AnsibleRunner import AnsibleRunner
 from cli.src.helpers.build_io import (copy_file, copy_files_recursively,
                                       get_ansible_config_file_path_for_build,
                                       get_inventory_path_for_build)
 from cli.src.helpers.data_loader import (ANSIBLE_PLAYBOOK_PATH,
-                                         load_schema_obj, load_yamls_file,
-                                         schema_types)
+                                         load_schema_obj, schema_types)
 from cli.src.helpers.doc_list_helpers import (ExpectedSingleResultException,
-                                              select_single, select_all)
+                                              select_single)
 from cli.src.helpers.yaml_helpers import dump
 from cli.src.schema.DefaultMerger import DefaultMerger
 from cli.src.schema.ManifestHandler import ManifestHandler
@@ -66,7 +64,7 @@ class BackupRecoveryBase(Step):
 
         # Please notice using DefaultMerger is not needed here, since it is done already at this point.
         # We just check if documents are missing and insert default ones without the unneeded merge operation.
-        for kind in {'configuration/backup', 'configuration/recovery'}:
+        for kind in ('configuration/backup', 'configuration/recovery'):
             try:
                 # Check if the required document is in user inputs
                 document = select_single(self.configuration_docs, lambda x: x.kind == kind)

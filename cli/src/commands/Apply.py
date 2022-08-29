@@ -36,9 +36,6 @@ class Apply(Step):
         self.inventory = None
 
         self.cluster_name = ''
-        self.configuration_docs = []
-        self.infrastructure_docs = []
-        self.all_docs = []
 
         Config().full_download = input_data.full_download
         Config().input_manifest_path = Path(self.input_manifest)

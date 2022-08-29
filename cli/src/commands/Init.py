@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 
 from cli.src.helpers.build_io import get_build_path
 from cli.src.helpers.data_loader import load_all_schema_objs, schema_types

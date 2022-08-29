@@ -2,7 +2,6 @@ from pathlib import Path
 
 from cli.src.Step import Step
 from cli.src.helpers.build_io import delete_directory
-from cli.src.helpers.doc_list_helpers import select_single
 from cli.src.schema.ManifestHandler import ManifestHandler
 from cli.src.terraform.TerraformRunner import TerraformRunner
 

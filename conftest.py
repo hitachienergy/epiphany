@@ -44,8 +44,9 @@ def prepare_test_directory():
 
 
 def prepare_test_data_for_load():
-    mhandler: ManifestHandler = ManifestHandler()
-    save_manifest(TEST_DOCS, CLUSTER_NAME_LOAD, MANIFEST_FILE_NAME)
+    mhandler: ManifestHandler = ManifestHandler(cluster_name=CLUSTER_NAME_LOAD)
+    mhandler.update_docs(TEST_DOCS)
+    mhandler.write_manifest(MANIFEST_FILE_NAME)
     with open(os.path.join(Config().output_dir, TEST_JSON_NAME), 'w') as out:
         json.dump(TEST_JSON, out)
 

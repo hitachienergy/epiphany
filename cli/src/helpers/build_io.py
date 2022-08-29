@@ -7,10 +7,8 @@ from ansible.inventory.manager import InventoryManager
 from ansible.parsing.dataloader import DataLoader
 
 from cli.src.Config import Config
-from cli.src.helpers.data_loader import (ANSIBLE_PLAYBOOK_PATH,
-                                         load_template_file, load_yamls_file,
-                                         template_types)
-from cli.src.helpers.yaml_helpers import dump, dump_all
+from cli.src.helpers.data_loader import load_template_file, template_types
+from cli.src.helpers.yaml_helpers import dump
 
 TERRAFORM_OUTPUT_DIR = 'terraform/'
 SP_FILE_NAME = 'sp.yml'

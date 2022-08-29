@@ -16,7 +16,8 @@ class DefaultMerger(Step):
 
         for doc in self.docs:
             replace_yesno_with_booleans(doc)
-            files_with_defaults = load_all_schema_objs(schema_types.DEFAULT, doc.provider, doc.kind)
+            provider = getattr(doc, 'provider', 'any')
+            files_with_defaults = load_all_schema_objs(schema_types.DEFAULT, provider, doc.kind)
             self.logger.info('Merging: ' + doc.kind+' name: '+doc.name)
             merged = self.merge_parent(files_with_defaults, doc)
             merged_docs.append(merged)

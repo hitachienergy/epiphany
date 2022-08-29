@@ -3,7 +3,6 @@ from pathlib import Path
 from cli.src.Step import Step
 from cli.src.helpers.build_io import get_inventory_path_for_build, load_inventory, save_inventory
 from cli.src.helpers.data_loader import load_schema_obj, schema_types
-from cli.src.helpers.doc_list_helpers import select_single
 from cli.src.helpers.objdict_helpers import merge_objdict
 from cli.src.models.AnsibleHostModel import AnsibleHostModel
 from cli.src.models.AnsibleInventoryItem import AnsibleInventoryItem
