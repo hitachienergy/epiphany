@@ -1,4 +1,6 @@
 ---
 cranes:
-  'https://github.com/google/go-containerregistry/releases/download/v0.11.0/go-containerregistry_Linux_x86_64.tar.gz':
-    sha256: 3cec40eb0fac2e6ed4b71de682ae562d15819ab92145e4f669b57baf04797adb
+  go-containerregistry:
+    primary:
+      url: 'https://github.com/google/go-containerregistry/releases/download/v0.11.0/go-containerregistry_Linux_x86_64.tar.gz'
+      sha256: 3cec40eb0fac2e6ed4b71de682ae562d15819ab92145e4f669b57baf04797adb

@@ -22,6 +22,20 @@ class Wget(Command):
             '--show-progress'
         ]
 
+    def check_connection(self, url: str) -> bool:
+        """
+        Use wget in a spider mode to check whether the file can be downloaded or not.
+
+        :param url: address which will be checked
+        :returns: True - connection valid, False - otherwise
+        """
+        params: List[str] = ['-q', '--spider']
+
+        if not self.run(params + [url]).returncode:
+            return True
+
+        return False
+
     def download(self, url: str,
                  output_document: Path = None,
                  directory_prefix: Path = None,

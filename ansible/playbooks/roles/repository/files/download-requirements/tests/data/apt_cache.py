@@ -1,4 +1,4 @@
-APT_CACHE_DEPENDS_RABBITMQ_STDOUT = '''
+APT_CACHE_DEPENDS_RABBITMQ_STDOUT = """
 rabbitmq-server
   Depends: adduser
  |Depends: erlang-base
@@ -7,9 +7,10 @@ rabbitmq-server
   Depends: <python3:any>
     python3
     dummy
-'''
+"""
 
-APT_CACHE_DEPENDS_SOLR_STDOUT = '''
+
+APT_CACHE_DEPENDS_SOLR_STDOUT = """
 solr-common
   Depends: curl
   Depends: debconf
@@ -29,4 +30,4 @@ solr-common
     openjdk-17-jre-headless
     openjdk-8-jre-headless
   Depends: libjs-jquery
-'''
+"""

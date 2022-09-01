@@ -8,7 +8,8 @@ from src.command.toolchain import Toolchain, TOOLCHAINS
 from src.config.config import Config, OSArch
 from src.config.manifest_reader import load_yaml_file
 from src.crypt import SHA_ALGORITHMS
-from src.downloader import Downloader
+from src.downloader.alt_addr_downloader import AltAddrDownloader
+from src.downloader.downloader import Downloader
 from src.error import CriticalError, ChecksumMismatch
 
 
@@ -72,7 +73,7 @@ class BaseMode:
             reqs['files'].update(content['files'])
 
         # parse common arch files:
-        for common_arch_reqs in ['cranes', 'files', 'images']:
+        for common_arch_reqs in ('cranes', 'files', 'images'):
             content = load_yaml_file(self._cfg.reqs_path / f'{self._cfg.os_arch.value}/{common_arch_reqs}.yml')
             reqs[common_arch_reqs].update(content[common_arch_reqs])
 
@@ -80,6 +81,9 @@ class BaseMode:
         reqs['grafana-dashboards'].update(content['grafana-dashboards'])
 
         return reqs
+
+    def __check_connection(self, url: str) -> bool:
+        return self._tools.wget.check_connection(url)
 
     def _create_backup_repositories(self):
         """
@@ -132,6 +136,18 @@ class BaseMode:
         """
         raise NotImplementedError
 
+    def __download_packages_from_urls(self, packages: Dict[str, Dict], dest: Path):
+        """
+        Download files under `self._requirements['packages']['from_url']`
+
+        :param packages: to be downloaded
+        :param dest: where to save the packages
+        """
+        downloader: Downloader = Downloader(packages, 'sha256', self._download_file)
+        for package_file in packages:
+            filepath = dest / package_file.split('/')[-1]
+            downloader.download(package_file, filepath)
+
     def __download_files(self, files: Dict[str, Dict], dest: Path):
         """
         Download files under `self._requirements['files']`
@@ -139,10 +155,18 @@ class BaseMode:
         :param files: to be downloaded
         :param dest: where to save the files
         """
-        downloader: Downloader = Downloader(files, 'sha256', self._download_file)
+        downloader: Downloader = AltAddrDownloader(files, 'sha256', self._download_file)
         for req_file in files:
-            filepath = dest / req_file.split('/')[-1]
-            downloader.download(req_file, filepath)
+            file_to_download, root_key = files[req_file]['primary']['url'], 'primary'
+            if not self.__check_connection(file_to_download):
+                logging.warning('Could not connect to: `{file_to_download}`, trying secondary address...')
+                try:
+                    file_to_download, root_key = files[req_file]['secondary']['url'], 'secondary'
+                except KeyError as ke:
+                    raise CriticalError(f'No secondary address provided for {file_to_download}') from ke
+
+            filepath = dest / file_to_download.split('/')[-1]
+            downloader.download(req_file, filepath, root_key, 'url')
 
     def __download_grafana_dashboards(self):
         """
@@ -163,8 +187,11 @@ class BaseMode:
         cranes = self._requirements['cranes']
         first_crane = next(iter(cranes))  # right now we use only single crane source
 
-        downloader: Downloader = Downloader(cranes, 'sha256', self._download_crane_binary)
-        downloader.download(first_crane, crane_package_path)
+        downloader: Downloader = AltAddrDownloader(cranes, 'sha256', self._download_crane_binary)
+        if self.__check_connection(cranes[first_crane]['primary']['url']):
+            downloader.download(first_crane, crane_package_path, 'primary', 'url')
+        else:
+            downloader.download(first_crane, crane_package_path, 'secondary', 'url')
 
         if not crane_path.exists():
             self._tools.tar.unpack(crane_package_path, Path('crane'), directory=self._cfg.dest_dir)
@@ -209,19 +236,16 @@ class BaseMode:
         """
         Optional step for cleanup routines.
         """
-        pass
 
     def _cleanup_packages(self):
         """
         Remove installed packages.
         """
-        pass
 
     def _remove_repository_files(self):
         """
         Additional routines before unpacking backup to remove all repository files under the /etc directory.
         """
-        pass
 
     def __restore_repositories(self):
         """
@@ -272,7 +296,7 @@ class BaseMode:
         logging.info('Done downloading packages from repos.')
 
         logging.info('Downloading packages from urls...')
-        self.__download_files(self._requirements['packages']['from_url'], self._cfg.dest_packages)
+        self.__download_packages_from_urls(self._requirements['packages']['from_url'], self._cfg.dest_packages)
         logging.info('Done downloading packages from urls.')
 
         logging.info('Downloading files...')
