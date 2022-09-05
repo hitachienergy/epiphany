@@ -57,7 +57,8 @@ class Upgrade(Step):
         if not mhandler['configuration/feature-mappings']:
             return  # pre 2.0.1 manifest version
 
-        self.__filter_images(mhandler)
+        if mhandler['epiphany-cluster']:
+            self.__filter_images(mhandler)
 
         mhandler.write_manifest()
 

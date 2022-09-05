@@ -7,7 +7,7 @@ from ruamel.yaml import YAML
 from cli.src.helpers.build_io import (ANSIBLE_CFG_FILE, ANSIBLE_INVENTORY_FILE,
                                       ANSIBLE_OUTPUT_DIR,
                                       ANSIBLE_VAULT_OUTPUT_DIR,
-                                      MANIFEST_FILE_NAME, SP_FILE_NAME,
+                                      SP_FILE_NAME,
                                       TERRAFORM_OUTPUT_DIR,
                                       get_ansible_config_file_path,
                                       get_ansible_config_file_path_for_build,
@@ -59,7 +59,7 @@ def test_get_inventory_path():
 
 def test_get_manifest_path():
     assert get_manifest_path(CLUSTER_NAME_SAVE) == os.path.join(
-        OUTPUT_PATH, CLUSTER_NAME_SAVE, MANIFEST_FILE_NAME)
+        OUTPUT_PATH, CLUSTER_NAME_SAVE, 'manifest.yml')
 
 
 def test_get_terraform_path():
