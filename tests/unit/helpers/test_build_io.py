@@ -59,8 +59,7 @@ def test_get_inventory_path():
 
 def test_get_manifest_path():
     mhandler = ManifestHandler(cluster_name=CLUSTER_NAME_SAVE)
-    assert str(mhandler.manifest_path) == os.path.join(
-        OUTPUT_PATH, CLUSTER_NAME_SAVE, 'manifest.yml')
+    assert str(mhandler.manifest_path) == os.path.join(CLUSTER_NAME_SAVE, 'manifest.yml')
 
 
 def test_get_terraform_path():
@@ -110,11 +109,6 @@ def test_load_manifest():
     mhandler = ManifestHandler(build_path=CLUSTER_NAME_LOAD)
     mhandler.read_manifest()
     assert mhandler.docs == TEST_DOCS
-
-
-def test_load_not_existing_manifest_docs():
-    with pytest.raises(Exception):
-        ManifestHandler(build_path=NON_EXISTING_CLUSTER).read_manifest()
 
 
 def test_save_sp():

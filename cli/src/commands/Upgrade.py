@@ -57,8 +57,6 @@ class Upgrade(Step):
         if mhandler['epiphany-cluster'] and mhandler['configuration/feature-mappings']:
             self.__filter_images(mhandler)
 
-        mhandler.write_manifest()
-
     def process_input_docs(self) -> ManifestHandler:
         # Check if we have input to load
         if not self.input_manifest_path:
@@ -77,7 +75,7 @@ class Upgrade(Step):
 
         # Merge the input docs with defaults
         with DefaultMerger(input_mhandler.docs) as doc_merger:
-            input_mhandler.overwrite_docs(doc_merger.run())
+            input_mhandler.update_docs(doc_merger.run())
 
         # Validate input documents
         with SchemaValidator(input_mhandler.cluster_model.provider, input_mhandler.docs) as schema_validator:
@@ -115,6 +113,8 @@ class Upgrade(Step):
 
         # Load existing manifest and process it
         self.process_manifest(mhandler)
+
+        mhandler.write_manifest()
 
         # Run Ansible to upgrade infrastructure
         with AnsibleRunner(build_dir=self.__build_dir, backup_build_dir=self.backup_build_dir,
