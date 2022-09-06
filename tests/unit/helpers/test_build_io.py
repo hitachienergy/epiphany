@@ -2,7 +2,6 @@ import os
 from collections import OrderedDict
 
 import pytest
-from ruamel.yaml import YAML
 
 from cli.src.helpers.build_io import (ANSIBLE_CFG_FILE, ANSIBLE_INVENTORY_FILE,
                                       ANSIBLE_OUTPUT_DIR,
@@ -16,12 +15,13 @@ from cli.src.helpers.build_io import (ANSIBLE_CFG_FILE, ANSIBLE_INVENTORY_FILE,
                                       get_ansible_vault_path, get_build_path,
                                       get_inventory_path,
                                       get_inventory_path_for_build,
-                                      get_manifest_path, get_output_path,
-                                      get_terraform_path, load_manifest,
+                                      get_output_path,
+                                      get_terraform_path,
                                       save_ansible_config_file, save_inventory,
                                       save_sp)
 from cli.src.helpers.objdict_helpers import dict_to_objdict
-from cli.src.helpers.yaml_helpers import safe_load, safe_load_all
+from cli.src.helpers.yaml_helpers import safe_load
+from cli.src.schema.ManifestHandler import ManifestHandler
 from tests.unit.helpers.constants import (CLUSTER_NAME_LOAD, CLUSTER_NAME_SAVE,
                                           NON_EXISTING_CLUSTER, OUTPUT_PATH,
                                           TEST_CLUSTER_MODEL, TEST_DOCS,
@@ -58,7 +58,8 @@ def test_get_inventory_path():
 
 
 def test_get_manifest_path():
-    assert get_manifest_path(CLUSTER_NAME_SAVE) == os.path.join(
+    mhandler = ManifestHandler(cluster_name=CLUSTER_NAME_SAVE)
+    assert str(mhandler.manifest_path) == os.path.join(
         OUTPUT_PATH, CLUSTER_NAME_SAVE, 'manifest.yml')
 
 
@@ -106,43 +107,42 @@ def test_get_ansible_config_file_path_for_build():
 
 
 def test_load_manifest():
-    build_path = get_build_path(CLUSTER_NAME_LOAD)
-    docs = load_manifest(build_path)
-    assert docs == TEST_DOCS
+    mhandler = ManifestHandler(build_path=CLUSTER_NAME_LOAD)
+    mhandler.read_manifest()
+    assert mhandler.docs == TEST_DOCS
 
 
 def test_load_not_existing_manifest_docs():
-    build_path = get_build_path(NON_EXISTING_CLUSTER)
     with pytest.raises(Exception):
-        load_manifest(build_path)
+        ManifestHandler(build_path=NON_EXISTING_CLUSTER).read_manifest()
 
 
 def test_save_sp():
     save_sp(TEST_SP, CLUSTER_NAME_SAVE)
     sp_path = os.path.join(OUTPUT_PATH, CLUSTER_NAME_SAVE, TERRAFORM_OUTPUT_DIR, SP_FILE_NAME)
-    sp_stream = open(sp_path, 'r')
-    sp_file_content = safe_load(sp_stream)
-    assert TEST_SP == sp_file_content
+    with open(sp_path, 'r', encoding='utf-8') as sp_stream:
+        sp_file_content = safe_load(sp_stream)
+        assert TEST_SP == sp_file_content
 
 
 def test_save_inventory():
     cluster_model = dict_to_objdict(TEST_CLUSTER_MODEL)
     save_inventory(TEST_INVENTORY, cluster_model)
-    f = open(os.path.join(OUTPUT_PATH, CLUSTER_NAME_SAVE, ANSIBLE_INVENTORY_FILE), mode='r')
-    inventory_content = f.read()
-    assert 'test-1 ansible_host=10.0.0.1' in inventory_content
-    assert 'test-2 ansible_host=10.0.0.2' in inventory_content
-    assert 'test-3 ansible_host=10.0.0.3' in inventory_content
-    assert 'test-4 ansible_host=10.0.0.4' in inventory_content
-    assert 'ansible_user=operations' in inventory_content
-    assert 'ansible_ssh_private_key_file=id_rsa' in inventory_content
+    with open(os.path.join(OUTPUT_PATH, CLUSTER_NAME_SAVE, ANSIBLE_INVENTORY_FILE), mode='r', encoding='utf-8') as f:
+        inventory_content = f.read()
+        assert 'test-1 ansible_host=10.0.0.1' in inventory_content
+        assert 'test-2 ansible_host=10.0.0.2' in inventory_content
+        assert 'test-3 ansible_host=10.0.0.3' in inventory_content
+        assert 'test-4 ansible_host=10.0.0.4' in inventory_content
+        assert 'ansible_user=operations' in inventory_content
+        assert 'ansible_ssh_private_key_file=id_rsa' in inventory_content
 
 
 def test_save_ansible_config_file():
     config_file_settings = OrderedDict(ANSIBLE_CONFIG_FILE_SETTINGS)
     ansible_config_file_path = os.path.join(OUTPUT_PATH, CLUSTER_NAME_SAVE, ANSIBLE_OUTPUT_DIR, ANSIBLE_CFG_FILE)
     save_ansible_config_file(config_file_settings, ansible_config_file_path)
-    f = open(ansible_config_file_path, mode='r')
-    ansible_config_file_content = f.read()
-    assert 'interpreter_python = auto_legacy_silent' in ansible_config_file_content
-    assert 'allow_world_readable_tmpfiles = true' in ansible_config_file_content
+    with open(ansible_config_file_path, mode='r', encoding='utf-8') as f:
+        ansible_config_file_content = f.read()
+        assert 'interpreter_python = auto_legacy_silent' in ansible_config_file_content
+        assert 'allow_world_readable_tmpfiles = true' in ansible_config_file_content

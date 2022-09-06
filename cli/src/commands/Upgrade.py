@@ -77,7 +77,7 @@ class Upgrade(Step):
 
         # Merge the input docs with defaults
         with DefaultMerger(input_mhandler.docs) as doc_merger:
-            input_mhandler.update_docs(doc_merger.run())
+            input_mhandler.overwrite_docs(doc_merger.run())
 
         # Validate input documents
         with SchemaValidator(input_mhandler.cluster_model.provider, input_mhandler.docs) as schema_validator:
