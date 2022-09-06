@@ -70,7 +70,7 @@ class Upgrade(Step):
         # Some basic checking on the input document(s)
         if len(input_mhandler.docs) == 0:
             raise Exception('No documents in input file.')
-        if not hasattr(input_mhandler.cluster_model, 'provider'):
+        if not hasattr(input_mhandler.docs[0], 'provider'):
             raise Exception('Input document does not have a provider.')
 
         # Merge the input docs with defaults
@@ -118,7 +118,7 @@ class Upgrade(Step):
 
         # Run Ansible to upgrade infrastructure
         with AnsibleRunner(build_dir=self.__build_dir, backup_build_dir=self.backup_build_dir,
-                           ansible_options=self.ansible_options, config_docs=self.input_docs,
+                           ansible_options=self.ansible_options, config_docs=mhandler.docs,
                            ping_retries=self.ping_retries) as ansible_runner:
             ansible_runner.upgrade()
 

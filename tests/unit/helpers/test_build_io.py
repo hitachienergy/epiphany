@@ -21,10 +21,9 @@ from cli.src.helpers.build_io import (ANSIBLE_CFG_FILE, ANSIBLE_INVENTORY_FILE,
                                       save_sp)
 from cli.src.helpers.objdict_helpers import dict_to_objdict
 from cli.src.helpers.yaml_helpers import safe_load
-from cli.src.schema.ManifestHandler import ManifestHandler
-from tests.unit.helpers.constants import (CLUSTER_NAME_LOAD, CLUSTER_NAME_SAVE,
-                                          NON_EXISTING_CLUSTER, OUTPUT_PATH,
-                                          TEST_CLUSTER_MODEL, TEST_DOCS,
+from tests.unit.helpers.constants import (CLUSTER_NAME_SAVE,
+                                          OUTPUT_PATH,
+                                          TEST_CLUSTER_MODEL,
                                           TEST_INVENTORY)
 
 TEST_SP = {'appId': 'xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx',
@@ -55,11 +54,6 @@ def test_get_build_path():
 def test_get_inventory_path():
     assert get_inventory_path(CLUSTER_NAME_SAVE) == os.path.join(
         OUTPUT_PATH, CLUSTER_NAME_SAVE, ANSIBLE_INVENTORY_FILE)
-
-
-def test_get_manifest_path():
-    mhandler = ManifestHandler(cluster_name=CLUSTER_NAME_SAVE)
-    assert str(mhandler.manifest_path) == os.path.join(CLUSTER_NAME_SAVE, 'manifest.yml')
 
 
 def test_get_terraform_path():
@@ -103,12 +97,6 @@ def test_get_ansible_config_file_path_for_build():
     assert get_ansible_config_file_path_for_build(os.path.join(
         OUTPUT_PATH, CLUSTER_NAME_SAVE)) == os.path.join(
         OUTPUT_PATH, CLUSTER_NAME_SAVE, ANSIBLE_OUTPUT_DIR,  ANSIBLE_CFG_FILE)
-
-
-def test_load_manifest():
-    mhandler = ManifestHandler(build_path=CLUSTER_NAME_LOAD)
-    mhandler.read_manifest()
-    assert mhandler.docs == TEST_DOCS
 
 
 def test_save_sp():
