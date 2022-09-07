@@ -73,14 +73,6 @@ class Upgrade(Step):
         if not hasattr(input_mhandler.docs[0], 'provider'):
             raise Exception('Input document does not have a provider.')
 
-        # Merge the input docs with defaults
-        with DefaultMerger(input_mhandler.docs) as doc_merger:
-            input_mhandler.update_docs(doc_merger.run())
-
-        # Validate input documents
-        with SchemaValidator(input_mhandler.cluster_model.provider, input_mhandler.docs) as schema_validator:
-            schema_validator.run()
-
         return input_mhandler
 
     def get_backup_dirs(self):
@@ -113,6 +105,14 @@ class Upgrade(Step):
 
         # Load existing manifest and process it
         self.process_manifest(mhandler)
+
+        # Merge the input docs with defaults
+        with DefaultMerger(mhandler.docs) as doc_merger:
+            mhandler.update_docs(doc_merger.run())
+
+        # Validate input documents
+        with SchemaValidator(mhandler.docs[0].provider, mhandler.docs) as schema_validator:
+            schema_validator.run()
 
         mhandler.write_manifest()
 

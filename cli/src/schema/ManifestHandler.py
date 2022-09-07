@@ -1,6 +1,7 @@
 from collections import defaultdict
 from itertools import chain
 from pathlib import Path
+from typing import Union
 
 from cli.src.helpers.ObjDict import ObjDict
 from cli.src.helpers.build_io import get_build_path
@@ -66,7 +67,7 @@ class ManifestHandler:
     def exists(self) -> bool:
         return self.__manifest_file_path.exists()
 
-    def update_doc(self, doc: dict | ObjDict):
+    def update_doc(self, doc: Union[dict, ObjDict]):
         """
         Try to update the document with matching `kind` and `name`.
         If the document does not exist add a new one.
@@ -82,14 +83,14 @@ class ManifestHandler:
 
         self.add_doc(doc)  # no document found with matching kind/name, add it
 
-    def update_docs(self, docs: list[dict | ObjDict]):
+    def update_docs(self, docs: list[Union[dict, ObjDict]]):
         for doc in docs:
             self.update_doc(doc)
 
-    def add_doc(self, doc: dict | ObjDict):
+    def add_doc(self, doc: Union[dict, ObjDict]):
         self.__docs[doc['kind']].append(objdict_to_dict(doc))
 
-    def add_docs(self, docs: list[dict | ObjDict]):
+    def add_docs(self, docs: list[Union[dict, ObjDict]]):
         for doc in docs:
             self.add_doc(doc)
 
