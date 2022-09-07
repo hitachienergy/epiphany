@@ -50,13 +50,6 @@ class Upgrade(Step):
 
         mhandler.update_doc(image_registry_doc)
 
-    def process_manifest(self, mhandler: ManifestHandler):
-        if not mhandler.docs:
-            mhandler.read_manifest()
-
-        if mhandler['epiphany-cluster'] and mhandler['configuration/feature-mappings']:
-            self.__filter_images(mhandler)
-
     def process_input_docs(self) -> ManifestHandler:
         # Check if we have input to load
         if not self.input_manifest_path:
@@ -72,6 +65,17 @@ class Upgrade(Step):
             raise Exception('No documents in input file.')
         if not hasattr(input_mhandler.docs[0], 'provider'):
             raise Exception('Input document does not have a provider.')
+
+        # Merge the input docs with defaults
+        with DefaultMerger(input_mhandler.docs) as doc_merger:
+            input_mhandler.update_docs(doc_merger.run())
+
+        # Validate input documents
+        with SchemaValidator(input_mhandler.docs[0].provider, input_mhandler.docs) as schema_validator:
+            schema_validator.run()
+
+        if input_mhandler['epiphany-cluster'] and input_mhandler['configuration/feature-mappings']:
+            self.__filter_images(input_mhandler)
 
         return input_mhandler
 
@@ -102,19 +106,6 @@ class Upgrade(Step):
 
         # Load possible input docs
         mhandler = self.process_input_docs()
-
-        # Load existing manifest and process it
-        self.process_manifest(mhandler)
-
-        # Merge the input docs with defaults
-        with DefaultMerger(mhandler.docs) as doc_merger:
-            mhandler.update_docs(doc_merger.run())
-
-        # Validate input documents
-        with SchemaValidator(mhandler.docs[0].provider, mhandler.docs) as schema_validator:
-            schema_validator.run()
-
-        mhandler.write_manifest()
 
         # Run Ansible to upgrade infrastructure
         with AnsibleRunner(build_dir=self.__build_dir, backup_build_dir=self.backup_build_dir,
