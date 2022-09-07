@@ -2,8 +2,10 @@ from collections import defaultdict
 from itertools import chain
 from pathlib import Path
 
+from cli.src.helpers.ObjDict import ObjDict
 from cli.src.helpers.build_io import get_build_path
 from cli.src.helpers.data_loader import load_yamls_file
+from cli.src.helpers.objdict_helpers import dict_to_objdict, objdict_to_dict
 from cli.src.helpers.yaml_helpers import dump_all
 
 
@@ -38,24 +40,24 @@ class ManifestHandler:
             self.__manifest_file_path = input_file.absolute()
             self.__build_path = self.__manifest_file_path.parent
 
-    def __getitem__(self, doc_name: str) -> list[dict]:
-        return self.__docs[doc_name]
+    def __getitem__(self, doc_name: str) -> ObjDict:
+        return dict_to_objdict(self.__docs[doc_name])
 
     @property
     def manifest_path(self) -> Path:
         return self.__manifest_file_path
 
     @property
-    def docs(self) -> list[dict]:
-        return list(chain(*self.__docs.values()))
+    def docs(self) -> list[ObjDict]:
+        return [dict_to_objdict(doc) for doc in chain(*self.__docs.values())]
 
     @property
-    def infra_docs(self) -> list[dict]:
-        return [doc for doc in chain(*self.__docs.values()) if doc['kind'].startswith('infrastructure')]
+    def infra_docs(self) -> list[ObjDict]:
+        return [dict_to_objdict(doc) for doc in chain(*self.__docs.values()) if doc['kind'].startswith('infrastructure')]
 
     @property
     def cluster_model(self) -> dict:
-        return self.__docs['epiphany-cluster'][0]
+        return dict_to_objdict(self.__docs['epiphany-cluster'][0])
 
     @property
     def cluster_name(self) -> str:
@@ -64,7 +66,7 @@ class ManifestHandler:
     def exists(self) -> bool:
         return self.__manifest_file_path.exists()
 
-    def update_doc(self, doc: dict):
+    def update_doc(self, doc: dict | ObjDict):
         """
         Try to update the document with matching `kind` and `name`.
         If the document does not exist add a new one.
@@ -80,14 +82,14 @@ class ManifestHandler:
 
         self.add_doc(doc)  # no document found with matching kind/name, add it
 
-    def update_docs(self, docs: list[dict]):
+    def update_docs(self, docs: list[dict | ObjDict]):
         for doc in docs:
             self.update_doc(doc)
 
-    def add_doc(self, doc: dict):
-        self.__docs[doc['kind']].append(doc)
+    def add_doc(self, doc: dict | ObjDict):
+        self.__docs[doc['kind']].append(objdict_to_dict(doc))
 
-    def add_docs(self, docs: list[dict]):
+    def add_docs(self, docs: list[dict | ObjDict]):
         for doc in docs:
             self.add_doc(doc)
 

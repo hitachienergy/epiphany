@@ -97,13 +97,12 @@ def merge_objdict(to_merge, extend_by):
             elif isinstance(to_merge[key], list) and isinstance(val, list):
                 # Dealing with 2 lists
                 merge_list(to_merge, val, key)
+            elif type(to_merge[key]) == type(val):
+                # Dealing with 2 basic types (integer, boolean, string, etc.) so replace
+                to_merge[key] = val
             else:
-                try:
-                    # Dealing with 2 basic types (integer, boolean, string, etc.) so replace
-                    to_merge[key] = val
-                except Exception as e:
-                    # If we come here we are dealing with 2 different types we cannot merge so throw exception.
-                    raise TypeMismatchException(f'Types of key "{key}" are different: {type(to_merge[key])}, {type(val)}. Unable to merge.') from e
+                # If we come here we are dealing with 2 different types we cannot merge so throw exception.
+                raise TypeMismatchException(f'Types of key "{key}" are different: {type(to_merge[key])}, {type(val)}. Unable to merge.')
         else:
             # Field not known in defaults so just add it. Might be extra config used by projects.
             to_merge[key] = val
