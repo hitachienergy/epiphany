@@ -1,19 +1,18 @@
 import copy
 import os
+from pathlib import Path
 
 from cli.src.ansible.AnsibleCommand import AnsibleCommand
-from cli.src.ansible.AnsibleRunner import AnsibleRunner
 from cli.src.helpers.build_io import (copy_file, copy_files_recursively,
                                       get_ansible_config_file_path_for_build,
-                                      get_inventory_path_for_build,
-                                      load_manifest)
+                                      get_inventory_path_for_build)
 from cli.src.helpers.data_loader import (ANSIBLE_PLAYBOOK_PATH,
-                                         load_schema_obj, load_yamls_file,
-                                         schema_types)
+                                         load_schema_obj, schema_types)
 from cli.src.helpers.doc_list_helpers import (ExpectedSingleResultException,
-                                              select_single, select_all)
+                                              select_single)
 from cli.src.helpers.yaml_helpers import dump
 from cli.src.schema.DefaultMerger import DefaultMerger
+from cli.src.schema.ManifestHandler import ManifestHandler
 from cli.src.schema.SchemaValidator import SchemaValidator
 from cli.src.Step import Step
 from cli.version import VERSION
@@ -24,34 +23,28 @@ class BackupRecoveryBase(Step):
 
     def __init__(self, input_data):
         # super(BackupRecoveryBase, self).__init__(__name__) needs to be called in any subclass
-        self.file = input_data.file
+        self.input_manifest: Path = Path(input_data.input_manifest)
         self.build_directory = input_data.build_directory
-        self.manifest_docs = list()
-        self.input_docs = list()
-        self.configuration_docs = list()
+        self.mhandler: ManifestHandler = ManifestHandler(build_path=Path(self.build_directory))
+        self.input_docs = []
+        self.configuration_docs = []
         self.cluster_model = None
         self.backup_doc = None
         self.recovery_doc = None
         self.ansible_command = AnsibleCommand()
         self.ansible_config_file_path = get_ansible_config_file_path_for_build(input_data.build_directory)
 
-    def __enter__(self):
-        super().__enter__()
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        pass
-
     def _process_input_docs(self):
         """Load, validate and merge (with defaults) input yaml documents."""
 
         # Get existing manifest config documents
-        self.manifest_docs = load_manifest(self.build_directory)
-        self.cluster_model = select_single(self.manifest_docs, lambda x: x.kind == 'epiphany-cluster')
+        self.mhandler.read_manifest()
+        self.cluster_model = self.mhandler.cluster_model
 
         # Load only backup / recovery configuration documents
-        loaded_docs = load_yamls_file(self.file)
-        self.input_docs = select_all(loaded_docs, lambda x: x.kind in ['configuration/backup', 'configuration/recovery'])
+        backup_mhandler: ManifestHandler = ManifestHandler(input_file=self.input_manifest)
+        backup_mhandler.read_manifest()
+        self.input_docs = backup_mhandler['configuration/backup'] + backup_mhandler['configuration/recovery']
         if len(self.input_docs) < 1:
             raise Exception('No documents for backup or recovery in input file.')
 
@@ -71,7 +64,7 @@ class BackupRecoveryBase(Step):
 
         # Please notice using DefaultMerger is not needed here, since it is done already at this point.
         # We just check if documents are missing and insert default ones without the unneeded merge operation.
-        for kind in {'configuration/backup', 'configuration/recovery'}:
+        for kind in ('configuration/backup', 'configuration/recovery'):
             try:
                 # Check if the required document is in user inputs
                 document = select_single(self.configuration_docs, lambda x: x.kind == kind)

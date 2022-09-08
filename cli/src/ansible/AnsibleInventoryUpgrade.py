@@ -1,12 +1,12 @@
-from cli.src.helpers.build_io import (get_inventory_path_for_build,
-                                      load_inventory, load_manifest,
-                                      save_inventory)
+from pathlib import Path
+
+from cli.src.Step import Step
+from cli.src.helpers.build_io import get_inventory_path_for_build, load_inventory, save_inventory
 from cli.src.helpers.data_loader import load_schema_obj, schema_types
-from cli.src.helpers.doc_list_helpers import select_single
 from cli.src.helpers.objdict_helpers import merge_objdict
 from cli.src.models.AnsibleHostModel import AnsibleHostModel
 from cli.src.models.AnsibleInventoryItem import AnsibleInventoryItem
-from cli.src.Step import Step
+from cli.src.schema.ManifestHandler import ManifestHandler
 
 
 class AnsibleInventoryUpgrade(Step):
@@ -16,14 +16,7 @@ class AnsibleInventoryUpgrade(Step):
         self.backup_build_dir = backup_build_dir
         self.cluster_model = None
         self.config_docs = config_docs
-        self.manifest_docs = []
-
-    def __enter__(self):
-        super().__enter__()
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        pass
+        self.mhandler: ManifestHandler = ManifestHandler(build_path=Path(build_dir))
 
     def get_role(self, inventory, role_name):
         for role in inventory:
@@ -68,8 +61,9 @@ class AnsibleInventoryUpgrade(Step):
         self.logger.info('Upgrading Ansible inventory')
 
         # load cluster model from manifest
-        self.manifest_docs = load_manifest(self.backup_build_dir)
-        self.cluster_model = select_single(self.manifest_docs, lambda x: x.kind == 'epiphany-cluster')
+        self.mhandler = ManifestHandler(build_path=Path(self.backup_build_dir))
+        self.mhandler.read_manifest()
+        self.cluster_model = self.mhandler.cluster_model
 
         # Merge manifest cluster config with newer defaults
         default_cluster_model = load_schema_obj(schema_types.DEFAULT, self.cluster_model.provider, 'epiphany-cluster')

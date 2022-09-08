@@ -8,11 +8,12 @@ from cli.src.helpers.build_io import (get_ansible_path,
 from cli.src.helpers.data_loader import (load_all_schema_objs_from_directory,
                                          load_schema_obj, schema_types)
 from cli.src.helpers.doc_list_helpers import (ExpectedSingleResultException,
-                                              select_first, select_single)
+                                              select_first)
 from cli.src.helpers.naming_helpers import to_feature_name, to_role_name
 from cli.src.helpers.ObjDict import ObjDict
 from cli.src.helpers.yaml_helpers import dump
 from cli.src.schema.DefaultMerger import DefaultMerger
+from cli.src.schema.ManifestHandler import ManifestHandler
 from cli.src.Step import Step
 from cli.version import VERSION
 
@@ -25,7 +26,6 @@ class AnsibleVarsGenerator(Step):
         self.inventory_creator = inventory_creator
         self.inventory_upgrade = inventory_upgrade
         self.roles_with_generated_vars = []
-        self.manifest_docs = []
 
         if inventory_creator is not None and inventory_upgrade is None:
             self.cluster_model = inventory_creator.cluster_model
@@ -40,16 +40,9 @@ class AnsibleVarsGenerator(Step):
                     self.config_docs.append(default)
                 else:
                     self.config_docs.append(config_doc)
-            self.manifest_docs = inventory_upgrade.manifest_docs
+            self.mhandler: ManifestHandler = inventory_upgrade.mhandler
         else:
             raise Exception('Invalid AnsibleVarsGenerator configuration')
-
-    def __enter__(self):
-        super().__enter__()
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        pass
 
     def generate(self):
         self.logger.info('Generate Ansible vars')
@@ -119,13 +112,12 @@ class AnsibleVarsGenerator(Step):
             self.roles_with_generated_vars.append(to_role_name(role))
 
     def write_role_manifest_vars(self, ansible_dir, role, kind):
-        try:
-            cluster_model = select_single(self.manifest_docs, lambda x: x.kind == 'epiphany-cluster')
-        except ExpectedSingleResultException:
-            return  # skip
+        cluster_model = self.mhandler.cluster_model
 
-        document = select_first(self.manifest_docs, lambda x: x.kind == kind)
-        if document is None:
+        document = {}
+        try:
+            document = self.mhandler[kind][0]
+        except IndexError:
             # If there is no document provided by the user, then fallback to defaults
             document = load_schema_obj(schema_types.DEFAULT, 'common', kind)
             # Inject the required "version" attribute
@@ -205,12 +197,12 @@ class AnsibleVarsGenerator(Step):
         # Reuse shared config from existing manifest
         # Shared config contains the use_ha_control_plane flag which is required during upgrades
 
-        cluster_model = select_single(self.manifest_docs, lambda x: x.kind == 'epiphany-cluster')
+        cluster_model = self.mhandler.cluster_model
 
         try:
-            shared_config_doc = select_single(self.manifest_docs, lambda x: x.kind == 'configuration/shared-config')
+            shared_config_doc = self.mhandler['configuration/shared-config'][0]
             shared_config_doc['provider'] = cluster_model['provider']
-        except ExpectedSingleResultException:
+        except IndexError:
             # If there is no shared-config doc inside the manifest file, this is probably a v0.3 cluster
             # Returning None here (there is nothing to merge at this point) and
             # hoping that the shared-config doc from defaults will be enough

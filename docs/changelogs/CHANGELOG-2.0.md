@@ -6,6 +6,7 @@
 ### Added
 
 - [#3232](https://github.com/epiphany-platform/epiphany/issues/3232) - Use tarball format insted of legacy for downloading Docker images
+- [#3186](https://github.com/epiphany-platform/epiphany/issues/3186) - Refactor manifest file handling in cli
 - [#3238](https://github.com/epiphany-platform/epiphany/issues/3238) - Make OpenSearch Dashboards user configurable
 
 ### Fixed
