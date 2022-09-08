@@ -1,11 +1,11 @@
 import os
+from pathlib import Path
 
-from cli.src.ansible.AnsibleCommand import AnsibleCommand
-from cli.src.helpers.build_io import (SPEC_OUTPUT_DIR,
-                                      get_inventory_path_for_build, load_inventory, load_manifest)
-from cli.src.helpers.doc_list_helpers import select_single
-from cli.src.spec.SpecCommand import SPEC_TESTS_PATH, SpecCommand
 from cli.src.Step import Step
+from cli.src.ansible.AnsibleCommand import AnsibleCommand
+from cli.src.helpers.build_io import SPEC_OUTPUT_DIR, get_inventory_path_for_build, load_inventory
+from cli.src.schema.ManifestHandler import ManifestHandler
+from cli.src.spec.SpecCommand import SPEC_TESTS_PATH, SpecCommand
 
 
 class Test(Step):
@@ -19,13 +19,6 @@ class Test(Step):
         self.all_groups = test_groups
         self.available_groups = self.__get_available_test_groups()
         self.selected_groups = self.__get_selected_test_groups()
-
-    def __enter__(self):
-        super().__enter__()
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        pass
 
     def __get_inventory_groups(self, append_implicit: bool) -> list[str]:
         """
@@ -93,8 +86,9 @@ class Test(Step):
             raise Exception('No test group specified to run')
 
         # get manifest documents
-        docs = load_manifest(self.build_directory)
-        cluster_model = select_single(docs, lambda x: x.kind == 'epiphany-cluster')
+        mhandler = ManifestHandler(build_path=Path(self.build_directory))
+        mhandler.read_manifest()
+        cluster_model = mhandler.cluster_model
 
         # get admin user
         admin_user = cluster_model.specification.admin_user
