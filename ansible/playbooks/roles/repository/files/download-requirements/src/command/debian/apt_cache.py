@@ -23,7 +23,7 @@ class AptCache(Command):
         show_output = self.run(show_args).stdout
 
         version_info: str = ''
-        candidate_version: str = [line for line in show_output.split('\n\n') if 'Version' in line][0]
+        candidate_version: str = [item for item in show_output.split('\n\n') if 'Version' in item][0]
         for ver_info in show_output.split('\n\n'):
             if candidate_version in ver_info:
                 version_info = ver_info
