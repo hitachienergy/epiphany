@@ -9,7 +9,7 @@ def test_interface_pull(mocker):
     with CommandRunMock(mocker, Crane(1).pull, {'image_name': 'image',
                                                 'destination': Path('/some/place'),
                                                 'platform': 'platform',
-                                                'legacy_format': True,
+                                                'use_legacy_format': True,
                                                 'insecure': True}) as call_args:
         assert call_args == ['crane', 'pull', '--insecure', '--platform=platform', '--format=legacy',
                              'image', '/some/place']
