@@ -22,14 +22,8 @@ class AptCache(Command):
         show_args: List[str] = ['show', f'{package}={version}' if version else package]
         show_output = self.run(show_args).stdout
 
-        version_info: str = ''
-        candidate_version: str = [item for item in show_output.split('\n\n') if 'Version' in item][0]
-        for ver_info in show_output.split('\n\n'):
-            if candidate_version in ver_info:
-                version_info = ver_info
-                break
-
         info: Dict[str, str] = {}
+        version_info: str = [item for item in show_output.split('\n\n') if 'Version' in item][0]
         for line in version_info.split('\n'):
             if line:
                 try:
