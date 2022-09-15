@@ -8,7 +8,6 @@ from cli.src.Step import Step
 from cli.src.ansible.AnsibleCommand import AnsibleCommand
 from cli.src.ansible.AnsibleRunner import AnsibleRunner
 from cli.src.helpers.build_io import copy_files_recursively
-from cli.src.helpers.data_loader import load_schema_obj, schema_types
 from cli.src.schema.DefaultMerger import DefaultMerger
 from cli.src.schema.ManifestHandler import ManifestHandler
 from cli.src.schema.SchemaValidator import SchemaValidator
@@ -29,26 +28,6 @@ class Upgrade(Step):
 
         Config().full_download = input_data.full_download
         Config().input_manifest_path = Path(self.input_manifest_path) if self.input_manifest_path else None
-
-    def __filter_images(self, mhandler: ManifestHandler):
-        selected_features = mhandler.get_selected_features()
-        os_type = mhandler.cluster_model['specification']['cloud']['default_os_image']
-
-        image_registry_doc = {}
-        try:
-            image_registry_doc = mhandler['configuration/image-registry'][0]
-        except IndexError:
-            image_registry_doc = load_schema_obj(schema_types.DEFAULT, 'common', 'configuration/image-registry')
-
-        # filter out only image groups with matching features used by the cluster:
-        os_arch = 'x86_64' if os_type == 'default' else os_type.split('-')[-1]
-        image_groups = image_registry_doc['specification']['images_to_load'][os_arch]
-        for image_group in image_groups:
-            image_groups[image_group] = {feature: images for feature, images
-                                         in image_groups[image_group].items()
-                                         if feature in selected_features}
-
-        mhandler.update_doc(image_registry_doc)
 
     def process_input_docs(self) -> ManifestHandler:
         # Check if we have input to load
@@ -73,9 +52,6 @@ class Upgrade(Step):
         # Validate input documents
         with SchemaValidator(input_mhandler.docs[0].provider, input_mhandler.docs) as schema_validator:
             schema_validator.run()
-
-        if input_mhandler['epiphany-cluster'] and input_mhandler['configuration/feature-mappings']:
-            self.__filter_images(input_mhandler)
 
         return input_mhandler
 
