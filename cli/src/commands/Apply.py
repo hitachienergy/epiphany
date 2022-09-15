@@ -105,6 +105,9 @@ class Apply(Step):
             tf_runner.apply()
 
     def collect_infrastructure_config(self):
+        if  self.output_mhandler.cluster_model['provider'] == 'any':
+            return
+
         with provider_class_loader(self.output_mhandler.cluster_model.provider,
                                    'InfrastructureConfigCollector')(self.output_mhandler.docs) as config_collector:
             self.output_mhandler.update_doc(config_collector.run())  # update kubernetes config doc
