@@ -9,12 +9,5 @@ class InfrastructureConfigCollector(Step):
         self.cluster_model = select_single(docs, lambda x: x.kind == 'epiphany-cluster')
         self.docs = docs
 
-    def __enter__(self):
-        super().__enter__()
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        pass
-
     def run(self):
         pass

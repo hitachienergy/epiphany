@@ -94,10 +94,6 @@ class ManifestHandler:
         for doc in docs:
             self.add_doc(doc)
 
-    def overwrite_docs(self, docs: list[dict]):
-        self.__docs.clear()
-        self.add_docs(docs)
-
     def get_selected_components(self) -> set:
         """
         Return components used in the manifest.
