@@ -37,7 +37,7 @@ class Upgrade(Step):
         image_registry_doc = {}
         try:
             image_registry_doc = mhandler['configuration/image-registry'][0]
-        except KeyError:
+        except IndexError:
             image_registry_doc = load_schema_obj(schema_types.DEFAULT, 'common', 'configuration/image-registry')
 
         # filter out only image groups with matching features used by the cluster:

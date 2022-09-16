@@ -10,11 +10,11 @@ class InfrastructureConfigCollector(Step):
         self.cluster_model = select_single(docs, lambda x: x.kind == 'epiphany-cluster')
         self.docs = docs
 
-    def run(self):
+    def run(self) -> dict:
         with APIProxy(self.cluster_model, self.docs) as proxy:
-            self.apply_file_share_for_k8s_pv(proxy)
+            return self.apply_file_share_for_k8s_pv(proxy)
 
-    def apply_file_share_for_k8s_pv(self, proxy):
+    def apply_file_share_for_k8s_pv(self, proxy) -> dict:
         storage_share_config = select_first(self.docs, lambda x: x.kind == 'infrastructure/storage-share')
         kubernetes_config = select_first(self.docs, lambda x: x.kind == 'configuration/kubernetes-master')
 
@@ -24,6 +24,8 @@ class InfrastructureConfigCollector(Step):
                 'storage_account_name': storage_share_config.specification.storage_account_name,
                 'storage_account_key': primary_key
             }
+
+        return kubernetes_config
 
     def should_apply_storage_settings(self, storage_share_config, kubernetes_config):
         return storage_share_config is not None and kubernetes_config is not None
