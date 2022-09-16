@@ -10,11 +10,12 @@ images:
       allow_mismatch: true
 
   applications:
-    'epiphanyplatform/keycloak:14.0.0':
-      sha1: 918f301128475294dabe44f9247b0b80b5f5e8f5
-
     'rabbitmq:3.8.9':
       sha1: 003cefb9c3309c55fa67f68067db9355750513d6
+
+  keycloak:
+    'quay.io/keycloak/keycloak:19.0.2':
+      sha1: 484d69fc4690b4816ec4c1ad66ad2352017aa19c
 
   kubernetes-master:
     # for HA configuration

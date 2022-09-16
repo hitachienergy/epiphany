@@ -1,0 +1,64 @@
+---
+# Create DB & DB user
+
+- name: Get PostgreSQL cluster in_recovery state
+  delegate_to: "{{ item }}"
+  become_user: postgres
+  become: true
+  postgresql_info:
+    filter: in_recovery
+  register: in_recovery_state
+  loop: "{{ groups.postgresql }}"
+
+- name: Set PostgreSQL primary node
+  set_fact:
+    postgres_primary: "{{ item.item }}"
+  loop: "{{ in_recovery_state.results }}"
+  when: not item.in_recovery
+
+- name: Create DB objects
+  delegate_to: "{{ _primary_node }}"
+  become_user: postgres
+  become: true
+  run_once: true
+  vars:
+    _primary_node: >-
+      {{ groups.postgresql | first if (groups.postgresql | count == 1) else postgres_primary }}
+  block:
+    - name: Create database for Keycloak
+      postgresql_db:
+        name: "{{ _chart_values.database.database }}"
+
+    - name: Create user in PostgreSQL
+      postgresql_user:
+        name: "{{ _chart_values.database.username }}"
+        password: "{{ _chart_values.database.password }}"
+        role_attr_flags: LOGIN
+        expires: infinity  # password never expires
+        comment: Keycloak user (created by Epiphany)
+      no_log: true
+      register: create_keycloak_user
+
+- name: Refresh password file in PgPool and users list in PgBouncer
+  when:
+    - create_keycloak_user.changed
+    - groups.postgresql | count > 1 or "'pgbouncer' in _chart_values.database.hostname"
+  block:
+    - name: Include vars from application role
+      include_vars:
+        file: roles/applications/vars/main.yml
+        name: applications_vars
+
+    - name: Restart PgPool deployment to update pool_passwd file
+      command: |
+        kubectl rollout restart deployment/pgpool -n {{ _namespace }}
+      vars:
+        _namespace: >-
+          {{ (applications_vars.specification.applications | selectattr('name', '==', 'pgpool') | first).namespace }}
+
+    - name: Restart PgBouncer deployment to update users list
+      command: |
+        kubectl rollout restart deployment/pgbouncer -n {{ _namespace }}
+      vars:
+        _namespace: >-
+          {{ (applications_vars.specification.applications | selectattr('name', '==', 'pgbouncer') | first).namespace }}

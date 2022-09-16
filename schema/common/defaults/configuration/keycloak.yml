@@ -1,0 +1,199 @@
+---
+kind: configuration/keycloak
+title: Keycloak Config
+name: default
+specification:
+  namespace: keycloak
+
+  database:
+    epiphany_managed: true
+
+  image_registry:
+    use_local: true
+
+  chart_values:
+    # Refs:
+    #   - https://github.com/codecentric/helm-charts/tree/keycloakx-1.6.0/charts/keycloakx
+    #   - https://github.com/epam/edp-install/blob/d01c15ea20906cd336c781ae29c4adaeab06df48/helmfiles/releases/keycloak.yaml
+    #   - https://github.com/bitnami/charts/tree/2a326f1a1ea5abbe4e8486666ba4f813264c98cf/bitnami/keycloak
+    #   - https://www.keycloak.org/server/all-config
+
+    fullnameOverride: keycloak
+
+    replicas: 2
+
+    image:
+      repository: quay.io/keycloak/keycloak
+      tag: '19.0.2'
+
+    # Termination grace period in seconds for Keycloak shutdown. Clusters with a large cache might need to extend this to give Infinispan more time to rebalance
+    terminationGracePeriodSeconds: 60
+
+    # Overrides the default args for the Keycloak container
+    args:
+      - '--verbose'
+      - 'start'
+      # TODO:
+      - '--http-enabled=false'
+      - '--hostname-strict=false'
+      - '--hostname-strict-https=true'
+      # - "--spi-events-listener-jboss-logging-success-level=info"
+      # - "--spi-events-listener-jboss-logging-error-level=warn"
+
+    extraEnv: |
+      {% raw %}
+      - name: KEYCLOAK_ADMIN
+        valueFrom:
+          secretKeyRef:
+            name: {{ include "keycloak.fullname" . }}-admin-credentials
+            key: username
+      - name: KEYCLOAK_ADMIN_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: {{ include "keycloak.fullname" . }}-admin-credentials
+            key: password
+      - name: JAVA_OPTS_APPEND
+        value: >-
+          -XX:+UseContainerSupport
+          -XX:MaxRAMPercentage=50.0
+          -Djava.awt.headless=true
+          -Djgroups.dns.query={{ include "keycloak.fullname" . }}-headless
+      - name: KC_HTTPS_CERTIFICATE_FILE
+        value: /mnt/certificates/tls.crt
+      - name: KC_HTTPS_CERTIFICATE_KEY_FILE
+        value: /mnt/certificates/tls.key
+      {% endraw %}
+
+    # Probes configuration based on https://github.com/keycloak/keycloak/blob/19.0/operator/src/main/java/org/keycloak/operator/controllers/KeycloakDeployment.java
+
+    livenessProbe: |
+      {% raw %}
+      exec:
+        command:
+          - curl
+          - --head
+          - --fail
+          - --silent
+          - --insecure
+          {{ if and (.Values.http.relativePath) (ne .Values.http.relativePath "/") }}
+          - https://127.0.0.1:8443/{{ .Values.http.relativePath | trimSuffix "/" }}/health/live
+          {{ else }}
+          - https://127.0.0.1:8443/health/live
+          {{ end }}
+      {% endraw %}
+      initialDelaySeconds: 0
+      periodSeconds: 2
+      failureThreshold: 15
+
+    readinessProbe: |
+      {% raw %}
+      exec:
+        command:
+          - curl
+          - --head
+          - --fail
+          - --silent
+          - --insecure
+          {{ if and (.Values.http.relativePath) (ne .Values.http.relativePath "/") }}
+          - https://127.0.0.1:8443/{{ .Values.http.relativePath | trimSuffix "/" }}/health/ready
+          {{ else }}
+          - https://127.0.0.1:8443/health/ready
+          {{ end }}
+      {% endraw %}
+      initialDelaySeconds: 10
+      periodSeconds: 2
+      failureThreshold: 15
+
+    startupProbe: |
+      {% raw %}
+      exec:
+        command:
+          - curl
+          - --head
+          - --fail
+          - --silent
+          - --insecure
+          {{ if and (.Values.http.relativePath) (ne .Values.http.relativePath "/") }}
+          - https://127.0.0.1:8443/{{ .Values.http.relativePath | trimSuffix "/" }}/health
+          {{ else }}
+          - https://127.0.0.1:8443/health
+          {{ end }}
+      {% endraw %}
+      initialDelaySeconds: 15
+      periodSeconds: 1
+      failureThreshold: 300
+
+    # TODO: measure
+    resources:
+      limits:
+        memory: 512Mi
+      requests:
+        cpu: 50m
+        memory: 512Mi
+
+    extraVolumes: |
+      - name: keycloak-tls-certificate
+        secret:
+          defaultMode: 420
+          optional: false
+          secretName: {% raw %}{{ include "keycloak.fullname" . }}{% endraw %}-tls-certificate
+
+    extraVolumeMounts: |
+      - mountPath: /mnt/certificates
+        name: keycloak-tls-certificate
+
+    # Configuration for secrets that should be created
+    secrets:
+      admin-credentials:
+        type: kubernetes.io/basic-auth
+        stringData:
+          username: keycloak-admin
+          password: PASSWORD_TO_CHANGE
+      ca:
+        stringData:
+          ca.crt: |-
+            {% raw %}
+            {{- $ca := genCA "epiphany-keycloak-ca" 3650 }}
+            {{- $_ := set $.Values "_shared" dict }}
+            {{- $_ := set $.Values._shared "ca" $ca }}
+            {{- $ca.Cert -}}
+            {% endraw %}
+      tls-certificate:
+        type: kubernetes.io/tls
+        stringData:
+          tls.crt: |-
+            {% raw %}
+            {{- $altNames := list "keycloak.keycloak.svc.cluster.local" "keycloak" }}
+            {{- $crt := genSignedCert "keycloak.keycloak.svc.cluster.local" nil $altNames 3650 $.Values._shared.ca }}
+            {{- $_ := set $.Values._shared "crt" $crt }}
+            {{- $crt.Cert -}}
+            {% endraw %}
+          tls.key: |-
+            {% raw %}{{ $.Values._shared.crt.Key }}{% endraw %}
+    service:
+      type: NodePort
+      httpNodePort: 30303
+      httpsNodePort: 30304
+
+    # Check database readiness at startup
+    dbchecker:
+      enabled: false  # requires additional image
+
+    database:
+      vendor: postgres
+      hostname: AUTOCONFIGURED
+      database: keycloak
+      port: 5432
+      username: keycloak
+      password: PASSWORD_TO_CHANGE
+
+    # ref: https://www.keycloak.org/server/reverseproxy
+    proxy:
+      enabled: true
+      mode: passthrough
+
+    metrics:
+      enabled: false
+
+    http:
+      relativePath: /  # /auth before Quarkus

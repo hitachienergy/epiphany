@@ -1,0 +1,9 @@
+---
+"$id": "#/specification"
+title: Keycloak specification schema
+description: Keycloak specification schema
+type: object
+# TODO:
+properties:
+  database:
+    type: object

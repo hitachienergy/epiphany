@@ -44,3 +44,9 @@
   when:
     - groups.postgresql is defined
     - groups.postgresql | length > 0
+
+- name: Keycloak checks
+  include_tasks: roles/keycloak/tasks/preflight/apply.yml
+  when:
+    - groups.keycloak is defined
+    - groups.keycloak | length > 0

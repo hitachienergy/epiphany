@@ -1,6 +1,0 @@
----
-- name: Auth-service | Ensure database is defined
-  assert:
-    that: groups.postgresql is defined or data.database.address is defined
-    fail_msg: At least one Postgresql component or database address has to be defined.
-    success_msg: Database provided

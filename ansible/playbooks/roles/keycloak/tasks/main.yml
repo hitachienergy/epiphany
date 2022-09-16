@@ -1,0 +1,38 @@
+---
+- name: Include database configuration when Epiphany storage is used
+  include_tasks: create-database.yml
+  when: specification.database.epiphany_managed
+  vars:
+    _chart_values: "{{ specification.chart_values }}"
+
+- name: Download Keycloak Helm chart
+  include_role:
+    name: download
+    tasks_from: download_file
+  vars:
+    file_name: "{{ keycloak_helm_chart_file_name }}"
+    repository_url: "{{ custom_repository_url | default('http://localhost/epirepo', true) }}"
+
+# Load chart values that dynamically override those specified under specification.chart_values
+- name: Load dynamic values from template
+  set_fact:
+    dynamic_values: "{{ lookup('template', 'dynamic-chart-values.yml.j2') | from_yaml }}"
+  vars:
+    _chart_values: "{{ specification.chart_values }}"
+
+- name: Create configuration file for Helm chart
+  copy:
+    content: |
+      {{ specification.chart_values | combine(dynamic_values, recursive=True) | to_nice_yaml }}
+    dest: '{{ vault_location }}/keycloak-chart-values.yml'
+    mode: u=rwx,go=
+
+- name: Install Keycloak with Helm chart
+  command: |
+    helm upgrade keycloak {{ download_directory }}/{{ keycloak_helm_chart_file_name }} \
+      -f {{ vault_location }}/keycloak-chart-values.yml \
+      -n {{ specification.namespace }} \
+      --create-namespace \
+      --install
+
+# TODO: Encrypt/remove values
