@@ -6,15 +6,17 @@ if countInventoryHosts('logging') < 1
   exit 0
 end
 
+config_doc = readDataYaml('configuration/logging')
+
 # Configurable passwords for ES users were introduced in v0.10.0.
 # For testing upgrades, we use default passwords for now but they should be read from filebeat.yml (remote host).
-es_filebeat_user_password  = readDataYaml('configuration/logging')['specification']['filebeatservice_password'] || 'PASSWORD_TO_CHANGE'
+es_filebeat_user_password  = config_doc['specification']['filebeatservice_password'] || 'PASSWORD_TO_CHANGE'
 es_filebeat_user_is_active = !listInventoryHosts('logging').empty?
-es_logstash_user_is_active = !readDataYaml('configuration/logging')['specification']['logstash_user_active'].nil?
+es_logstash_user_is_active = !config_doc['specification']['logstash_user_active'].nil?
 
 filebeat_user = es_logstash_user_is_active ? 'logstash' : 'filebeatservice'
 
-es_kibanaserver_user_password  = readDataYaml('configuration/logging')['specification']['kibanaserver_password'] || 'kibanaserver'
+es_kibanaserver_user_password  = config_doc['specification']['kibanaserver_password'] || 'kibanaserver'
 es_kibanaserver_user_is_active = !listInventoryHosts('logging').empty?
 
 es_api_port     = 9200
