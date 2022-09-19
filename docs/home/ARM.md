@@ -206,23 +206,6 @@ provider: any
 name: default
 specification:
   applications:
-  - name: auth-service # requires PostgreSQL to be installed in cluster
-    enabled: true
-    image_path: epiphanyplatform/keycloak:9.0.0
-    use_local_image_registry: true
-    #image_pull_secret_name: regcred
-    service:
-      name: as-testauthdb
-      port: 30104
-      replicas: 2
-      namespace: namespace-for-auth
-      admin_user: auth-service-username
-      admin_password: PASSWORD_TO_CHANGE
-    database:
-      name: auth-database-name
-      #port: "5432" # leave it when default
-      user: auth-db-user
-      password: PASSWORD_TO_CHANGE
   - name: rabbitmq
     enabled: true
     image_path: rabbitmq:3.8.9

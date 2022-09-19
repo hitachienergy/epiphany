@@ -71,7 +71,7 @@ For more information, refer to [the official documentation](https://kubernetes.i
 To check the if a Keycloak service deployed on Kubernetes is running with the command:
 
 ```shell
-kubectl get pods --kubeconfig=/etc/kubernetes/admin.conf --namespace=keycloak_service_namespace --field-selector=status.phase=Running | grep keycloak_service_name
+kubectl get pods --kubeconfig=/etc/kubernetes/admin.conf --namespace=keycloak --field-selector=status.phase=Running | grep keycloak
 ```
 
 #### - HAProxy

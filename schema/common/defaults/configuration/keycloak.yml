@@ -169,8 +169,8 @@ specification:
             {% raw %}{{ $.Values._shared.crt.Key }}{% endraw %}
     service:
       type: NodePort
-      httpNodePort: 30303
-      httpsNodePort: 30304
+      httpNodePort: 30103
+      httpsNodePort: 30104
 
     # Check database readiness at startup
     dbchecker:
