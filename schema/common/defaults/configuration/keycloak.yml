@@ -31,17 +31,14 @@ specification:
 
     # Overrides the default args for the Keycloak container
     args:
-      - '--verbose'
+      - '--verbose'  # print out error details
       - 'start'
-      # TODO:
-      - '--http-enabled=false'
-      - '--hostname-strict=false'
-      - '--hostname-strict-https=true'
-      # - "--spi-events-listener-jboss-logging-success-level=info"
-      # - "--spi-events-listener-jboss-logging-error-level=warn"
+      # - '--http-enabled=true'
+      - '--hostname-strict=false'  # resolve hostname from request headers
+      # - '--spi-events-listener-jboss-logging-success-level=info'  # enable successful events in logs
 
-    extraEnv: |
-      {% raw %}
+    extraEnv: |-
+      {%- raw -%}
       - name: KEYCLOAK_ADMIN
         valueFrom:
           secretKeyRef:
@@ -62,12 +59,12 @@ specification:
         value: /mnt/certificates/tls.crt
       - name: KC_HTTPS_CERTIFICATE_KEY_FILE
         value: /mnt/certificates/tls.key
-      {% endraw %}
+      {%- endraw %}
 
     # Probes configuration based on https://github.com/keycloak/keycloak/blob/19.0/operator/src/main/java/org/keycloak/operator/controllers/KeycloakDeployment.java
 
-    livenessProbe: |
-      {% raw %}
+    livenessProbe: |-
+      {%- raw -%}
       exec:
         command:
           - curl
@@ -85,8 +82,8 @@ specification:
       periodSeconds: 2
       failureThreshold: 15
 
-    readinessProbe: |
-      {% raw %}
+    readinessProbe: |-
+      {%- raw -%}
       exec:
         command:
           - curl
@@ -104,8 +101,8 @@ specification:
       periodSeconds: 2
       failureThreshold: 15
 
-    startupProbe: |
-      {% raw %}
+    startupProbe: |-
+      {%- raw -%}
       exec:
         command:
           - curl
@@ -123,24 +120,24 @@ specification:
       periodSeconds: 1
       failureThreshold: 300
 
-    # TODO: measure
     resources:
       limits:
+        # cpu: 1000m
         memory: 512Mi
       requests:
         cpu: 50m
         memory: 512Mi
 
-    extraVolumes: |
-      - name: keycloak-tls-certificate
+    extraVolumes: |-
+      - name: keycloak-tls-certificates
         secret:
           defaultMode: 420
           optional: false
-          secretName: {% raw %}{{ include "keycloak.fullname" . }}{% endraw %}-tls-certificate
+          secretName: {% raw %}{{ include "keycloak.fullname" . }}{% endraw %}-tls-certificates
 
-    extraVolumeMounts: |
+    extraVolumeMounts: |-
       - mountPath: /mnt/certificates
-        name: keycloak-tls-certificate
+        name: keycloak-tls-certificates
 
     # Configuration for secrets that should be created
     secrets:
@@ -152,22 +149,22 @@ specification:
       ca:
         stringData:
           ca.crt: |-
-            {% raw %}
+            {%- raw -%}
             {{- $ca := genCA "epiphany-keycloak-ca" 3650 }}
             {{- $_ := set $.Values "_shared" dict }}
             {{- $_ := set $.Values._shared "ca" $ca }}
             {{- $ca.Cert -}}
-            {% endraw %}
-      tls-certificate:
+            {%- endraw %}
+      tls-certificates:
         type: kubernetes.io/tls
         stringData:
           tls.crt: |-
-            {% raw %}
+            {%- raw -%}
             {{- $altNames := list "keycloak.keycloak.svc.cluster.local" "keycloak" }}
             {{- $crt := genSignedCert "keycloak.keycloak.svc.cluster.local" nil $altNames 3650 $.Values._shared.ca }}
             {{- $_ := set $.Values._shared "crt" $crt }}
             {{- $crt.Cert -}}
-            {% endraw %}
+            {%- endraw %}
           tls.key: |-
             {% raw %}{{ $.Values._shared.crt.Key }}{% endraw %}
     service:

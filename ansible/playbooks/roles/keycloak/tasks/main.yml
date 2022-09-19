@@ -13,6 +13,15 @@
     file_name: "{{ keycloak_helm_chart_file_name }}"
     repository_url: "{{ custom_repository_url | default('http://localhost/epirepo', true) }}"
 
+- name: Include vars from application role
+  include_vars:
+    file: roles/applications/vars/main.yml
+    name: applications_vars
+  when:
+    - specification.database.epiphany_managed
+    - specification.chart_values.database.hostname | lower == 'autoconfigured'
+    - groups.postgresql | count > 1
+
 # Load chart values that dynamically override those specified under specification.chart_values
 - name: Load dynamic values from template
   set_fact:
@@ -35,4 +44,7 @@
       --create-namespace \
       --install
 
-# TODO: Encrypt/remove values
+- name: Remove temporary file  # contains sensitive data
+  file:
+    path: '{{ vault_location }}/keycloak-chart-values.yml'
+    state: absent
