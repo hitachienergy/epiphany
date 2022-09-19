@@ -318,7 +318,7 @@ output.elasticsearch:
   username: filebeatservice
   password: {{ "'%s'" % logging_vars.specification.filebeatservice_password | replace("'","''") }}
   {% else %}
-  username: logstash
+  username: {{ "'%s'" % existing_output_es_username | replace("'","''") }}
   password: {{ "'%s'" % existing_output_es_password | replace("'","''") }}
   {% endif %}
 

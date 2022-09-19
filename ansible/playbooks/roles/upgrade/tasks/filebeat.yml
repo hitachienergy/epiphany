@@ -102,6 +102,8 @@
       vars:
         existing_output_es_password: >-
           {{ _filebeat_existing_config['output.elasticsearch'].password }}
+        existing_output_es_username: >-
+          {{ _filebeat_existing_config['output.elasticsearch'].username }}
         existing_setup_dashboards:
           enabled: >-
             {{ _filebeat_existing_config['setup.dashboards.enabled'] | default(False) }}

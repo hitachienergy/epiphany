@@ -12,6 +12,8 @@
 
 ### Fixed
 
+- [#3271](https://github.com/epiphany-platform/epiphany/issues/3271) - Filebeat not shipping logs to OpenSearch after upgrading epicli from v2.0.1
+
 ### Updated
 
 - [#3257](https://github.com/epiphany-platform/epiphany/issues/3257) - Upgrade ansible-core to 2.13 (ansible 6)
