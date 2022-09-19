@@ -83,7 +83,11 @@ class BaseMode:
         return reqs
 
     def __check_connection(self, url: str) -> bool:
-        return self._tools.wget.check_connection(url)
+        if self._tools.wget.check_connection(url):
+            return True
+
+        logging.warning('Could not connect to: `{url}`')
+        return False
 
     def _create_backup_repositories(self):
         """
@@ -157,16 +161,13 @@ class BaseMode:
         """
         downloader: Downloader = AltAddrDownloader(files, 'sha256', self._download_file)
         for req_file in files:
-            file_to_download, root_key = files[req_file]['primary']['url'], 'primary'
-            if not self.__check_connection(file_to_download):
-                logging.warning('Could not connect to: `{file_to_download}`, trying secondary address...')
-                try:
-                    file_to_download, root_key = files[req_file]['secondary']['url'], 'secondary'
-                except KeyError as ke:
-                    raise CriticalError(f'No secondary address provided for {file_to_download}') from ke
-
-            filepath = dest / file_to_download.split('/')[-1]
-            downloader.download(req_file, filepath, root_key, 'url')
+            for option_idx, option in enumerate(files[req_file]['options']):
+                file_to_download = option['url']
+                if self.__check_connection(file_to_download):
+                    filepath = dest / file_to_download.split('/')[-1]
+                    downloader.download(req_file, filepath, option_idx, 'url')
+                    continue
+                raise CriticalError(f'No more addresses available for {file_to_download}')
 
     def __download_grafana_dashboards(self):
         """
@@ -188,10 +189,12 @@ class BaseMode:
         first_crane = next(iter(cranes))  # right now we use only single crane source
 
         downloader: Downloader = AltAddrDownloader(cranes, 'sha256', self._download_crane_binary)
-        if self.__check_connection(cranes[first_crane]['primary']['url']):
-            downloader.download(first_crane, crane_package_path, 'primary', 'url')
-        else:
-            downloader.download(first_crane, crane_package_path, 'secondary', 'url')
+        for option_idx, option in enumerate(cranes[first_crane]['options']):
+            crane_to_download = option['url']
+            if self.__check_connection(crane_to_download):
+                downloader.download(first_crane, crane_package_path, option_idx, 'url')
+                continue
+            raise CriticalError(f'No more addresses available for {crane_to_download}')
 
         if not crane_path.exists():
             self._tools.tar.unpack(crane_package_path, Path('crane'), directory=self._cfg.dest_dir)

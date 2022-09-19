@@ -2,71 +2,71 @@
 files:
   # --- Exporters ---
   kafka-exporter:
-    primary:
-      url: 'https://github.com/danielqsj/kafka_exporter/releases/download/v1.4.0/kafka_exporter-1.4.0.linux-arm64.tar.gz'
-      sha256: 95ff0c723f3cdb6967b54c0208a5d0e67ad59dc53c1907a401cb8a448e53ec96
+    options:
+      - url: 'https://github.com/danielqsj/kafka_exporter/releases/download/v1.4.0/kafka_exporter-1.4.0.linux-arm64.tar.gz'
+        sha256: 95ff0c723f3cdb6967b54c0208a5d0e67ad59dc53c1907a401cb8a448e53ec96
     deps: [kafka-exporter]
 
   jmx-prometheus-javaagent:
-    primary:
-      url: 'https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.16.1/jmx_prometheus_javaagent-0.16.1.jar'
-      sha256: 0ddc6834f854c03d5795305193c1d33132a24fbd406b4b52828602f5bc30777e
+    options:
+      - url: 'https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.16.1/jmx_prometheus_javaagent-0.16.1.jar'
+        sha256: 0ddc6834f854c03d5795305193c1d33132a24fbd406b4b52828602f5bc30777e
     deps: [kafka]
 
   node-exporter:
-    primary:
-      url: 'https://github.com/prometheus/node_exporter/releases/download/v1.3.1/node_exporter-1.3.1.linux-arm64.tar.gz'
-      sha256: f19f35175f87d41545fa7d4657e834e3a37c1fe69f3bf56bc031a256117764e7
+    options:
+      - url: 'https://github.com/prometheus/node_exporter/releases/download/v1.3.1/node_exporter-1.3.1.linux-arm64.tar.gz'
+        sha256: f19f35175f87d41545fa7d4657e834e3a37c1fe69f3bf56bc031a256117764e7
     deps: [node-exporter]
 
   postgres-exporter:
-    primary:
-      url: 'https://github.com/prometheus-community/postgres_exporter/releases/download/v0.10.0/postgres_exporter-0.10.0.linux-arm64.tar.gz'
-      sha256: 82a1a4e07c7140f8e55532dbbdfea3bbba33dafc7ef0a221601bb2fd5359ff03
+    options:
+      - url: 'https://github.com/prometheus-community/postgres_exporter/releases/download/v0.10.0/postgres_exporter-0.10.0.linux-arm64.tar.gz'
+        sha256: 82a1a4e07c7140f8e55532dbbdfea3bbba33dafc7ef0a221601bb2fd5359ff03
     deps: [postgres-exporter]
 
   # --- Misc ---
   kafka:
-    primary:
-      url: 'https://archive.apache.org/dist/kafka/2.8.1/kafka_2.12-2.8.1.tgz'
-      sha256: 175a4134efc569a586d58916cd16ce70f868b13dea2b5a3d12a67b1395d59f98
+    options:
+      - url: 'https://archive.apache.org/dist/kafka/2.8.1/kafka_2.12-2.8.1.tgz'
+        sha256: 175a4134efc569a586d58916cd16ce70f868b13dea2b5a3d12a67b1395d59f98
     deps: [kafka]
 
   apache-zookeeper:
-    primary:
-      url: 'https://archive.apache.org/dist/zookeeper/zookeeper-3.5.8/apache-zookeeper-3.5.8-bin.tar.gz'
-      sha256: c35ed6786d59b73920243f1a324d24c2ddfafb379041d7a350cc9a341c52caf3
+    options:
+      - url: 'https://archive.apache.org/dist/zookeeper/zookeeper-3.5.8/apache-zookeeper-3.5.8-bin.tar.gz'
+        sha256: c35ed6786d59b73920243f1a324d24c2ddfafb379041d7a350cc9a341c52caf3
     deps: [zookeeper]
 
   alertmanager:
-    primary:
-      url: 'https://github.com/prometheus/alertmanager/releases/download/v0.23.0/alertmanager-0.23.0.linux-arm64.tar.gz'
-      sha256: afa44f350797032ceb714598900cfdddbf81d6ef03d2ecbfc0221cc2cb28a6b9
+    options:
+      - url: 'https://github.com/prometheus/alertmanager/releases/download/v0.23.0/alertmanager-0.23.0.linux-arm64.tar.gz'
+        sha256: afa44f350797032ceb714598900cfdddbf81d6ef03d2ecbfc0221cc2cb28a6b9
     deps: [prometheus]
 
   prometheus:
-    primary:
-      url: 'https://github.com/prometheus/prometheus/releases/download/v2.31.1/prometheus-2.31.1.linux-arm64.tar.gz'
-      sha256: a7b4694b96cbf38b63ca92d05a6d3a2cf6df50a85a4d2a3fe2d758a65dcbec3b
+    options:
+      - url: 'https://github.com/prometheus/prometheus/releases/download/v2.31.1/prometheus-2.31.1.linux-arm64.tar.gz'
+        sha256: a7b4694b96cbf38b63ca92d05a6d3a2cf6df50a85a4d2a3fe2d758a65dcbec3b
     deps: [prometheus]
 
   helm:
-    primary:
-      url: 'https://get.helm.sh/helm-v3.2.0-linux-arm64.tar.gz'
-      sha256: cd11f0ed12a658f3b78392528814350a508d2c53d8da7f04145909e94bda10f1
+    options:
+      - url: 'https://get.helm.sh/helm-v3.2.0-linux-arm64.tar.gz'
+        sha256: cd11f0ed12a658f3b78392528814350a508d2c53d8da7f04145909e94bda10f1
     deps: [helm]
 
   # --- Helm charts ---
   node-exporter-chart:
-    primary:
-      url: 'https://charts.bitnami.com/bitnami/node-exporter-2.3.17.tgz'
-      sha256: ec586fabb775a4f05510386899cf348391523c89ff5a1d4097b0592e675ade7f
+    options:
+      - url: 'https://charts.bitnami.com/bitnami/node-exporter-2.3.17.tgz'
+        sha256: ec586fabb775a4f05510386899cf348391523c89ff5a1d4097b0592e675ade7f
     deps: [kubernetes-master, k8s-as-cloud-service]
 
   filebeat-chart:
-    primary:
-      url: 'https://helm.elastic.co/helm/filebeat/filebeat-7.12.1.tgz'
-      sha256: 5838058fe06372390dc335900a7707109cc7287a84164ca245d395af1f9c0a79
+    options:
+      - url: 'https://helm.elastic.co/helm/filebeat/filebeat-7.12.1.tgz'
+        sha256: 5838058fe06372390dc335900a7707109cc7287a84164ca245d395af1f9c0a79
     deps: [kubernetes-master, k8s-as-cloud-service]
 
   'https://github.com/codecentric/helm-charts/releases/download/keycloakx-1.6.0/keycloakx-1.6.0.tgz':
@@ -75,13 +75,13 @@ files:
 
   # --- OpenSearch Bundle ---
   opensearch:
-    primary:
-      url: 'https://artifacts.opensearch.org/releases/bundle/opensearch/1.2.4/opensearch-1.2.4-linux-arm64.tar.gz'
-      sha256: 5e8cd13ad1831e4a286a54334505c16c43ce8e50981100eea4eb18f79d3e63a5
+    options:
+      - url: 'https://artifacts.opensearch.org/releases/bundle/opensearch/1.2.4/opensearch-1.2.4-linux-arm64.tar.gz'
+        sha256: 5e8cd13ad1831e4a286a54334505c16c43ce8e50981100eea4eb18f79d3e63a5
     deps: [logging, opensearch]
 
   opensearch-dashboards:
-    primary:
-      url: 'https://artifacts.opensearch.org/releases/bundle/opensearch-dashboards/1.2.0/opensearch-dashboards-1.2.0-linux-arm64.tar.gz'
-      sha256: 1f668d98f4670f1b88f03b19d30b2cc44ec439a7b2edff1a48034717d594cfe1
+    options:
+      - url: 'https://artifacts.opensearch.org/releases/bundle/opensearch-dashboards/1.2.0/opensearch-dashboards-1.2.0-linux-arm64.tar.gz'
+        sha256: 1f668d98f4670f1b88f03b19d30b2cc44ec439a7b2edff1a48034717d594cfe1
     deps: [logging, opensearch]
