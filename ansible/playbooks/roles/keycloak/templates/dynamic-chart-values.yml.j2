@@ -16,6 +16,6 @@ database:
   {% if groups.postgresql | count == 1 %}
   hostname: {{ hostvars[groups.postgresql[0]].ansible_default_ipv4.address }}
   {% else %}
-  hostname: {{ applications_vars.specification.applications | selectattr('name', '==', 'pgbouncer') | first).pgbouncer.env.DB_HOST }}
+  hostname: {{ (applications_vars.specification.applications | selectattr('name', '==', 'pgbouncer') | first).pgbouncer.env.DB_HOST }}
   {% endif %}
 {% endif %}
