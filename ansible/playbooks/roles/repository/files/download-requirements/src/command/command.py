@@ -57,7 +57,8 @@ class Command:
             if process.returncode == 0:
                 return process
 
-            logging.warning(process.stderr)
+            if process.stderr:
+                logging.warning(process.stderr)
 
         raise CriticalError(f'Retries count reached maximum, command: `{self.__command}`')
 
@@ -86,7 +87,7 @@ class Command:
             if rproc.returncode == 0:
                 return output
 
-            logging.warning(lproc.stderr if not lproc.returncode == 0 else rproc.stderr)
+            logging.warning(lproc.stderr if lproc.returncode != 0 else rproc.stderr)
 
         raise CriticalError(f'Retries count reached maximum, command: `{self.__command}`')
 

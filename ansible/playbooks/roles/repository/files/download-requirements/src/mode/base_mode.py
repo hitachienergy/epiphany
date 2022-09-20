@@ -83,10 +83,12 @@ class BaseMode:
         return reqs
 
     def __check_connection(self, url: str) -> bool:
-        if self._tools.wget.check_connection(url):
-            return True
+        try:
+            if self._tools.wget.check_connection(url):
+                return True
+        except CriticalError:
+            logging.warning(f'Could not connect to: `{url}`')
 
-        logging.warning('Could not connect to: `{url}`')
         return False
 
     def _create_backup_repositories(self):
@@ -162,12 +164,16 @@ class BaseMode:
         downloader: Downloader = AltAddrDownloader(files, 'sha256', self._download_file)
         for req_file in files:
             for option_idx, option in enumerate(files[req_file]['options']):
+                file_downloaded: bool = False
                 file_to_download = option['url']
                 if self.__check_connection(file_to_download):
                     filepath = dest / file_to_download.split('/')[-1]
                     downloader.download(req_file, filepath, option_idx, 'url')
+                    file_downloaded = True
                     continue
-                raise CriticalError(f'No more addresses available for {file_to_download}')
+
+            if not file_downloaded:
+                raise CriticalError(f'No more addresses available for {req_file}')
 
     def __download_grafana_dashboards(self):
         """
@@ -190,11 +196,15 @@ class BaseMode:
 
         downloader: Downloader = AltAddrDownloader(cranes, 'sha256', self._download_crane_binary)
         for option_idx, option in enumerate(cranes[first_crane]['options']):
+            crane_downloaded: bool = False
             crane_to_download = option['url']
             if self.__check_connection(crane_to_download):
                 downloader.download(first_crane, crane_package_path, option_idx, 'url')
+                crane_downloaded = True
                 continue
-            raise CriticalError(f'No more addresses available for {crane_to_download}')
+
+        if not crane_downloaded:
+            raise CriticalError(f'No more addresses available for {first_crane}')
 
         if not crane_path.exists():
             self._tools.tar.unpack(crane_package_path, Path('crane'), directory=self._cfg.dest_dir)
