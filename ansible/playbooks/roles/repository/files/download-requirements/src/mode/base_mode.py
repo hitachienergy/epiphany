@@ -10,7 +10,7 @@ from src.config.manifest_reader import load_yaml_file
 from src.crypt import SHA_ALGORITHMS
 from src.downloader.alt_addr_downloader import AltAddrDownloader
 from src.downloader.downloader import Downloader
-from src.error import CriticalError, ChecksumMismatch
+from src.error import CriticalError, ChecksumMismatch, RetriesExceeded
 
 
 class BaseMode:
@@ -86,7 +86,7 @@ class BaseMode:
         try:
             if self._tools.wget.check_connection(url):
                 return True
-        except CriticalError:
+        except RetriesExceeded:
             logging.warning(f'Could not connect to: `{url}`')
 
         return False
@@ -161,7 +161,7 @@ class BaseMode:
         :param files: to be downloaded
         :param dest: where to save the files
         """
-        downloader: Downloader = AltAddrDownloader(files, 'sha256', self._download_file)
+        downloader: AltAddrDownloader = AltAddrDownloader(files, 'sha256', self._download_file)
         for req_file in files:
             for option_idx, option in enumerate(files[req_file]['options']):
                 file_downloaded: bool = False
@@ -171,6 +171,8 @@ class BaseMode:
                     downloader.download(req_file, filepath, option_idx, 'url')
                     file_downloaded = True
                     continue
+
+                logging.info('Trying different mirror...')
 
             if not file_downloaded:
                 raise CriticalError(f'No more addresses available for {req_file}')
@@ -194,7 +196,7 @@ class BaseMode:
         cranes = self._requirements['cranes']
         first_crane = next(iter(cranes))  # right now we use only single crane source
 
-        downloader: Downloader = AltAddrDownloader(cranes, 'sha256', self._download_crane_binary)
+        downloader: AltAddrDownloader = AltAddrDownloader(cranes, 'sha256', self._download_crane_binary)
         for option_idx, option in enumerate(cranes[first_crane]['options']):
             crane_downloaded: bool = False
             crane_to_download = option['url']
@@ -202,6 +204,8 @@ class BaseMode:
                 downloader.download(first_crane, crane_package_path, option_idx, 'url')
                 crane_downloaded = True
                 continue
+
+            logging.info('Trying different mirror...')
 
         if not crane_downloaded:
             raise CriticalError(f'No more addresses available for {first_crane}')

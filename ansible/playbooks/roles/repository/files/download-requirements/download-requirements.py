@@ -9,7 +9,7 @@ from typing import List
 
 from src.command.toolchain import TOOLCHAINS
 from src.config.config import Config
-from src.error import DownloadRequirementsException
+from src.error import DownloadRequirementsException, RetriesExceeded
 
 
 def install_missing_modules(config: Config):
@@ -79,6 +79,9 @@ def main(argv: List[str]) -> int:
 
         time_end = datetime.datetime.now() - time_begin
         logging.info(f'Total execution time: {str(time_end).split(".")[0]}')
+    except RetriesExceeded:
+        logging.error('No alternatives available, exiting...')
+        return 2
     except DownloadRequirementsException:
         return 1
 

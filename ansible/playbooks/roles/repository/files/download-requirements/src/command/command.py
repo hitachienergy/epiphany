@@ -2,7 +2,7 @@ import logging
 import subprocess
 from typing import List
 
-from src.error import CriticalError
+from src.error import RetriesExceeded
 
 
 class Command:
@@ -60,7 +60,7 @@ class Command:
             if process.stderr:
                 logging.warning(process.stderr)
 
-        raise CriticalError(f'Retries count reached maximum, command: `{self.__command}`')
+        raise RetriesExceeded(f'Retries count reached maximum, command: `{self.__command}`')
 
     def __or__(self, command) -> str:
         """
@@ -89,7 +89,7 @@ class Command:
 
             logging.warning(lproc.stderr if lproc.returncode != 0 else rproc.stderr)
 
-        raise CriticalError(f'Retries count reached maximum, command: `{self.__command}`')
+        raise RetriesExceeded(f'Retries count reached maximum, command: `{self.__command}`')
 
     def _run_and_filter(self, args: List[str]) -> List[str]:
         """
