@@ -154,6 +154,28 @@ class BaseMode:
             filepath = dest / package_file.split('/')[-1]
             downloader.download(package_file, filepath)
 
+    def __download_file(self, files: Dict[str, Dict], req_file: str, downloader: AltAddrDownloader, dest: Path):
+        """
+        Download `req_file` using `downloader`.
+
+        :param files: file entries from a requirements yaml
+        :param req_file: entry from `files` to be downloaded
+        :param downloader: wrapper to be used for downloading `req_file`
+        :param dest: where to save the file
+        """
+        file_options = files[req_file]['options']
+        for option_idx, option in enumerate(file_options):
+            file_to_download = option['url']
+            if self.__check_connection(file_to_download):
+                filepath = dest / file_to_download.split('/')[-1]
+                downloader.download(req_file, filepath, option_idx, 'url')
+                return
+
+            if option_idx != len(file_options) - 1:
+                logging.info('Trying different mirror...')
+
+        raise CriticalError(f'No more addresses available for {req_file}')
+
     def __download_files(self, files: Dict[str, Dict], dest: Path):
         """
         Download files under `self._requirements['files']`
@@ -163,19 +185,7 @@ class BaseMode:
         """
         downloader: AltAddrDownloader = AltAddrDownloader(files, 'sha256', self._download_file)
         for req_file in files:
-            for option_idx, option in enumerate(files[req_file]['options']):
-                file_downloaded: bool = False
-                file_to_download = option['url']
-                if self.__check_connection(file_to_download):
-                    filepath = dest / file_to_download.split('/')[-1]
-                    downloader.download(req_file, filepath, option_idx, 'url')
-                    file_downloaded = True
-                    continue
-
-                logging.info('Trying different mirror...')
-
-            if not file_downloaded:
-                raise CriticalError(f'No more addresses available for {req_file}')
+            self.__download_file(files, req_file, downloader, dest)
 
     def __download_grafana_dashboards(self):
         """
@@ -191,27 +201,20 @@ class BaseMode:
         """
         Download Crane package if needed and setup it's environment.
         """
-        crane_path = self._cfg.dest_dir / 'crane'
-        crane_package_path = Path(f'{crane_path}.tar.gz')
         cranes = self._requirements['cranes']
         first_crane = next(iter(cranes))  # right now we use only single crane source
 
+        crane_path = self._cfg.dest_dir / 'cranes'
+        crane_path.mkdir(exist_ok=True, parents=True)
+
         downloader: AltAddrDownloader = AltAddrDownloader(cranes, 'sha256', self._download_crane_binary)
-        for option_idx, option in enumerate(cranes[first_crane]['options']):
-            crane_downloaded: bool = False
-            crane_to_download = option['url']
-            if self.__check_connection(crane_to_download):
-                downloader.download(first_crane, crane_package_path, option_idx, 'url')
-                crane_downloaded = True
-                continue
+        self.__download_file(cranes, first_crane, downloader, crane_path)
 
-            logging.info('Trying different mirror...')
+        if not (crane_path / 'crane').exists():
+            # grab newest downloaded crane file:
+            crane_file = sorted(list(crane_path.iterdir()), key=lambda crane: crane.stat().st_mtime)[0]
 
-        if not crane_downloaded:
-            raise CriticalError(f'No more addresses available for {first_crane}')
-
-        if not crane_path.exists():
-            self._tools.tar.unpack(crane_package_path, Path('crane'), directory=self._cfg.dest_dir)
+            self._tools.tar.unpack(crane_file, Path('crane'), directory=self._cfg.dest_dir)
             chmod(crane_path, 0o0755)
 
         # create symlink to the crane file so that it'll be visible in shell
