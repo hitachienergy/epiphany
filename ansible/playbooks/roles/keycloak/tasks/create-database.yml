@@ -44,11 +44,6 @@
     - create_keycloak_user.changed
     - groups.postgresql | count > 1 or "'pgbouncer' in _chart_values.database.hostname"
   block:
-    - name: Include vars from application role
-      include_vars:
-        file: roles/applications/vars/main.yml
-        name: applications_vars
-
     - name: Restart PgPool deployment to update pool_passwd file
       command: |
         kubectl rollout restart deployment/pgpool -n {{ _namespace }}

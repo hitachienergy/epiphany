@@ -1,9 +1,17 @@
 ---
-- name: Include database configuration when Epiphany storage is used
-  include_tasks: create-database.yml
+- name: Provide database
   when: specification.database.epiphany_managed
   vars:
     _chart_values: "{{ specification.chart_values }}"
+  block:
+    - name: Include vars from application role
+      include_vars:
+        file: roles/applications/vars/main.yml
+        name: applications_vars
+      when: groups.postgresql | count > 1 or "'pgbouncer' in _chart_values.database.hostname"
+
+    - name: Include database configuration when Epiphany storage is used
+      include_tasks: create-database.yml
 
 - name: Download Keycloak Helm chart
   include_role:
@@ -12,15 +20,6 @@
   vars:
     file_name: "{{ keycloak_helm_chart_file_name }}"
     repository_url: "{{ custom_repository_url | default('http://localhost/epirepo', true) }}"
-
-- name: Include vars from application role
-  include_vars:
-    file: roles/applications/vars/main.yml
-    name: applications_vars
-  when:
-    - specification.database.epiphany_managed
-    - specification.chart_values.database.hostname | lower == 'autoconfigured'
-    - groups.postgresql | count > 1
 
 # Load chart values that dynamically override those specified under specification.chart_values
 - name: Load dynamic values from template
