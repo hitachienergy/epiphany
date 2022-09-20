@@ -50,5 +50,7 @@ specification:
       enabled: true
     - name: applications
       enabled: true
+    - name: keycloak
+      enabled: true
     - name: rook
       enabled: true

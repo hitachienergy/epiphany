@@ -574,15 +574,6 @@ specification:
       count: 0
     single_machine:
       count: 1
----
-kind: configuration/applications
-title: "Kubernetes Applications Config"
-name: default
-specification:
-  applications:
-  - name: auth-service
-    enabled: yes # set to yest to enable authentication service
-    ... # add other authentication service configuration as needed
 ```
 
 To create a single machine cluster using the "any" provider (with extra load\_balancer config included) use the following template below:

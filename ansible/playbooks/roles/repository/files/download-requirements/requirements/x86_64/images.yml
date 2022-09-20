@@ -16,11 +16,12 @@ images:
     'bitnami/pgbouncer:1.16.0':
       sha1: 953a8b57083234b2762c375badc80a7168974b60
 
-    'epiphanyplatform/keycloak:14.0.0':
-      sha1: c408b75a4b6d79f11854559e6433a2e6498ee8f9
-
     'rabbitmq:3.8.9':
       sha1: 2705b05f9ac0bda6a4136fc8d66dc99295daa95d
+
+  keycloak:
+    'quay.io/keycloak/keycloak:19.0.2':
+      sha1: ffbe5f8fff32eaa1f14043c5aa5f558a4ba17b52
 
   kubernetes-master:
     # for HA configuration

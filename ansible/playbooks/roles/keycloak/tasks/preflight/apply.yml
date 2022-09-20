@@ -1,0 +1,38 @@
+---
+- name: Keycloak checks
+  run_once: true
+  delegate_to: localhost
+  module_defaults:
+    assert:
+      quiet: true
+  block:
+    - name: Include vars from keycloak role
+      include_vars:
+        file: roles/keycloak/vars/main.yml
+        name: keycloak_vars
+
+    - name: Assert postgresql component
+      when: keycloak_vars.specification.database.epiphany_managed
+      block:
+        - name: Ensure postgresql is provided
+          assert:
+            that:
+              - groups.postgresql is defined
+              - groups.postgresql | count > 0
+            fail_msg: At least one postgresql component has to be defined
+
+        - name: Execute if Postgresql is not standalone instance
+          when: groups.postgresql | count > 1
+          block:
+            - name: Include vars from application role
+              include_vars:
+                file: roles/applications/vars/main.yml
+                name: applications_vars
+
+            - name: Assert PgBouncer is enabled
+              assert:
+                that: "{{ _app_statuses['pgbouncer'] }}"
+                fail_msg: PgBouncer is not enabled
+              vars:
+                _app_statuses: >-
+                  {{ applications_vars.specification.applications | items2dict(key_name='name', value_name='enabled') }}

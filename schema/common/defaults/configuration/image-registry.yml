@@ -11,14 +11,15 @@ specification:
     x86_64:
       generic:
         applications:
-          - name: "epiphanyplatform/keycloak:14.0.0"
-            file_name: keycloak-14.0.0.tar
           - name: "rabbitmq:3.8.9"
             file_name: rabbitmq-3.8.9.tar
           - name: "bitnami/pgpool:4.2.4"
             file_name: pgpool-4.2.4.tar
           - name: "bitnami/pgbouncer:1.16.0"
             file_name: pgbouncer-1.16.0.tar
+        keycloak:
+          - name: "quay.io/keycloak/keycloak:19.0.2"
+            file_name: keycloak-19.0.2.tar
         kubernetes-master:
           - name: "kubernetesui/dashboard:v2.3.1"
             file_name: dashboard-v2.3.1.tar
@@ -159,10 +160,11 @@ specification:
     aarch64:
       generic:
         applications:
-          - name: "epiphanyplatform/keycloak:14.0.0"
-            file_name: keycloak-14.0.0.tar
           - name: "rabbitmq:3.8.9"
             file_name: rabbitmq-3.8.9.tar
+        keycloak:
+          - name: "quay.io/keycloak/keycloak:19.0.2"
+            file_name: keycloak-19.0.2.tar
         kubernetes-master:
           - name: "kubernetesui/dashboard:v2.3.1"
             file_name: dashboard-v2.3.1.tar

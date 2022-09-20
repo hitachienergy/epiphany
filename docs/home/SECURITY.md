@@ -117,7 +117,7 @@ different values. The list does not include ports that are bound to the loopback
 
 13. Kubernetes apps:
 
-    - 30104 - auth-service (Keycloak)
+    - 30103,30104 - Keycloak
     - 30672,31672 - RabbitMQ (AMQP, management)
 
 14. HAProxy:

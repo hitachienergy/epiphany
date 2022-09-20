@@ -47,6 +47,10 @@ files:
     sha256: 5838058fe06372390dc335900a7707109cc7287a84164ca245d395af1f9c0a79
     deps: [kubernetes-master, k8s-as-cloud-service]
 
+  'https://github.com/codecentric/helm-charts/releases/download/keycloakx-1.6.0/keycloakx-1.6.0.tgz':
+    sha256: 11c5536008f47257ea6255d6129948df1178c7d009519b6a460a35995e74356a
+    deps: [keycloak]
+
   # --- OpenSearch Bundle ---
   'https://artifacts.opensearch.org/releases/bundle/opensearch/1.2.4/opensearch-1.2.4-linux-arm64.tar.gz':
     sha256: 5e8cd13ad1831e4a286a54334505c16c43ce8e50981100eea4eb18f79d3e63a5
