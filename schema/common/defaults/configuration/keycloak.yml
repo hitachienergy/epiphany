@@ -175,7 +175,7 @@ specification:
     # ref: https://www.keycloak.org/server/reverseproxy
     proxy:
       enabled: true
-      mode: passthrough
+      mode: reencrypt
 
     metrics:
       enabled: false
