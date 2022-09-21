@@ -56,7 +56,7 @@ class Test(Step):
         Check whether additional actions are needed in order to run selected test groups
         """
         if self.kubeconfig_remote_path:
-            kubectl_groups = ['applications', 'kubernetes_master']
+            kubectl_groups = ('applications', 'keycloak', 'kubernetes_master')
             if any(group in kubectl_groups for group in self.selected_groups):
                 return True
             if 'all' in self.selected_groups and any(group in kubectl_groups for group in self.available_groups):
