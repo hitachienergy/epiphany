@@ -91,15 +91,18 @@ To add disks to Rook/Ceph Cluster Storage you need to attach first raw devices t
 
 #### Rook/Ceph Configuration
 
-To enable Rook support add to your cluster configuration the section like below:
+To install Rook/Ceph, set `enabled` to `true` in your input manifest:
 
 ```yaml
 ---
-kind: configuration/rook
-title: "Kubernetes Rook Config"
+kind: configuration/features
+title: Features to be enabled/disabled
 name: default
 specification:
-    enabled: true
+  features:
+    ...
+    - name: rook
+      enabled: true
 ```
 
 If you want to install rook and rook cluster in the namespace different than `rook-ceph`, you need to add key `rook_namespace` with desired namespace name as value like in the sample below.
@@ -110,13 +113,11 @@ kind: configuration/rook
 title: "Kubernetes Rook Config"
 name: default
 specification:
-    enabled: true
     rook_namespace: your-rook-namespace
 ```
 
-The key `specification.enabled` must be set to true to install Rook/Ceph component. Epiphany configuration file provides set of
-parameters that are used for Rook/Ceph installation with default values. To override default values provided by Rook you need
-to adjust `configuration/rook` keys:
+Epiphany configuration file provides set of parameters that are used for Rook/Ceph installation with default values.
+To override default values provided by Rook you need to adjust `configuration/rook` keys:
 - `specification.operator_chart_values` - to override Rook Operator Helm Chart default values
 - `specification.cluster_chart_values` - to override Rook Cluster Helm Chart default values
 
@@ -126,7 +127,6 @@ kind: configuration/rook
 title: "Kubernetes Rook Config"
 name: default
 specification:
-    enabled: true
     operator_chart_values: |
       ...
     cluster_chart_values: |

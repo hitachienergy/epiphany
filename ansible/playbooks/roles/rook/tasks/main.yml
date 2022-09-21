@@ -1,80 +1,79 @@
 ---
-- name: Prepare configuration and upgrade/install Rook Helm chart
-  when: specification.enabled
+# Prepare configuration and upgrade/install Rook Helm chart
+
+- name: RedHat fix | Create helm's binary symlink
+  file:
+    src: "/usr/local/bin/helm"
+    dest: "/usr/bin/helm"
+    state: link
+  when: ansible_os_family == 'RedHat'
+
+- name: Download Rook's Chart Files
+  include_role:
+    name: download
+    tasks_from: download_file
+  vars:
+    file_name: "{{ item }}"
+  loop:
+    - "{{ rook_helm_chart_file_name }}"
+    - "{{ rook_helm_cluster_chart_file_name }}"
+
+- name: Decide if internal docker registry will be used
+  set_fact:
+    use_epiphany_image_registry: >-
+      {{ _use_local_image_registry }}
+  vars:
+    _use_local_image_registry: >-
+      {{ (specification.use_local_image_registry is undefined) or (specification.use_local_image_registry | bool) }}
+
+- name: Adjust image paths in charts to use internal docker registry
+  when: use_epiphany_image_registry
   block:
-    - name: RedHat fix | Create helm's binary symlink
-      file:
-        src: "/usr/local/bin/helm"
-        dest: "/usr/bin/helm"
-        state: link
-      when: ansible_os_family == 'RedHat'
-
-    - name: Download Rook's Chart Files
-      include_role:
-        name: download
-        tasks_from: download_file
-      vars:
-        file_name: "{{ item }}"
-      loop:
-        - "{{ rook_helm_chart_file_name }}"
-        - "{{ rook_helm_cluster_chart_file_name }}"
-
-    - name: Decide if internal docker registry will be used
+    - name: Adjust images paths in operator_chart_values
       set_fact:
-        use_epiphany_image_registry: >-
-          {{ _use_local_image_registry }}
+        operator_images: "{{ lookup('template', 'operator-images.yml.j2') | from_yaml }}"
       vars:
-        _use_local_image_registry: >-
-          {{ (specification.use_local_image_registry is undefined) or (specification.use_local_image_registry | bool) }}
+        data: "{{ specification.operator_chart_values }}"
 
-    - name: Adjust image paths in charts to use internal docker registry
-      when: use_epiphany_image_registry
-      block:
-        - name: Adjust images paths in operator_chart_values
-          set_fact:
-            operator_images: "{{ lookup('template', 'operator-images.yml.j2') | from_yaml }}"
-          vars:
-            data: "{{ specification.operator_chart_values }}"
+    - name: Adjust images paths in cluster_chart_values
+      set_fact:
+        cluster_images: "{{ lookup('template', 'cluster-images.yml.j2') | from_yaml }}"
+      vars:
+        data: "{{ specification.cluster_chart_values }}"
 
-        - name: Adjust images paths in cluster_chart_values
-          set_fact:
-            cluster_images: "{{ lookup('template', 'cluster-images.yml.j2') | from_yaml }}"
-          vars:
-            data: "{{ specification.cluster_chart_values }}"
+- name: Create custom configuration for operator Helm chart file (operator-custom-chart-values.yml)
+  copy:
+    content: |-
+      {% if use_epiphany_image_registry %}
+      {{ specification.operator_chart_values | combine(operator_images, recursive=True) }}
+      {% else %}
+      {{ specification.operator_chart_values }}
+      {% endif %}
+    dest: "{{ download_directory }}/operator-custom-chart-values.yml"
+    mode: preserve
 
-    - name: Create custom configuration for operator Helm chart file (operator-custom-chart-values.yml)
-      copy:
-        content: |-
-          {% if use_epiphany_image_registry %}
-          {{ specification.operator_chart_values | combine(operator_images, recursive=True) }}
-          {% else %}
-          {{ specification.operator_chart_values }}
-          {% endif %}
-        dest: "{{ download_directory }}/operator-custom-chart-values.yml"
-        mode: preserve
+- name: Create custom configuration for cluster Helm chart file (cluster-custom-chart-values.yml)
+  copy:
+    content: |-
+      {% if use_epiphany_image_registry %}
+      {{ specification.cluster_chart_values | combine(cluster_images, recursive=True) }}
+      {% else %}
+      {{ specification.cluster_chart_values }}
+      {% endif %}
+    dest: "{{ download_directory }}/cluster-custom-chart-values.yml"
+    mode: preserve
 
-    - name: Create custom configuration for cluster Helm chart file (cluster-custom-chart-values.yml)
-      copy:
-        content: |-
-          {% if use_epiphany_image_registry %}
-          {{ specification.cluster_chart_values | combine(cluster_images, recursive=True) }}
-          {% else %}
-          {{ specification.cluster_chart_values }}
-          {% endif %}
-        dest: "{{ download_directory }}/cluster-custom-chart-values.yml"
-        mode: preserve
+- name: Install Rook operator using Helm chart with values from operator-custom-chart-values.yml
+  command: |
+    helm -n {{ specification.rook_namespace }} upgrade --install \
+      -f {{ download_directory }}/operator-custom-chart-values.yml \
+      {{ rook_helm_chart_name }} \
+      {{ download_directory }}/{{ rook_helm_chart_file_name }} --create-namespace
 
-    - name: Install Rook operator using Helm chart with values from operator-custom-chart-values.yml
-      command: |
-        helm -n {{ specification.rook_namespace }} upgrade --install \
-          -f {{ download_directory }}/operator-custom-chart-values.yml \
-          {{ rook_helm_chart_name }} \
-          {{ download_directory }}/{{ rook_helm_chart_file_name }} --create-namespace
-
-    - name: Create Rook cluster with values from cluster-custom-chart-values.yml
-      command: |
-        helm -n {{ specification.rook_namespace }} upgrade --install \
-          --set operatorNamespace={{ specification.rook_namespace }} \
-          -f {{ download_directory }}/cluster-custom-chart-values.yml \
-          {{ rook_helm_cluster_chart_name }} \
-          {{ download_directory }}/{{ rook_helm_cluster_chart_file_name }} --create-namespace
+- name: Create Rook cluster with values from cluster-custom-chart-values.yml
+  command: |
+    helm -n {{ specification.rook_namespace }} upgrade --install \
+      --set operatorNamespace={{ specification.rook_namespace }} \
+      -f {{ download_directory }}/cluster-custom-chart-values.yml \
+      {{ rook_helm_cluster_chart_name }} \
+      {{ download_directory }}/{{ rook_helm_cluster_chart_file_name }} --create-namespace

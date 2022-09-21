@@ -53,4 +53,4 @@ specification:
     - name: keycloak
       enabled: true
     - name: rook
-      enabled: true
+      enabled: false
