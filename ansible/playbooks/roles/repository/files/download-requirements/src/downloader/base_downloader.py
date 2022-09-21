@@ -5,10 +5,8 @@ from shutil import move
 from tempfile import mkstemp
 from typing import Callable, Dict
 
-from src.command.toolchain import Toolchain, TOOLCHAINS
-from src.config.config import Config, OSArch
 from src.crypt import SHA_ALGORITHMS
-from src.error import CriticalError, ChecksumMismatch
+from src.error import ChecksumMismatch
 
 
 class BaseDownloader:
@@ -19,17 +17,20 @@ class BaseDownloader:
     def __init__(self, requirements: Dict[str, Dict],
                  sha_algorithm: str,
                  download_func: Callable,
-                 download_func_args: Dict = None):
+                 download_func_args: Dict = None,
+                 check_connection: Callable = None):
         """
         :param requirements: data from parsed requirements file
         :param sha_algorithm: which algorithm will be used in validating the requirements
         :param download_func: back end function used for downloading the requirements
         :param download_func_args: optional args passed to the `download_func`
+        :param check_connection: optional function for checking connection to downloaded requirements
         """
         self._requirements: Dict[str, Dict] = requirements
         self.__sha_algorithm: str = sha_algorithm
         self.__download: Callable = download_func
         self.__download_args: Dict = download_func_args or {}
+        self.__check_connection: Callable = check_connection or (lambda addr: True)
 
     def __is_checksum_valid(self, requirement: str, requirement_file: Path) -> bool:
         """
@@ -51,7 +52,7 @@ class BaseDownloader:
 
         return True
 
-    def _download(self, requirement: str, address: str, requirement_file: Path, additional_args: dict = None):
+    def _download(self, requirement: str, address: str, requirement_file: Path, additional_args: dict = None) -> bool:
         """
         Download `requirement` as `requirement_file` and compare checksums.
 
@@ -62,6 +63,7 @@ class BaseDownloader:
         :param additional_args: optional arguments passed to `download_func`
         :raises:
             :class:`ChecksumMismatch`: can be raised on failed checksum
+        :returns: True - file downloaded correctly and/or checksum matched, False - otherwise
         """
         additional_args = additional_args or {}
         download_args = {**self.__download_args, **additional_args}
@@ -69,12 +71,15 @@ class BaseDownloader:
         if requirement_file.exists():
             if self.__is_checksum_valid(requirement, requirement_file):
                 logging.debug(f'- {address} - checksum ok, skipped')
-                return
+                return True
 
             logging.info(f'- {address}')
 
             tmpfile = Path(mkstemp()[1])
             chmod(tmpfile, 0o0644)
+
+            if not self.__check_connection(address):
+                return False
 
             self.__download(address, tmpfile, **download_args)
 
@@ -83,11 +88,16 @@ class BaseDownloader:
                 raise ChecksumMismatch(f'- {address}')
 
             move(str(tmpfile), str(requirement_file))
-            return
+            return True
 
         logging.info(f'- {address}')
+        if not self.__check_connection(address):
+            return False
+
         self.__download(address, requirement_file, **download_args)
 
         if not self.__is_checksum_valid(requirement, requirement_file):
             requirement_file.unlink()
             raise ChecksumMismatch(f'- {address}')
+
+        return True

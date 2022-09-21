@@ -11,7 +11,7 @@ class AltAddrDownloader(BaseDownloader):
                        requirement_file: Path,
                        index: int,
                        sub_key: str = None,
-                       additional_args: dict = None):
+                       additional_args: dict = None) -> bool:
         """
         Download `requirement` as `requirement_file` and compare checksums.
 
@@ -22,7 +22,8 @@ class AltAddrDownloader(BaseDownloader):
         :param additional_args: optional arguments passed to `download_func`
         :raises:
             :class:`ChecksumMismatch`: can be raised on failed checksum
+        :returns: True - file downloaded correctly and/or checksum matched, False - otherwise
         """
         req = self._requirements[requirement]['options'][index]
         addr = req[sub_key] if sub_key else req
-        self._download(req, addr, requirement_file, additional_args)
+        return self._download(req, addr, requirement_file, additional_args)

@@ -166,9 +166,9 @@ class BaseMode:
         file_options = files[req_file]['options']
         for option_idx, option in enumerate(file_options):
             file_to_download = option['url']
-            if self.__check_connection(file_to_download):
-                filepath = dest / file_to_download.split('/')[-1]
-                downloader.download(req_file, filepath, option_idx, 'url')
+
+            filepath = dest / file_to_download.split('/')[-1]
+            if downloader.download(req_file, filepath, option_idx, 'url'):
                 return
 
             if option_idx != len(file_options) - 1:
@@ -183,7 +183,8 @@ class BaseMode:
         :param files: to be downloaded
         :param dest: where to save the files
         """
-        downloader: AltAddrDownloader = AltAddrDownloader(files, 'sha256', self._download_file)
+        downloader: AltAddrDownloader = AltAddrDownloader(files, 'sha256', self._download_file,
+                                                          check_connection=self.__check_connection)
         for req_file in files:
             self.__download_file(files, req_file, downloader, dest)
 
@@ -208,7 +209,8 @@ class BaseMode:
         crane_bin_path = self._cfg.dest_dir / 'crane'
         crane_path.mkdir(exist_ok=True, parents=True)
 
-        downloader: AltAddrDownloader = AltAddrDownloader(cranes, 'sha256', self._download_crane_binary)
+        downloader: AltAddrDownloader = AltAddrDownloader(cranes, 'sha256', self._download_crane_binary,
+                                                          check_connection=self.__check_connection)
         self.__download_file(cranes, first_crane, downloader, crane_path)
 
         if not (crane_path / 'crane').exists():
