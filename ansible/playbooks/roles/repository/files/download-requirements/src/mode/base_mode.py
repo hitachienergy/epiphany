@@ -205,6 +205,7 @@ class BaseMode:
         first_crane = next(iter(cranes))  # right now we use only single crane source
 
         crane_path = self._cfg.dest_dir / 'cranes'
+        crane_bin_path = self._cfg.dest_dir / 'crane'
         crane_path.mkdir(exist_ok=True, parents=True)
 
         downloader: AltAddrDownloader = AltAddrDownloader(cranes, 'sha256', self._download_crane_binary)
@@ -215,12 +216,12 @@ class BaseMode:
             crane_file = sorted(list(crane_path.iterdir()), key=lambda crane: crane.stat().st_mtime)[0]
 
             self._tools.tar.unpack(crane_file, Path('crane'), directory=self._cfg.dest_dir)
-            chmod(crane_path, 0o0755)
+            chmod(crane_bin_path, 0o0755)
 
         # create symlink to the crane file so that it'll be visible in shell
         crane_symlink = Path('/usr/bin/crane')
         if not crane_symlink.exists():
-            crane_symlink.symlink_to(crane_path)
+            crane_symlink.symlink_to(crane_bin_path)
             self._cfg.dest_crane_symlink = crane_symlink
 
     def _download_images(self):
