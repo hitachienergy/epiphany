@@ -72,11 +72,7 @@ specification:
           - --fail
           - --silent
           - --insecure
-          {{ if and (.Values.http.relativePath) (ne .Values.http.relativePath "/") }}
-          - https://127.0.0.1:8443/{{ .Values.http.relativePath | trimSuffix "/" }}/health/live
-          {{ else }}
-          - https://127.0.0.1:8443/health/live
-          {{ end }}
+          - https://127.0.0.1:8443{{ .Values.http.relativePath | trimSuffix "/" }}/health/live
       {% endraw %}
       initialDelaySeconds: 0
       periodSeconds: 2
@@ -91,11 +87,7 @@ specification:
           - --fail
           - --silent
           - --insecure
-          {{ if and (.Values.http.relativePath) (ne .Values.http.relativePath "/") }}
-          - https://127.0.0.1:8443/{{ .Values.http.relativePath | trimSuffix "/" }}/health/ready
-          {{ else }}
-          - https://127.0.0.1:8443/health/ready
-          {{ end }}
+          - https://127.0.0.1:8443{{ .Values.http.relativePath | trimSuffix "/" }}/health/ready
       {% endraw %}
       initialDelaySeconds: 10
       periodSeconds: 2
@@ -110,11 +102,7 @@ specification:
           - --fail
           - --silent
           - --insecure
-          {{ if and (.Values.http.relativePath) (ne .Values.http.relativePath "/") }}
-          - https://127.0.0.1:8443/{{ .Values.http.relativePath | trimSuffix "/" }}/health
-          {{ else }}
-          - https://127.0.0.1:8443/health
-          {{ end }}
+          - https://127.0.0.1:8443{{ .Values.http.relativePath | trimSuffix "/" }}/health
       {% endraw %}
       initialDelaySeconds: 15
       periodSeconds: 1

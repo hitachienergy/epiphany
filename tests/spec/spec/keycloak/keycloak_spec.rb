@@ -8,7 +8,8 @@ service_replicas = chart_values['replicas']
 service_namespace = config_spec['namespace']
 chart_fullname = chart_values['fullnameOverride']
 service_name = "#{chart_fullname}-http"
-url_relative_path = chart_values['http']['relativePath'] or '/'
+http_settings = chart_values.fetch('http', {})  # optional setting
+url_relative_path = http_settings.fetch('relativePath', '/auth').chomp('/')
 
 describe 'Check if service is present' do
   describe command("kubectl get services --namespace=#{service_namespace}") do
@@ -33,7 +34,7 @@ describe 'Check status - all pods should be running' do
 end
 
 describe 'Check service URL' do
-  describe command("curl -o /dev/null -s -w '%{http_code}' -k https://#{host_inventory['hostname']}:#{service_port}#{url_relative_path}") do
+  describe command("curl -o /dev/null -s -w '%{http_code}' -k https://#{host_inventory['hostname']}:#{service_port}#{url_relative_path}/") do
     it 'is expected to be equal' do
       expect(subject.stdout.to_i).to eq 200
     end
