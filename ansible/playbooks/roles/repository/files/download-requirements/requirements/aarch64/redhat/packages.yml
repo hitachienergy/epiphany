@@ -195,6 +195,9 @@ packages:
     - 'kubectl-1.22.4'
     - 'kubelet-1.22.4'
 
+    # Kubernetes Generic
+    - 'kubernetes-cni-0.8.7-0'  # since K8s v1.22.4
+
   from_url:
     # Github repository for erlang rpm is used since packagecloud repository is limited to a certain number of versions and erlang package from erlang-solutions repository is much more complex and bigger
     'http://packages.erlang-solutions.com/erlang/rpm/centos/8/aarch64/esl-erlang_23.1.5-1~centos~8_arm64.rpm':
