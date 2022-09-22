@@ -33,7 +33,7 @@ class Command:
 
         :param args: additional args which will be used with __proc_name
         :capture_output: save stdout/stderr to completed process object
-        :raises: :class:`CriticalError`: when number of retries exceeded
+        :raises: :class:`RetriesExceeded`: when number of retries exceeded
         :returns: completed process object
         """
         process_args = [self.__proc_name]
@@ -67,7 +67,7 @@ class Command:
         Run two subprocesses by piping output from the first process to the second process.
 
         :param command: process onto which output from the first process will be passed
-        :raises: :class:`CriticalError`: when number of retries exceeded
+        :raises: :class:`RetriesExceeded`: when number of retries exceeded
         :returns: final stdout
         """
         lproc_name = f'{self.__proc_name} {" ".join(self.__pipe_args)}'

@@ -81,8 +81,10 @@ files:
         sha256: df4e1f2125af41fb84c72e4d12aa0cb859dddd4f37b3d5979981bd092040bd16
     deps: [kubernetes-master]
 
-  'https://github.com/codecentric/helm-charts/releases/download/keycloakx-1.6.0/keycloakx-1.6.0.tgz':
-    sha256: 11c5536008f47257ea6255d6129948df1178c7d009519b6a460a35995e74356a
+  keycloak:
+    options:
+      - url: 'https://github.com/codecentric/helm-charts/releases/download/keycloakx-1.6.0/keycloakx-1.6.0.tgz'
+        sha256: 11c5536008f47257ea6255d6129948df1178c7d009519b6a460a35995e74356a
     deps: [keycloak]
 
   # --- OpenSearch Bundle ---
