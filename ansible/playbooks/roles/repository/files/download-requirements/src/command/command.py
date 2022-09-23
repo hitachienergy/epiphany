@@ -2,7 +2,7 @@ import logging
 import subprocess
 from typing import List
 
-from src.error import CriticalError
+from src.error import RetriesExceeded
 
 
 class Command:
@@ -33,7 +33,7 @@ class Command:
 
         :param args: additional args which will be used with __proc_name
         :capture_output: save stdout/stderr to completed process object
-        :raises: :class:`CriticalError`: when number of retries exceeded
+        :raises: :class:`RetriesExceeded`: when number of retries exceeded
         :returns: completed process object
         """
         process_args = [self.__proc_name]
@@ -57,16 +57,17 @@ class Command:
             if process.returncode == 0:
                 return process
 
-            logging.warning(process.stderr)
+            if process.stderr:
+                logging.warning(process.stderr)
 
-        raise CriticalError(f'Retries count reached maximum, command: `{self.__command}`')
+        raise RetriesExceeded(f'Retries count reached maximum, command: `{self.__command}`')
 
     def __or__(self, command) -> str:
         """
         Run two subprocesses by piping output from the first process to the second process.
 
         :param command: process onto which output from the first process will be passed
-        :raises: :class:`CriticalError`: when number of retries exceeded
+        :raises: :class:`RetriesExceeded`: when number of retries exceeded
         :returns: final stdout
         """
         lproc_name = f'{self.__proc_name} {" ".join(self.__pipe_args)}'
@@ -86,9 +87,9 @@ class Command:
             if rproc.returncode == 0:
                 return output
 
-            logging.warning(lproc.stderr if not lproc.returncode == 0 else rproc.stderr)
+            logging.warning(lproc.stderr if lproc.returncode != 0 else rproc.stderr)
 
-        raise CriticalError(f'Retries count reached maximum, command: `{self.__command}`')
+        raise RetriesExceeded(f'Retries count reached maximum, command: `{self.__command}`')
 
     def _run_and_filter(self, args: List[str]) -> List[str]:
         """

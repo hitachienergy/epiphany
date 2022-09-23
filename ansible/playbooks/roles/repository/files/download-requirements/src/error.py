@@ -59,3 +59,9 @@ class OldManifestVersion(DownloadRequirementsWarning):
     """
     def __init__(self, version: str):
         super().__init__(f'Old manifest version used: `{version}`, no optimization will be performed.')
+
+
+class RetriesExceeded(DownloadRequirementsWarning):
+    """
+    Raised when number of command retries exceeds the limit.
+    """

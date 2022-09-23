@@ -112,13 +112,13 @@ class RedHatFamilyMode(BaseMode):
 
         # repmgr is supported only with x86_64 architecture
         if self._cfg.os_arch == OSArch.X86_64:
-            for repo in ['https://dl.2ndquadrant.com/default/release/get/10/rpm',  # for repmgr
-                        'https://dl.2ndquadrant.com/default/release/get/13/rpm']:
+            for repo in ('https://dl.2ndquadrant.com/default/release/get/10/rpm',  # for repmgr
+                         'https://dl.2ndquadrant.com/default/release/get/13/rpm'):
                 Command('curl', self._cfg.retries, [repo]) | Command('bash', self._cfg.retries)  # curl {repo} | bash
 
             # script adds 2 repositories, only 1 is required
-            for repo in ['2ndquadrant-dl-default-release-pg10-debug',
-                        '2ndquadrant-dl-default-release-pg13-debug']:
+            for repo in ('2ndquadrant-dl-default-release-pg10-debug',
+                         '2ndquadrant-dl-default-release-pg13-debug'):
                 self._tools.dnf_config_manager.disable_repo(repo)
 
         self._tools.dnf.makecache(False, True)

@@ -232,8 +232,8 @@ class Config:
         for feature in manifest['requested-features']:
             lines.append(f'- {feature}')
 
-        for reqs in [('files', 'Files'),
-                     ('grafana-dashboards', 'Dashboards')]:
+        for reqs in (('files', 'Files'),
+                     ('grafana-dashboards', 'Dashboards')):
             reqs_to_download = sorted(requirements[reqs[0]])
             if reqs_to_download:
                 lines.append('')
