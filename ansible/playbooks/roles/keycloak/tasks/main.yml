@@ -40,6 +40,7 @@
     helm upgrade keycloak {{ download_directory }}/{{ keycloak_helm_chart_file_name }} \
       -f {{ vault_location }}/keycloak-chart-values.yml \
       -n {{ specification.namespace }} \
+      --atomic \
       --create-namespace \
       --install
 
