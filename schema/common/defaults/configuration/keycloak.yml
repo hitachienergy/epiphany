@@ -122,11 +122,6 @@ specification:
           defaultMode: 420
           optional: false
           secretName: {% raw %}{{ include "keycloak.fullname" . }}{% endraw %}-tls-certificates
-          items:
-            - key: tls.crt
-              path: tls.crt
-            - key: tls.key
-              path: tls.key
 
     extraVolumeMounts: |-
       - mountPath: /mnt/certificates
@@ -156,8 +151,8 @@ specification:
             {%- endraw %}
           tls.crt: |-
             {%- raw -%}
-            {{- $altNames := list "keycloak.keycloak.svc.cluster.local" "keycloak" }}
-            {{- $crt := genSignedCert "keycloak.keycloak.svc.cluster.local" nil $altNames 3650 $.Values._shared.ca }}
+            {{- $altNames := list "keycloak-http.keycloak.svc.cluster.local" "keycloak-http" "keycloak" }}
+            {{- $crt := genSignedCert "keycloak-http.keycloak.svc.cluster.local" nil $altNames 3650 $.Values._shared.ca }}
             {{- $_ := set $.Values._shared "crt" $crt }}
             {{- $tlsCert := $crt.Cert }}
             {{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-%s" (include "keycloak.fullname" .) "tls-certificates")) }}
