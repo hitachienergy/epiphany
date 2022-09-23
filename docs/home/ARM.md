@@ -34,7 +34,7 @@ Besides making sure that the selected providers, operating systems, components a
 
 ***Notes***
 
-- ```Rook/Ceph Cluster Storage``` is not supported on ```arm64``` and needs to be disabled in feature-mapping.
+- ```Rook/Ceph Cluster Storage``` is not supported on ```arm64```.
 - For the ```postgresql``` component the ```pgpool``` and ```pgbouncer``` extensions for load-balancing and replication are not yet supported on ```arm64```. These should be disabled in the ```postgressql``` and ```applications``` configurations.
 - While not defined in any of the component configurations, the ```elasticsearch_curator``` role is currently not supported on ```arm64``` and should be removed from the ```feature-mapping``` configuration if defined.
 - If you want to download ```arm64``` requirements from an ```x86_64``` machine, you can try to use a container as described [here](./howto/CLUSTER.md#downloading-offline-requirements-with-a-docker-container).

@@ -4,7 +4,6 @@ title: "Kubernetes Rook Config"
 name: default
 specification:
   rook_namespace: rook-ceph
-  enabled: false
   use_local_image_registry: true
   operator_chart_values:
     image:
