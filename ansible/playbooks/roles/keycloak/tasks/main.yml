@@ -8,7 +8,7 @@
       include_vars:
         file: roles/applications/vars/main.yml
         name: applications_vars
-      when: groups.postgresql | count > 1 or "'pgbouncer' in _chart_values.database.hostname"
+      when: groups.applications is defined
 
     - name: Include database configuration when Epiphany storage is used
       include_tasks: create-database.yml
