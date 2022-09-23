@@ -14,6 +14,8 @@
   set_fact:
     postgres_primary: "{{ item.item }}"
   loop: "{{ in_recovery_state.results }}"
+  loop_control:
+    label: {in_recovery: "{{ item.in_recovery }}"}
   when: not item.in_recovery
 
 - name: Create DB objects
