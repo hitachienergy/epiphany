@@ -19,3 +19,15 @@ database:
   hostname: {{ (applications_vars.specification.applications | selectattr('name', '==', 'pgbouncer') | first).pgbouncer.env.DB_HOST }}
   {% endif %}
 {% endif %}
+
+{% if _existing_autogen_certs | count > 0 %}
+secrets:
+  {% for name, data in _existing_autogen_certs.items() %}
+  {{ name }}:
+    stringData:
+      {% for key, value in data.items() %}
+      {{ key }}: |
+        {{ value | b64decode | indent(8) }}
+      {% endfor %}
+  {% endfor %}
+{% endif %}
