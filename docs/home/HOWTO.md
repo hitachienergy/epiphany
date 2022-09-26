@@ -48,6 +48,9 @@
   - [Persistent storage](./howto/kubernetes/PERSISTENT_STORAGE.md)
   - [Certificate management](./howto/kubernetes/CERTIFICATES.md)
 
+- [Keycloak](./howto/KEYCLOAK.md)
+  - [How to run Keycloak](./howto/KEYCLOAK.md#how-to-run-keycloak)
+
 - [Helm](./howto/HELM.md)
   - [Helm "system" chart repository](./howto/HELM.md#helm-system-chart-repository)
   - [Installing Helm charts from the "system" repository](./howto/HELM.md#installing-helm-charts-from-the-system-repository)
