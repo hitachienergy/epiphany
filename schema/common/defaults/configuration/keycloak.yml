@@ -6,7 +6,7 @@ specification:
   namespace: keycloak
 
   database:
-    epiphany_managed: true
+    epiphany_managed: true  # if true, Keycloak database and user are created by Epiphany in `postgresql` component
 
   image_registry:
     use_local: true
@@ -113,19 +113,19 @@ specification:
         # cpu: 1000m
         memory: 512Mi
       requests:
-        cpu: 50m
+        cpu: 50m  # minimal usage (when idle): ~ 38m
         memory: 512Mi
 
     extraVolumes: |-
-      - name: keycloak-tls-certificates
+      - name: keycloak-tls-certs
         secret:
           defaultMode: 420
           optional: false
-          secretName: {% raw %}{{ include "keycloak.fullname" . }}{% endraw %}-tls-certificates
+          secretName: {% raw %}{{ include "keycloak.fullname" . }}{% endraw %}-tls-certs
 
     extraVolumeMounts: |-
       - mountPath: /mnt/certificates
-        name: keycloak-tls-certificates
+        name: keycloak-tls-certs
 
     # Configuration for secrets that should be created
     secrets:
@@ -134,7 +134,7 @@ specification:
         stringData:
           username: keycloak-admin
           password: PASSWORD_TO_CHANGE
-      tls-certificates:
+      tls-certs:
         type: kubernetes.io/tls
         stringData:
           ca.crt: |-
@@ -143,7 +143,7 @@ specification:
             {{- $_ := set $.Values "_shared" dict }}
             {{- $_ := set $.Values._shared "ca" $ca }}
             {{- $caCert := $ca.Cert }}
-            {{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-%s" (include "keycloak.fullname" .) "tls-certificates")) }}
+            {{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-%s" (include "keycloak.fullname" .) "tls-certs")) }}
             {{- if $secret }}
             {{- $caCert = index $secret.data "ca.crt" | b64dec }}
             {{- end }}
@@ -151,11 +151,11 @@ specification:
             {%- endraw %}
           tls.crt: |-
             {%- raw -%}
-            {{- $altNames := list "keycloak-http.keycloak.svc.cluster.local" "keycloak-http" "keycloak" }}
+            {{- $altNames := list "keycloak-0.keycloak-headless.keycloak.svc.cluster.local" "keycloak-0.keycloak-headless.keycloak" "keycloak-0.keycloak-headless" "keycloak-0" "keycloak-1.keycloak-headless.keycloak.svc.cluster.local" "keycloak-1.keycloak-headless.keycloak" "keycloak-1.keycloak-headless" "keycloak-1" "keycloak-headless.keycloak.svc.cluster.local" "keycloak-headless.keycloak" "keycloak-headless" "keycloak-http.keycloak.svc.cluster.local" "keycloak-http.keycloak" "keycloak-http" }}
             {{- $crt := genSignedCert "keycloak-http.keycloak.svc.cluster.local" nil $altNames 3650 $.Values._shared.ca }}
             {{- $_ := set $.Values._shared "crt" $crt }}
             {{- $tlsCert := $crt.Cert }}
-            {{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-%s" (include "keycloak.fullname" .) "tls-certificates")) }}
+            {{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-%s" (include "keycloak.fullname" .) "tls-certs")) }}
             {{- if $secret }}
             {{- $tlsCert = index $secret.data "tls.crt" | b64dec }}
             {{- end }}
@@ -164,7 +164,7 @@ specification:
           tls.key: |-
             {%- raw -%}
             {{- $tlsKey := $.Values._shared.crt.Key }}
-            {{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-%s" (include "keycloak.fullname" .) "tls-certificates")) }}
+            {{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-%s" (include "keycloak.fullname" .) "tls-certs")) }}
             {{- if $secret }}
             {{- $tlsKey = index $secret.data "tls.key" | b64dec }}
             {{- end }}
