@@ -74,12 +74,11 @@ def test_manifest_verbose_output(INPUT_DOC: str,
     assert log_output == EXPECTED_OUTPUT_DOC
 
 
-def test_verbose_full_download_output(mocker, caplog):
+def test_verbose_full_download_output(caplog):
     """
-    Check output produced when running download-requirements script with the `-v|--verbose` flag and with provided `-m|--manifest`
-    and --full-download flag used
+    Check output produced when running download-requirements script with the `-v|--verbose` flag and without `-m|--manifest`
+    provided
     """
-    mocker.patch('src.config.manifest_reader.load_yaml_file_all', return_value=yaml.safe_load_all(INPUT_MANIFEST_FEATURE_MAPPINGS))
     caplog.set_level(logging.INFO)
 
     # mock Config's init methods:
@@ -90,7 +89,6 @@ def test_verbose_full_download_output(mocker, caplog):
 
     # mock required config data:
     config.dest_manifest = None
-    config.full_download = True
     config.os_arch = OSArch.X86_64
     config.verbose_mode = True
 

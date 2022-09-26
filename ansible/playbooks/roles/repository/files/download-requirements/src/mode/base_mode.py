@@ -27,7 +27,6 @@ class BaseMode:
         self._tools: Toolchain = TOOLCHAINS[self._cfg.os_type.os_family](self._cfg.retries)
         self._cfg.read_manifest(self._requirements)
 
-
     def __parse_repositories(self) -> Dict[str, Dict]:
         """
         Load repositories for target architecture/distro from a yaml file.
