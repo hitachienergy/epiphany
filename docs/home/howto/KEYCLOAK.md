@@ -89,21 +89,33 @@
     By default, Keycloak listens only for HTTPS traffic on port which is exposed via `NodePort` service.
 
     Some Keycloak features rely on the assumption that the remote address of the HTTP request connecting to Keycloak
-    is the real IP address of the clients machine.
+    is the real IP address of the client machine.
 
     When you have HAProxy in front of Keycloak, this might not be the case, so we need to ensure that the X-Forwarded-For
-    header is set by HAProxy. In order to achive this the original content has to be modified by HAProxy. For that reason,
-    TLS is terminated by HAProxy and then communication is re-encrypted. Different keys and certificates are used on HAProxy
+    header is set by HAProxy. In order to achive this the content has to be modified by HAProxy. For that reason,
+    TLS is terminated by HAProxy and the modified content is re-encrypted. Different keys and certificates are used on HAProxy
     as well as on Keycloak.
 
     Example of backend configuration:
 
     ```text
-    backend keycloak_backend
+    backend keycloak
         balance roundrobin
         option forwardfor
         server kubernetes-node-vm-0 10.1.1.151:30104 check ssl verify required ca-file /etc/ssl/haproxy/epiphany-keycloak-ca.crt
         server kubernetes-node-vm-1 10.1.1.235:30104 check ssl verify required ca-file /etc/ssl/haproxy/epiphany-keycloak-ca.crt
+    ```
+
+    It's recommended to not expose some endpoints, see https://www.keycloak.org/server/reverseproxy#_exposed_path_recommendations.
+
+    Example of frontend configuration:
+
+    ```text
+    frontend https_fe
+        bind *:443 ssl crt /etc/ssl/haproxy/cert.crt
+        # Do not expose health checks & metrics, see https://www.keycloak.org/server/reverseproxy#_exposed_path_recommendations
+        http-request deny if { path_beg /auth/health/ } || { path /auth/health } || { path_beg /auth/metrics/ } || { path /auth/metrics }
+        use_backend keycloak if { path -m beg /auth/ } || { path /auth }
     ```
 
 7. Log into GUI
@@ -116,4 +128,4 @@
     ssh -L 30104:localhost:30104 <user>@<k8s_host> -i <ssh_key_file>
     ```
 
-    GUI should be reachable at: https://localhost:30104
+    GUI should be reachable at: https://localhost:30104/auth

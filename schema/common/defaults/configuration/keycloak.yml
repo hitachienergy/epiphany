@@ -193,7 +193,7 @@ specification:
       mode: reencrypt
 
     metrics:
-      enabled: false
+      enabled: true  # used by readinessProbe
 
     http:
-      relativePath: /  # /auth before Quarkus
+      relativePath: /auth  # for backward compatibility and HAProxy
