@@ -250,7 +250,7 @@ class Config:
 
         images = requirements['images']
         images_to_print: List[str] = []
-        for image_category in images:
+        for image_category in set(images):
             for image in images[image_category]:
                 images_to_print.append(image)
 
