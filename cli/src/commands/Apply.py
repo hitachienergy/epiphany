@@ -110,7 +110,9 @@ class Apply(Step):
 
         with provider_class_loader(self.output_mhandler.cluster_model.provider,
                                    'InfrastructureConfigCollector')(self.output_mhandler.docs) as config_collector:
-            self.output_mhandler.update_doc(config_collector.run())  # update kubernetes config doc
+            kube_doc = config_collector.run()
+            if kube_doc:
+                self.output_mhandler.update_doc(kube_doc)  # update kubernetes config doc
 
         # Save manifest again as we have some new information for Ansible apply
         self.output_mhandler.write_manifest()
