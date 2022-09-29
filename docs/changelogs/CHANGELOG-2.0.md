@@ -15,6 +15,7 @@
 
 - [#3271](https://github.com/epiphany-platform/epiphany/issues/3271) - Filebeat not shipping logs to OpenSearch after upgrading epicli from v2.0.1
 - [#3275](https://github.com/epiphany-platform/epiphany/issues/3275) - Kubernetes installation on aarch64 fails due to missing kubernetes-cni-0.8.7 package
+- [#3279](https://github.com/epiphany-platform/epiphany/issues/3279) - dnf install failed for `ca-certificates` package on RedHat family distros
 
 ### Updated
 

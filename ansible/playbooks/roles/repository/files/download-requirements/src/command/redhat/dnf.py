@@ -76,12 +76,15 @@ class Dnf(DnfBase):
                 f'dnf update failed for packages `{package}`, reason: `{proc.stderr}`')
 
     def install(self, package: str,
-                assume_yes: bool = True):
+                assume_yes: bool = True,
+                ignore_already_installed_error: bool = False):
         """
         Interface for `dnf install -y`
 
         :param package: packaged to be installed
         :param assume_yes: if set to True, -y flag will be used
+        :param ignore_already_installed_error: if set to True,
+            `The same or higher version of {package} is already installed` error is ignored
         """
         no_ask: str = '-y' if assume_yes else ''
         proc = self.run(['install', no_ask, package], accept_nonzero_returncode=True)
@@ -94,8 +97,11 @@ class Dnf(DnfBase):
             raise CriticalError(
                 f'Found an error. dnf install failed for package `{package}`, reason: `{proc.stdout}`')
         if self._filter_non_critical_errors(proc.stderr):
-            raise CriticalError(
-                f'dnf install failed for package `{package}`, reason: `{proc.stderr}`')
+            if ignore_already_installed_error:
+                if any('is already installed' in line for line in proc.stdout.split('\n')):
+                    return
+
+            raise CriticalError(f'dnf install failed for package `{package}`, reason: `{proc.stderr}`')
 
     def remove(self, package: str,
                assume_yes: bool = True):
