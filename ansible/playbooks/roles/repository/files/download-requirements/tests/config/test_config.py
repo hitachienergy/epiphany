@@ -6,11 +6,12 @@ import yaml
 
 from src.config.config import Config
 from tests.data.config import (
+    ALL_REQUIREMENTS,
     DASHBOARD_REQUIREMENTS,
+    EXPECTED_FULL_DOWNLOAD_OUTPUT,
     EXPECTED_VERBOSE_DASHBOARD_OUTPUT,
     EXPECTED_VERBOSE_FILE_OUTPUT,
     EXPECTED_VERBOSE_IMAGE_NO_DOCUMENT_OUTPUT,
-    EXPECTED_VERBOSE_IMAGE_OUTPUT,
     EXPECTED_VERBOSE_K8S_AS_CLOUD_SERVICE_OUTPUT,
     EXPECTED_VERBOSE_OUTPUT,
     FILE_REQUIREMENTS,
@@ -20,7 +21,6 @@ from tests.data.manifest_reader import (
     INPUT_MANIFEST_FEATURE_MAPPINGS,
     INPUT_MANIFEST_IMAGES_NO_DOCUMENT,
     INPUT_MANIFEST_WITH_DASHBOARDS,
-    INPUT_MANIFEST_WITH_IMAGES,
     INPUT_MANIFEST_WITH_K8S_AS_CLOUD_SERVICE
 )
 from src.config.os_type import OSArch
@@ -31,7 +31,6 @@ from src.config.os_type import OSArch
                           (INPUT_MANIFEST_FEATURE_MAPPINGS, EXPECTED_VERBOSE_FILE_OUTPUT, FILE_REQUIREMENTS),
                           (INPUT_MANIFEST_FEATURE_MAPPINGS, EXPECTED_VERBOSE_OUTPUT, DASHBOARD_REQUIREMENTS),
                           (INPUT_MANIFEST_WITH_DASHBOARDS, EXPECTED_VERBOSE_DASHBOARD_OUTPUT, DASHBOARD_REQUIREMENTS),
-                          (INPUT_MANIFEST_WITH_IMAGES, EXPECTED_VERBOSE_IMAGE_OUTPUT, IMAGE_REQUIREMENTS),
                           (INPUT_MANIFEST_IMAGES_NO_DOCUMENT, EXPECTED_VERBOSE_IMAGE_NO_DOCUMENT_OUTPUT, IMAGE_REQUIREMENTS),
                           (INPUT_MANIFEST_WITH_K8S_AS_CLOUD_SERVICE, EXPECTED_VERBOSE_K8S_AS_CLOUD_SERVICE_OUTPUT, FILE_REQUIREMENTS)
                          ])
@@ -73,3 +72,28 @@ def test_manifest_verbose_output(INPUT_DOC: str,
     log_output = f'\n{"".join(caplog.messages)}\n'
 
     assert log_output == EXPECTED_OUTPUT_DOC
+
+
+def test_verbose_full_download_output(caplog):
+    """
+    Check output produced when running download-requirements script with the `-v|--verbose` flag and without `-m|--manifest`
+    provided
+    """
+    caplog.set_level(logging.INFO)
+
+    # mock Config's init methods:
+    Config._Config__add_args = lambda *args: None
+    Config._Config__log_info_summary = lambda *args: None
+
+    config = Config([])
+
+    # mock required config data:
+    config.dest_manifest = None
+    config.os_arch = OSArch.X86_64
+    config.verbose_mode = True
+
+    config.read_manifest(ALL_REQUIREMENTS)
+
+    log_output = f'\n{"".join(caplog.messages)}\n'
+
+    assert log_output == EXPECTED_FULL_DOWNLOAD_OUTPUT

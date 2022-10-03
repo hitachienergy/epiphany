@@ -62,6 +62,8 @@ class Config:
 
         if self.dest_manifest:
             lines.append(f'Manifest used: {str(self.dest_manifest.absolute())}')
+        else:
+            lines.append('Manifest not used, downloading all available requirements...')
 
         if self.is_log_file_enabled:
             lines.append(f'Log file location: {str(self.log_file.absolute())}')
@@ -207,17 +209,17 @@ class Config:
         self.distro_subdir = self.family_subdir / self.os_type.os_name
 
         # add optional arguments
+        self.dest_manifest = args['manifest'] or None
+        self.is_log_file_enabled = False if args['no_logfile'] else True
         self.repos_backup_file = Path(args['repos_backup_file'])
         self.retries = args['retries']
-        self.is_log_file_enabled = False if args['no_logfile'] else True
-        self.dest_manifest = args['manifest'] or None
         self.verbose_mode = True if self.log_level == logging.DEBUG else args['verbose']
 
         # offline mode
         self.rerun = args['rerun']
         self.pyyaml_installed = args['pyyaml_installed']
 
-    def __print_parsed_manifest_data(self, requirements: Dict[str, Any], manifest: Dict[str, Any]):
+    def __get_parsed_manifest_data_output(self, manifest: Dict[str, Any]) -> str:
         lines: List[str] = ['Manifest summary:']
 
         lines.append('-' * self.__LINE_SIZE)
@@ -231,6 +233,11 @@ class Config:
         lines.append('Features requested:')
         for feature in manifest['requested-features']:
             lines.append(f'- {feature}')
+
+        return '\n'.join(lines)
+
+    def __get_requirements_output(self, requirements: Dict[str, Any]) -> str:
+        lines: List[str] = []
 
         for reqs in (('files', 'Files'),
                      ('grafana-dashboards', 'Dashboards')):
@@ -250,12 +257,12 @@ class Config:
         if images_to_print:
             lines.append('')
             lines.append('Images to download:')
-            for image in sorted(images_to_print):
+            for image in sorted(set(images_to_print)):
                 lines.append(f'- {image}')
 
-        lines.append('-' * self.__LINE_SIZE)
+        lines.append('')
 
-        logging.info('\n'.join(lines))
+        return '\n'.join(lines)
 
     def __filter_files(self, requirements: Dict[str, Any],
                              manifest: Dict[str, Any]):
@@ -283,19 +290,12 @@ class Config:
         for image_group in images:
             images_to_download[image_group] = {}
 
-        if len(manifest['requested-images']):  # if image-registry document used:
-            for image_group in images:
+        for image_group in images:
+            if image_group in manifest['requested-features']:
                 for image, data in images[image_group].items():
-                    if image in manifest['requested-images'] and image not in selected_images:
+                    if image not in selected_images:
                         images_to_download[image_group][image] = data
                         selected_images.add(image)
-        else:                                  # otherwise check features used:
-            for image_group in images:
-                if image_group in manifest['requested-features']:
-                    for image, data in images[image_group].items():
-                        if image not in selected_images:
-                            images_to_download[image_group][image] = data
-                            selected_images.add(image)
 
         if images_to_download:
             requirements['images'] = images_to_download
@@ -322,18 +322,21 @@ class Config:
         :param requirements: parsed requirements which will be filtered based on the manifest output
         """
         if not self.dest_manifest:
+            logging.info(self.__get_requirements_output(requirements))
             return
 
         # Needs to be imported here as the libyaml might be missing on the OS,
         # this could cause crash on config.py import.
         from src.config.manifest_reader import ManifestReader
 
-        mreader = ManifestReader(self.dest_manifest, self.os_arch)
+        mreader = ManifestReader(self.dest_manifest)
         try:
             manifest = mreader.parse_manifest()
             self.__filter_manifest(requirements, manifest)
 
             if self.verbose_mode:
-                self.__print_parsed_manifest_data(requirements, manifest)
+                logging.info(f'{self.__get_parsed_manifest_data_output(manifest)}\n'
+                             f'{self.__get_requirements_output(requirements)}'
+                             f'{"-" * self.__LINE_SIZE}')
         except OldManifestVersion:
             pass  # old manifest used, cannot optimize download time

@@ -1,3 +1,6 @@
+from typing import Dict
+
+
 FILE_REQUIREMENTS = """
 files:
   # --- Exporters ---
@@ -345,6 +348,61 @@ images:
 """
 
 
+ALL_REQUIREMENTS: Dict[str, Dict] = {
+    'files': {
+        'https://github.com/danielqsj/kafka_exporter/releases/download/v1.4.0/kafka_exporter-1.4.0.linux-amd64.tar.gz': {
+            'sha256': 'ffda682e82daede726da8719257a088f8e23dcaa4e2ac8b2b2748a129aea85f0',
+            'deps': ['kafka-exporter']
+        },
+        'https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.16.1/jmx_prometheus_javaagent-0.16.1.jar': {
+            'sha256': '0ddc6834f854c03d5795305193c1d33132a24fbd406b4b52828602f5bc30777e',
+            'deps': ['kafka']
+        },
+        'https://github.com/prometheus/node_exporter/releases/download/v1.3.1/node_exporter-1.3.1.linux-amd64.tar.gz': {
+            'sha256': '68f3802c2dd3980667e4ba65ea2e1fb03f4a4ba026cca375f15a0390ff850949',
+            'deps': ['node-exporter']
+        },
+        'https://github.com/prometheus-community/postgres_exporter/releases/download/v0.10.0/postgres_exporter-0.10.0.linux-amd64.tar.gz': {
+            'sha256': '1d1a008c5e29673b404a9ce119b7516fa59974aeda2f47d4a0446d102abce8a1',
+            'deps': ['postgres-exporter']
+        }
+    },
+    'grafana-dashboards': {
+        'grafana_dashboard_7249': {
+            'url': 'https://grafana.com/api/dashboards/7249/revisions/1/download',
+            'sha256': '41cc2794b1cc9fc537baf045fee12d086d23632b4c8b2e88985274bb9862e731'
+        },
+        'grafana_dashboard_315': {
+            'url': 'https://grafana.com/api/dashboards/315/revisions/3/download',
+            'sha256': 'ee46dd6e68a9950aa78e8c88ae5e565c8ebde6cbdbe08972a70f06c5486618fb'
+        },
+        'grafana_dashboard_11074': {
+            'url': 'https://grafana.com/api/dashboards/11074/revisions/9/download',
+            'sha256': '151b23305da46eab84930e99175e1c07e375af73dbbb4b8f501ca25f5ac62785'
+        }
+    },
+    'images': {
+        'haproxy': {
+            'haproxy:2.2.2-alpine': {
+                'sha1': 'dff8993b065b7f7846adb553548bcdcfcd1b6e8e'
+            }
+        },
+        'image-registry': {
+            'registry:2.8.0': {
+                'sha1': '89795c17099199c752d02ad8797c1d4565a08aff',
+                'allow_mismatch': True
+            }
+        },
+        'applications': {
+            'bitnami/pgpool:4.2.4': {
+                'sha1': '66741f3cf4a508bd1f80e2965b0086a4c0fc3580'
+            }
+        }
+    },
+    'packages': {}
+}
+
+
 EXPECTED_VERBOSE_OUTPUT = """
 Manifest summary:
 --------------------------------------------------
@@ -428,40 +486,6 @@ Files to download:
 """
 
 
-EXPECTED_VERBOSE_IMAGE_OUTPUT = """
-Manifest summary:
---------------------------------------------------
-Components requested:
-- repository
-
-Features requested:
-- filebeat
-- firewall
-- image-registry
-- node-exporter
-- repository
-
-Images to download:
-- bitnami/pgpool:4.2.4
-- epiphanyplatform/keycloak:14.0.0
-- haproxy:2.2.2-alpine
-- k8s.gcr.io/coredns/coredns:v1.8.0
-- k8s.gcr.io/etcd:3.4.13-0
-- k8s.gcr.io/kube-apiserver:v1.21.7
-- k8s.gcr.io/kube-apiserver:v1.22.4
-- k8s.gcr.io/kube-controller-manager:v1.21.7
-- k8s.gcr.io/kube-controller-manager:v1.22.4
-- k8s.gcr.io/kube-proxy:v1.21.7
-- k8s.gcr.io/kube-scheduler:v1.21.7
-- k8s.gcr.io/pause:3.4.1
-- kubernetesui/dashboard:v2.3.1
-- kubernetesui/metrics-scraper:v1.0.7
-- rabbitmq:3.8.9
-- registry:2.8.0
---------------------------------------------------
-"""
-
-
 EXPECTED_VERBOSE_IMAGE_NO_DOCUMENT_OUTPUT = """
 Manifest summary:
 --------------------------------------------------
@@ -507,4 +531,25 @@ Files to download:
 - node-exporter
 - node-exporter-chart
 --------------------------------------------------
+"""
+
+
+EXPECTED_FULL_DOWNLOAD_OUTPUT = """
+
+Files to download:
+- https://github.com/danielqsj/kafka_exporter/releases/download/v1.4.0/kafka_exporter-1.4.0.linux-amd64.tar.gz
+- https://github.com/prometheus-community/postgres_exporter/releases/download/v0.10.0/postgres_exporter-0.10.0.linux-amd64.tar.gz
+- https://github.com/prometheus/node_exporter/releases/download/v1.3.1/node_exporter-1.3.1.linux-amd64.tar.gz
+- https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.16.1/jmx_prometheus_javaagent-0.16.1.jar
+
+Dashboards to download:
+- grafana_dashboard_11074
+- grafana_dashboard_315
+- grafana_dashboard_7249
+
+Images to download:
+- bitnami/pgpool:4.2.4
+- haproxy:2.2.2-alpine
+- registry:2.8.0
+
 """
