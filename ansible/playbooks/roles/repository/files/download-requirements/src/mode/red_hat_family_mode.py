@@ -79,7 +79,7 @@ class RedHatFamilyMode(BaseMode):
         self._tools.dnf.makecache(timer=True)
 
         # Ensure ca-certificates package is in the latest version
-        self._tools.dnf.install('ca-certificates')
+        self._tools.dnf.install('ca-certificates', ignore_already_installed_error=True)
 
         for package in self.__base_packages:
             if not self._tools.rpm.is_package_installed(package):
