@@ -42,7 +42,7 @@ class SchemaValidator(Step):
         except Exception as e:
             self.logger.error(f'Failed validating: {doc.kind}')
             self.logger.error(e)
-            raise Exception('Schema validation error, see the error above.')
+            raise Exception('Schema validation error, see the error above.') from e
 
     def run_for_individual_documents(self):
         for doc in self.validation_docs:

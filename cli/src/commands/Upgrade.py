@@ -50,7 +50,8 @@ class Upgrade(Step):
             input_mhandler.update_docs(doc_merger.run())
 
         # Validate input documents
-        with SchemaValidator(input_mhandler.docs[0].provider, input_mhandler.docs) as schema_validator:
+        docs = [doc for doc in input_mhandler.docs if not doc['kind'].startswith('infrastructure')]
+        with SchemaValidator(input_mhandler.docs[0].provider, docs) as schema_validator:
             schema_validator.run()
 
         return input_mhandler
