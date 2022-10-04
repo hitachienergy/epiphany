@@ -195,7 +195,7 @@ specification:
 
     # Check database readiness at startup
     dbchecker:
-      enabled: false  # requires additional image
+      enabled: false
 
     database:
       vendor: postgres
