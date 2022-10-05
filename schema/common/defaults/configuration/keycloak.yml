@@ -196,6 +196,9 @@ specification:
     # Check database readiness at startup
     dbchecker:
       enabled: false
+      image:
+        repository: docker.io/busybox
+        tag: '1.32'
 
     database:
       vendor: postgres
