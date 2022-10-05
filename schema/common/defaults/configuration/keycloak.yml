@@ -13,7 +13,7 @@ specification:
 
   chart_values:
     # Refs:
-    #   - https://github.com/codecentric/helm-charts/tree/keycloakx-1.6.0/charts/keycloakx
+    #   - https://github.com/codecentric/helm-charts/tree/keycloakx-1.6.1/charts/keycloakx
     #   - https://github.com/epam/edp-install/blob/d01c15ea20906cd336c781ae29c4adaeab06df48/helmfiles/releases/keycloak.yaml
     #   - https://github.com/bitnami/charts/tree/2a326f1a1ea5abbe4e8486666ba4f813264c98cf/bitnami/keycloak
     #   - https://www.keycloak.org/server/all-config
