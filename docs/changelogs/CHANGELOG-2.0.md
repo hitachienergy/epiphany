@@ -10,6 +10,7 @@
 - [#3232](https://github.com/epiphany-platform/epiphany/issues/3232) - Use tarball format insted of legacy for downloading Docker images
 - [#3238](https://github.com/epiphany-platform/epiphany/issues/3238) - Make OpenSearch Dashboards user configurable
 - [#3241](https://github.com/epiphany-platform/epiphany/issues/3241) - Simplify APT commands flow in download-requirements.py
+- [#3259](https://github.com/epiphany-platform/epiphany/issues/3259) - Add mechanism for filtering sensitive data on the cli side
 - [#3260](https://github.com/epiphany-platform/epiphany/issues/3260) - Remove registry-image doc support in download-requirements.py
 - [#3266](https://github.com/epiphany-platform/epiphany/issues/3266) - Disable validation of infrastructure documents in upgrade mode
 

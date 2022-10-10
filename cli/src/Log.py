@@ -2,6 +2,7 @@ import logging
 import logging.handlers
 import os
 import threading
+from typing import Callable
 
 import click
 from pythonjsonlogger import jsonlogger
@@ -90,7 +91,7 @@ class Log:
 
 class LogPipe(threading.Thread):
 
-    def __init__(self, logger_name):
+    def __init__(self, logger_name, line_filter: Callable = None):
         threading.Thread.__init__(self)
         self.logger = Log(logger_name)
         self.daemon = False
@@ -100,6 +101,7 @@ class LogPipe(threading.Thread):
         self.error_strings = ['error', 'Error', 'ERROR', 'fatal', 'FAILED']
         self.warning_strings = ['warning', 'warning', 'WARNING']
         self.output_error_lines = []
+        self.__line_filter = line_filter or (lambda line: line)
 
     def fileno(self):
         return self.fd_write
@@ -113,6 +115,9 @@ class LogPipe(threading.Thread):
 
         for line in iter(self.pipe_reader.readline, ''):
             line = line.strip('\n')
+            if not self.__line_filter(line):
+                continue
+
             if with_error_detection and any(string in line for string in self.error_strings):
                 self.output_error_lines.append(line)
             if with_level_detection:

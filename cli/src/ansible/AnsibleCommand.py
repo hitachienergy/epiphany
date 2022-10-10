@@ -17,6 +17,15 @@ class AnsibleCommand:
         self.working_directory = working_directory
         self.colors_enabled = not Config().no_color
 
+    def __check_log_line(self, log_line: str) -> bool:
+        """
+        Check line from a log if it contains any sensitive data.
+
+        :param log_line: line from a log to be tested
+        :returns: True - line is secure and can be saved, False - line is insecure and cannot be saved
+        """
+        return '"subscription_name"' not in log_line
+
     def run_task(self, hosts, inventory, module, args=None):
         cmd = ['ansible']
 
@@ -35,7 +44,7 @@ class AnsibleCommand:
 
         self.logger.info(f'Running: "{style(module, **HIGHLIGHTED) if self.colors_enabled else module}"')
 
-        logpipe = LogPipe(__name__)
+        logpipe = LogPipe(__name__, self.__check_log_line)
         with subprocess.Popen(cmd, stdout=logpipe, stderr=logpipe) as sp:
             logpipe.close()
 
@@ -80,7 +89,7 @@ class AnsibleCommand:
 
         self.logger.info(f'Running: "{style(playbook_path, **HIGHLIGHTED) if self.colors_enabled else playbook_path}"')
 
-        logpipe = LogPipe(__name__)
+        logpipe = LogPipe(__name__, self.__check_log_line)
         with subprocess.Popen(cmd, stdout=logpipe, stderr=logpipe) as sp:
             logpipe.close()
 

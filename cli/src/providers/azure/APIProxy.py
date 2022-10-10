@@ -126,6 +126,15 @@ class APIProxy:
         keys = self.run(self, f'az storage account keys list -g \'{self.resource_group_name}\' -n \'{storage_account_name}\'')
         return keys[0]['value']
 
+    def __check_log_line(self, log_line: str) -> bool:
+        """
+        Check line from a log if it contains any sensitive data.
+
+        :param log_line: line from a log to be tested
+        :returns: True - line is secure and can be saved, False - line is insecure and cannot be saved
+        """
+        return '--subscription' not in log_line
+
     @staticmethod
     def wait(self, seconds):
         for x in range(0, seconds):
@@ -134,10 +143,7 @@ class APIProxy:
 
     @staticmethod
     def run(self, cmd, log_cmd=True):
-        if log_cmd:
-            self.logger.info('Running: "' + cmd + '"')
-
-        logpipe = LogPipe(__name__)
+        logpipe = LogPipe(__name__, self.__check_log_line)
         with Popen(cmd, stdout=PIPE, stderr=logpipe, shell=True) as sp:
             logpipe.close()
             try:
@@ -149,11 +155,8 @@ class APIProxy:
                 output = {}
 
         if sp.returncode != 0:
-            if log_cmd:
-                raise Exception(f'Error running: "{cmd}"')
-            else:
-                raise Exception('Error running Azure APIProxy cmd')
-        else:
-            if log_cmd:
-                self.logger.info(f'Done running "{cmd}"')
-            return output
+            raise Exception('Error running Azure APIProxy')
+
+        if log_cmd:
+            self.logger.info('Done running Azure ApiProxy')
+        return output

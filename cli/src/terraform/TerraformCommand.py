@@ -28,6 +28,15 @@ class TerraformCommand:
     def init(self, env=os.environ.copy()):
         self.run(self, self.INIT_COMMAND, env=env)
 
+    def __check_log_line(self, log_line: str) -> bool:
+        """
+        Check line from a log if it contains any sensitive data.
+
+        :param log_line: line from a log to be tested
+        :returns: True - line is secure and can be saved, False - line is insecure and cannot be saved
+        """
+        return not any(secret for secret in ('--subscription', '/subscriptions/', '"secrets"') if secret in log_line)
+
     @staticmethod
     def run(self, command, env, auto_approve=False, auto_retries=1):
         cmd = ['terraform']
@@ -57,7 +66,7 @@ class TerraformCommand:
         retries = 1
         do_retry = True
         while ((retries <= auto_retries) and do_retry):
-            logpipe = LogPipe(__name__)
+            logpipe = LogPipe(__name__, self.__check_log_line)
             with subprocess.Popen(cmd, stdout=logpipe, stderr=logpipe, env=env,  shell=True) as sp:
                 logpipe.close()
             retries = retries + 1
