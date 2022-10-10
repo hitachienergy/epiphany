@@ -132,8 +132,19 @@ properties:
         properties:
           enabled:
             type: boolean
+          image:
+            type: object
+            properties:
+              repository:
+                type: string
+              tag:
+                type: string
+            required:
+            - repository
+            - tag
         required:
         - enabled
+        - image
       database:
         type: object
         properties:

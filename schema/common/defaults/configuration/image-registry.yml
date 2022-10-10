@@ -18,6 +18,8 @@ specification:
           - name: "bitnami/pgbouncer:1.16.0"
             file_name: pgbouncer-1.16.0.tar
         keycloak:
+          - name: "docker.io/busybox:1.32"
+            file_name: busybox-1.32.tar
           - name: "quay.io/keycloak/keycloak:19.0.2"
             file_name: keycloak-19.0.2.tar
         kubernetes-master:
@@ -163,6 +165,8 @@ specification:
           - name: "rabbitmq:3.8.9"
             file_name: rabbitmq-3.8.9.tar
         keycloak:
+          - name: "docker.io/busybox:1.32"
+            file_name: busybox-1.32.tar
           - name: "quay.io/keycloak/keycloak:19.0.2"
             file_name: keycloak-19.0.2.tar
         kubernetes-master:

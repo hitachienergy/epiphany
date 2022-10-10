@@ -6,14 +6,14 @@ specification:
   namespace: keycloak
 
   database:
-    epiphany_managed: true
+    epiphany_managed: true  # if true, Keycloak database and user are created by Epiphany in `postgresql` component
 
   image_registry:
     use_local: true
 
   chart_values:
     # Refs:
-    #   - https://github.com/codecentric/helm-charts/tree/keycloakx-1.6.0/charts/keycloakx
+    #   - https://github.com/codecentric/helm-charts/tree/keycloakx-1.6.1/charts/keycloakx
     #   - https://github.com/epam/edp-install/blob/d01c15ea20906cd336c781ae29c4adaeab06df48/helmfiles/releases/keycloak.yaml
     #   - https://github.com/bitnami/charts/tree/2a326f1a1ea5abbe4e8486666ba4f813264c98cf/bitnami/keycloak
     #   - https://www.keycloak.org/server/all-config
@@ -61,6 +61,24 @@ specification:
         value: /mnt/certificates/tls.key
       {%- endraw %}
 
+    # Pod affinity
+    affinity: |-
+      {%- raw -%}
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                {{- include "keycloak.selectorLabels" . | nindent 10 }}
+            topologyKey: kubernetes.io/hostname
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  {{- include "keycloak.selectorLabels" . | nindent 12 }}
+              topologyKey: topology.kubernetes.io/zone
+      {%- endraw %}
+
     # Probes configuration based on https://github.com/keycloak/keycloak/blob/19.0/operator/src/main/java/org/keycloak/operator/controllers/KeycloakDeployment.java
 
     livenessProbe: |-
@@ -72,11 +90,7 @@ specification:
           - --fail
           - --silent
           - --insecure
-          {{ if and (.Values.http.relativePath) (ne .Values.http.relativePath "/") }}
-          - https://127.0.0.1:8443/{{ .Values.http.relativePath | trimSuffix "/" }}/health/live
-          {{ else }}
-          - https://127.0.0.1:8443/health/live
-          {{ end }}
+          - https://127.0.0.1:8443{{ .Values.http.relativePath | trimSuffix "/" }}/health/live
       {% endraw %}
       initialDelaySeconds: 0
       periodSeconds: 2
@@ -91,11 +105,7 @@ specification:
           - --fail
           - --silent
           - --insecure
-          {{ if and (.Values.http.relativePath) (ne .Values.http.relativePath "/") }}
-          - https://127.0.0.1:8443/{{ .Values.http.relativePath | trimSuffix "/" }}/health/ready
-          {{ else }}
-          - https://127.0.0.1:8443/health/ready
-          {{ end }}
+          - https://127.0.0.1:8443{{ .Values.http.relativePath | trimSuffix "/" }}/health/ready
       {% endraw %}
       initialDelaySeconds: 10
       periodSeconds: 2
@@ -110,11 +120,7 @@ specification:
           - --fail
           - --silent
           - --insecure
-          {{ if and (.Values.http.relativePath) (ne .Values.http.relativePath "/") }}
-          - https://127.0.0.1:8443/{{ .Values.http.relativePath | trimSuffix "/" }}/health
-          {{ else }}
-          - https://127.0.0.1:8443/health
-          {{ end }}
+          - https://127.0.0.1:8443{{ .Values.http.relativePath | trimSuffix "/" }}/health
       {% endraw %}
       initialDelaySeconds: 15
       periodSeconds: 1
@@ -125,19 +131,19 @@ specification:
         # cpu: 1000m
         memory: 512Mi
       requests:
-        cpu: 50m
+        cpu: 50m  # minimal usage (when idle): ~ 38m
         memory: 512Mi
 
     extraVolumes: |-
-      - name: keycloak-tls-certificates
+      - name: keycloak-tls-certs
         secret:
           defaultMode: 420
           optional: false
-          secretName: {% raw %}{{ include "keycloak.fullname" . }}{% endraw %}-tls-certificates
+          secretName: {% raw %}{{ include "keycloak.fullname" . }}{% endraw %}-tls-certs
 
     extraVolumeMounts: |-
       - mountPath: /mnt/certificates
-        name: keycloak-tls-certificates
+        name: keycloak-tls-certs
 
     # Configuration for secrets that should be created
     secrets:
@@ -146,27 +152,42 @@ specification:
         stringData:
           username: keycloak-admin
           password: PASSWORD_TO_CHANGE
-      ca:
+      tls-certs:
+        type: kubernetes.io/tls
         stringData:
           ca.crt: |-
             {%- raw -%}
             {{- $ca := genCA "epiphany-keycloak-ca" 3650 }}
             {{- $_ := set $.Values "_shared" dict }}
             {{- $_ := set $.Values._shared "ca" $ca }}
-            {{- $ca.Cert -}}
+            {{- $caCert := $ca.Cert }}
+            {{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-%s" (include "keycloak.fullname" .) "tls-certs")) }}
+            {{- if $secret }}
+            {{- $caCert = index $secret.data "ca.crt" | b64dec }}
+            {{- end }}
+            {{- $caCert -}}
             {%- endraw %}
-      tls-certificates:
-        type: kubernetes.io/tls
-        stringData:
           tls.crt: |-
             {%- raw -%}
-            {{- $altNames := list "keycloak.keycloak.svc.cluster.local" "keycloak" }}
-            {{- $crt := genSignedCert "keycloak.keycloak.svc.cluster.local" nil $altNames 3650 $.Values._shared.ca }}
+            {{- $altNames := list "keycloak-0.keycloak-headless.keycloak.svc.cluster.local" "keycloak-0.keycloak-headless.keycloak" "keycloak-0.keycloak-headless" "keycloak-0" "keycloak-1.keycloak-headless.keycloak.svc.cluster.local" "keycloak-1.keycloak-headless.keycloak" "keycloak-1.keycloak-headless" "keycloak-1" "keycloak-headless.keycloak.svc.cluster.local" "keycloak-headless.keycloak" "keycloak-headless" "keycloak-http.keycloak.svc.cluster.local" "keycloak-http.keycloak" "keycloak-http" }}
+            {{- $crt := genSignedCert "keycloak-http.keycloak.svc.cluster.local" nil $altNames 3650 $.Values._shared.ca }}
             {{- $_ := set $.Values._shared "crt" $crt }}
-            {{- $crt.Cert -}}
+            {{- $tlsCert := $crt.Cert }}
+            {{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-%s" (include "keycloak.fullname" .) "tls-certs")) }}
+            {{- if $secret }}
+            {{- $tlsCert = index $secret.data "tls.crt" | b64dec }}
+            {{- end }}
+            {{- $tlsCert -}}
             {%- endraw %}
           tls.key: |-
-            {% raw %}{{ $.Values._shared.crt.Key }}{% endraw %}
+            {%- raw -%}
+            {{- $tlsKey := $.Values._shared.crt.Key }}
+            {{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-%s" (include "keycloak.fullname" .) "tls-certs")) }}
+            {{- if $secret }}
+            {{- $tlsKey = index $secret.data "tls.key" | b64dec }}
+            {{- end }}
+            {{- $tlsKey -}}
+            {%- endraw %}
     service:
       type: NodePort
       httpNodePort: 30103
@@ -174,7 +195,10 @@ specification:
 
     # Check database readiness at startup
     dbchecker:
-      enabled: false  # requires additional image
+      enabled: false
+      image:
+        repository: docker.io/busybox
+        tag: '1.32'
 
     database:
       vendor: postgres
@@ -187,10 +211,10 @@ specification:
     # ref: https://www.keycloak.org/server/reverseproxy
     proxy:
       enabled: true
-      mode: passthrough
+      mode: reencrypt
 
     metrics:
-      enabled: false
+      enabled: true  # used by readinessProbe
 
     http:
-      relativePath: /  # /auth before Quarkus
+      relativePath: /auth  # for backward compatibility and HAProxy

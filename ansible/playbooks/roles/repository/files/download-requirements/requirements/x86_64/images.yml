@@ -20,6 +20,10 @@ images:
       sha1: 2705b05f9ac0bda6a4136fc8d66dc99295daa95d
 
   keycloak:
+    # optional - can be used by Helm chart to check database readiness at startup
+    'docker.io/busybox:1.32':
+      sha1: 0355284f96b69167cc50641845691ef737724414
+
     'quay.io/keycloak/keycloak:19.0.2':
       sha1: ffbe5f8fff32eaa1f14043c5aa5f558a4ba17b52
 

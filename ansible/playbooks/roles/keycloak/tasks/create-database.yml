@@ -14,6 +14,8 @@
   set_fact:
     postgres_primary: "{{ item.item }}"
   loop: "{{ in_recovery_state.results }}"
+  loop_control:
+    label: {in_recovery: "{{ item.in_recovery }}"}
   when: not item.in_recovery
 
 - name: Create DB objects
@@ -42,18 +44,23 @@
 - name: Refresh password file in PgPool and users list in PgBouncer
   when:
     - create_keycloak_user.changed
-    - groups.postgresql | count > 1 or "'pgbouncer' in _chart_values.database.hostname"
+    - applications_vars.specification.applications is defined
+  vars:
+    _pgbouncer_spec: >-
+      {{ applications_vars.specification.applications | selectattr('name', '==', 'pgbouncer') }}
+    _pgpool_spec: >-
+      {{ applications_vars.specification.applications | selectattr('name', '==', 'pgpool') }}
   block:
     - name: Restart PgPool deployment to update pool_passwd file
+      when:
+        - _pgpool_spec | count > 0
+        - (_pgpool_spec | first).enabled
       command: |
-        kubectl rollout restart deployment/pgpool -n {{ _namespace }}
-      vars:
-        _namespace: >-
-          {{ (applications_vars.specification.applications | selectattr('name', '==', 'pgpool') | first).namespace }}
+        kubectl rollout restart deployment/pgpool -n {{ (_pgpool_spec | first).namespace }}
 
     - name: Restart PgBouncer deployment to update users list
+      when:
+        - _pgbouncer_spec | count > 0
+        - (_pgbouncer_spec | first).enabled
       command: |
-        kubectl rollout restart deployment/pgbouncer -n {{ _namespace }}
-      vars:
-        _namespace: >-
-          {{ (applications_vars.specification.applications | selectattr('name', '==', 'pgbouncer') | first).namespace }}
+        kubectl rollout restart deployment/pgbouncer -n {{ (_pgbouncer_spec | first).namespace }}
