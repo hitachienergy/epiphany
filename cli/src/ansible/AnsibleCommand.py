@@ -17,14 +17,14 @@ class AnsibleCommand:
         self.working_directory = working_directory
         self.colors_enabled = not Config().no_color
 
-    def __check_log_line(self, log_line: str) -> bool:
+    def __check_log_line(self, log_line: str):
         """
         Check line from a log if it contains any sensitive data.
 
         :param log_line: line from a log to be tested
         :returns: True - line is secure and can be saved, False - line is insecure and cannot be saved
         """
-        return '"subscription_name"' not in log_line
+        return log_line
 
     def run_task(self, hosts, inventory, module, args=None):
         cmd = ['ansible']

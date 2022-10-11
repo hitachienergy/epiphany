@@ -114,9 +114,7 @@ class LogPipe(threading.Thread):
         with_level_detection = logger_short_name not in colored_loggers
 
         for line in iter(self.pipe_reader.readline, ''):
-            line = line.strip('\n')
-            if not self.__line_filter(line):
-                continue
+            line = self.__line_filter(line.strip('\n'))
 
             if with_error_detection and any(string in line for string in self.error_strings):
                 self.output_error_lines.append(line)

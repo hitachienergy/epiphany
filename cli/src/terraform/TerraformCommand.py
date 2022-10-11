@@ -1,4 +1,5 @@
 import os
+import re
 import subprocess
 
 from cli.src.Config import Config
@@ -28,14 +29,27 @@ class TerraformCommand:
     def init(self, env=os.environ.copy()):
         self.run(self, self.INIT_COMMAND, env=env)
 
-    def __check_log_line(self, log_line: str) -> bool:
+    def __filter_log_line(self, log_line: str) -> str:
         """
         Check line from a log if it contains any sensitive data.
 
         :param log_line: line from a log to be tested
         :returns: True - line is secure and can be saved, False - line is insecure and cannot be saved
         """
-        return not any(secret for secret in ('--subscription', '/subscriptions/', '"secrets"') if secret in log_line)
+        patterns: dict[str, str] = {
+            '/subscriptions/': r'/subscriptions/(.*?)/',
+            '"secrets"' : r'"secrets": \[(.*?)\]'
+        }
+
+        def replace_with_star(matched_pattern):
+            matched = matched_pattern.group(1)
+            return matched_pattern.string.replace(matched, "*" * len(matched))
+
+        for pattern, sub in patterns.items():
+            if pattern in log_line:
+                return re.sub(sub, replace_with_star, log_line)
+
+        return log_line
 
     @staticmethod
     def run(self, command, env, auto_approve=False, auto_retries=1):
@@ -66,7 +80,7 @@ class TerraformCommand:
         retries = 1
         do_retry = True
         while ((retries <= auto_retries) and do_retry):
-            logpipe = LogPipe(__name__, self.__check_log_line)
+            logpipe = LogPipe(__name__, self.__filter_log_line)
             with subprocess.Popen(cmd, stdout=logpipe, stderr=logpipe, env=env,  shell=True) as sp:
                 logpipe.close()
             retries = retries + 1

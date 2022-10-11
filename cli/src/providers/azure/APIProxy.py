@@ -82,6 +82,7 @@ class APIProxy:
         # Azure we support (https://www.terraform.io/docs/providers/azurerm/auth/azure_cli.html):
         # - Authenticating to Azure using the Azure CLI
         # - Authenticating to Azure using a Service Principal and a Client Secret
+
         if not self.cluster_model.specification.cloud.use_service_principal:
             # Account
             subscription = self.login_account()
@@ -126,14 +127,14 @@ class APIProxy:
         keys = self.run(self, f'az storage account keys list -g \'{self.resource_group_name}\' -n \'{storage_account_name}\'')
         return keys[0]['value']
 
-    def __check_log_line(self, log_line: str) -> bool:
+    def __check_log_line(self, log_line: str):
         """
         Check line from a log if it contains any sensitive data.
 
         :param log_line: line from a log to be tested
         :returns: True - line is secure and can be saved, False - line is insecure and cannot be saved
         """
-        return '--subscription' not in log_line
+        return log_line
 
     @staticmethod
     def wait(self, seconds):
