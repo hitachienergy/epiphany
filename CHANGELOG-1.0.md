@@ -1,5 +1,11 @@
 # Changelog 1.0
 
+## [1.0.7] YYYY-MM-DD
+
+### Fixed
+
+- [#3296](https://github.com/epiphany-platform/epiphany/issues/3296) - Update `ca-certificates` package to the latest version
+
 ## [1.0.6] 2022-08-04
 
 ### Fixed
