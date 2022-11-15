@@ -6,14 +6,14 @@ specification:
     publisher: Canonical
     offer: UbuntuServer
     sku: 18.04-LTS
-    version: "18.04.202103151"
+    version: "18.04.202210180"
   redhat-7-x86_64:
-    publisher: RedHat 
+    publisher: RedHat
     offer: RHEL
     sku: 7-LVM
-    version: "7.9.2020111202"
+    version: "7.9.2022032203"
   centos-7-x86_64:
     publisher: OpenLogic
     offer: CentOS
     sku: "7_9"
-    version: "7.9.2021020400"
+    version: "7.9.2022101800"
