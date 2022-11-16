@@ -2,7 +2,7 @@ kind: infrastructure/cloud-os-image-defaults
 title: "Cloud OS Image Defaults"
 name: default
 specification:
-  ubuntu-18.04-x86_64: ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-20210323
-  redhat-7-x86_64: RHEL-7.9_HVM-20210208-x86_64-0-Hourly2-GP2
-  centos-7-x86_64: CentOS 7.9.2009 x86_64
-  centos-7-arm64: CentOS 7.9.2009 aarch64
+  ubuntu-18.04-x86_64: ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-20221018
+  redhat-7-x86_64: RHEL-7.9_HVM-20221027-x86_64-0-Hourly2-GP2
+  centos-7-x86_64: CentOS Linux 7 x86_64 - 2211
+  centos-7-arm64: CentOS Linux 7 aarch64 - 2211

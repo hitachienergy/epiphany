@@ -28,8 +28,8 @@ This document will help you decide how you should patch your OS. This is not a s
 
 For Epiphany v1.0 we recommend the following image (AMI):  
 
-- RHEL: `RHEL-7.9_HVM-20210208-x86_64-0-Hourly2-GP2` (kernel 3.10.0-1160.15.2.el7.x86_64),
-- Ubuntu: `ubuntu-bionic-18.04-amd64-server-20210323` (kernel 5.4.0-1041-aws).
+- RHEL: `RHEL-7.9_HVM-20221027-x86_64-0-Hourly2-GP2` (kernel 3.10.0-1160.80.1.el7.x86_64),
+- Ubuntu: `ubuntu-bionic-18.04-amd64-server-20221018` (kernel 5.4.0-1088-aws).
 
 Note: For different supported OS versions this guide may be useful as well.
 
@@ -54,16 +54,16 @@ For more information, refer to [AWS Systems Manager User Guide](https://docs.aws
 
 ### Suggested OS images
 
-For Epiphany v1.0 we recommend the following image (urn):  
+For Epiphany v1.0 we recommend the following image (urn):
 
-- RHEL: `RHEL:7-LVM:7.9.2020111202` (kernel 3.10.0-1160.el7.x86_64),
-- Ubuntu: `UbuntuServer:18.04-LTS:18.04.202103151` (kernel 5.4.0-1041-azure).
+- RHEL: `RHEL:7-LVM:7.9.2022032203` (kernel 3.10.0-1160.59.1.el7.x86_64),
+- Ubuntu: `UbuntuServer:18.04-LTS:18.04.202210180` (kernel 5.4.0-1094-azure).
 
 Note: For different supported OS versions this guide may be useful as well.
 
 ### Patching methods
 
-Azure has `Update Management` solution in `Azure Automation`. It gives you visibility into update compliance across Azure and other clouds, and on-premises. The feature allows you to create scheduled deployments that orchestrate the installation of updates within a defined maintenance window.  
+Azure has `Update Management` solution in `Azure Automation`. It gives you visibility into update compliance across Azure and other clouds, and on-premises. The feature allows you to create scheduled deployments that orchestrate the installation of updates within a defined maintenance window.
 To manage updates that way please refer to [official documentation](https://docs.microsoft.com/en-us/azure/automation/update-management/update-mgmt-manage-updates-for-vm).
 
 ## Patching with OS specific package manager

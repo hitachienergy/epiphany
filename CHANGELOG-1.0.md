@@ -1,5 +1,11 @@
 # Changelog 1.0
 
+## [1.0.8] YYYY-MM-DD
+
+### Fixed
+
+- [#3296](https://github.com/epiphany-platform/epiphany/issues/3299) - CentOS 7.9.2009 AMI no longer available
+
 ## [1.0.7] 2022-11-07
 
 ### Fixed
