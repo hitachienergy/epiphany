@@ -71,7 +71,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | azure-common | 1.1.27 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-core | 1.21.1 | https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/core/azure-core | MIT License |
 | azure-cosmos | 3.2.0 | https://github.com/Azure/azure-documentdb-python | [MIT License](https://api.github.com/repos/azure/azure-documentdb-python/license) |
-| azure-datalake-store | 0.0.52 | https://github.com/Azure/azure-data-lake-store-python | [Other](https://api.github.com/repos/azure/azure-data-lake-store-python/license) |
+| azure-datalake-store | 0.0.52 | https://github.com/Azure/azure-data-lake-store-python | [MIT License](https://api.github.com/repos/azure/azure-data-lake-store-python/license) |
 | azure-functions-devops-build | 0.0.22 | https://github.com/Azure/azure-functions-devops-build | [MIT License](https://api.github.com/repos/azure/azure-functions-devops-build/license) |
 | azure-graphrbac | 0.60.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-identity | 1.7.1 | https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/identity/azure-identity | MIT License |
@@ -168,14 +168,14 @@ Note that versions are default versions and can be changed in certain cases thro
 | fabric | 2.6.0 | http://fabfile.org | BSD |
 | humanfriendly | 9.2 | https://humanfriendly.readthedocs.io | MIT |
 | idna | 2.10 | https://github.com/kjd/idna | [BSD 3-Clause "New" or "Revised" License](https://api.github.com/repos/kjd/idna/license) |
-| importlib-metadata | 1.7.0 | http://importlib-metadata.readthedocs.io/ | Apache Software License |
+| importlib-metadata | 4.13.0 | https://github.com/python/importlib_metadata | [Apache License 2.0](https://api.github.com/repos/python/importlib_metadata/license) |
 | invoke | 1.6.0 | http://docs.pyinvoke.org | BSD |
 | isodate | 0.6.1 | https://github.com/gweis/isodate/ | [BSD 3-Clause "New" or "Revised" License](https://api.github.com/repos/gweis/isodate/license) |
 | javaproperties | 0.5.2 | https://github.com/jwodder/javaproperties | [MIT License](https://api.github.com/repos/jwodder/javaproperties/license) |
 | Jinja2 | 2.11.2 | https://palletsprojects.com/p/jinja/ | BSD-3-Clause |
 | jmespath | 0.10.0 | https://github.com/jmespath/jmespath.py | [Other](https://api.github.com/repos/jmespath/jmespath.py/license) |
 | jsondiff | 1.2.0 | https://github.com/ZoomerAnalytics/jsondiff | [MIT License](https://api.github.com/repos/zoomeranalytics/jsondiff/license) |
-| jsonschema | 3.2.0 | https://github.com/Julian/jsonschema | [MIT License](https://api.github.com/repos/julian/jsonschema/license) |
+| jsonschema | 4.17.0 |  | MIT |
 | knack | 0.8.2 | https://github.com/microsoft/knack | [MIT License](https://api.github.com/repos/microsoft/knack/license) |
 | MarkupSafe | 1.1.1 | https://palletsprojects.com/p/markupsafe/ | BSD-3-Clause |
 | msal-extensions | 0.3.1 | https://github.com/AzureAD/microsoft-authentication-extensions-for-python | [MIT License](https://github.com/AzureAD/microsoft-authentication-extensions-for-python/LICENSE) |
@@ -187,11 +187,12 @@ Note that versions are default versions and can be changed in certain cases thro
 | paramiko | 2.9.1 | https://paramiko.org | LGPL |
 | pathlib2 | 2.3.6 | https://github.com/mcmtroffaes/pathlib2 | [MIT License](https://api.github.com/repos/mcmtroffaes/pathlib2/license) |
 | pkginfo | 1.8.2 | https://code.launchpad.net/~tseaver/pkginfo/trunk | MIT |
-| portalocker | 1.7.1 | https://github.com/WoLpH/portalocker | [Other](https://api.github.com/repos/wolph/portalocker/license) |
+| portalocker | 1.7.1 | https://github.com/WoLpH/portalocker | [BSD 3-Clause "New" or "Revised" License](https://api.github.com/repos/wolph/portalocker/license) |
 | psutil | 5.9.0 | https://github.com/giampaolo/psutil | [BSD 3-Clause "New" or "Revised" License](https://api.github.com/repos/giampaolo/psutil/license) |
 | pycparser | 2.20 | https://github.com/eliben/pycparser | [Other](https://api.github.com/repos/eliben/pycparser/license) |
 | PyGithub | 1.55 | https://github.com/pygithub/pygithub | [GNU Lesser General Public License v3.0](https://api.github.com/repos/pygithub/pygithub/license) |
 | Pygments | 2.10.0 | https://pygments.org/ | BSD License |
+| PyJWT | 2.3.0 | https://github.com/jpadilla/pyjwt | [MIT License](https://api.github.com/repos/jpadilla/pyjwt/license) |
 | PyJWT | 2.3.0 | https://github.com/jpadilla/pyjwt | [MIT License](https://api.github.com/repos/jpadilla/pyjwt/license) |
 | PyNaCl | 1.4.0 | https://github.com/pyca/pynacl/ | [Apache License 2.0](https://api.github.com/repos/pyca/pynacl/license) |
 | pyOpenSSL | 21.0.0 | https://pyopenssl.org/ | Apache License, Version 2.0 |
@@ -204,16 +205,18 @@ Note that versions are default versions and can be changed in certain cases thro
 | PyYAML | 5.4.1 | https://pyyaml.org/ | MIT |
 | requests-oauthlib | 1.3.0 | https://github.com/requests/requests-oauthlib | [ISC License](https://api.github.com/repos/requests/requests-oauthlib/license) |
 | requests | 2.25.1 | https://requests.readthedocs.io | Apache 2.0 |
+| requests | 2.25.1 | https://requests.readthedocs.io | Apache 2.0 |
 | ruamel.yaml.clib | 0.2.2 | https://sourceforge.net/p/ruamel-yaml-clib/code/ci/default/tree | MIT |
 | ruamel.yaml | 0.16.12 | https://sourceforge.net/p/ruamel-yaml/code/ci/default/tree | MIT license |
 | s3transfer | 0.3.4 | https://github.com/boto/s3transfer | [Apache License 2.0](https://api.github.com/repos/boto/s3transfer/license) |
 | scp | 0.13.6 | https://github.com/jbardin/scp.py | [Other](https://api.github.com/repos/jbardin/scp.py/license) |
 | semver | 2.13.0 | https://github.com/python-semver/python-semver | [BSD 3-Clause "New" or "Revised" License](https://api.github.com/repos/python-semver/python-semver/license) |
+| setuptools | 65.5.1 | https://github.com/pypa/setuptools | [MIT License](https://api.github.com/repos/pypa/setuptools/license) |
 | six | 1.15.0 | https://github.com/benjaminp/six | [MIT License](https://api.github.com/repos/benjaminp/six/license) |
 | sshtunnel | 0.1.5 | https://github.com/pahaz/sshtunnel | [MIT License](https://api.github.com/repos/pahaz/sshtunnel/license) |
 | tabulate | 0.8.9 | https://github.com/astanin/python-tabulate | [MIT License](https://api.github.com/repos/astanin/python-tabulate/license) |
-| terraform-bin | 1.0.1 | https://github.com/epiphany-platform/terraform-bin | [Apache License 2.0](https://api.github.com/repos/epiphany-platform/terraform-bin/license) |
-| typing_extensions | 4.0.0 | https://github.com/python/typing/blob/master/typing_extensions | [Other](https://github.com/python/typing/blob/master/typing_extensions/LICENSE) |
+| typing_extensions | 4.4.0 | https://github.com/python/typing/blob/master/typing_extensions | [Other](https://github.com/python/typing/blob/master/typing_extensions/LICENSE) |
+| urllib3 | 1.26.7 | https://urllib3.readthedocs.io/ | MIT |
 | urllib3 | 1.26.7 | https://urllib3.readthedocs.io/ | MIT |
 | vsts | 0.1.25 | https://github.com/Microsoft/vsts-python-api | [MIT License](https://api.github.com/repos/microsoft/vsts-python-api/license) |
 | websocket-client | 0.56.0 | https://github.com/websocket-client/websocket-client.git | BSD |

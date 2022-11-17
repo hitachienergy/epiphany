@@ -14,6 +14,7 @@ FROM python:3.7-slim
 ARG HELM_VERSION=3.3.1
 ARG KUBECTL_VERSION=1.18.8
 ARG ISTIOCTL_VERSION=1.8.1
+ARG TERRAFORM_VERSION=0.12.6
 
 ARG USERNAME=epiuser
 ARG USER_UID=1000
@@ -37,6 +38,11 @@ RUN apt-get update \
     && chmod +x ./kubectl \
     && mv ./kubectl /usr/local/bin/kubectl \
     && kubectl version --client \
+    && echo "Installing terraform binary ..." \
+    && curl -fsSLO https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
+    && unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /usr/local/bin \
+    && rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
+    && terraform version \
     && echo "Installing istioctl binary ..." \
     && curl -fsSLO https://github.com/istio/istio/releases/download/${ISTIOCTL_VERSION}/istioctl-${ISTIOCTL_VERSION}-linux-amd64.tar.gz \
     && tar -xzof istioctl-${ISTIOCTL_VERSION}-linux-amd64.tar.gz -C /usr/local/bin istioctl \
