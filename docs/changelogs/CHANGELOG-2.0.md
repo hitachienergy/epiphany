@@ -1,6 +1,12 @@
 <!-- markdownlint-disable-file no-duplicate-header -->
 # Changelog 2.0
 
+## [2.0.3] YYYY-MM-DD
+
+### Fixed
+
+- [#3306](https://github.com/epiphany-platform/epiphany/issues/3306) - OpenSearch admin certificate expired
+
 ## [2.0.2] 2022-10-14
 
 ### Added
