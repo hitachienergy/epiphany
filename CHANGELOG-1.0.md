@@ -5,6 +5,7 @@
 ### Fixed
 
 - [#3303](https://github.com/epiphany-platform/epiphany/issues/3303) - terraform-bin security and license issues
+- [#3307](https://github.com/epiphany-platform/epiphany/issues/3307) - OpenDistro admin certificate expired
 
 ## [1.0.8] 2022-11-16
 
