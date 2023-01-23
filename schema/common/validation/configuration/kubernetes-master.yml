@@ -8,6 +8,8 @@ properties:
     type: string
   cni_version:
     type: string
+  cri-tools_version:
+    type: string
   cluster_name:
     type: string
   allow_pods_on_master:

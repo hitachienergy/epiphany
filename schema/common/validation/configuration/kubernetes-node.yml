@@ -8,5 +8,7 @@ properties:
     type: string
   cni_version:
     type: string
+  cri-tools_version:
+    type: string
   node_labels:
     type: string
