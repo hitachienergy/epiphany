@@ -29,7 +29,7 @@ packages:
     - 'containerd.io-1.5.11'
     - 'container-selinux'
     - 'copy-jdk-configs'  # for java-1.8.0-openjdk-headless
-    - 'cri-tools'
+    - 'cri-tools-1.25.0'
     - 'cups-libs'  # for java-1.8.0-openjdk-headless
     - 'curl'
     - 'dejavu-sans-fonts'  # for grafana
