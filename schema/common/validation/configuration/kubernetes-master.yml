@@ -8,6 +8,8 @@ properties:
     type: string
   cni_version:
     type: string
+  cri_tools_version:
+    type: string
   cluster_name:
     type: string
   allow_pods_on_master:
@@ -149,6 +151,7 @@ properties:
 required:
 - version
 - cni_version
+- cri_tools_version
 - cluster_name
 - allow_pods_on_master
 - storage

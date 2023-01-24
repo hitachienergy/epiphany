@@ -1,6 +1,12 @@
 <!-- markdownlint-disable-file no-duplicate-header -->
 # Changelog 2.0
 
+## [2.0.4] YYYY-MM-DD
+
+### Fixed
+
+- [#3315](https://github.com/epiphany-platform/epiphany/issues/3315) - Failed to initialize Kubernetes cluster: CRI v1 runtime API is not implemented
+
 ## [2.0.3] 2023-01-04
 
 ### Fixed
