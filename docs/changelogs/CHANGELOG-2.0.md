@@ -1,7 +1,17 @@
 <!-- markdownlint-disable-file no-duplicate-header -->
 # Changelog 2.0
 
-## [2.0.3] YYYY-MM-DD
+## [2.0.4] 2023-01-24
+
+### Fixed
+
+- [#3315](https://github.com/epiphany-platform/epiphany/issues/3315) - Failed to initialize Kubernetes cluster: CRI v1 runtime API is not implemented
+
+## [2.0.3] 2023-01-04
+
+### Fixed
+
+- [#3306](https://github.com/epiphany-platform/epiphany/issues/3306) - OpenSearch admin certificate expired
 
 ## [2.0.2] 2022-10-14
 

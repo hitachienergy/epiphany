@@ -29,10 +29,12 @@
         - kubectl={{ specification.version }}-00
         - kubeadm={{ specification.version }}-00
         - kubernetes-cni={{ specification.cni_version }}-00
+        - cri-tools={{ specification.cri_tools_version }}-00
       RedHat:
         - kubelet-{{ specification.version }}-0
         - kubectl-{{ specification.version }}-0
         - kubeadm-{{ specification.version }}-0
         - kubernetes-cni-{{ specification.cni_version }}-0
+        - cri-tools-{{ specification.cri_tools_version }}-0
   module_defaults:
     yum: {lock_timeout: "{{ yum_lock_timeout }}"}

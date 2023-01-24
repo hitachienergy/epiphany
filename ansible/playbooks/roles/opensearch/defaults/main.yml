@@ -41,7 +41,7 @@ certificates:
     admin:
       cert:
         filename: epiphany-admin.pem
-        ownca_not_after: 20221231235959Z  # relative time, such as '+3650d', is NOT idempotent
+        ownca_not_after: 20250509235959Z  # relative time, such as '+3650d', is NOT idempotent. Setting 2025.05.09 which is EOL for 2.0.x LTS
         subject:
           <<: *common-subject
           CN: Epiphany Admin
