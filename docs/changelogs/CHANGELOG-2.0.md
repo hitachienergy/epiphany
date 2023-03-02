@@ -1,6 +1,12 @@
 <!-- markdownlint-disable-file no-duplicate-header -->
 # Changelog 2.0
 
+## [2.0.5] 2023-03-01
+
+### Fixed
+
+- [#3324](https://github.com/epiphany-platform/epiphany/issues/3324) - Missing python3-setuptools package in offline mode
+
 ## [2.0.4] 2023-01-24
 
 ### Fixed

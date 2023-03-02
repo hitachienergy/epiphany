@@ -91,6 +91,7 @@ packages:
     - 'python3-policycoreutils'  # for container-selinux
     - 'python3-psycopg2'
     - 'python3-pycparser'  # for python3-cryptography
+    - 'python3-setuptools'
     - 'python3-slip-dbus'  # for firewalld
     - 'python36'  # there is no python3 package
     - 'quota'  # for nfs-utils
