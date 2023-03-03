@@ -485,7 +485,7 @@ on primary node once the upgrade is completely over.
 
 From Epiphany 1.x to 2.x the Terraform stack received the following major updates:
 - Terraform 0.12.6 to 1.1.3
-- Azurerm provider 1.38.0 to 2.91.0
+- Azurerm provider 1.38.0 to 3.45.0
 - AWS provider 2.26 to 3.71.0
 - Removal of auto-scaling-groups in favor of plain EC2 instances on AWS.
 
