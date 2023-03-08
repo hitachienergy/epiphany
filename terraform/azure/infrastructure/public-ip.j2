@@ -17,4 +17,12 @@ resource "azurerm_public_ip" "{{ specification.name }}" {
   allocation_method       = "{{ specification.allocation_method }}"
   idle_timeout_in_minutes = "{{ specification.idle_timeout_in_minutes }}"
   sku                     = "{{ specification.sku }}"
+
+  lifecycle {
+    ignore_changes = [
+      # Zones are no longer computed - if you wish Azure to assign availability zones automatically, you must use ignore_changes.
+      # Ref: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/3.0-upgrade-guide#behavioural-updates
+      zones
+    ]
+  }
 }
