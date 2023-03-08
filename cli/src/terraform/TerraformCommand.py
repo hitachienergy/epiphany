@@ -26,7 +26,7 @@ class TerraformCommand:
         self.run(self, self.PLAN_COMMAND, env=env)
 
     def init(self, env=os.environ.copy()):
-        self.run(self, self.INIT_COMMAND, env=env)
+        self.run(self, self.INIT_COMMAND, env=env, auto_retries=2)
 
     @staticmethod
     def run(self, command, env, auto_approve=False, auto_retries=1):
@@ -58,12 +58,24 @@ class TerraformCommand:
         do_retry = True
         while ((retries <= auto_retries) and do_retry):
             logpipe = LogPipe(__name__)
-            with subprocess.Popen(cmd, stdout=logpipe, stderr=logpipe, env=env,  shell=True) as sp:
+            with subprocess.Popen(cmd, stdout=logpipe, stderr=logpipe, env=env, shell=True) as sp:
                 logpipe.close()
+
             retries = retries + 1
             do_retry = next((True for line in logpipe.output_error_lines if 'RetryableError' in line), False)
+
             if do_retry and retries <= auto_retries:
-                self.logger.warning(f'Terraform failed with "RetryableError" error. Retry: {str(retries)}/{str(auto_retries)}')
+                self.logger.warning('Terraform failed with "RetryableError" error.')
+            elif command == self.INIT_COMMAND and ' -upgrade' not in cmd:
+                do_retry = next((True for line in logpipe.output_error_lines if 'Failed to query available provider packages' in line), False)
+
+                if do_retry and retries <= auto_retries:
+                    self.logger.warning("Terraform failed with a version mismatch error.\n"\
+                                        "Appending the -upgrade argument to allow selection of new versions.")
+                    cmd += ' -upgrade'
+
+            if do_retry and retries <= auto_retries:
+                self.logger.warning(f'Retry: {str(retries)}/{str(auto_retries)}')
 
         if sp.returncode != 0:
             raise Exception(f'Error running: "{cmd}"')
