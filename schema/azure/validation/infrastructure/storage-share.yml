@@ -10,6 +10,8 @@ properties:
     type: string
   quota:
     type: integer
+  cross_tenant_replication_enabled:
+    type: boolean
   min_tls_version:
     type: string
   allow_nested_items_to_be_public:

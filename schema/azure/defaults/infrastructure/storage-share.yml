@@ -7,5 +7,6 @@ specification:
   name: SET_BY_AUTOMATION
   storage_account_name: SET_BY_AUTOMATION
   quota: 50
+  cross_tenant_replication_enabled: true
   min_tls_version: TLS1_2
   allow_nested_items_to_be_public: false
