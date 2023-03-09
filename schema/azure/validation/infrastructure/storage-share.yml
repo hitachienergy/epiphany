@@ -10,3 +10,7 @@ properties:
     type: string
   quota:
     type: integer
+  min_tls_version:
+    type: string
+  allow_nested_items_to_be_public:
+    type: boolean
