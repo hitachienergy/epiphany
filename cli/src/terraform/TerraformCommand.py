@@ -17,7 +17,7 @@ class TerraformCommand:
         self.working_directory = working_directory
 
     def apply(self, auto_approve=False, env=os.environ.copy()):
-        self.run(self, self.APPLY_COMMAND, auto_approve=auto_approve, env=env, auto_retries=3)
+        self.run(self, self.APPLY_COMMAND, auto_approve=auto_approve, env=env, auto_retries=2)
 
     def destroy(self, auto_approve=False, env=os.environ.copy()):
         self.run(self, self.DESTROY_COMMAND, auto_approve=auto_approve, env=env)
@@ -26,10 +26,10 @@ class TerraformCommand:
         self.run(self, self.PLAN_COMMAND, env=env)
 
     def init(self, env=os.environ.copy()):
-        self.run(self, self.INIT_COMMAND, env=env, auto_retries=2)
+        self.run(self, self.INIT_COMMAND, env=env, auto_retries=1)
 
     @staticmethod
-    def run(self, command, env, auto_approve=False, auto_retries=1):
+    def run(self, command, env, auto_approve=False, auto_retries=0):
         cmd = ['terraform']
 
         # global options
@@ -54,14 +54,14 @@ class TerraformCommand:
         if Config().debug > 0:
             env['TF_LOG'] = terraform_verbosity[Config().debug]
 
-        retries = 1
+        retries = 0
         do_retry = True
         while ((retries <= auto_retries) and do_retry):
             logpipe = LogPipe(__name__)
             with subprocess.Popen(cmd, stdout=logpipe, stderr=logpipe, env=env, shell=True) as sp:
                 logpipe.close()
 
-            retries = retries + 1
+            retries += 1
             do_retry = next((True for line in logpipe.output_error_lines if 'RetryableError' in line), False)
 
             if do_retry and retries <= auto_retries:
@@ -70,8 +70,8 @@ class TerraformCommand:
                 do_retry = next((True for line in logpipe.output_error_lines if 'Failed to query available provider packages' in line), False)
 
                 if do_retry and retries <= auto_retries:
-                    self.logger.warning("Terraform failed with a version mismatch error.\n"\
-                                        "Appending the -upgrade argument to allow selection of new versions.")
+                    self.logger.warning("Terraform failed with a version mismatch error. Appending the -upgrade "\
+                                        "argument to allow selection of new versions.")
                     cmd += ' -upgrade'
 
             if do_retry and retries <= auto_retries:
