@@ -1,5 +1,6 @@
 import os
 import subprocess
+import time
 
 from cli.src.Config import Config
 from cli.src.Log import Log, LogPipe
@@ -60,6 +61,9 @@ class TerraformCommand:
             logpipe = LogPipe(__name__)
             with subprocess.Popen(cmd, stdout=logpipe, stderr=logpipe, env=env, shell=True) as sp:
                 logpipe.close()
+
+            while not logpipe.pipe_reader.closed:
+                time.sleep(0.5)
 
             retries += 1
             do_retry = next((True for line in logpipe.output_error_lines if 'RetryableError' in line), False)
