@@ -166,9 +166,6 @@ images:
     'bitnami/pgbouncer:1.16.0':
       sha1: f2e37eecbf9aed44d5566f06dcc101c1ba9edff9
 
-    'epiphanyplatform/keycloak:14.0.0':
-      sha1: b59d75a967cedd3a4cf5867eced2fb5dff52f60e
-
     'rabbitmq:3.8.9':
       sha1: c64408bf5bb522f47d5323652dd5e60560dcb5bc
 
