@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 Reference for actual cluster component versions can be found [here](docs/home/COMPONENTS.md)
 
+- [CHANGELOG-2.1.x-PGML](./docs/changelogs/CHANGELOG-2.1-PGML.md)
 - [CHANGELOG-2.0.x](./docs/changelogs/CHANGELOG-2.0.md)
 - [CHANGELOG-1.3.x](./docs/changelogs/CHANGELOG-1.3.md)
 - [CHANGELOG-1.2.x](./docs/changelogs/CHANGELOG-1.2.md)
