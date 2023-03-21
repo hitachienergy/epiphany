@@ -2,12 +2,12 @@
 trigger:
   branches:
     include:
-      - develop
+      - v2.1-PGML
 
 pr:
   branches:
     include:
-      - develop
+      - v2.1-PGML
 
 pool:
   name: $(agentPoolName)
