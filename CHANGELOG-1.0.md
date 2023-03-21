@@ -1,5 +1,11 @@
 # Changelog 1.0
 
+## [1.0.10] YYYY-MM-DD
+
+### Fixed
+
+- [#3332](https://github.com/epiphany-platform/epiphany/issues/3332) - Switch from DockerHub to GitHub Container Registry
+
 ## [1.0.9] 2023-01-04
 
 ### Fixed
