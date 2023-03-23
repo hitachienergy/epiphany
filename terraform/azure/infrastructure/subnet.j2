@@ -15,4 +15,5 @@ resource "azurerm_subnet" "{{ specification.name }}" {
   address_prefixes     = ["{{ specification.address_prefix }}"]
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
+  service_endpoints    = [{% if specification.service_endpoints %}"{{ specification.service_endpoints | join('", "')}}"{% endif %}]
 }

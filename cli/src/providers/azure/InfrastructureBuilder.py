@@ -174,6 +174,7 @@ class InfrastructureBuilder(Step):
         subnet.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'subnet' + '-' + str(index), component_key)
         subnet.specification.address_prefix = subnet_definition['address_pool']
         subnet.specification.cluster_name = self.cluster_name
+        subnet.specification.service_endpoints = subnet_definition['service_endpoints'] if 'service_endpoints' in subnet_definition else []
         return subnet
 
     def get_availability_set(self, availability_set_name):

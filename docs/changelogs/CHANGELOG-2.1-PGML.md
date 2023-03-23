@@ -3,6 +3,10 @@
 
 ## [2.1.0-dev+PGML]
 
+### Added
+
+- Allow to define service endpoints for subnets
+
 ### Updated
 
 - Terraform Azure Provider 2.91.0 to 3.45.0
