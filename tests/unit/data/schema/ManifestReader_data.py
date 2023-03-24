@@ -85,7 +85,6 @@ specification:
     - node-exporter
     - logging
     - firewall
-    - rook
     single_machine:
     - repository
     - image-registry
@@ -94,12 +93,10 @@ specification:
     - applications
     - postgresql
     - firewall
-    - rook
     kubernetes_master:
     - kubernetes-master
     - helm
     - applications
-    - rook
     - node-exporter
     - filebeat
     - firewall
@@ -208,8 +205,7 @@ EXPECTED_PARSED_MANIFEST_DOCS: List[Dict] = [
                  'grafana',
                  'node-exporter',
                  'logging',
-                 'firewall',
-                 'rook'
+                 'firewall'
              ],
              'single_machine': [
                  'repository',
@@ -218,14 +214,12 @@ EXPECTED_PARSED_MANIFEST_DOCS: List[Dict] = [
                  'helm',
                  'applications',
                  'postgresql',
-                 'firewall',
-                 'rook'
+                 'firewall'
              ],
              'kubernetes_master': [
                  'kubernetes-master',
                  'helm',
                  'applications',
-                 'rook',
                  'node-exporter',
                  'filebeat',
                  'firewall'

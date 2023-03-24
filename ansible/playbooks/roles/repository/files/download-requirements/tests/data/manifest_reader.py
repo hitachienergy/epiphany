@@ -48,7 +48,6 @@ specification:
       - node-exporter
       - logging
       - firewall
-      - rook
     single_machine:
       - repository
       - image-registry
@@ -57,12 +56,10 @@ specification:
       - applications
       - postgresql
       - firewall
-      - rook
     kubernetes_master:
       - kubernetes-master
       - helm
       - applications
-      - rook
       - node-exporter
       - filebeat
       - firewall

@@ -16,3 +16,4 @@
 ### Removed
 
 - RabbitMQ
+- Rook

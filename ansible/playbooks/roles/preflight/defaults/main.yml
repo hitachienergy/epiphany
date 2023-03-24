@@ -48,7 +48,6 @@ unsupported_roles:
       - postgres_exporter
       - prometheus
       - repository
-      - rook
       - zookeeper
 
   - distro: AlmaLinux
@@ -58,7 +57,6 @@ unsupported_roles:
     arch: aarch64
     roles:
       - elasticsearch_curator
-      - rook
   - distro: RedHat
     arch: x86_64
     roles: []  # all supported
@@ -86,7 +84,6 @@ unsupported_roles:
       - postgres_exporter
       - prometheus
       - repository
-      - rook
       - zookeeper
 
 unsupported_postgres_extensions:
