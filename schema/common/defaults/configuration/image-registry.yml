@@ -20,8 +20,8 @@ specification:
         keycloak:
           - name: "docker.io/busybox:1.32"
             file_name: busybox-1.32.tar
-          - name: "quay.io/keycloak/keycloak:19.0.2"
-            file_name: keycloak-19.0.2.tar
+          - name: "quay.io/keycloak/keycloak:20.0.5-0"
+            file_name: keycloak-20.0.5-0.tar
         kubernetes-master:
           - name: "kubernetesui/dashboard:v2.3.1"
             file_name: dashboard-v2.3.1.tar
@@ -167,8 +167,8 @@ specification:
         keycloak:
           - name: "docker.io/busybox:1.32"
             file_name: busybox-1.32.tar
-          - name: "quay.io/keycloak/keycloak:19.0.2"
-            file_name: keycloak-19.0.2.tar
+          - name: "quay.io/keycloak/keycloak:20.0.5-0"
+            file_name: keycloak-20.0.5-0.tar
         kubernetes-master:
           - name: "kubernetesui/dashboard:v2.3.1"
             file_name: dashboard-v2.3.1.tar
