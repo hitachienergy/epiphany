@@ -105,8 +105,6 @@ AWS:
           - default-epiphany-modules-test-all-1 # <----- make sure that it is correct VM name
       load_balancer:
         count: 0
-      rabbitmq:
-        count: 0
   ---
   kind: configuration/feature-mappings
   title: "Feature mapping to components"
@@ -263,29 +261,6 @@ AWS:
   name: default
   specification:
     applications:
-      - name: rabbitmq
-        enabled: false
-        image_path: rabbitmq:3.8.3
-        use_local_image_registry: false
-        service:
-          name: rabbitmq-cluster
-          port: 30672
-          management_port: 31672
-          replicas: 2
-          namespace: queue
-        rabbitmq:
-          plugins:
-            - rabbitmq_management
-            - rabbitmq_management_agent
-          policies:
-            - name: ha-policy2
-              pattern: ".*"
-              definitions:
-                ha-mode: all
-          custom_configurations:
-            - name: vm_memory_high_watermark.relative
-              value: 0.5
-          cluster:
       - name: auth-service
         enabled: false
         image_path: jboss/keycloak:9.0.0
@@ -396,7 +371,7 @@ AWS:
 
   This will install PostgreSQL on one of the machines and configure PgBouncer, Pgpool and additional services to manage database connections.
 
-  Please make sure you disable applications that you don't need. Also, you can enable standard Epiphany services like Kafka or RabbitMQ, by increasing the number of virtual machines in the basic infrastructure config and assigning them to Epiphany components you want to use.
+  Please make sure you disable applications that you don't need. Also, you can enable standard Epiphany services like Kafka, by increasing the number of virtual machines in the basic infrastructure config and assigning them to Epiphany components you want to use.
 
   If you would like to deploy custom resources into managed Kubernetes, then the standard kubeconfig yaml document can be found inside the shared state file (you should be able to use vendor tools as well to get it).
 

@@ -8,14 +8,6 @@ repositories:
     content: 'deb http://apt.kubernetes.io/ kubernetes-xenial main'
     key: 'https://packages.cloud.google.com/apt/doc/apt-key.gpg'
 
-  erlang-23.x:
-    content: 'deb https://packages.erlang-solutions.com/ubuntu focal contrib'
-    key: 'https://packages.erlang-solutions.com/ubuntu/erlang_solutions.asc'
-
-  rabbitmq:
-    content: 'deb https://packagecloud.io/rabbitmq/rabbitmq-server/ubuntu bionic main'
-    key: 'https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey'
-
   docker-ce:
     content: 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable'
     key: 'https://download.docker.com/linux/ubuntu/gpg'

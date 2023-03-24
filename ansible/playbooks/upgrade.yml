@@ -214,16 +214,6 @@
       vars: { lock_file: /var/tmp/kafka-exporter-upgrade-in-progress.flag }
       when: "'kafka_exporter' in upgrade_components or upgrade_components|length == 0"
 
-- hosts: rabbitmq
-  become: true
-  become_method: sudo
-  tasks:
-    - import_role:
-        name: upgrade
-        tasks_from: rabbitmq
-      vars: { lock_file: /var/tmp/rabbitmq-upgrade-in-progress.flag }
-      when: "'rabbitmq' in upgrade_components or upgrade_components|length == 0"
-
 - hosts: haproxy
   become: true
   become_method: sudo

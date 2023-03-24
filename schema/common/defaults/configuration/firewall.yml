@@ -13,8 +13,6 @@ specification:
       enabled: false
       ports:
         - 30104/tcp       # auth-service
-        - 30672/tcp       # rabbitmq-amqp
-        - 31672/tcp       # rabbitmq-http (management)
     common: # for all inventory hosts
       enabled: true
       ports:
@@ -85,15 +83,6 @@ specification:
       ports:
         - 9090/tcp
         - 9093/tcp # Alertmanager
-    rabbitmq:
-      enabled: true
-      ports:
-        - 4369/tcp    # peer discovery service used by RabbitMQ nodes and CLI tools
-        # - 5671/tcp  # encrypted communication (if TLS/SSL is enabled)
-        - 5672/tcp    # AMQP
-        # - 15672/tcp # HTTP API clients, management UI and rabbitmqadmin (only if the management plugin is enabled)
-        - 15692/tcp   # rabbitmq-exporter for Prometheus
-        - 25672/tcp   # distribution server
     zookeeper:
       enabled: true
       ports:

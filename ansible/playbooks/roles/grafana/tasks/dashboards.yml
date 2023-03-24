@@ -24,20 +24,6 @@
       loop: "{{ grafana_online_dashboards }}"
       when: grafana_online_dashboards != []
 
-    - block:
-        - name: Set fact for RabbitMQ dashboard
-          set_fact:
-            rabbitmq_dashboard:
-              - dashboard_id: '10991'
-                datasource: Prometheus
-
-        - name: Extend external dashboards with RabbitMQ monitoring dashboard
-          set_fact:
-            grafana_external_dashboards: "{{ grafana_external_dashboards | union(rabbitmq_dashboard) }}"
-      when:
-        - rabbitmq_monitoring_enabled is defined
-        - rabbitmq_monitoring_enabled
-
     - name: Download Grafana dashboards from local repository to temporary directory
       include_role:
         name: download

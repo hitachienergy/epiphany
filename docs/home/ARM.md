@@ -24,7 +24,6 @@ Besides making sure that the selected providers, operating systems, components a
 | kubernetes_master | :heavy_check_mark: | :x: | :x: |
 | kubernetes_node | :heavy_check_mark: | :x: | :x: |
 | kafka | :heavy_check_mark: | :x: | :x: |
-| rabbitmq | :heavy_check_mark: | :x: | :x: |
 | logging | :heavy_check_mark: | :x: | :x: |
 | monitoring | :heavy_check_mark: | :x: | :x: |
 | load_balancer | :heavy_check_mark: | :x: | :x: |
@@ -43,7 +42,6 @@ Besides making sure that the selected providers, operating systems, components a
 
 | Application | Supported |
 | - | - |
-| rabbitmq | :heavy_check_mark: |
 | auth-service | :heavy_check_mark: |
 | pgpool | :x: |
 | pgbouncer | :x: |
@@ -90,9 +88,6 @@ specification:
     postgresql:
       count: 1
       machine: postgresql-machine-arm
-    rabbitmq:
-      count: 2
-      machine: rabbitmq-machine-arm
     opensearch:
       count: 1
       machine: opensearch-machine-arm
@@ -157,14 +152,6 @@ specification:
   ip: x.x.x.x
 ---
 kind: infrastructure/virtual-machine
-name: rabbitmq-machine-arm
-provider: any
-based_on: rabbitmq-machine
-specification:
-  hostname: hostname
-  ip: x.x.x.x
----
-kind: infrastructure/virtual-machine
 name: opensearch-machine-arm
 provider: any
 based_on: logging-machine
@@ -188,51 +175,6 @@ specification:
     pgaudit:
       enabled: yes
 title: Postgresql
----        
-kind: configuration/rabbitmq
-title: "RabbitMQ"
-provider: any
-name: default
-specification:
-  rabbitmq_plugins:
-    - rabbitmq_management_agent
-    - rabbitmq_management
-  cluster:
-    is_clustered: true
----
-kind: configuration/applications
-title: "Kubernetes Applications Config"
-provider: any
-name: default
-specification:
-  applications:
-  - name: rabbitmq
-    enabled: true
-    image_path: rabbitmq:3.8.9
-    use_local_image_registry: true
-    #image_pull_secret_name: regcred # optional
-    service:
-      name: rabbitmq-cluster
-      port: 30672
-      management_port: 31672
-      replicas: 2
-      namespace: queue
-    rabbitmq:
-      #amqp_port: 5672 #optional - default 5672
-      plugins: # optional list of RabbitMQ plugins
-        - rabbitmq_management_agent
-        - rabbitmq_management
-      policies: # optional list of RabbitMQ policies
-        - name: ha-policy2
-          pattern: ".*"
-          definitions:
-            ha-mode: all
-      custom_configurations: #optional list of RabbitMQ configurations (new format -> https://www.rabbitmq.com/configure.html)
-        - name: vm_memory_high_watermark.relative
-          value: 0.5
-      #cluster:
-        #is_clustered: true #redundant in in-Kubernetes installation, it will always be clustered
-        #cookie: "cookieSetFromDataYaml" #optional - default value will be random generated string
 ```
 
 ### ```AWS``` provider
@@ -294,11 +236,6 @@ specification:
       machine: postgresql-machine-arm
       subnets:
         - address_pool: 10.1.6.0/24
-    rabbitmq:
-      count: 2
-      machine: rabbitmq-machine-arm
-      subnets:
-        - address_pool: 10.1.8.0/24
     opensearch:
       count: 1
       machine: opensearch-machine-arm
@@ -367,13 +304,6 @@ specification:
   size: a1.medium
 ---
 kind: infrastructure/virtual-machine
-name: rabbitmq-machine-arm
-provider: aws
-based_on: rabbitmq-machine
-specification:
-  size: a1.medium
----
-kind: infrastructure/virtual-machine
 name: opensearch-machine-arm
 provider: aws
 based_on: logging-machine
@@ -399,51 +329,6 @@ specification:
     replication:
       enabled: no
 title: Postgresql
----        
-kind: configuration/rabbitmq
-title: "RabbitMQ"
-provider: aws
-name: default
-specification:
-  rabbitmq_plugins:
-    - rabbitmq_management_agent
-    - rabbitmq_management
-  cluster:
-    is_clustered: true
----
-kind: configuration/applications
-title: "Kubernetes Applications Config"
-provider: aws
-name: default
-specification:
-  applications:
-  - name: rabbitmq
-    enabled: yes
-    image_path: rabbitmq:3.8.9
-    use_local_image_registry: true
-    #image_pull_secret_name: regcred # optional
-    service:
-      name: rabbitmq-cluster
-      port: 30672
-      management_port: 31672
-      replicas: 2
-      namespace: queue
-    rabbitmq:
-      #amqp_port: 5672 #optional - default 5672
-      plugins: # optional list of RabbitMQ plugins
-        - rabbitmq_management_agent
-        - rabbitmq_management
-      policies: # optional list of RabbitMQ policies
-        - name: ha-policy2
-          pattern: ".*"
-          definitions:
-            ha-mode: all
-      custom_configurations: #optional list of RabbitMQ configurations (new format -> https://www.rabbitmq.com/configure.html)
-        - name: vm_memory_high_watermark.relative
-          value: 0.5
-      #cluster:
-        #is_clustered: true #redundant in in-Kubernetes installation, it will always be clustered
-        #cookie: "cookieSetFromDataYaml" #optional - default value will be random generated string
 ```
 
 ### ```Azure``` provider

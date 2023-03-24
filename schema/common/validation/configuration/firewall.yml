@@ -162,15 +162,6 @@ properties:
             type: array
             items:
               type: string
-      rabbitmq:
-        type: object
-        properties:
-          enabled:
-            type: boolean
-          ports:
-            type: array
-            items:
-              type: string
       zookeeper:
         type: object
         properties:

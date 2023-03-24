@@ -77,17 +77,3 @@ properties:
                 "$id": "#/properties/specification/properties/components/properties/postgresql/properties/snapshot_name"
                 type: string
                 pattern: "(^[0-9]{8}-[0-9]{6}$)|(^latest$)"
-          rabbitmq:
-            "$id": "#/properties/specification/properties/components/properties/rabbitmq"
-            type: object
-            required:
-            - enabled
-            additionalProperties: false
-            properties:
-              enabled:
-                "$id": "#/properties/specification/properties/components/properties/rabbitmq/properties/enabled"
-                type: boolean
-              snapshot_name:
-                "$id": "#/properties/specification/properties/components/properties/rabbitmq/properties/snapshot_name"
-                type: string
-                pattern: "(^[0-9]{8}-[0-9]{6}$)|(^latest$)"

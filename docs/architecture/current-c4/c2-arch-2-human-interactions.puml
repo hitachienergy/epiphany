@@ -18,7 +18,6 @@ Container_Boundary(epiphany, "Epiphany managed environment"){
     Container(streams, "Streams Processing", "Apache Kafka")
     Container(rdb, "Relational Database", "PostrgreSQL")
     Container(lb, "Load Balancer", "HAProxy")
-    Container(messages, "Message Broker", "RabbitMQ")
     Container(repository, "Repository", "Apache")
     Container(auth, "Authentication and Authorization", "Keycloak")
 

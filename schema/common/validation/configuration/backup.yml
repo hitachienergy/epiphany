@@ -61,16 +61,6 @@ properties:
               enabled:
                 "$id": "#/properties/specification/properties/components/properties/postgresql/properties/enabled"
                 type: boolean
-          rabbitmq:
-            "$id": "#/properties/specification/properties/components/properties/rabbitmq"
-            type: object
-            required:
-            - enabled
-            additionalProperties: false
-            properties:
-              enabled:
-                "$id": "#/properties/specification/properties/components/properties/rabbitmq/properties/enabled"
-                type: boolean
           kubernetes:
             "$id": "#/properties/specification/properties/components/properties/kubernetes"
             type: object

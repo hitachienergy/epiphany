@@ -11,8 +11,6 @@ specification:
     x86_64:
       generic:
         applications:
-          - name: "rabbitmq:3.8.9"
-            file_name: rabbitmq-3.8.9.tar
           - name: "bitnami/pgpool:4.2.4"
             file_name: pgpool-4.2.4.tar
           - name: "bitnami/pgbouncer:1.16.0"
@@ -161,9 +159,7 @@ specification:
             file_name: pod2daemon-flexvol-v3.15.0.tar
     aarch64:
       generic:
-        applications:
-          - name: "rabbitmq:3.8.9"
-            file_name: rabbitmq-3.8.9.tar
+        applications: []
         keycloak:
           - name: "docker.io/busybox:1.32"
             file_name: busybox-1.32.tar

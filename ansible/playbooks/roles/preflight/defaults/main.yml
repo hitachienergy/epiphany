@@ -47,7 +47,6 @@ unsupported_roles:
       - postgresql
       - postgres_exporter
       - prometheus
-      - rabbitmq
       - repository
       - rook
       - zookeeper
@@ -86,7 +85,6 @@ unsupported_roles:
       - postgresql
       - postgres_exporter
       - prometheus
-      - rabbitmq
       - repository
       - rook
       - zookeeper

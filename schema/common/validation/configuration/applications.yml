@@ -41,62 +41,6 @@ properties:
           type: string
         enabled:
           type: boolean
-        image_path:
-          type: string
-        use_local_image_registry:
-          type: boolean
-        service:
-          type: object
-          properties:
-            name:
-              type: string
-            port:
-              type: integer
-            management_port:
-              type: integer
-            replicas:
-              type: integer
-            namespace:
-              type: string
-        rabbitmq:
-          type: object
-          properties:
-            plugins:
-              type: array
-              items:
-              - type: string
-              - type: string
-            policies:
-              type: array
-              items:
-              - type: object
-                properties:
-                  name:
-                    type: string
-                  pattern:
-                    type: string
-                  definitions:
-                    type: object
-                    properties:
-                      ha-mode:
-                        type: string
-            custom_configurations:
-              type: array
-              items:
-              - type: object
-                properties:
-                  name:
-                    type: string
-                  value:
-                    type: number
-            cluster:
-              type: 'null'
-    - type: object
-      properties:
-        name:
-          type: string
-        enabled:
-          type: boolean
         image:
           type: object
           properties:

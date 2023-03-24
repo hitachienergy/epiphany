@@ -16,9 +16,6 @@ images:
     'bitnami/pgbouncer:1.16.0':
       sha1: 953a8b57083234b2762c375badc80a7168974b60
 
-    'rabbitmq:3.8.9':
-      sha1: 2705b05f9ac0bda6a4136fc8d66dc99295daa95d
-
   keycloak:
     # optional - can be used by Helm chart to check database readiness at startup
     'docker.io/busybox:1.32':

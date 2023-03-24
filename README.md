@@ -14,7 +14,7 @@
 
 Epiphany at its core is a full automation of Kubernetes and Docker plus additional builtin services/components like:
 
-- Kafka or RabbitMQ for high speed messaging/events
+- Kafka for high speed messaging/events
 - Prometheus and Alertmanager for monitoring with Graphana for visualization
 - OpenSearch for centralized logging
 - HAProxy for loadbalancing

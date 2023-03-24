@@ -22,7 +22,7 @@ properties:
           generic:
             type: object
             properties:
-              [applications, rabbitmq, kubernetes-master, postgresql, rook]:
+              [applications, kubernetes-master, postgresql, rook]:
                 type: array
                 items:
                   type: object
@@ -61,7 +61,7 @@ properties:
           generic:
             type: object
             properties:
-              [applications, rabbitmq, kubernetes-master]:
+              [applications, kubernetes-master]:
                 type: array
                 items:
                   type: object

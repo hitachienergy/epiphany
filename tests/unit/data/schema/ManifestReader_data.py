@@ -33,8 +33,6 @@ specification:
       count: 0
     load_balancer:
       count: 0
-    rabbitmq:
-      count: 0
     opensearch:
       count: 0
 version: 2.0.1dev
@@ -49,11 +47,6 @@ specification:
     - jmx-exporter
     - kafka
     - kafka-exporter
-    - node-exporter
-    - filebeat
-    - firewall
-    rabbitmq:
-    - rabbitmq
     - node-exporter
     - filebeat
     - firewall
@@ -86,7 +79,6 @@ specification:
     - kubernetes-master
     - node-exporter
     - filebeat
-    - rabbitmq
     - postgresql
     - prometheus
     - grafana
@@ -100,7 +92,6 @@ specification:
     - kubernetes-master
     - helm
     - applications
-    - rabbitmq
     - postgresql
     - firewall
     - rook
@@ -160,7 +151,6 @@ EXPECTED_PARSED_MANIFEST_DOCS: List[Dict] = [
              'kafka':             { 'count': 0 },
              'postgresql':        { 'count': 0 },
              'load_balancer':     { 'count': 0 },
-             'rabbitmq':          { 'count': 0 },
              'opensearch':        { 'count': 0 }
          }
      },
@@ -176,12 +166,6 @@ EXPECTED_PARSED_MANIFEST_DOCS: List[Dict] = [
                  'jmx-exporter',
                  'kafka',
                  'kafka-exporter',
-                 'node-exporter',
-                 'filebeat',
-                 'firewall'
-             ],
-             'rabbitmq': [
-                 'rabbitmq',
                  'node-exporter',
                  'filebeat',
                  'firewall'
@@ -219,7 +203,6 @@ EXPECTED_PARSED_MANIFEST_DOCS: List[Dict] = [
                  'kubernetes-master',
                  'node-exporter',
                  'filebeat',
-                 'rabbitmq',
                  'postgresql',
                  'prometheus',
                  'grafana',
@@ -234,7 +217,6 @@ EXPECTED_PARSED_MANIFEST_DOCS: List[Dict] = [
                  'kubernetes-master',
                  'helm',
                  'applications',
-                 'rabbitmq',
                  'postgresql',
                  'firewall',
                  'rook'
@@ -302,7 +284,6 @@ INPUT_DOC_TO_UPDATE_BASE = [
              'kafka':             { 'count': 0 },
              'postgresql':        { 'count': 0 },
              'load_balancer':     { 'count': 0 },
-             'rabbitmq':          { 'count': 0 },
              'opensearch':        { 'count': 0 }
          }
      },
@@ -374,7 +355,6 @@ EXPECTED_UPDATED_DOC_BASE = [
              'kafka':             { 'count': 0 },
              'postgresql':        { 'count': 0 },
              'load_balancer':     { 'count': 0 },
-             'rabbitmq':          { 'count': 0 },
              'opensearch':        { 'count': 0 }
          }
      },

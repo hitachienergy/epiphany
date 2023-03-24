@@ -166,9 +166,6 @@ images:
     'bitnami/pgbouncer:1.16.0':
       sha1: f2e37eecbf9aed44d5566f06dcc101c1ba9edff9
 
-    'rabbitmq:3.8.9':
-      sha1: c64408bf5bb522f47d5323652dd5e60560dcb5bc
-
   kubernetes-master:
     'haproxy:2.2.2-alpine':
       sha1: dff8993b065b7f7846adb553548bcdcfcd1b6e8e
@@ -488,7 +485,6 @@ Manifest summary:
 --------------------------------------------------
 Components requested:
 - kafka
-- rabbitmq
 - repository
 
 Features requested:
@@ -499,7 +495,6 @@ Features requested:
 - kafka
 - kafka-exporter
 - node-exporter
-- rabbitmq
 - repository
 - zookeeper
 

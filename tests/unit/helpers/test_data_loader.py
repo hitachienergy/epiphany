@@ -46,7 +46,6 @@ TEST_MINIMAL_CLUSTER_CONFIG = {
             'kafka': {'count': 2},
             'postgresql': {'count': 1},
             'load_balancer': {'count': 1},
-            'rabbitmq': {'count': 1},
             'opensearch': {'count': 1}
         }
     }

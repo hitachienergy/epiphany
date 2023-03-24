@@ -11,10 +11,6 @@ properties:
         type: array
         items:
           type: string
-      rabbitmq:
-        type: array
-        items:
-          type: string
       logging:
         type: array
         items:

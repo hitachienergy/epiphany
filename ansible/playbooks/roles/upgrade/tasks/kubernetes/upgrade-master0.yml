@@ -13,9 +13,6 @@
 - name: K8s/master0 | Update imageRepository in kubeadm-config ConfigMap
   include_tasks: patch-kubeadm-image-repository.yml
 
-- name: K8s/master0 | Reconfigure rabbitmq application
-  include_tasks: reconfigure-rabbitmq-app.yml
-
 - name: K8s/master0 | Reconfigure keycloak application
   include_tasks: reconfigure-auth-service-app.yml
 

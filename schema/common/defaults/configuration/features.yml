@@ -38,8 +38,6 @@ specification:
       enabled: true
     - name: kafka
       enabled: true
-    - name: rabbitmq
-      enabled: true
     - name: kafka-exporter
       enabled: true
     - name: postgresql

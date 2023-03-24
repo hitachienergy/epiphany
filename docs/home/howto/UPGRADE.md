@@ -17,7 +17,6 @@
   - [Migration from Open Distro for Elasticsearch & Kibana to OpenSearch and OpenSearch Dashboards](#migration-from-open-distro-for-elasticsearch--kibana-to-opensearch-and-opensearch-dashboards)
   - [Open Distro for Elasticsearch upgrade](#open-distro-for-elasticsearch-upgrade)
   - [Node exporter upgrade](#node-exporter-upgrade)
-  - [RabbitMQ upgrade](#rabbitmq-upgrade)
   - [Kubernetes upgrade](#kubernetes-upgrade)
     - [Prerequisites](#prerequisites)
   - [PostgreSQL upgrade](#postgresql-upgrade)
@@ -238,8 +237,6 @@ specification:
       count: 1
     postgresql:
       count: 1
-    rabbitmq:
-      count: 0
     opensearch:
       count: 0
   name: clustername
@@ -359,22 +356,6 @@ with [breaking changes](https://github.com/prometheus/node_exporter/releases/tag
 Starting from Epiphany v0.8.0 it's possible to upgrade node exporter according
 to [components](https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/COMPONENTS.md) file. Upgrade will
 be performed automatically when the upgrade procedure detects node exporter hosts.
-
-## RabbitMQ upgrade
-
----
-**NOTE**
-
-Before upgrade procedure, make sure you have a data backup. Check that the node or cluster is in a good state: no alarms
-are in effect, no ongoing queue synchronisation operations and the system is otherwise under a reasonable load. For more
-information visit RabbitMQ [site](https://www.rabbitmq.com/upgrade.html).
-
----
-
-With the version of Epiphany 0.9 it's possible to upgrade RabbitMQ to v3.8.9. It requires Erlang system packages upgrade
-that is done automatically to v23.1.4. Upgrade is performed in offline mode after stopping all RabbitMQ nodes.
-[Rolling upgrade](https://www.rabbitmq.com/upgrade.html#rolling-upgrades) is not supported by Epiphany, and it is
-advised not to use this approach when Erlang needs to be upgraded.
 
 ## Kubernetes upgrade
 

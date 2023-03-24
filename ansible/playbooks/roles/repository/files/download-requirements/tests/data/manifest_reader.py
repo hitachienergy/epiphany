@@ -13,11 +13,6 @@ specification:
       - node-exporter
       - filebeat
       - firewall
-    rabbitmq:
-      - rabbitmq
-      - node-exporter
-      - filebeat
-      - firewall
     logging:
       - logging
       - opensearch-dashboards
@@ -47,7 +42,6 @@ specification:
       - kubernetes-master
       - node-exporter
       - filebeat
-      - rabbitmq
       - postgresql
       - prometheus
       - grafana
@@ -61,7 +55,6 @@ specification:
       - kubernetes-master
       - helm
       - applications
-      - rabbitmq
       - postgresql
       - firewall
       - rook
@@ -121,8 +114,6 @@ specification:
       count: 0
     load_balancer:
       count: 0
-    rabbitmq:
-      count: 0
     opensearch:
       count: 0
 version: 2.0.1dev
@@ -156,8 +147,6 @@ specification:
     postgresql:
       count: 0
     load_balancer:
-      count: 0
-    rabbitmq:
       count: 0
     opensearch:
       count: 0
@@ -193,8 +182,6 @@ specification:
       count: 0
     load_balancer:
       count: 0
-    rabbitmq:
-      count: 1
     opensearch:
       count: 0
 version: 2.0.1dev
@@ -230,8 +217,6 @@ specification:
     postgresql:
       count: 0
     load_balancer:
-      count: 0
-    rabbitmq:
       count: 0
     opensearch:
       count: 0
