@@ -71,8 +71,8 @@ files:
 
   keycloak:
     options:
-      - url: 'https://github.com/codecentric/helm-charts/releases/download/keycloakx-1.6.1/keycloakx-1.6.1.tgz'
-        sha256: 9a29ccf04343b2b1b8a877e9259aa07332606945017d8c17d85702506aac38f3
+      - url: 'https://github.com/codecentric/helm-charts/releases/download/keycloakx-2.1.1/keycloakx-2.1.1.tgz'
+        sha256: 1ae37a17d10d159f793dc6a42ec4182bb230fccadd092badb45a36986fe45d71
     deps: [keycloak]
 
   # --- OpenSearch Bundle ---

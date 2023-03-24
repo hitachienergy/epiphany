@@ -24,7 +24,7 @@ specification:
 
     image:
       repository: quay.io/keycloak/keycloak
-      tag: '19.0.2'
+      tag: '20.0.5-0'
 
     # Termination grace period in seconds for Keycloak shutdown. Clusters with a large cache might need to extend this to give Infinispan more time to rebalance
     terminationGracePeriodSeconds: 60

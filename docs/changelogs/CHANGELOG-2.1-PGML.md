@@ -10,3 +10,4 @@
 ### Updated
 
 - Terraform Azure Provider 2.91.0 to 3.45.0
+- Upgrade Keycloak to 20.0.5-0

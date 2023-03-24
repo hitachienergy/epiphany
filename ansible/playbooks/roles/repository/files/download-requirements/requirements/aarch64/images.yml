@@ -18,8 +18,8 @@ images:
     'docker.io/busybox:1.32':
       sha1: 90402d70a03ed8248ec353ec8158da8cc3e8066a
 
-    'quay.io/keycloak/keycloak:19.0.2':
-      sha1: 484d69fc4690b4816ec4c1ad66ad2352017aa19c
+    'quay.io/keycloak/keycloak:20.0.5-0':
+      sha1: a5966f808b57c135868724b95e61a338047e85fd
 
   kubernetes-master:
     # for HA configuration
