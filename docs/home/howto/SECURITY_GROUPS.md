@@ -4,7 +4,7 @@ This document describes the Security Groups layout which is used to deploy Epiph
 
 ## Introduction
 
-By default Epiphany platform is creating security groups required to handle communication by all components (like postgress/rabbitmq etc). As per defaults, Epiphany creates a subnet per component and  each subnet has its own of security group, with rules that allow communication between them. This enables the smooth communication between all components. Please check our [security document](https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/SECURITY.md) too. *Be aware, that whenever you want to add a new rule, you need to copy all default rules from mentioned above url*. That this document is splited into two parts: AWS and Azure. The reason why we do that, is that there are diffrent values in AWS and AZure, when setting the security rules.
+By default Epiphany platform is creating security groups required to handle communication by all components (like postgres etc). As per defaults, Epiphany creates a subnet per component and  each subnet has its own of security group, with rules that allow communication between them. This enables the smooth communication between all components. Please check our [security document](https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/SECURITY.md) too. *Be aware, that whenever you want to add a new rule, you need to copy all default rules from mentioned above url*. That this document is splited into two parts: AWS and Azure. The reason why we do that, is that there are diffrent values in AWS and AZure, when setting the security rules.
 
 ## Setting own security groups
 
@@ -90,8 +90,6 @@ specification:
     monitoring:
       count: 0
     postgresql:
-      count: 0
-    rabbitmq:
       count: 0
 ---
 kind: infrastructure/virtual-machine
@@ -275,8 +273,6 @@ specification:
     postgresql:
       count: 0
     load_balancer:
-      count: 0
-    rabbitmq:
       count: 0
     opensearch:
       count: 0

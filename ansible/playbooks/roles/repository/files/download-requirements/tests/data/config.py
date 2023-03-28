@@ -72,18 +72,6 @@ files:
         sha256: 5838058fe06372390dc335900a7707109cc7287a84164ca245d395af1f9c0a79
     deps: [kubernetes-master, k8s-as-cloud-service]
 
-  rook-ceph-chart:
-    options:
-      - url: 'https://charts.rook.io/release/rook-ceph-v1.8.8.tgz'
-        sha256: f67e474dedffd4004f3a0b7b40112694a7f1c2b1a0048b03b3083d0a01e86b14
-    deps: [kubernetes-master]
-
-  rook-ceph-cluster-chart:
-    options:
-      - url: 'https://charts.rook.io/release/rook-ceph-cluster-v1.8.8.tgz'
-        sha256: df4e1f2125af41fb84c72e4d12aa0cb859dddd4f37b3d5979981bd092040bd16
-    deps: [kubernetes-master]
-
   # --- OpenSearch Bundle ---
   opensearch:
     options:
@@ -165,9 +153,6 @@ images:
 
     'bitnami/pgbouncer:1.16.0':
       sha1: f2e37eecbf9aed44d5566f06dcc101c1ba9edff9
-
-    'rabbitmq:3.8.9':
-      sha1: c64408bf5bb522f47d5323652dd5e60560dcb5bc
 
   kubernetes-master:
     'haproxy:2.2.2-alpine':
@@ -338,10 +323,6 @@ images:
 
     'quay.io/csiaddons/volumereplication-operator:v0.3.0':
       sha1: d3cd17f14fcbf09fc6c8c2c5c0419f098f87a70f
-
-  rook:
-    'rook/ceph:v1.8.8':
-      sha1: f34039b17b18f5a855b096d48ff787b4013615e4
 """
 
 
@@ -488,7 +469,6 @@ Manifest summary:
 --------------------------------------------------
 Components requested:
 - kafka
-- rabbitmq
 - repository
 
 Features requested:
@@ -499,7 +479,6 @@ Features requested:
 - kafka
 - kafka-exporter
 - node-exporter
-- rabbitmq
 - repository
 - zookeeper
 

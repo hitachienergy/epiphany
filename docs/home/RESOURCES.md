@@ -39,8 +39,6 @@ Here are some materials concerning Epiphany tooling and cluster components - bot
     1. [Kafka](http://kafka.apache.org/)
         - [Kafka introduction](http://kafka.apache.org/intro)
         - (Pluralsight) [Getting Started with Apache Kafka](https://app.pluralsight.com/library/courses/apache-kafka-getting-started/table-of-contents)
-    2. [RabbitMQ](https://www.rabbitmq.com/)
-        - [RabbitMQ Getting started](https://www.rabbitmq.com/getstarted.html)
 5. Central logging
     1. [OpenSearch Dashboards](https://opensearch.org/docs/latest/dashboards/index/)
     2. [OpenSearch](https://opensearch.org/docs/latest)

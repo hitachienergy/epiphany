@@ -30,11 +30,6 @@ grafana-dashboards:
     url: 'https://grafana.com/api/dashboards/9628/revisions/7/download'
     sha256: c64cc38ad9ebd7af09551ee83e669a38f62a76e7c80929af5668a5852732b376
 
-  # RabbitMQ Monitoring
-  grafana_dashboard_4279:
-    url: 'https://grafana.com/api/dashboards/4279/revisions/4/download'
-    sha256: 74d47be868da52c145240ab5586d91ace9e9218ca775af988f9d60e501907a25
-
   # Node Exporter Full
   grafana_dashboard_1860:
     url: 'https://grafana.com/api/dashboards/1860/revisions/23/download'
@@ -59,8 +54,3 @@ grafana-dashboards:
   grafana_dashboard_6663:
     url: 'https://grafana.com/api/dashboards/6663/revisions/1/download'
     sha256: d544d88069e1b793ff3d8f6970df641ad9a66217e69b629621e1ecbb2f06aa05
-
-  # RabbitMQ cluster monitoring (via Prometheus)
-  grafana_dashboard_10991:
-    url: 'https://grafana.com/api/dashboards/10991/revisions/11/download'
-    sha256: 66340fa3256d432287cba75ab5177eb058c77afa7d521a75d58099f95b1bff50

@@ -1,8 +1,0 @@
----
-"$id": "#/specification"
-title: "Rook specification schema"
-description: "Rook specification schema"
-type: object
-properties:
-  rook_namespace:
-    type: string

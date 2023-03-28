@@ -16,10 +16,6 @@ OpenSearch Dashboards:
 - [How to configure Dashboards](#how-to-configure-opensearch-dashboards)
 - [How to configure default passwords for service users in OpenSearch Dashboards, OpenSearch and Filebeat](#how-to-configure-default-passwords-for-service-users-in-opensearch-dashboards-opensearch-and-filebeat)
 
-RabbitMQ:
-
-- [How to enable RabbitMQ monitoring](#how-to-enable-rabbitmq-monitoring)
-
 Azure:
 
 - [How to configure Azure additional monitoring and alerting](#how-to-configure-azure-additional-monitoring-and-alerting)
@@ -346,26 +342,6 @@ specification:
 
 You can also change the rest of parameters but note, that you would have to change your security group as well.
 
-
-# RabbitMQ
-
-## How to enable RabbitMQ monitoring
-
-To enable RabbitMQ monitoring set `specification/rabbitmq_monitoring_enabled` in `configuration/rabbitmq` section to `true`.
-This will:
-* enable RabbitMQ's plugin for Prometheus metrics exposure
-* add target for Prometheus to be able to scrape metrics from rabbitmq nodes
-* download Grafana dashboard for displaying scraped metrics from RabbitMQ
-
-```yaml
----
-kind: configuration/rabbitmq
-title: RabbitMQ
-name: default
-specification:
-  ...
-  rabbitmq_monitoring_enabled: true
-```
 
 # Azure
 

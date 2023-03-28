@@ -11,8 +11,6 @@ specification:
     x86_64:
       generic:
         applications:
-          - name: "rabbitmq:3.8.9"
-            file_name: rabbitmq-3.8.9.tar
           - name: "bitnami/pgpool:4.2.4"
             file_name: pgpool-4.2.4.tar
           - name: "bitnami/pgbouncer:1.16.0"
@@ -27,27 +25,6 @@ specification:
             file_name: dashboard-v2.3.1.tar
           - name: "kubernetesui/metrics-scraper:v1.0.7"
             file_name: metrics-scraper-v1.0.7.tar
-        rook:
-          - name: "k8s.gcr.io/sig-storage/csi-attacher:v3.4.0"
-            file_name: csi-attacher-v3.4.0.tar
-          - name: "k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.5.0"
-            file_name: csi-node-driver-registrar-v2.5.0.tar
-          - name: "k8s.gcr.io/sig-storage/csi-provisioner:v3.1.0"
-            file_name: csi-provisioner-v3.1.0.tar
-          - name: "k8s.gcr.io/sig-storage/csi-resizer:v1.4.0"
-            file_name: csi-resizer-v1.4.0.tar
-          - name: "k8s.gcr.io/sig-storage/csi-snapshotter:v5.0.1"
-            file_name: csi-snapshotter-v5.0.1.tar
-          - name: "quay.io/ceph/ceph:v16.2.7-20220510"
-            file_name: ceph-v16.2.7-20220510.tar
-          - name: "quay.io/cephcsi/cephcsi:v3.5.1"
-            file_name: cephcsi-v3.5.1.tar
-          - name: "quay.io/csiaddons/k8s-sidecar:v0.2.1"
-            file_name: k8s-sidecar-v0.2.1.tar
-          - name: "quay.io/csiaddons/volumereplication-operator:v0.3.0"
-            file_name: volumereplication-operator-v0.3.0.tar
-          - name: "rook/ceph:v1.8.8"
-            file_name: ceph-v1.8.8.tar
       current:
         haproxy:
           - name: "haproxy:2.2.2-alpine"
@@ -161,9 +138,7 @@ specification:
             file_name: pod2daemon-flexvol-v3.15.0.tar
     aarch64:
       generic:
-        applications:
-          - name: "rabbitmq:3.8.9"
-            file_name: rabbitmq-3.8.9.tar
+        applications: []
         keycloak:
           - name: "docker.io/busybox:1.32"
             file_name: busybox-1.32.tar

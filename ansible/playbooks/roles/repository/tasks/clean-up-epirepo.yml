@@ -113,7 +113,6 @@
           - dashboard*.tar
           - cni*.tar
           - kube-apiserver*.tar
-          - rabbitmq*.tar
           - kube-controller-manager*.tar
           - pgpool*.tar
           - kube-proxy*.tar

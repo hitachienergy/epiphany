@@ -8,7 +8,6 @@ Epiphany provides solution to create full or partial backup and restore for some
 - [Logging](#logging)
 - [Monitoring](#monitoring)
 - [Postgresql](#postgresql)
-- [RabbitMQ](#rabbitmq)
 - [Kubernetes (only backup)](#kubernetes)
 
 Backup is created directly on the machine where component is running, and it is moved to the ``repository`` host via
@@ -37,8 +36,6 @@ specification:
       enabled: true
     postgresql:
       enabled: true
-    rabbitmq:
-      enabled: false
 # Kubernes recovery is not supported at this point.
 # You may create backup by enabling this below, but recovery should be done manually according to Kubernetes documentation.
     kubernetes:
@@ -99,9 +96,6 @@ specification:
     postgresql:
       enabled: false
       snapshot_name: latest
-    rabbitmq:
-      enabled: false
-      snapshot_name: latest
 ```
 
 Run ``epicli recovery`` command:
@@ -155,17 +149,6 @@ running ``epicli apply`` and next ``epicli recovery`` to restore database data. 
 database configuration from backup since this needs to be done using ``epicli apply`` or manually by copying backed up
 files accordingly to cluster state. The reason of this is that is very risky to restore configuration files among
 different database cluster configurations.
-
-### RabbitMQ
-
-RabbitMQ backup includes:
-
-- Messages definitions
-- Configuration files: ``/etc/rabbitmq/``
-
-Backup does not include RabbitMQ messages.
-
-Recovery includes all backed up files and configurations.
 
 ### Kubernetes
 

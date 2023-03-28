@@ -3,20 +3,6 @@
   set_fact:
     is_alertmanager_enabled: "{{ specification.alertmanager.enable | bool and (specification.alertmanager.config.receivers | length>0 ) }}"
 
-- name: Check RabbitMQ
-  when:
-    - groups.rabbitmq is defined
-    - groups.rabbitmq | length > 0
-  block:
-    - name: Load RabbitMQ's config vars
-      include_vars:
-        file: roles/rabbitmq/vars/main.yml
-        name: rabbitmq_config
-
-    - name: Set fact about RabbitMQ monitoring
-      set_fact:
-        rabbitmq_monitoring_enabled: "{{ rabbitmq_config.specification.rabbitmq_monitoring_enabled }}"
-
 - name: Check HAproxy
   when:
     - groups.haproxy is defined

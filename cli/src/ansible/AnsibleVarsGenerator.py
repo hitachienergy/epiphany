@@ -67,7 +67,7 @@ class AnsibleVarsGenerator(Step):
             roles_with_defaults = [
                 'grafana', 'haproxy', 'image_registry', 'jmx_exporter', 'kafka', 'kafka_exporter',
                 'logging', 'node_exporter', 'opensearch', 'opensearch_dashboards', 'postgres_exporter',
-                'postgresql', 'prometheus', 'rabbitmq', 'repository'
+                'postgresql', 'prometheus', 'repository'
                 ]
             # now lets add any external configs we want to load
             roles_with_defaults = [*roles_with_defaults, *self.inventory_upgrade.get_new_config_roles()]

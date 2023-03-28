@@ -95,7 +95,6 @@ packages:
     - 'python3-slip-dbus'  # for firewalld
     - 'python36'  # there is no python3 package
     - 'quota'  # for nfs-utils
-    - 'rabbitmq-server-3.8.9'
     - 'rdma-core'
     - 'rsync'
     - 'samba-client'
@@ -200,9 +199,6 @@ packages:
     - 'kubernetes-cni-0.8.7-0'  # since K8s v1.22.4
 
   from_url:
-    # Github repository for erlang rpm is used since packagecloud repository is limited to a certain number of versions and erlang package from erlang-solutions repository is much more complex and bigger
-    'http://packages.erlang-solutions.com/erlang/rpm/centos/8/aarch64/esl-erlang_23.1.5-1~centos~8_arm64.rpm':
-      sha256: 9c135d300a66fe399a764da0070e49b8cd5a356516d2904dd0521f80da1a1ecb
     # Grafana package is not downloaded from repository since it was not reliable (issue #2449)
     'https://dl.grafana.com/oss/release/grafana-8.3.2-1.aarch64.rpm':
       sha256: a05354a9363decc3a2b036a58f827e0a4d086791ba73d7cc4b9f05afb592f4d1

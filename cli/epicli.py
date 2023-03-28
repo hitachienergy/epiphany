@@ -275,7 +275,6 @@ def upgrade_parser(subparsers):
         'postgresql',
         'postgres_exporter',
         'prometheus',
-        'rabbitmq',
         'zookeeper',
         ])
 

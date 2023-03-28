@@ -29,7 +29,6 @@ Additional to users created by each component Epiphany creates also users and gr
 - node_exporter/node_exporter
 - jmx-exporter/jmx-exporter
 - prometheus/prometheus
-- rabbitmq/rabbitmq
 - zookeeper/zookeeper
 - kafka/kafka
 
@@ -87,20 +86,11 @@ different values. The list does not include ports that are bound to the loopback
 
     - 3000 - Grafana web UI
 
-10. RabbitMQ:
-
-    - 4369 - peer discovery service (epmd)
-    - 5671 - AMQP with TLS (if TLS is enabled)
-    - 5672 - AMQP
-    - 15672 - HTTP API clients, management UI and rabbitmqadmin
-    - 15692 - rabbitmq-exporter for Prometheus
-    - 25672 - distribution server
-
-11. PostgreSQL:
+10. PostgreSQL:
 
     - 5432 - PostgreSQL server
 
-12. Kubernetes:
+11. Kubernetes:
 
     - 111/tcp - rpcbind (NFS)
     - 111/udp - rpcbind (+1 random UDP port, see note [[2]](#notes))
@@ -115,12 +105,11 @@ different values. The list does not include ports that are bound to the loopback
     - 10252 - kube-controller-manager
     - 10256 - kube-proxy
 
-13. Kubernetes apps:
+12. Kubernetes apps:
 
     - 30103,30104 - Keycloak
-    - 30672,31672 - RabbitMQ (AMQP, management)
 
-14. HAProxy:
+13. HAProxy:
 
     - 443 - HTTPS frontend
     - 9000 - stats page
@@ -129,7 +118,7 @@ different values. The list does not include ports that are bound to the loopback
 
     **NOTE:** Not applicable for Ubuntu where UNIX socket is used (deb package's default).
 
-15. Repository:
+14. Repository:
 
     - 80 - deb/rpm package repository (httpd is stopped at the end of installation)
     - 5000 - Docker image registry
@@ -197,17 +186,7 @@ Below you can find list of cipersuites and protocols used for communication set 
       ECDHE-RSA-AES128-GCM-SHA256 ECDHE-RSA-AES256-GCM-SHA384 ECDHE-RSA-AES128-SHA ECDHE-RSA-AES256-SHA
       AES128-GCM-SHA256 AES256-GCM-SHA384 AES128-SHA AES256-SHA
 
-7. RabbitMQ:
-
-    - protocols:  
-      TLSv1.3, TLSv1.2
-
-    - ciphersuites:  
-      ECDHE-ECDSA-AES256-GCM-SHA384 ECDHE-RSA-AES256-GCM-SHA384 ECDH-ECDSA-AES256-GCM-SHA384 ECDH-RSA-AES256-GCM-SHA384
-      DHE-RSA-AES256-GCM-SHA384 DHE-DSS-AES256-GCM-SHA384 ECDHE-ECDSA-AES128-GCM-SHA256 ECDHE-RSA-AES128-GCM-SHA256
-      ECDH-ECDSA-AES128-GCM-SHA256 ECDH-RSA-AES128-GCM-SHA256 DHE-RSA-AES128-GCM-SHA256 DHE-DSS-AES128-GCM-SHA256
-
-8. Kubernetes:
+7. Kubernetes:
 
     - protocols:  
       TLSv1.2
@@ -216,7 +195,7 @@ Below you can find list of cipersuites and protocols used for communication set 
       ECDHE-RSA-AES256-GCM-SHA384 ECDHE-RSA-AES256-SHA AES256-GCM-SHA384 AES256-SHA ECDHE-RSA-AES128-GCM-SHA256
       ECDHE-RSA-AES128-SHA AES128-GCM-SHA256 AES128-SHA ECDHE-RSA-DES-CBC3-SHA DES-CBC3-SHA
 
-9. Kubernetes apps:
+8. Kubernetes apps:
 
     - Keycloak:
 

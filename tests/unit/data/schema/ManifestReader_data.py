@@ -33,8 +33,6 @@ specification:
       count: 0
     load_balancer:
       count: 0
-    rabbitmq:
-      count: 0
     opensearch:
       count: 0
 version: 2.0.1dev
@@ -49,11 +47,6 @@ specification:
     - jmx-exporter
     - kafka
     - kafka-exporter
-    - node-exporter
-    - filebeat
-    - firewall
-    rabbitmq:
-    - rabbitmq
     - node-exporter
     - filebeat
     - firewall
@@ -86,29 +79,24 @@ specification:
     - kubernetes-master
     - node-exporter
     - filebeat
-    - rabbitmq
     - postgresql
     - prometheus
     - grafana
     - node-exporter
     - logging
     - firewall
-    - rook
     single_machine:
     - repository
     - image-registry
     - kubernetes-master
     - helm
     - applications
-    - rabbitmq
     - postgresql
     - firewall
-    - rook
     kubernetes_master:
     - kubernetes-master
     - helm
     - applications
-    - rook
     - node-exporter
     - filebeat
     - firewall
@@ -160,7 +148,6 @@ EXPECTED_PARSED_MANIFEST_DOCS: List[Dict] = [
              'kafka':             { 'count': 0 },
              'postgresql':        { 'count': 0 },
              'load_balancer':     { 'count': 0 },
-             'rabbitmq':          { 'count': 0 },
              'opensearch':        { 'count': 0 }
          }
      },
@@ -176,12 +163,6 @@ EXPECTED_PARSED_MANIFEST_DOCS: List[Dict] = [
                  'jmx-exporter',
                  'kafka',
                  'kafka-exporter',
-                 'node-exporter',
-                 'filebeat',
-                 'firewall'
-             ],
-             'rabbitmq': [
-                 'rabbitmq',
                  'node-exporter',
                  'filebeat',
                  'firewall'
@@ -219,14 +200,12 @@ EXPECTED_PARSED_MANIFEST_DOCS: List[Dict] = [
                  'kubernetes-master',
                  'node-exporter',
                  'filebeat',
-                 'rabbitmq',
                  'postgresql',
                  'prometheus',
                  'grafana',
                  'node-exporter',
                  'logging',
-                 'firewall',
-                 'rook'
+                 'firewall'
              ],
              'single_machine': [
                  'repository',
@@ -234,16 +213,13 @@ EXPECTED_PARSED_MANIFEST_DOCS: List[Dict] = [
                  'kubernetes-master',
                  'helm',
                  'applications',
-                 'rabbitmq',
                  'postgresql',
-                 'firewall',
-                 'rook'
+                 'firewall'
              ],
              'kubernetes_master': [
                  'kubernetes-master',
                  'helm',
                  'applications',
-                 'rook',
                  'node-exporter',
                  'filebeat',
                  'firewall'
@@ -302,7 +278,6 @@ INPUT_DOC_TO_UPDATE_BASE = [
              'kafka':             { 'count': 0 },
              'postgresql':        { 'count': 0 },
              'load_balancer':     { 'count': 0 },
-             'rabbitmq':          { 'count': 0 },
              'opensearch':        { 'count': 0 }
          }
      },
@@ -374,7 +349,6 @@ EXPECTED_UPDATED_DOC_BASE = [
              'kafka':             { 'count': 0 },
              'postgresql':        { 'count': 0 },
              'load_balancer':     { 'count': 0 },
-             'rabbitmq':          { 'count': 0 },
              'opensearch':        { 'count': 0 }
          }
      },

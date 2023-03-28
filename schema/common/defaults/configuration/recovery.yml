@@ -16,6 +16,3 @@ specification:
     postgresql:
       enabled: false
       snapshot_name: latest
-    rabbitmq:
-      enabled: false
-      snapshot_name: latest

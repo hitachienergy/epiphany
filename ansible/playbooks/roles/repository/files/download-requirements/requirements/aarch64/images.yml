@@ -9,9 +9,7 @@ images:
       sha1: 626b18df8b0ae6870c74dbd118da8c3913b78a44
       allow_mismatch: true
 
-  applications:
-    'rabbitmq:3.8.9':
-      sha1: 003cefb9c3309c55fa67f68067db9355750513d6
+  applications: {}
 
   keycloak:
     # optional - can be used by Helm chart to check database readiness at startup

@@ -528,11 +528,10 @@ Single machine cannot be scaled up or deployed alongside other types of cluster.
 Sometimes it might be desirable to run an Epiphany cluster on a single machine. For this purpose Epiphany ships with a `single_cluster` component configuration. This cluster comes with the following main components:
 
 - kubernetes-master: Untainted so pods can be deployed on it
-- rabbitmq: Rabbitmq for messaging instead of Kafka
-- applications: For deploying the Keycloak authentication service
+- keycloak: For deploying authentication service
 - postgresql: To provide a database for Keycloak
 
-Note that components like logging and monitoring are missing since they do not provide much benefit in a single machine scenario. Also, RabbitMQ is included over Kafka since that is much less resource intensive.
+Note that components like logging and monitoring are missing since they do not provide much benefit in a single machine scenario.
 
 To get started with a single machine cluster you can use the following template as a base. Note that some configurations are omitted:
 
@@ -562,8 +561,6 @@ specification:
     postgresql:
       count: 0
     load_balancer:
-      count: 0
-    rabbitmq:
       count: 0
     opensearch:
       count: 0
@@ -600,8 +597,6 @@ specification:
       count: 1
       configuration: default
       machines: [single-machine]
-    rabbitmq:
-      count: 0
     single_machine:
       count: 1
       configuration: default
@@ -658,7 +653,7 @@ Epiphany gives you the ability to define custom components. This allows you to d
 
 The first thing you will need to do is define it in the `configuration/features` and the `configuration/feature-mappings` configurations. To get these configurations you can run `epicli init ... --full` command. In the `configuration/features` doc you can see all the available features that Epiphany provides. The `configuration/feature-mappings` doc is where all the Epiphany components are defined and where you can add your custom components.
 
-Below are parts of an example `configuration/features` and `configuration/feature-mappings` docs where we define a new `single_machine_new` component. We want to use Kafka instead of RabbitMQ and don't need applications and postgres since we don't want a Keycloak deployment:
+Below are parts of an example `configuration/features` and `configuration/feature-mappings` docs where we define a new `single_machine_new` component. We want to use Kafka and don't need applications and postgres since we don't want a Keycloak deployment:
 
 ```yaml
 kind: configuration/features
@@ -683,7 +678,7 @@ specification:
       - image-registry
       - kubernetes-master
       - applications
-      - rabbitmq
+      - keycloak
       - postgresql
       - firewall
     # Below is the new single_machine_new definition
@@ -744,8 +739,6 @@ Kafka | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_ch
 Load Balancer | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | ---
 OpenSearch | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
 Postgresql | :x: | :x: | :heavy_check_mark: | :heavy_check_mark: | [#1577](https://github.com/epiphany-platform/epiphany/issues/1577)
-RabbitMQ | :heavy_check_mark: | :heavy_check_mark: | :x: | :heavy_check_mark: |  [#1578](https://github.com/epiphany-platform/epiphany/issues/1578), [#1309](https://github.com/epiphany-platform/epiphany/issues/1309)
-RabbitMQ K8s | :heavy_check_mark: | :heavy_check_mark: | :x: | :heavy_check_mark: | [#1486](https://github.com/epiphany-platform/epiphany/issues/1486)
 Keycloak K8s | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
 Pgpool K8s | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
 Pgbouncer K8s | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
@@ -776,23 +769,6 @@ ODFE will join the cluster but Kibana will be a standalone instance.
 - Postgresql:  
 :arrow_up: At the moment does not support scaling up. Check known issues.  
 :arrow_down: At the moment does not support scaling down. Check known issues.
-- RabbitMQ:  
-If the instance count is changed, then additional RabbitMQ nodes will be added or removed.  
-:arrow_up: Will create new VM and adds it to the RabbitMQ cluster.  
-:arrow_down: At the moment scaling down will just remove VM. All data not processed on this VM will be purged. Check known issues.  
-Note that clustering requires a change in the `configuration/rabbitmq` document:
-
-  ```yaml
-  kind: configuration/rabbitmq
-  ...
-  specification:
-    cluster:
-      is_clustered: true
-  ...
-  ```
-
-- RabbitMQ K8s:
-  Scaling is controlled via replicas in StatefulSet. RabbitMQ on K8s uses plugin rabbitmq_peer_discovery_k8s to works in cluster.
 
 Additional known issues:
 
@@ -903,10 +879,6 @@ When planning Kafka installation you have to think about number of partitions an
 
 You can read more [here](https://www.confluent.io/blog/how-choose-number-topics-partitions-kafka-cluster) about planning number of partitions.
 
-## RabbitMQ installation and setting
-
-To install RabbitMQ in single mode just add rabbitmq role to your data.yaml for your server and in general roles section. All configuration on RabbitMQ, e.g., user other than guest creation should be performed manually.
-
 ## How to use Azure availability sets
 
 In your cluster yaml config declare as many as required objects of kind `infrastructure/availability-set` like
@@ -976,8 +948,6 @@ specification:
 # This line tells we generate the availability-set terraform template
       availability_set: postgresql  # Short and simple name is preferred
       count: 2
-    rabbitmq:
-      count: 0
 title: Epiphany cluster Config
 ---
 kind: infrastructure/availability-set

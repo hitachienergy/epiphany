@@ -33,9 +33,6 @@ CLUSTER_DOC_ANY = {
             'load_balancer': {
                 'count': 1,
                 'machines': ['default-loadbalancer']},
-            'rabbitmq': {
-                'count': 1,
-                'machines': ['default-rabbitmq']},
             'opensearch': {
                 'count': 1,
                 'machines': ['default-opensearch']}
@@ -77,9 +74,6 @@ EXPECTED_CLUSTER_DOC_ANY = {
             'load_balancer': {
                 'count': 1,
                 'machines': ['default-loadbalancer']},
-            'rabbitmq': {
-                'count': 1,
-                'machines': ['default-rabbitmq']},
             'opensearch': {
                 'count': 1,
                 'machines': ['default-opensearch']}
@@ -114,7 +108,6 @@ CLUSTER_DOC_AZURE = {
             'kafka': {'count': 2},
             'postgresql': {'count': 1},
             'load_balancer': {'count': 1},
-            'rabbitmq': {'count': 1},
             'opensearch': {'count': 1}
         }
     },
@@ -143,7 +136,6 @@ EXPECTED_CLUSTER_DOC_AZURE = {
             'kafka': {'count': 2},
             'postgresql': {'count': 1},
             'load_balancer': {'count': 1},
-            'rabbitmq': {'count': 1},
             'opensearch': {'count': 1}
         }
     },
@@ -178,7 +170,6 @@ CLUSTER_DOC_AWS = {
             'kafka': {'count': 2},
             'postgresql': {'count': 1},
             'load_balancer': {'count': 1},
-            'rabbitmq': {'count': 1},
             'opensearch': {'count': 1}
         }
     },
@@ -208,7 +199,6 @@ EXPECTED_CLUSTER_DOC_AWS = {
             'kafka': {'count': 2},
             'postgresql': {'count': 1},
             'load_balancer': {'count': 1},
-            'rabbitmq': {'count': 1},
             'opensearch': {'count': 1}
         }
     },
@@ -238,16 +228,6 @@ NOT_NEEDED_DOCS = [
         'specification': {
             'hostname': 'loadbalancer',
             'ip': '192.168.100.110'
-        },
-        'version': '2.0.1dev'
-    },
-    {
-        'kind': 'infrastructure/machine',
-        'provider': 'any',
-        'name': 'default-rabbitmq',
-        'specification': {
-          'hostname': 'rabbitmq',
-          'ip': '192.168.100.111'
         },
         'version': '2.0.1dev'
     },
