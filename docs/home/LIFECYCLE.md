@@ -19,21 +19,21 @@ Versions will be released every quarter (except the quarter when the LTS version
 
 The LTS version will be released once a year and will be supported for up to 3 years. During support time, patch releases will be made to the LTS version. The patch version will be released immediately after critical bug fix, in case of minor issues the patch version will be released along with other releases (quarterly).
 
-| Epiphany version | Release date | Release date | End of support |
-| ----------------------| --------------- | -------------|--------------------|--------------- |
-| [0.2.x](../changelogs/CHANGELOG-0.2.md) | 19 Feb 2019 | 11 May 2019 | 06 Apr 2020 |
-| [0.3.x](../changelogs/CHANGELOG-0.3.md) | 02 Aug 2019 | 21 May 2019 | 01 Jul 2020 |
-| [0.4.x](../changelogs/CHANGELOG-0.4.md) | 11 Oct 2019 | 02 Oct 2020 | 22 Oct 2020 |
-| [0.5.x](../changelogs/CHANGELOG-0.5.md) | 17 Jan 2020 | 04 Nov 2020 | 19 Jan 2021 |
-| [0.6.x](../changelogs/CHANGELOG-0.6.md) | 06 Apr 2020 | 09 Apr 2021 | 01 Apr 2021 |
-| [0.7.x](../changelogs/CHANGELOG-0.7.md) | 01 Jul 2020 | 17 May 2021 | 30 Jun 2021 |
-| [0.8.x](../changelogs/CHANGELOG-0.8.md) | 22 Oct 2020 | 17 Apr 2021 | 30 Sep 2021 |
-| [0.9.x](../changelogs/CHANGELOG-0.9.md) | 19 Jan 2021 | 14 May 2021 | 30 Dec 2021 |
-| [1.0.x LTS](../changelogs/CHANGELOG-1.0.md) | 01 Apr 2021 | 16 Jul 2021 | 01 Apr 2024 |
-| [1.1.x STS](../changelogs/CHANGELOG-1.1.md) | 30 Jun 2021 | 30 Jun 2021 | 30 Dec 2021 |
-| [1.2.x STS](../changelogs/CHANGELOG-1.2.md) | 30 Sep 2021 | 30 Sep 2021 | 30 Mar 2022 |
-| [1.3.x STS](../changelogs/CHANGELOG-1.3.md) | 19 Jan 2022 | 19 Jan 2022 | 30 Jun 2022 |
-| [2.0.x LTS](../changelogs/CHANGELOG-2.0.md) | 09 May 2022 | 09 May 2022 | 09 May 2025 |
+| Epiphany version | Release date | End of support |
+| ----------------------| --------------- | -------------|
+| [0.2.x](../changelogs/CHANGELOG-0.2.md) | 19 Feb 2019 | 06 Apr 2020 |
+| [0.3.x](../changelogs/CHANGELOG-0.3.md) | 02 Aug 2019 | 01 Jul 2020 |
+| [0.4.x](../changelogs/CHANGELOG-0.4.md) | 11 Oct 2019 | 22 Oct 2020 |
+| [0.5.x](../changelogs/CHANGELOG-0.5.md) | 17 Jan 2020 | 19 Jan 2021 |
+| [0.6.x](../changelogs/CHANGELOG-0.6.md) | 06 Apr 2020 | 01 Apr 2021 |
+| [0.7.x](../changelogs/CHANGELOG-0.7.md) | 01 Jul 2020 | 30 Jun 2021 |
+| [0.8.x](../changelogs/CHANGELOG-0.8.md) | 22 Oct 2020 | 30 Sep 2021 |
+| [0.9.x](../changelogs/CHANGELOG-0.9.md) | 19 Jan 2021 | 30 Dec 2021 |
+| [1.0.x LTS](../changelogs/CHANGELOG-1.0.md) | 01 Apr 2021 | 01 Apr 2024 |
+| [1.1.x STS](../changelogs/CHANGELOG-1.1.md) | 30 Jun 2021 | 30 Dec 2021 |
+| [1.2.x STS](../changelogs/CHANGELOG-1.2.md) | 30 Sep 2021 | 30 Mar 2022 |
+| [1.3.x STS](../changelogs/CHANGELOG-1.3.md) | 19 Jan 2022 | 30 Jun 2022 |
+| [2.0.x LTS](../changelogs/CHANGELOG-2.0.md) | 09 May 2022 | 09 May 2025 |
 
 ```mermaid
 gantt
