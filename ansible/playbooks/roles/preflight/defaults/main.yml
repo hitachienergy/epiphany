@@ -28,7 +28,6 @@ unsupported_roles:
     arch: aarch64
     roles:
       - applications
-      - elasticsearch_curator
       - filebeat
       - firewall
       - grafana
@@ -55,8 +54,7 @@ unsupported_roles:
     roles: []  # all supported
   - distro: AlmaLinux
     arch: aarch64
-    roles:
-      - elasticsearch_curator
+    roles: []  # all supported
   - distro: RedHat
     arch: x86_64
     roles: []  # all supported
@@ -64,7 +62,6 @@ unsupported_roles:
     arch: aarch64
     roles:
       - applications
-      - elasticsearch_curator
       - filebeat
       - firewall
       - grafana

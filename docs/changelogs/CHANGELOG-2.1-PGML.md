@@ -15,5 +15,6 @@
 
 ### Removed
 
+- Elasticsearch Curator
 - RabbitMQ
 - Rook

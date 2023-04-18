@@ -24,16 +24,6 @@ repositories:
     gpg_keys:
       - https://artifacts.elastic.co/GPG-KEY-elasticsearch
 
-  elasticsearch-curator-5:
-    id: curator-5
-    data: |
-      name=CentOS/RHEL 7 repository for Elasticsearch Curator 5.x packages
-      baseurl=https://packages.elastic.co/curator/5/centos/7
-      gpgcheck=1
-      enabled=1
-    gpg_keys:
-      - https://packages.elastic.co/GPG-KEY-elasticsearch
-
   kubernetes:
     id: kubernetes
     data: |

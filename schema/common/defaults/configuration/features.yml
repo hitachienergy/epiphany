@@ -20,8 +20,6 @@ specification:
       enabled: true
     - name: opensearch
       enabled: true
-    - name: elasticsearch-curator
-      enabled: true
     - name: opensearch-dashboards
       enabled: true
     - name: filebeat

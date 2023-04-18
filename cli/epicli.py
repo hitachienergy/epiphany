@@ -259,7 +259,6 @@ def upgrade_parser(subparsers):
     required = sub_parser.add_argument_group('required arguments')
 
     component_list = sorted([
-        'elasticsearch_curator',
         'filebeat',
         'grafana',
         'image_registry',

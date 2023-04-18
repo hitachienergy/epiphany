@@ -114,15 +114,6 @@
   environment:
     KUBECONFIG: "{{ kubeconfig.remote }}"
 
-- hosts: elasticsearch_curator
-  become: true
-  become_method: sudo
-  tasks:
-    - import_role:
-        name: upgrade
-        tasks_from: elasticsearch-curator
-      when: "'elasticsearch_curator' in upgrade_components or upgrade_components|length == 0"
-
 - hosts: filebeat
   become: true
   become_method: sudo
