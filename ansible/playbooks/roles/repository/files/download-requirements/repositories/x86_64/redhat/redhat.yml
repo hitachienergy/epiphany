@@ -1,17 +1,5 @@
 ---
 repositories:
-  elastic-6:
-    id: elastic-6
-    data: |
-      name=Elastic repository for 6.x packages
-      baseurl=https://artifacts.elastic.co/packages/oss-6.x/yum
-      gpgcheck=1
-      enabled=1
-      autorefresh=1
-      type=rpm-md
-    gpg_keys:
-      - https://artifacts.elastic.co/GPG-KEY-elasticsearch
-
   elasticsearch-7:
     id: elasticsearch-7.x
     data: |

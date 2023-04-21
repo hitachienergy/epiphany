@@ -229,7 +229,7 @@ When dashboard creation or import succeeds you will see it on your dashboard lis
 
 # OpenSearch Dashboards
 
-OpenSearch Dashboards ( a Kibana counterpart ) is an open source search and analytics visualization layer. It also serves as a user interface for many OpenSearch project plugins. For more information please refer to [the official website](https://opensearch.org/docs/latest/dashboards/index/).
+OpenSearch Dashboards (a Kibana counterpart) is an open source search and analytics visualization layer. It also serves as a user interface for many OpenSearch project plugins. For more information please refer to [the official website](https://opensearch.org/docs/latest/dashboards/index/).
 
 ## How to configure OpenSearch Dashboards
 
@@ -248,11 +248,8 @@ By default OpenSearch Dashoboards adjusts the UTC time in `@timestamp` to the br
 
 ## How to configure default passwords for service users in OpenSearch Dashboards, OpenSearch and Filebeat
 
-In order to learn more about both components, please look through documentation:
+In order to learn more about the components, please look through documentation:
 - [logging](./LOGGING.md#centralized-logging-setup)
-- [opensearch](./DATABASES.md#how-to-start-working-with-opensearch)
-
-If your configuration includes both components enabled, please note that these OpenSearch instances are separate and can be configured independently, e.g. having different passwords for default users.
 
 To configure admin password for OpenSearch Dashoboards (previously Kibana) and OpenSearch you need to follow the procedure below.
 

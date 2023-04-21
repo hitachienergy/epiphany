@@ -49,7 +49,7 @@ end
 
 if es_filebeat_user_is_active
   listInventoryHosts('opensearch').each do |val|
-    describe 'Check the connection to the Elasticsearch hosts' do
+    describe 'Check the connection to the OpenSearch hosts' do
       let(:disable_sudo) { false }
       describe command("curl -k -u #{filebeat_user}:#{es_filebeat_user_password} -o /dev/null -s -w '%{http_code}' https://#{val}:#{es_api_port}") do
         it 'is expected to be equal' do
@@ -60,12 +60,12 @@ if es_filebeat_user_is_active
   end
 end
 
-# This test is for optional (manual) command 'filebeat setup --dashboards' (loads Kibana dashboards)
+# This test is for optional (manual) command 'filebeat setup --dashboards' (loads dashboards to OpenSearch Dashboards)
 if es_kibanaserver_user_is_active
-  listInventoryHosts('kibana').each do |val|
-    describe 'Check the connection to the Kibana endpoint' do
+  listInventoryHosts('opensearch_dashboards').each do |val|
+    describe 'Check the connection to the OpenSearch Dashboards endpoint' do
       let(:disable_sudo) { false }
-      describe command("curl -u kibanaserver:#{es_kibanaserver_user_password} -o /dev/null -s -w '%{http_code}' http://#{val}:#{kibana_api_port}/app/kibana") do
+      describe command("curl -u kibanaserver:#{es_kibanaserver_user_password} -o /dev/null -s -w '%{http_code}' http://#{val}:#{kibana_api_port}/app/home") do
         it 'is expected to be equal' do
           expect(subject.stdout.to_i).to eq 200
         end

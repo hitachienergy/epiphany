@@ -14,12 +14,12 @@
             file: roles/opensearch/vars/main.yml
             name: component_vars
 
-        - name: Run elasticsearch snapshot tasks
+        - name: Run OpenSearch snapshot tasks
           import_role:
             name: backup
             tasks_from: logging_opensearch_snapshot
 
-        - name: Run elasticsearch archive tasks
+        - name: Run OpenSearch archive tasks
           import_role:
             name: backup
             tasks_from: logging_opensearch_conf

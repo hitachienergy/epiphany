@@ -1,8 +1,8 @@
 # Centralized logging setup
 
-For centralized logging Epiphany uses [Open Search](https://opensearch.org/) stack - an opensource successor<sup>[1]</sup> of Elasticsearch & Kibana projects.
+For centralized logging Epiphany uses [OpenSearch](https://opensearch.org/) stack - an open source successor<sup>[1]</sup> of Elasticsearch & Kibana projects.
 
-In order to enable centralized logging, be sure to set `count` property for `logging` feature to the value greater than 0 in your
+In order to enable centralized logging, be sure to set `count` property for `logging` component to the value greater than 0 in your
 configuration manifest.
 
 ```yaml
@@ -20,6 +20,8 @@ specification:
       count: 1  # <<------
     [...]
 ```
+
+Installation with more than one `logging` node will be clustered.
 
 ## Default feature mapping for logging
 
@@ -186,9 +188,7 @@ policy to already existing indices by assigning them to policy in dashboard Inde
 
 ## How to export Dashboards reports
 
-Since v1.0 Epiphany provides the possibility to export reports from Kibana to CSV, PNG or PDF using the Open Distro for Elasticsearch Kibana reports feature. And after migrating from Elastic stack to OpenSearch stack you can make use of the OpenSearch Reporting feature to achieve this and more.
-
-Check more details about the OpenSearch Reports plugin and how to export reports in the
+Check details about the OpenSearch Reports plugin and how to export reports in the
 [documentation](https://github.com/opensearch-project/dashboards-reports/blob/main/README.md#opensearch-dashboards-reports).
 
 Notice: Currently in the OpenSearch stack the following plugins are installed and enabled by default: alerting, anomaly detection, gantt chart, index management, observability, query workbench, reports, security.
@@ -233,7 +233,7 @@ specification:
 ## How to use default OpenSearch dashboards
 
 ---
-This feature is not working in current version of OpenSearch and so the `setup.dashboards.enabled` is set with value _false_ as a workaround.
+This feature is not working in current version of OpenSearch and so the `setup.dashboards.enabled` is set with value `false` as a workaround.
 
 ---
 It is possible to configure `setup.dashboards.enabled` and `setup.dashboards.index` Filebeat settings using `specification.kibana.dashboards` key in `configuration/filebeat` doc.
@@ -250,12 +250,7 @@ specification:
       index: filebeat-*
 ```
 
-Notice: Setting `specification.kibana.dashboards.enabled` to `true` not providing Kibana will result in a Filebeat crash.
-
-<br>
-
----
-<sup>[1] More information about migrating from Elasticsearch & Kibana to OpenSearch & OpenSearch Dashboards can be found [here](./UPGRADE.md#migration-from-open-distro-for-elasticsearch--kibana-to-opensearch-and-opensearch-dashboards).</sup>
+Notice: Setting `specification.kibana.dashboards.enabled` to `true` not providing OpenSearch Dashboards will result in a Filebeat crash.
 
 ## Audit logs
 
@@ -263,7 +258,7 @@ There is an [option](https://opensearch.org/docs/latest/security-plugin/audit-lo
 OpenSearch audit logs which is switched on in Epiphany by default using the following configuration part:
 
 ```yaml
-kind: configuration/logging
+kind: configuration/opensearch
 specification:
   opensearch_security:
     audit:

@@ -39,7 +39,7 @@ describe 'Check if opensearch_dashboards user exists' do
     it { should belong_to_group 'opensearch_dashboards' }
   end
 end
-describe 'Check Elasticsearch directories and config files' do
+describe 'Check OpenSearch directories and config files' do
   let(:disable_sudo) { false }
   describe file('/usr/share/opensearch') do
     it { should exist }
@@ -61,7 +61,7 @@ describe 'Check if the ports are open' do
 end
 
 listInventoryHosts('opensearch').each do |val|
-  describe 'Check Elasticsearch nodes status codes' do
+  describe 'Check OpenSearch nodes status codes' do
     let(:disable_sudo) { false }
     describe command("curl -k -u admin:#{es_admin_password} -o /dev/null -s -w '%{http_code}' https://#{val}:#{es_rest_api_port}") do
       it 'is expected to be equal' do

@@ -10,7 +10,7 @@ Computing section - contains `Kubernetes Master` and `Kubernetes Node` where man
 
 Centralized monitoring section with `Prometheus`, `Grafana` and `Alert Manager` pulls data from exporters installed on all machines. `Grafana` web dashboards are available on the machine running this role. Machine running `Alert Manager` requires access to configured endpoints for alerting - like email server, Slack, PagerDuty.
 
-Centralized logging receives data pushed by `Filebeat` component that is installed on each machine. `Kibana` web interface is available on machine running this role.
+Centralized logging receives data pushed by `Filebeat` component that is installed on each machine. `OpenSearch Dashboards` web interface is available on machine running this role.
 
 Messaging with `Kafka` like `Kubernetes Node` scales horizontally, it means as many machines running this role are possible as needed.
 

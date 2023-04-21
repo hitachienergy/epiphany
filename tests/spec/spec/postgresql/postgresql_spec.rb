@@ -508,7 +508,7 @@ if pgaudit_enabled && countInventoryHosts('opensearch') > 0 && (!replicated || (
     command.squish
   end
 
-  describe 'Check if Elasticsearch logs contain queries from PostrgeSQL database' do
+  describe 'Check if OpenSearch contains queries from PostrgeSQL database' do
     query = get_elasticsearch_query(message_pattern: "serverspec_test* AND NOT #{pg_user}")
     command = get_query_command_with_retries(json_query: query, min_doc_hits: 6)
     describe command(command) do

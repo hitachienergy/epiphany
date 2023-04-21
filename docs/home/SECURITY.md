@@ -167,7 +167,7 @@ Below you can find list of cipersuites and protocols used for communication set 
       ECDHE-RSA-AES256-SHA384 ECDHE-RSA-AES128-SHA256 DHE-RSA-AES256-SHA256 DHE-RSA-AES128-SHA256 ECDHE-RSA-AES256-SHA
       ECDHE-RSA-AES128-SHA DHE-RSA-AES256-SHA DHE-RSA-AES128-SHA
 
-5. Kibana:
+5. OpenSearch Dashboards:
 
     - protocols:  
       TLSv1.1,TLSv1.2
