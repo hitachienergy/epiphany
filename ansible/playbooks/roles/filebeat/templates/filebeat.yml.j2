@@ -182,7 +182,7 @@ setup.template.settings:
 setup.dashboards.enabled: false
 # {% set dashboards_enabled = is_upgrade_run | ternary(existing_setup_dashboards.enabled, specification.opensearch.dashboards.enabled) %}
 # {% if dashboards_enabled | lower == 'auto' %}
-#  {% if group_names | intersect(['opensearch_dashboards', 'logging']) | count == 2 %}
+#  {% if group_names | intersect(['opensearch_dashboards', 'opensearch']) | count == 2 %}
 # setup.dashboards.enabled: true
 #  {% else %}
 #setup.dashboards.enabled: false
@@ -258,7 +258,7 @@ setup.kibana:
   {% if setup_kibana_host is defined %}
   host: {{ setup_kibana_host }}
   username: kibanaserver
-  password: {{ "'%s'" % logging_vars.specification.kibanaserver_password | replace("'","''") }}
+  password: {{ "'%s'" % opensearch_vars.specification.kibanaserver_password | replace("'","''") }}
   {% else %}
   #host: "localhost:5601"
   {% endif %}
@@ -267,8 +267,8 @@ setup.kibana:
   {% if existing_setup_kibana.host is defined %}
   host: {{ existing_setup_kibana.host }}
   {% else %}
-    {% if groups.opensearch_dashboards is defined and groups.logging is defined and (groups.opensearch_dashboards | intersect(groups.logging) | count > 0) %}
-  host: {{ hostvars[groups.opensearch_dashboards | intersect(groups.logging) | first].ansible_hostname }}
+    {% if groups.opensearch_dashboards[0] is defined %}
+  host: {{ hostvars[groups.opensearch_dashboards[0]].ansible_hostname }}
     {% else %}
   #host: "localhost:5601"
     {% endif %}
@@ -302,21 +302,21 @@ setup.kibana:
 #================================ Outputs =====================================
 
 # Configure what output to use when sending the data collected by the beat.
-# Default Elasticsearch output is array of 'logging' hosts. If not exist, 'hosts' remains empty to manual configuration.
+# Default Elasticsearch output is array of 'opensearch' hosts. If not exist, 'hosts' remains empty to manual configuration.
 
 # ---------------------------- Elasticsearch Output ----------------------------
 output.elasticsearch:
   # Array of hosts to connect to.
-{% if groups.logging is defined %}
+{% if groups.opensearch is defined %}
   hosts:
-  {% for host in groups.logging %}
+  {% for host in groups.opensearch %}
     - "https://{{ hostvars[host]['ansible_hostname'] }}:9200"
   {% endfor %}
 
   # Authentication credentials - either API key or username/password.
   {% if not is_upgrade_run %}
   username: filebeatservice
-  password: {{ "'%s'" % logging_vars.specification.filebeatservice_password | replace("'","''") }}
+  password: {{ "'%s'" % opensearch_vars.specification.filebeatservice_password | replace("'","''") }}
   {% else %}
   username: {{ "'%s'" % existing_output_es_username | replace("'","''") }}
   password: {{ "'%s'" % existing_output_es_password | replace("'","''") }}

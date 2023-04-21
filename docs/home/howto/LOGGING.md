@@ -1,8 +1,8 @@
 # Centralized logging setup
 
-For centralized logging Epiphany uses [Open Search](https://opensearch.org/) stack - an opensource successor<sup>[1]</sup> of Elasticsearch & Kibana projects.
+For centralized logging Epiphany uses [OpenSearch](https://opensearch.org/) stack - an open source successor<sup>[1]</sup> of Elasticsearch & Kibana projects.
 
-In order to enable centralized logging, be sure to set `count` property for `logging` feature to the value greater than 0 in your
+In order to enable centralized logging, be sure to set `count` property for `logging` component to the value greater than 0 in your
 configuration manifest.
 
 ```yaml
@@ -21,6 +21,8 @@ specification:
     [...]
 ```
 
+Installation with more than one `logging` node will be clustered.
+
 ## Default feature mapping for logging
 
 Below example shows a default feature mapping for logging:
@@ -29,7 +31,7 @@ Below example shows a default feature mapping for logging:
 roles_mapping:
 [...]
   logging:
-    - logging
+    - opensearch
     - opensearch-dashboards
     - node-exporter
     - filebeat
@@ -37,25 +39,7 @@ roles_mapping:
 ...
 ```
 
-The `logging` role has replaced `elasticsearch` role. This change was done to enable Elasticsearch usage also for data
-storage - not only for logs as it was till 0.5.0.
-
-Default configuration of `logging` and `opensearch` roles is identical ( more info [here](./DATABASES.md#how-to-start-working-with-opensearch) ). To modify configuration of centralized logging
-adjust to your needs the following default values in your manifest:
-
-```yaml
-[...]
-kind: configuration/logging
-title: Logging Config
-name: default
-specification:
-  cluster_name: EpiphanyOpensearch
-  clustered: True
-  paths:
-    data: /var/lib/opensearch
-    repo: /var/lib/opensearch-snapshots
-    logs: /var/log/opensearch
-```
+The `opensearch` role has replaced the `logging` role. After this change it is possible to deploy only one OpenSearch cluster within Epiphany cluster.
 
 ## How to manage OpenSearch data
 
@@ -176,7 +160,7 @@ There is an example of such policy below. Be aware that this is only example and
 }
 ```
 
-Example above shows configuration with rollover index policy on a daily basis or when the index achieve 1 GB size. Indexes older than 14 days will
+Example above shows configuration with rollover index policy on a daily basis or when the index achieves 1 GB size. Indices older than 14 days will
 be deleted. States and conditionals could be combined. Please
 see [policies](https://opensearch.org/docs/latest/im-plugin/ism/policies/) documentation for more
 details.
@@ -200,19 +184,17 @@ PUT _index_template/ism_rollover
 ```
 
 After applying this policy, every new index created under this one will apply to it. There is also possibility to apply
-policy to already existing policies by assigning them to policy in dashboard Index Management panel.
+policy to already existing indices by assigning them to policy in dashboard Index Management panel.
 
 ## How to export Dashboards reports
 
-Since v1.0 Epiphany provides the possibility to export reports from Kibana to CSV, PNG or PDF using the Open Distro for Elasticsearch Kibana reports feature. And after migrating from Elastic stack to OpenSearch stack you can make use of the OpenSearch Reporting feature to achieve this and more.
-
-Check more details about the OpenSearch Reports plugin and how to export reports in the
+Check details about the OpenSearch Reports plugin and how to export reports in the
 [documentation](https://github.com/opensearch-project/dashboards-reports/blob/main/README.md#opensearch-dashboards-reports).
 
-Notice: Currently in the OpenSearch stack the following plugins are installed and enabled by default: security, alerting, anomaly detection, index management, query workbench, notebooks, reports, alerting, gantt chart plugins.
+Notice: Currently in the OpenSearch stack the following plugins are installed and enabled by default: alerting, anomaly detection, gantt chart, index management, observability, query workbench, reports, security.
 
 You can easily check enabled default plugins for Dashboards component using the following command on the logging machine:
-`./bin/opensearch-dashboards-plugin list` in directory where you've installed _opensearch-dashboards_.
+`/usr/share/opensearch-dashboards/bin/opensearch-dashboards-plugin list`.
 
 ---
 
@@ -251,7 +233,7 @@ specification:
 ## How to use default OpenSearch dashboards
 
 ---
-This feature is not working in current version of OpenSearch and so the `setup.dashboards.enabled` is set with value _false_ as a workaround.
+This feature is not working in current version of OpenSearch and so the `setup.dashboards.enabled` is set with value `false` as a workaround.
 
 ---
 It is possible to configure `setup.dashboards.enabled` and `setup.dashboards.index` Filebeat settings using `specification.kibana.dashboards` key in `configuration/filebeat` doc.
@@ -268,12 +250,7 @@ specification:
       index: filebeat-*
 ```
 
-Notice: Setting `specification.kibana.dashboards.enabled` to `true` not providing Kibana will result in a Filebeat crash.
-
-<br>
-
----
-<sup>[1] More information about migrating from Elasticsearch & Kibana to OpenSearch & OpenSearch Dashboards can be found [here](./UPGRADE.md#migration-from-open-distro-for-elasticsearch--kibana-to-opensearch-and-opensearch-dashboards).</sup>
+Notice: Setting `specification.kibana.dashboards.enabled` to `true` not providing OpenSearch Dashboards will result in a Filebeat crash.
 
 ## Audit logs
 
@@ -281,7 +258,7 @@ There is an [option](https://opensearch.org/docs/latest/security-plugin/audit-lo
 OpenSearch audit logs which is switched on in Epiphany by default using the following configuration part:
 
 ```yaml
-kind: configuration/logging
+kind: configuration/opensearch
 specification:
   opensearch_security:
     audit:

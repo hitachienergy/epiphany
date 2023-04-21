@@ -60,12 +60,6 @@ Containers | Kubernetes components that run in a container
 
 [Read more](https://opensearch.org/docs/latest)
 
-### Elasticsearch Curator
-
-`Elasticsearch Curator` is component that manages and cleans indices and snapshots. Epiphany uses `Elasticsearch Curator` to ensure that centralized logging will not completely fill disk space.
-
-[Read more](https://www.elastic.co/guide/en/elasticsearch/client/curator/5.8/index.html)
-
 ### OpenSearch Dashboards
 
 `OpenSearch Dashboards` like `Grafana` is used in Epiphany for visualization. It uses `OpenSearch` as datasource for logs, it allows to create full text queries, dashboards and analytics that are performed on logs.

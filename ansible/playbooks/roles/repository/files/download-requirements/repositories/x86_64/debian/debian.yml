@@ -1,9 +1,5 @@
 ---
 repositories:
-  elastic-6.x:
-    content: 'deb https://artifacts.elastic.co/packages/oss-6.x/apt stable main'
-    key: 'https://artifacts.elastic.co/GPG-KEY-elasticsearch'
-
   kubernetes:
     content: 'deb http://apt.kubernetes.io/ kubernetes-xenial main'
     key: 'https://packages.cloud.google.com/apt/doc/apt-key.gpg'

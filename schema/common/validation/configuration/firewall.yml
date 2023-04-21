@@ -117,15 +117,6 @@ properties:
             type: array
             items:
               type: string
-      logging:
-        type: object
-        properties:
-          enabled:
-            type: boolean
-          ports:
-            type: array
-            items:
-              type: string
       node_exporter:
         type: object
         properties:

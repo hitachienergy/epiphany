@@ -79,7 +79,7 @@
       {{ existing_es_config['opensearch_security.authcz.admin_dn'] if (is_upgrade_run) else
          [ _epiphany_dns.admin ] }}
     _epiphany_nodes_dn: >-
-      {%- if groups[current_group_name] | length > 1 -%}
+      {%- if groups.opensearch | length > 1 -%}
         {%- set nodes_to_iterate = ansible_play_hosts_all -%}
       {%- else -%}
         {%- set nodes_to_iterate = [ inventory_hostname ] -%}
@@ -245,9 +245,6 @@
         method: GET
         status_code: [200, 404]
       register: filebeatservice_check_response
-      when:
-        - groups.logging[0] is defined
-        - inventory_hostname in groups.logging
 
     - name: Create dedicated filebeatservice user
       uri:

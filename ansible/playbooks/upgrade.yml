@@ -114,15 +114,6 @@
   environment:
     KUBECONFIG: "{{ kubeconfig.remote }}"
 
-- hosts: elasticsearch_curator
-  become: true
-  become_method: sudo
-  tasks:
-    - import_role:
-        name: upgrade
-        tasks_from: elasticsearch-curator
-      when: "'elasticsearch_curator' in upgrade_components or upgrade_components|length == 0"
-
 - hosts: filebeat
   become: true
   become_method: sudo
@@ -131,37 +122,10 @@
         name: upgrade
         tasks_from: filebeat
       when:
-        - groups.logging is defined
+        - groups.opensearch is defined
         - "'filebeat' in upgrade_components or upgrade_components|length == 0"
   environment:
     KUBECONFIG: "{{ kubeconfig.local }}"
-
-# Currently, the upgrade of opensearch/logging instances is disabled
-# === logging ===
-
-# - hosts: logging
-#   become: true
-#   become_method: sudo
-#   tasks:
-#     - include_role:
-#         name: upgrade
-#         tasks_from: opensearch
-#       when: "'logging' in upgrade_components or upgrade_components|length == 0"
-#   vars:
-#     current_group_name: logging
-
-# === opensearch ===
-
-# - hosts: opensearch
-#   become: true
-#   become_method: sudo
-#   tasks:
-#     - include_role:
-#         name: upgrade
-#         tasks_from: opensearch
-#       when: "'opensearch' in upgrade_components or upgrade_components|length == 0"
-#   vars:
-#     current_group_name: opensearch
 
 - hosts: grafana
   become: true

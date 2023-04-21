@@ -28,13 +28,11 @@ Besides making sure that the selected providers, operating systems, components a
 | monitoring | :heavy_check_mark: | :x: | :x: |
 | load_balancer | :heavy_check_mark: | :x: | :x: |
 | postgresql | :heavy_check_mark: | :x: | :x: |
-| opensearch | :heavy_check_mark: | :x: | :x: |
 | single_machine | :heavy_check_mark: | :x: | :x: |
 
 ***Notes***
 
 - For the ```postgresql``` component the ```pgpool``` and ```pgbouncer``` extensions for load-balancing and replication are not yet supported on ```arm64```. These should be disabled in the ```postgressql``` and ```applications``` configurations.
-- While not defined in any of the component configurations, the ```elasticsearch_curator``` role is currently not supported on ```arm64``` and should be removed from the ```feature-mapping``` configuration if defined.
 - If you want to download ```arm64``` requirements from an ```x86_64``` machine, you can try to use a container as described [here](./howto/CLUSTER.md#downloading-offline-requirements-with-a-docker-container).
 
 ### Applications
@@ -87,9 +85,6 @@ specification:
     postgresql:
       count: 1
       machine: postgresql-machine-arm
-    opensearch:
-      count: 1
-      machine: opensearch-machine-arm
     repository:
       count: 1
       machine: repository-machine-arm
@@ -146,14 +141,6 @@ kind: infrastructure/virtual-machine
 name: lb-machine-arm
 provider: any
 based_on: load-balancer-machine
-specification:
-  hostname: hostname
-  ip: x.x.x.x
----
-kind: infrastructure/virtual-machine
-name: opensearch-machine-arm
-provider: any
-based_on: logging-machine
 specification:
   hostname: hostname
   ip: x.x.x.x
@@ -235,11 +222,6 @@ specification:
       machine: postgresql-machine-arm
       subnets:
         - address_pool: 10.1.6.0/24
-    opensearch:
-      count: 1
-      machine: opensearch-machine-arm
-      subnets:
-        - address_pool: 10.1.10.0/24
     repository:
       count: 1
       machine: repository-machine-arm
@@ -301,13 +283,6 @@ provider: aws
 based_on: load-balancer-machine
 specification:
   size: a1.medium
----
-kind: infrastructure/virtual-machine
-name: opensearch-machine-arm
-provider: aws
-based_on: logging-machine
-specification:
-  size: a1.large
 ---
 kind: infrastructure/virtual-machine
 name: repository-machine-cent

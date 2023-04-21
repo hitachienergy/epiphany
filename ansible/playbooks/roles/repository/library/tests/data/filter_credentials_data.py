@@ -32,10 +32,7 @@ CLUSTER_DOC_ANY = {
                 'machines': ['default-postgresql']},
             'load_balancer': {
                 'count': 1,
-                'machines': ['default-loadbalancer']},
-            'opensearch': {
-                'count': 1,
-                'machines': ['default-opensearch']}
+                'machines': ['default-loadbalancer']}
         }
     },
     'version': '2.0.1dev'
@@ -73,10 +70,7 @@ EXPECTED_CLUSTER_DOC_ANY = {
                 'machines': ['default-postgresql']},
             'load_balancer': {
                 'count': 1,
-                'machines': ['default-loadbalancer']},
-            'opensearch': {
-                'count': 1,
-                'machines': ['default-opensearch']}
+                'machines': ['default-loadbalancer']}
         }
     },
     'version': '2.0.1dev'
@@ -107,8 +101,7 @@ CLUSTER_DOC_AZURE = {
             'monitoring': {'count': 1},
             'kafka': {'count': 2},
             'postgresql': {'count': 1},
-            'load_balancer': {'count': 1},
-            'opensearch': {'count': 1}
+            'load_balancer': {'count': 1}
         }
     },
     'version': '2.0.1dev'
@@ -135,8 +128,7 @@ EXPECTED_CLUSTER_DOC_AZURE = {
             'monitoring': {'count': 1},
             'kafka': {'count': 2},
             'postgresql': {'count': 1},
-            'load_balancer': {'count': 1},
-            'opensearch': {'count': 1}
+            'load_balancer': {'count': 1}
         }
     },
     'version': '2.0.1dev'
@@ -169,8 +161,7 @@ CLUSTER_DOC_AWS = {
             'monitoring': {'count': 1},
             'kafka': {'count': 2},
             'postgresql': {'count': 1},
-            'load_balancer': {'count': 1},
-            'opensearch': {'count': 1}
+            'load_balancer': {'count': 1}
         }
     },
     'version': '2.0.1dev'
@@ -198,8 +189,7 @@ EXPECTED_CLUSTER_DOC_AWS = {
             'monitoring': {'count': 1},
             'kafka': {'count': 2},
             'postgresql': {'count': 1},
-            'load_balancer': {'count': 1},
-            'opensearch': {'count': 1}
+            'load_balancer': {'count': 1}
         }
     },
     'version': '2.0.1dev'

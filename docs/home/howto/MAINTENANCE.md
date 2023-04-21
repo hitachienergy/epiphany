@@ -149,18 +149,18 @@ We can also check the status of OpenSearch cluster:
 
 You can do this using curl or any other equivalent tool.
 
-#### - Kibana
+#### - OpenSearch Dashboards
 
-To check status of Kibana, use the command:
+To check status of OpenSearch Dashboards, use the command:
 
 ```shell
-systemctl status kibana
+systemctl status opensearch-dashboards
 ```
 
-Check if Kibana service is listening at the port 5601:
+Check if `opensearch-dashboards` service is listening on the port 5601:
 
 ```shell
-netstat -antup | grep 5601
+ss -antup | grep 5601
 ```
 
 #### - Filebeat

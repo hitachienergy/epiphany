@@ -13,7 +13,7 @@ specification:
       - filebeat
       - firewall
     logging:
-      - logging
+      - opensearch
       - opensearch-dashboards
       - node-exporter
       - filebeat
@@ -45,7 +45,7 @@ specification:
       - prometheus
       - grafana
       - node-exporter
-      - logging
+      - opensearch
       - firewall
     single_machine:
       - repository
@@ -66,11 +66,6 @@ specification:
       - firewall
     kubernetes_node:
       - kubernetes-node
-      - node-exporter
-      - filebeat
-      - firewall
-    opensearch:
-      - opensearch
       - node-exporter
       - filebeat
       - firewall

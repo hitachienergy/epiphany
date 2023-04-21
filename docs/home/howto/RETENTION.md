@@ -49,7 +49,7 @@ retention in bytes.
 
 ---
 
-## Kibana
+## OpenSearch Dashboards
 
 TODO
 

@@ -1,7 +1,7 @@
 ---
 # Ansible playbook for backing up logging data
 
-- hosts: logging[0]
+- hosts: opensearch[0]
   gather_facts: true
   become: true
   become_method: sudo
@@ -9,17 +9,17 @@
   tasks:
     - when: specification.components.logging.enabled | default(false)
       block:
-        - name: Include logging vars
+        - name: Include opensearch vars
           include_vars:
-            file: roles/logging/vars/main.yml
+            file: roles/opensearch/vars/main.yml
             name: component_vars
 
-        - name: Run elasticsearch snapshot tasks
+        - name: Run OpenSearch snapshot tasks
           import_role:
             name: backup
             tasks_from: logging_opensearch_snapshot
 
-        - name: Run elasticsearch archive tasks
+        - name: Run OpenSearch archive tasks
           import_role:
             name: backup
             tasks_from: logging_opensearch_conf
@@ -37,4 +37,4 @@
                 name: backup
                 tasks_from: logging_opensearch_dashboards_conf
               vars:
-                snapshot_name: "{{ hostvars[groups.logging.0].snapshot_name }}"
+                snapshot_name: "{{ hostvars[groups.opensearch.0].snapshot_name }}"

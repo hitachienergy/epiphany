@@ -259,19 +259,15 @@ def upgrade_parser(subparsers):
     required = sub_parser.add_argument_group('required arguments')
 
     component_list = sorted([
-        'elasticsearch_curator',
         'filebeat',
         'grafana',
         'image_registry',
         'jmx_exporter',
         'kafka',
         'kafka_exporter',
-        'opensearch_dashboards',
         'kubernetes',
         'load_balancer',
-        'logging',
         'node_exporter',
-        'opensearch',
         'postgresql',
         'postgres_exporter',
         'prometheus',

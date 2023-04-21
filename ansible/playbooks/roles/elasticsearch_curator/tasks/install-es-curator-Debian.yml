@@ -1,7 +1,0 @@
----
-# This file is meant to be also used by upgrade playbook
-
-- name: Install elasticsearch-curator package
-  apt:
-    name: "elasticsearch-curator={{ curator_version }}"
-    state: present

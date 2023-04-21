@@ -38,10 +38,6 @@ specification:
       count: 1
       machines: []
       configuration: default
-    opensearch:
-      count: 0
-      machines: []
-      configuration: default
     repository:
       count: 1
       machines: []

@@ -15,5 +15,7 @@
 
 ### Removed
 
+- Elasticsearch Curator
 - RabbitMQ
 - Rook
+- `logging` role (merged with `opensearch`)

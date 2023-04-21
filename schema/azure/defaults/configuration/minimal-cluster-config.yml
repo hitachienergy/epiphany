@@ -31,5 +31,3 @@ specification:
       count: 1
     load_balancer:
       count: 1
-    opensearch:
-      count: 1

@@ -246,23 +246,18 @@ Automatic encryption of storage on Azure is not yet supported by Epiphany. Guide
 - [Here](https://docs.microsoft.com/en-us/azure/security/fundamentals/azure-disk-encryption-vms-vmss) for VM storage.
 - [Here](https://docs.microsoft.com/en-us/azure/storage/common/storage-service-encryption) for storage shares,
 
-## How to use TLS/SSL certificate with Kibana
+## How to use TLS/SSL certificate with OpenSearch Dashboards
 
-For this moment it is not possible to automatically expose Kibana via https with using of Epiphany, but this can be
+For this moment it is not possible to automatically expose OpenSearch Dashboards via HTTPS with using of Epiphany, but this can be
 easily performed manually.
 
 First, you need to generate certificate in .pem format.
 
-After that, you need to change Kibana configuration file (```/etc/kibana/kibana.yml```) by adding and adjusting
-following lines:
+After that, you need to change OpenSearch Dashboards configuration file (`/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml`).
 
-```yaml
-server.ssl.enabled: true
-server.ssl.certificate: /path_to_your_certificate.pem
-server.ssl.key: /path_to_your_key.pem
-```
+For details, see <https://opensearch.org/docs/latest/install-and-configure/install-dashboards/tls/>
 
-To verify if the Kibana server is up and running you can use, for example, following command:
+To verify if the OpenSearch Dashboards server is up and running you can use, for example, following command:
 
 ```bash
 openssl s_client -connect your_ip:5601

@@ -71,13 +71,6 @@ specification:
       subnets:
         - address_pool: 10.1.7.0/24
           availability_zone: eu-west-2a
-    opensearch:
-      count: 0
-      machine: logging-machine
-      configuration: default
-      subnets:
-        - address_pool: 10.1.10.0/24
-          availability_zone: eu-west-2a
     repository:
       count: 1
       machine: repository-machine

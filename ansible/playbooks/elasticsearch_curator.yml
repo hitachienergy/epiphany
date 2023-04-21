@@ -1,8 +1,0 @@
----
-# Ansible playbook that installs Elasticsearch Curator and configures cron jobs that delete indices
-
-- hosts: elasticsearch_curator
-  become: true
-  become_method: sudo
-  roles:
-    - elasticsearch_curator

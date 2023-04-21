@@ -89,14 +89,14 @@ filebeatConfig:
 
     output.elasticsearch:
 {#    Array of hosts to connect to #}
-{% if groups['logging'] is defined %}
+{% if groups['opensearch'] is defined %}
       hosts:
-      {% for host in groups['logging'] -%}
+      {% for host in groups['opensearch'] -%}
       - "https://{{hostvars[host]['ansible_default_ipv4']['address']}}:9200"
       {% endfor %}
 
       username: filebeatservice
-      password: {{ "'%s'" % logging_vars.specification.filebeatservice_password | replace("'","''") }}
+      password: {{ "'%s'" % opensearch_vars.specification.filebeatservice_password | replace("'","''") }}
 
 {#    Controls the verification of certificates #}
       ssl.verification_mode: none

@@ -1,17 +1,5 @@
 ---
 repositories:
-  elastic-6:
-    id: elastic-6
-    data: |
-      name=Elastic repository for 6.x packages
-      baseurl=https://artifacts.elastic.co/packages/oss-6.x/yum
-      gpgcheck=1
-      enabled=1
-      autorefresh=1
-      type=rpm-md
-    gpg_keys:
-      - https://artifacts.elastic.co/GPG-KEY-elasticsearch
-
   elasticsearch-7:
     id: elasticsearch-7.x
     data: |
@@ -23,16 +11,6 @@ repositories:
       type=rpm-md
     gpg_keys:
       - https://artifacts.elastic.co/GPG-KEY-elasticsearch
-
-  elasticsearch-curator-5:
-    id: curator-5
-    data: |
-      name=CentOS/RHEL 7 repository for Elasticsearch Curator 5.x packages
-      baseurl=https://packages.elastic.co/curator/5/centos/7
-      gpgcheck=1
-      enabled=1
-    gpg_keys:
-      - https://packages.elastic.co/GPG-KEY-elasticsearch
 
   kubernetes:
     id: kubernetes

@@ -35,7 +35,7 @@ packages:
     - 'docker-ce-20.10.8'
     - 'docker-ce-cli-20.10.8'
     - 'docker-ce-rootless-extras-20.10.8'
-    - 'elasticsearch-oss-7.10.2'  # for opendistroforelasticsearch & logging roles
+    - 'elasticsearch-oss-7.10.2'  # for opensearch role
     - 'ethtool'
     - 'filebeat-7.12.1'
     - 'firewalld'
