@@ -127,18 +127,6 @@
   environment:
     KUBECONFIG: "{{ kubeconfig.local }}"
 
-# Currently, the upgrade of opensearch instances is disabled
-# === opensearch ===
-
-# - hosts: opensearch
-#   become: true
-#   become_method: sudo
-#   tasks:
-#     - include_role:
-#         name: upgrade
-#         tasks_from: opensearch
-#       when: "'opensearch' in upgrade_components or upgrade_components|length == 0"
-
 - hosts: grafana
   become: true
   become_method: sudo

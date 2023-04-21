@@ -14,8 +14,6 @@
   - [How to upgrade Kafka](#how-to-upgrade-kafka)
     - [Kafka upgrade](#kafka-upgrade)
     - [ZooKeeper upgrade](#zookeeper-upgrade)
-  - [Migration from Open Distro for Elasticsearch & Kibana to OpenSearch and OpenSearch Dashboards](#migration-from-open-distro-for-elasticsearch--kibana-to-opensearch-and-opensearch-dashboards)
-  - [Open Distro for Elasticsearch upgrade](#open-distro-for-elasticsearch-upgrade)
   - [Node exporter upgrade](#node-exporter-upgrade)
   - [Kubernetes upgrade](#kubernetes-upgrade)
     - [Prerequisites](#prerequisites)
@@ -294,44 +292,6 @@ then start with the rest **one by one**.
 
 More detailed information about ZooKeeper you can find
 in  [ZooKeeper documentation](https://cwiki.apache.org/confluence/display/ZOOKEEPER).
-
-## Migration from Open Distro for Elasticsearch & Kibana to OpenSearch and OpenSearch Dashboards
-
----
-**NOTE**
-
-Make sure you have a backup before proceeding to migration steps described below!
-
----
-Following the decision of Elastic NV<sup>[1]</sup> on ceasing open source options available for Elasticsearch and Kibana and releasing them under the Elastic license (more info [here](https://github.com/epiphany-platform/epiphany/issues/2870)) Epiphany team decided to implement a mechanism of automatic migration from ElasticSearch 7.10.2 to OpenSearch 1.2.4.
-
-It is important to remember, that while the new platform makes an effort to continue to support a broad set of third party tools (ie. Beats) there can be some drawbacks or even malfunctions as not everything has been tested or has explicitly been added to OpenSearch compatibility scope<sup>[2]</sup>.
-Additionally some of the embedded service accounts ( ie. *kibanaserver*) can be still found in OpenSearch environment but they will be phased out.
-
-Keep in mind, that for the current version of OpenSearch and OpenSearch Dashboards it is necessary to include the `filebeat` component along with the loggging one in order to implement the workaround for *Kibana API not available* [bug](https://github.com/opensearch-project/OpenSearch-Dashboards/issues/656#issuecomment-978036236).
-
-Upgrade of the ESS/ODFE versions not shipped with the previous Epiphany releases is not supported. If your environment is customized it needs to be standardized ( as described in [this](https://opensearch.org/docs/latest/upgrade-to/upgrade-to/#upgrade-paths) table ) prior to running the subject migration.
-
-Migration of Elasticsearch Curator is not supported. More info on use of Curator in OpenSearch environment can be found [here](https://github.com/opensearch-project/OpenSearch/issues/1352).
-
-<sup>[1]</sup> https://www.elastic.co/pricing/faq/licensing#what-are-the-key-changes-being-made-to-the-elastic-license
-
-<sup>[2]</sup> https://opensearch.org/docs/latest/clients/agents-and-ingestion-tools/index/
-
-Upgrade of Elasticsearch uses API calls (GET, PUT, POST) which requires an admin TLS certificate. By default, Epiphany
-generates self-signed certificates for this purpose but if you use your own, you have to provide the admin certificate's
-location. To do that, edit the following settings changing `cert_path` and `key_path`.
-
-```yaml
-opensearch:
-  upgrade_config:
-    custom_admin_certificate:
-      cert_path: /etc/elasticsearch/custom-admin.pem
-      key_path: /etc/elasticsearch/custom-admin-key.pem
-```
-
-They are accessible via the defaults of `upgrade`
-role (`/usr/local/epicli/data/common/ansible/playbooks/roles/upgrade/defaults/main.yml`).
 
 ## Node exporter upgrade
 
