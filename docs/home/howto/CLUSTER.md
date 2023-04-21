@@ -562,8 +562,6 @@ specification:
       count: 0
     load_balancer:
       count: 0
-    opensearch:
-      count: 0
     single_machine:
       count: 1
 ```
@@ -732,12 +730,11 @@ Component | Scale up | Scale down | HA | Clustered |Known issues
 --- | --- | --- | --- | --- | ---
 Repository | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | --- |
 Monitoring | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | ---
-Logging | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | ---
+Logging | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
 Kubernetes master | :heavy_check_mark: | :x: | :heavy_check_mark: | :heavy_check_mark: | [#1579](https://github.com/epiphany-platform/epiphany/issues/1579)
 Kubernetes node | :heavy_check_mark: | :x: | :heavy_check_mark: | :heavy_check_mark: | [#1580](https://github.com/epiphany-platform/epiphany/issues/1580)
 Kafka | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
 Load Balancer | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | ---
-OpenSearch | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
 Postgresql | :x: | :x: | :heavy_check_mark: | :heavy_check_mark: | [#1577](https://github.com/epiphany-platform/epiphany/issues/1577)
 Keycloak K8s | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
 Pgpool K8s | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
@@ -760,8 +757,8 @@ However, even if you create more than one VM, by default all other components wi
 :arrow_up: Scaling up the load_balancer component will create a new standalone VM.  
 :arrow_down: Scaling down will remove it in LIFO order (Last In, First Out).
 - Logging:  
-:arrow_up:  Scaling up will create new VM with both Kibana and ODFE components inside.  
-ODFE will join the cluster but Kibana will be a standalone instance.  
+:arrow_up:  Scaling up will create new VM with both OpenSearch and OpenSearch Dashboards components inside.  
+OpenSearch will join the cluster but OpenSearch Dashboards will be a standalone instance.  
 :arrow_down: When scaling down VM will be deleted.
 - Monitoring:  
 :arrow_up: Scaling up the monitoring component will create a new standalone VM.  

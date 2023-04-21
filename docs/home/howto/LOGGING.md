@@ -29,7 +29,7 @@ Below example shows a default feature mapping for logging:
 roles_mapping:
 [...]
   logging:
-    - logging
+    - opensearch
     - opensearch-dashboards
     - node-exporter
     - filebeat
@@ -37,25 +37,7 @@ roles_mapping:
 ...
 ```
 
-The `logging` role has replaced `elasticsearch` role. This change was done to enable Elasticsearch usage also for data
-storage - not only for logs as it was till 0.5.0.
-
-Default configuration of `logging` and `opensearch` roles is identical ( more info [here](./DATABASES.md#how-to-start-working-with-opensearch) ). To modify configuration of centralized logging
-adjust to your needs the following default values in your manifest:
-
-```yaml
-[...]
-kind: configuration/logging
-title: Logging Config
-name: default
-specification:
-  cluster_name: EpiphanyOpensearch
-  clustered: True
-  paths:
-    data: /var/lib/opensearch
-    repo: /var/lib/opensearch-snapshots
-    logs: /var/log/opensearch
-```
+The `opensearch` role has replaced the `logging` role. After this change it is possible to deploy only one OpenSearch cluster within Epiphany cluster.
 
 ## How to manage OpenSearch data
 
@@ -176,7 +158,7 @@ There is an example of such policy below. Be aware that this is only example and
 }
 ```
 
-Example above shows configuration with rollover index policy on a daily basis or when the index achieve 1 GB size. Indexes older than 14 days will
+Example above shows configuration with rollover index policy on a daily basis or when the index achieves 1 GB size. Indices older than 14 days will
 be deleted. States and conditionals could be combined. Please
 see [policies](https://opensearch.org/docs/latest/im-plugin/ism/policies/) documentation for more
 details.
@@ -200,7 +182,7 @@ PUT _index_template/ism_rollover
 ```
 
 After applying this policy, every new index created under this one will apply to it. There is also possibility to apply
-policy to already existing policies by assigning them to policy in dashboard Index Management panel.
+policy to already existing indices by assigning them to policy in dashboard Index Management panel.
 
 ## How to export Dashboards reports
 
@@ -209,10 +191,10 @@ Since v1.0 Epiphany provides the possibility to export reports from Kibana to CS
 Check more details about the OpenSearch Reports plugin and how to export reports in the
 [documentation](https://github.com/opensearch-project/dashboards-reports/blob/main/README.md#opensearch-dashboards-reports).
 
-Notice: Currently in the OpenSearch stack the following plugins are installed and enabled by default: security, alerting, anomaly detection, index management, query workbench, notebooks, reports, alerting, gantt chart plugins.
+Notice: Currently in the OpenSearch stack the following plugins are installed and enabled by default: alerting, anomaly detection, gantt chart, index management, observability, query workbench, reports, security.
 
 You can easily check enabled default plugins for Dashboards component using the following command on the logging machine:
-`./bin/opensearch-dashboards-plugin list` in directory where you've installed _opensearch-dashboards_.
+`/usr/share/opensearch-dashboards/bin/opensearch-dashboards-plugin list`.
 
 ---
 

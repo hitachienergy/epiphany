@@ -39,7 +39,6 @@ unsupported_roles:
       - kafka_exporter
       - kubernetes_master
       - kubernetes_node
-      - logging
       - node_exporter
       - opensearch
       - opensearch_dashboards
@@ -73,7 +72,6 @@ unsupported_roles:
       - kafka_exporter
       - kubernetes_master
       - kubernetes_node
-      - logging
       - node_exporter
       - opensearch
       - opensearch_dashboards

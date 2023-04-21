@@ -17,19 +17,19 @@ last_node_host = 'none'
 last_node_host = ENV['pg_last_node_host'] if ENV['pg_last_node_host']
 
 config_docs = {}
-%w[logging postgresql].each do |kind|
+%w[opensearch postgresql].each do |kind|
   config_docs[kind.to_sym] = readDataYaml("configuration/#{kind}")
 end
 
 ELASTICSEARCH = { # must be global until we introduce modules
-  host: listInventoryHosts('logging')[0],
+  host: listInventoryHosts('opensearch')[0],
   api_port: 9200
 }
 
 unless ELASTICSEARCH[:host].nil?
   # Configurable passwords for ES users were introduced in v0.10.0.
   # For testing upgrades, we use the default password for now but we're going to switch to TLS auth.
-  ELASTICSEARCH[:admin_password] = config_docs[:logging]['specification']['admin_password'] || 'admin'
+  ELASTICSEARCH[:admin_password] = config_docs[:opensearch]['specification']['admin_password'] || 'admin'
 end
 
 replicated =           countInventoryHosts('postgresql') > 1
@@ -472,7 +472,7 @@ end
 
 ### Tests for PGAudit
 
-if pgaudit_enabled && countInventoryHosts('logging') > 0 && (!replicated || (replicated && (last_node_host.include? host_inventory['hostname'])))
+if pgaudit_enabled && countInventoryHosts('opensearch') > 0 && (!replicated || (replicated && (last_node_host.include? host_inventory['hostname'])))
 
   def get_elasticsearch_query(message_pattern:, size: 20, with_sort: true)
     query_template = {

@@ -62,7 +62,7 @@ specification:
       ports:
         - 8472/udp  # flannel (vxlan backend)
         - 10250/tcp # Kubelet API
-    logging:
+    opensearch:
       enabled: true
       ports:
         - 9200/tcp
@@ -70,10 +70,6 @@ specification:
       enabled: true
       ports:
         - 9100/tcp
-    opensearch:
-      enabled: true
-      ports:
-        - 9200/tcp
     postgresql:
       enabled: true
       ports:

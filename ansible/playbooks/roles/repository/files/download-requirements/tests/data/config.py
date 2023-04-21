@@ -77,7 +77,7 @@ files:
     options:
       - url: 'https://artifacts.opensearch.org/releases/bundle/opensearch/1.2.4/opensearch-1.2.4-linux-x64.tar.gz'
         sha256: d40f2696623b6766aa235997e2847a6c661a226815d4ba173292a219754bd8a8
-    deps: [logging, opensearch]
+    deps: [opensearch]
 
   opensearch-dashboards:
     options:
@@ -89,7 +89,7 @@ files:
     options:
       - url: 'https://github.com/opensearch-project/perftop/releases/download/1.2.0.0/opensearch-perf-top-1.2.0.0-linux-x64.zip'
         sha256: e8f9683976001a8cf59a9f86da5caafa10b88643315f0af2baa93a9354d41e2b
-    deps: [logging, opensearch]
+    deps: [opensearch]
 """
 
 

@@ -237,8 +237,6 @@ specification:
       count: 1
     postgresql:
       count: 1
-    opensearch:
-      count: 0
   name: clustername
   prefix: 'prefix'
 title: Epiphany cluster Config
@@ -320,19 +318,11 @@ Migration of Elasticsearch Curator is not supported. More info on use of Curator
 
 <sup>[2]</sup> https://opensearch.org/docs/latest/clients/agents-and-ingestion-tools/index/
 
-Upgrade will be performed automatically when the upgrade procedure detects your `logging`, `opensearch` or `kibana` hosts.
-
 Upgrade of Elasticsearch uses API calls (GET, PUT, POST) which requires an admin TLS certificate. By default, Epiphany
 generates self-signed certificates for this purpose but if you use your own, you have to provide the admin certificate's
 location. To do that, edit the following settings changing `cert_path` and `key_path`.
 
 ```yaml
-logging:
-  upgrade_config:
-    custom_admin_certificate:
-      cert_path: /etc/elasticsearch/custom-admin.pem
-      key_path: /etc/elasticsearch/custom-admin-key.pem
-
 opensearch:
   upgrade_config:
     custom_admin_certificate:

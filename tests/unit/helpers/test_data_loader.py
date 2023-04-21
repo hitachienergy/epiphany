@@ -45,8 +45,7 @@ TEST_MINIMAL_CLUSTER_CONFIG = {
             'monitoring': {'count': 1},
             'kafka': {'count': 2},
             'postgresql': {'count': 1},
-            'load_balancer': {'count': 1},
-            'opensearch': {'count': 1}
+            'load_balancer': {'count': 1}
         }
     }
 }

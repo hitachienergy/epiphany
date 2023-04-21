@@ -43,10 +43,6 @@ specification:
       count: 1
       machines:
         - default-loadbalancer
-    opensearch:
-      count: 1
-      machines:
-        - default-opensearch
 ---
 kind: infrastructure/machine
 provider: any
@@ -117,10 +113,3 @@ name: default-loadbalancer
 specification:
   hostname: loadbalancer # YOUR-MACHINE-HOSTNAME
   ip: 192.168.100.110 # YOUR-MACHINE-IP
----
-kind: infrastructure/machine
-provider: any
-name: default-opensearch
-specification:
-  hostname: opensearch # YOUR-MACHINE-HOSTNAME
-  ip: 192.168.100.111 # YOUR-MACHINE-IP

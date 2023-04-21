@@ -472,36 +472,6 @@ specification:
     ...
     logging:
       count: 1
-    opensearch:
-      count: 2
 ```
 
 **Installation with more than one node will always be clustered** - Option to configure the non-clustered installation of more than one node for OpenSearch is not supported.
-
-```yaml
-kind: configuration/opensearch
-title: OpenSearch Config
-name: default
-specification:
-  cluster_name: EpiphanyOpenSearch
-```
-
-By default, OpenSearch Dashboards (previously Kibana) is deployed only for `logging` component. If you want to deploy it
-for `opensearch` component you have to:
-- modify feature mapping by adding `opensearch-dashboards` under `opensearch` component (see configuration below)
-- set up `kibanaserver` user and its password in `configuration/opensearch`, see [Opensearch user and password configuration](./MONITORING.md#opensearch-component)
-
-```yaml
-kind: configuration/feature-mappings
-title: "Feature mapping to components"
-name: default
-specification:
-  mappings:
-    opensearch:
-      - node-exporter
-      - filebeat
-      - firewall
-      - opensearch-dashboards
-```
-
-Filebeat running on `opensearch` hosts will always point to centralized logging hosts ( [more info](./LOGGING.md) ).

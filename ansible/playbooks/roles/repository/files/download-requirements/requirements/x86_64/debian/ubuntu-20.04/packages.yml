@@ -15,7 +15,7 @@ packages:
     - 'docker-ce-rootless-extras=5:20.10.8*'
     - 'ebtables'
 
-    # for opensearch & logging roles
+    # for opensearch role
     - 'elasticsearch-oss=7.10.2*'
 
     - 'ethtool'

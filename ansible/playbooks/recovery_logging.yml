@@ -1,7 +1,7 @@
 ---
 # Ansible playbook for recovering logging data
 
-- hosts: logging[0]
+- hosts: opensearch[0]
   become: true
   become_method: sudo
   serial: 1
@@ -9,7 +9,7 @@
     - when: specification.components.logging.enabled | default(false)
       block:
         - include_vars:
-            file: roles/logging/vars/main.yml
+            file: roles/opensearch/vars/main.yml
             name: component_vars
 
         - import_role:

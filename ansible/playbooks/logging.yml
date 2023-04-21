@@ -1,6 +1,0 @@
----
-- hosts: logging
-  become: true
-  become_method: sudo
-  roles:
-    - logging

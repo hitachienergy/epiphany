@@ -33,8 +33,6 @@ specification:
       count: 0
     load_balancer:
       count: 0
-    opensearch:
-      count: 0
 version: 2.0.1dev
 ---
 kind: configuration/feature-mappings
@@ -51,7 +49,7 @@ specification:
     - filebeat
     - firewall
     logging:
-    - logging
+    - opensearch
     - opensearch-dashboards
     - node-exporter
     - filebeat
@@ -83,7 +81,7 @@ specification:
     - prometheus
     - grafana
     - node-exporter
-    - logging
+    - opensearch
     - firewall
     single_machine:
     - repository
@@ -102,11 +100,6 @@ specification:
     - firewall
     kubernetes_node:
     - kubernetes-node
-    - node-exporter
-    - filebeat
-    - firewall
-    opensearch:
-    - opensearch
     - node-exporter
     - filebeat
     - firewall
@@ -147,8 +140,7 @@ EXPECTED_PARSED_MANIFEST_DOCS: List[Dict] = [
              'monitoring':        { 'count': 0 },
              'kafka':             { 'count': 0 },
              'postgresql':        { 'count': 0 },
-             'load_balancer':     { 'count': 0 },
-             'opensearch':        { 'count': 0 }
+             'load_balancer':     { 'count': 0 }
          }
      },
      'version': '2.0.1dev'
@@ -168,7 +160,7 @@ EXPECTED_PARSED_MANIFEST_DOCS: List[Dict] = [
                  'firewall'
              ],
              'logging': [
-                 'logging',
+                 'opensearch',
                  'opensearch-dashboards',
                  'node-exporter',
                  'filebeat',
@@ -204,7 +196,7 @@ EXPECTED_PARSED_MANIFEST_DOCS: List[Dict] = [
                  'prometheus',
                  'grafana',
                  'node-exporter',
-                 'logging',
+                 'opensearch',
                  'firewall'
              ],
              'single_machine': [
@@ -226,12 +218,6 @@ EXPECTED_PARSED_MANIFEST_DOCS: List[Dict] = [
              ],
              'kubernetes_node': [
                  'kubernetes-node',
-                 'node-exporter',
-                 'filebeat',
-                 'firewall'
-             ],
-             'opensearch': [
-                 'opensearch',
                  'node-exporter',
                  'filebeat',
                  'firewall'
@@ -277,8 +263,7 @@ INPUT_DOC_TO_UPDATE_BASE = [
              'monitoring':        { 'count': 0 },
              'kafka':             { 'count': 0 },
              'postgresql':        { 'count': 0 },
-             'load_balancer':     { 'count': 0 },
-             'opensearch':        { 'count': 0 }
+             'load_balancer':     { 'count': 0 }
          }
      },
      'version': '2.0.1dev'
@@ -348,8 +333,7 @@ EXPECTED_UPDATED_DOC_BASE = [
              'monitoring':        { 'count': 0 },
              'kafka':             { 'count': 0 },
              'postgresql':        { 'count': 0 },
-             'load_balancer':     { 'count': 0 },
-             'opensearch':        { 'count': 0 }
+             'load_balancer':     { 'count': 0 }
          }
      },
      'version': '2.0.1dev'

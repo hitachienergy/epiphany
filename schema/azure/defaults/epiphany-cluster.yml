@@ -79,14 +79,6 @@ specification:
       subnets:
         - address_pool: 10.1.7.0/24
           service_endpoints: []
-    opensearch:
-      count: 0
-      alt_component_name: ''
-      machine: logging-machine
-      configuration: default
-      subnets:
-        - address_pool: 10.1.10.0/24
-          service_endpoints: []
     repository:
       count: 1
       alt_component_name: ''

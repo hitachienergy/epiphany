@@ -1,6 +1,16 @@
+#jinja2: lstrip_blocks: True
+# {{ ansible_managed }}
+
 server.port: 5601
 server.host: "{{ inventory_hostname }}"
-opensearch.hosts: ["{{ opensearch_nodes_dashboards }}"]
+{% if groups.opensearch is defined %}
+opensearch.hosts:
+  {% for host in groups.opensearch %}
+  - "https://{{ host }}:{{ opensearch_api_port }}"
+  {% endfor %}
+{% else %}
+opensearch.hosts: []
+{% endif %}
 opensearch.ssl.verificationMode: none
 opensearch.username: "kibanaserver"
 opensearch.password: "{{ opensearch_configuration.specification.kibanaserver_password }}"

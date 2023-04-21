@@ -16,8 +16,6 @@ specification:
       enabled: true
     - name: helm
       enabled: true
-    - name: logging
-      enabled: true
     - name: opensearch
       enabled: true
     - name: opensearch-dashboards

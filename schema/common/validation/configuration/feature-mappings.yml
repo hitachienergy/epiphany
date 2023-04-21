@@ -43,10 +43,6 @@ properties:
         type: array
         items:
           type: string
-      opensearch:
-        type: array
-        items:
-          type: string
       repository:
         type: array
         items:

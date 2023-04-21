@@ -7,16 +7,13 @@
     name: postgresql_defaults
   when: "'postgresql' in group_names"
 
-# Do not select OpenSearch Dashboards configured host to use OpenSearch deployed by 'opensearch' role
 - name: Set value for setup.kibana.host
   set_fact:
     setup_kibana_host: >-
-      {{ hostvars[groups.opensearch_dashboards|intersect(groups.logging)|first]['ansible_hostname'] }}
+      {{ hostvars[groups.opensearch_dashboards[0]]['ansible_hostname'] }}
   when:
     - not is_upgrade_run
     - groups.opensearch_dashboards[0] is defined
-    - groups.logging is defined
-    - groups.opensearch_dashboards | intersect(groups.logging) | length
 
 - name: Copy configuration file (filebeat.yml)
   template:
@@ -53,7 +50,7 @@
                 format: string
 
 - name: Start/restart and enable filebeat service
-  when: groups.logging[0] is defined
+  when: groups.opensearch[0] is defined
   block:
     - name: Enable auditd module
       command: filebeat modules enable auditd
@@ -89,4 +86,4 @@
     name: filebeat
     state: stopped
     enabled: false
-  when: groups.logging[0] is undefined
+  when: groups.opensearch[0] is undefined

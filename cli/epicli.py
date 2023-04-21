@@ -268,7 +268,6 @@ def upgrade_parser(subparsers):
         'opensearch_dashboards',
         'kubernetes',
         'load_balancer',
-        'logging',
         'node_exporter',
         'opensearch',
         'postgresql',

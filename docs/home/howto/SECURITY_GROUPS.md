@@ -274,8 +274,6 @@ specification:
       count: 0
     load_balancer:
       count: 0
-    opensearch:
-      count: 0
     single_machine:
       count: 0
   name: testing
