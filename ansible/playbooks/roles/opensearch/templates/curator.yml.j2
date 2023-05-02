@@ -1,0 +1,31 @@
+#jinja2: lstrip_blocks: True
+# {{ ansible_managed }}
+
+# Refs:
+# - https://www.elastic.co/guide/en/elasticsearch/client/curator/7.0/configfile.html
+# - https://github.com/flant/curator-opensearch/blob/0.0.9/examples/curator.yml
+
+# Remember, leave a key empty if there is no value. None will be a string, not a Python "NoneType".
+
+client:
+  # If `master_only` is true, and `hosts` has more than one value, Curator will raise an Exception.
+  hosts:
+    - {{ ansible_hostname }}
+  port: {{ ports.http }}
+  url_prefix:
+  use_ssl: True
+  certificate: "{{ certificates.dirs.certs }}/epiphany-root-ca.pem"
+  client_cert: "{{ certificates.dirs.certs }}/epiphany-admin.pem"
+  client_key: "{{ certificates.dirs.certs }}/epiphany-admin-key.pem"
+  ssl_no_validate:
+  username:
+  password:
+  timeout:
+  # In some situations it makes sense to install Curator on every node. But you wouldn't want it to run on each node.
+  master_only: True
+
+logging:
+  loglevel: INFO # DEBUG
+  logfile:
+  logformat:
+  blacklist: # ['elasticsearch', 'urllib3']
