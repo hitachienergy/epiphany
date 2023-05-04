@@ -56,3 +56,63 @@ properties:
             properties:
               enforce_hostname_verification:
                 type: boolean
+  curator:
+    type: object
+    properties:
+      install:
+        type: boolean
+      delete_indices_cron_jobs:
+        type: array
+        items:
+        - type: object
+          properties:
+            description:
+              type: string
+            cron:
+              type: object
+              properties:
+                hour:
+                  type: integer
+                minute:
+                  type: integer
+                enabled:
+                  type: boolean
+            filter_list:
+              type: array
+              items:
+              - type: object
+                properties:
+                  filtertype:
+                    type: string
+                  unit_count:
+                    type: integer
+                  unit:
+                    type: string
+                  source:
+                    type: string
+                  direction:
+                    type: string
+        - type: object
+          properties:
+            description:
+              type: string
+            cron:
+              type: object
+              properties:
+                minute:
+                  type: integer
+                enabled:
+                  type: boolean
+            filter_list:
+              type: array
+              items:
+              - type: object
+                properties:
+                  filtertype:
+                    type: string
+                  disk_space:
+                    type: integer
+                  use_age:
+                    type: boolean
+                  source:
+                    type: string

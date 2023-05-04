@@ -21,3 +21,7 @@
 
 - name: Include configuration tasks
   include_tasks: configure-opensearch.yml
+
+- name: Include Curator tasks
+  include_tasks: install-curator.yml
+  when: specification.curator.install

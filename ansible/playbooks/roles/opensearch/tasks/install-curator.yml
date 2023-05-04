@@ -1,0 +1,22 @@
+---
+# Ref: https://github.com/flant/curator-opensearch
+
+# ensurepip is not available on fresh Ubuntu (https://github.com/deadsnakes/issues/issues/97)
+- name: Install python3-venv
+  apt:
+    name: python3-venv
+    state: present
+  when: ansible_os_family == 'Debian'
+
+- name: Install curator-opensearch
+  ansible.builtin.pip:
+    name: curator-opensearch=={{ curator.version }}
+    virtualenv: "{{ curator.venv_dir }}"
+    virtualenv_command: "{{ ansible_python.executable }} -m venv"
+
+- name: Test curator_cli
+  command: "{{ curator.venv_dir }}/bin/curator_cli --version"
+  changed_when: false
+
+- name: Include Curator configuration tasks
+  include_tasks: configure-curator.yml

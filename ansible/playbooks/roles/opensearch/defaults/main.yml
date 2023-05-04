@@ -7,6 +7,10 @@ file_name_version:
   opensearch_perftop:
     x86_64: opensearch-perf-top-1.2.0.0-linux-x64.zip
     # Perftop is not supported on ARM (https://github.com/opensearch-project/perftop/issues/26)
+curator:
+  version: '0.0.9'
+  venv_dir: /root/venv/curator-opensearch
+  config_file_path: /root/.curator/curator.yml
 certificates:
   dirs:
     certs: /usr/share/opensearch/config

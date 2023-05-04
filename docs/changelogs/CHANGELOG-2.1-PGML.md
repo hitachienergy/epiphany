@@ -6,6 +6,7 @@
 ### Added
 
 - Allow to define service endpoints for subnets
+- curator-opensearch 0.0.9
 
 ### Updated
 
