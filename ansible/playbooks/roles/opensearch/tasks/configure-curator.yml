@@ -29,7 +29,7 @@
       {{ curator.venv_dir }}/bin/curator_cli delete-indices
       --allow_ilm_indices
       --filter_list '{{ item.filter_list | to_json(separators=(',',':')) }}'
-      --ignore_empty_list
+      --ignore_empty_list | logger -t curator_cli
     job_config_hash: "{{ item | string | hash('sha1') }}"
   loop: "{{ specification.curator.delete_indices_cron_jobs }}"
 
