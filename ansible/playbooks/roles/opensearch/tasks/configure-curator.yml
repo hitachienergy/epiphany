@@ -27,6 +27,7 @@
     # separators used to remove spaces
     curator_cmd: >-
       {{ curator.venv_dir }}/bin/curator_cli delete-indices
+      --allow_ilm_indices
       --filter_list '{{ item.filter_list | to_json(separators=(',',':')) }}'
       --ignore_empty_list
     job_config_hash: "{{ item | string | hash('sha1') }}"
