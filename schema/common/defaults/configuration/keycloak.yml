@@ -211,7 +211,7 @@ specification:
     # ref: https://www.keycloak.org/server/reverseproxy
     proxy:
       enabled: true
-      mode: reencrypt
+      mode: edge
 
     metrics:
       enabled: true  # used by readinessProbe

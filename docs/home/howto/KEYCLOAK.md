@@ -49,7 +49,7 @@
 
 4. Adjust default Keycloak settings to your needs by editing `configuration/keycloak` doc.
 
-    By default, only HTTPS protocol is enabled and auto-generated TLS certificate is used.
+    By default, an auto-generated TLS certificate is used.
 
     You can provide your own certificate:
 
@@ -86,15 +86,15 @@
 
 6. Reconfigure HA proxy (if needed).
 
-    By default, Keycloak listens only for HTTPS traffic on port which is exposed via `NodePort` service.
+    By default, Keycloak listens for HTTP and HTTPS traffic on ports that are exposed via `NodePort` service.
 
     Some Keycloak features rely on the assumption that the remote address of the HTTP request connecting to Keycloak
     is the real IP address of the client machine.
 
     When you have HAProxy in front of Keycloak, this might not be the case, so we need to ensure that the X-Forwarded-For
     header is set by HAProxy. In order to achive this the content has to be modified by HAProxy. For that reason,
-    TLS is terminated by HAProxy and the modified content is re-encrypted. Different keys and certificates are used on HAProxy
-    as well as on Keycloak.
+    TLS is terminated by HAProxy and the modified content can be optionally re-encrypted. Keycloak uses its own certificate
+    (different than HAProxy).
 
     Example of backend configuration:
 
