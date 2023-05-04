@@ -14,9 +14,9 @@ client:
   port: {{ ports.http }}
   url_prefix:
   use_ssl: True
-  certificate: "{{ certificates.dirs.certs }}/epiphany-root-ca.pem"
-  client_cert: "{{ certificates.dirs.certs }}/epiphany-admin.pem"
-  client_key: "{{ certificates.dirs.certs }}/epiphany-admin-key.pem"
+  certificate: "{{ certificates.dirs.certs }}/{{ certificates.files.root_ca.cert.filename }}"
+  client_cert: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.cert.filename }}"
+  client_key: "{{ certificates.dirs.certs }}/{{ certificates.files.admin.key.filename }}"
   ssl_no_validate:
   username:
   password:
