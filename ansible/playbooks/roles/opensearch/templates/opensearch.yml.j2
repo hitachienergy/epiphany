@@ -109,6 +109,7 @@ plugins.security.ssl.transport.pemcert_filepath: "{{ certificates.dirs.certs }}/
 plugins.security.ssl.transport.pemkey_filepath: "{{ certificates.dirs.ca_key }}/{{ node_key_filename.transport }}"
 plugins.security.ssl.transport.pemtrustedcas_filepath: "{{ certificates.dirs.certs }}/{{ root_ca_cert_filename.transport }}"
 plugins.security.ssl.transport.enforce_hostname_verification: {{ specification.opensearch_security.ssl.transport.enforce_hostname_verification | lower }}
+{# if enabled, only HTTPS is allowed #}
 plugins.security.ssl.http.enabled: true
 plugins.security.ssl.http.pemcert_filepath: "{{ certificates.dirs.certs }}/{{ node_cert_filename.http }}"
 plugins.security.ssl.http.pemkey_filepath: "{{ certificates.dirs.ca_key }}/{{ node_key_filename.http }}"
