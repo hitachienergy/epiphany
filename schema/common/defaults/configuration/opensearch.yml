@@ -43,6 +43,10 @@ specification:
             unit: days
             source: creation_date
             direction: older
+          - filtertype: pattern
+            exclude: true
+            kind: regex
+            value: ^[.].+$
       - description: Delete the oldest indices to not consume more than N gigabytes of disk space
         cron:
           minute: 30
@@ -52,3 +56,7 @@ specification:
             disk_space: 128
             use_age: True
             source: creation_date
+          - filtertype: pattern
+            exclude: true
+            kind: regex
+            value: ^[.].+$
