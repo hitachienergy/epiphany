@@ -30,7 +30,7 @@ specification:
       dnsDomain: cluster.local
       serviceSubnet: 10.96.0.0/12
       plugin: flannel # valid options: calico, flannel, canal (due to lack of support for calico on Azure - use canal)
-    imageRepository: k8s.gcr.io
+    imageRepository: registry.k8s.io
     certificates:
       expiration_days: 365 # values greater than 24855 are not recommended
       renew: false
