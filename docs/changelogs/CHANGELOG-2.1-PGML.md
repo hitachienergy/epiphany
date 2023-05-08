@@ -14,6 +14,7 @@
 - Upgrade Keycloak to 20.0.5-0
 - Make YAML format of default configuration compatible with sops (it converts YAML block scalars to flow scalars)
 - Change default proxy mode for Keycloak from `reencrypt` to `edge` (HTTP is enabled)
+- Switch from `k8s.gcr.io` to `registry.k8s.io`
 
 ### Removed
 

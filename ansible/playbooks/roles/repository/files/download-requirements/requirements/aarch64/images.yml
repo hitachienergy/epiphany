@@ -31,26 +31,26 @@ images:
       sha1: 996f919bfc7db09e30f759d5987395bce287e63d
     # K8s
     # v1.22.4
-    'k8s.gcr.io/kube-apiserver:v1.22.4':
-      sha1: eea0329e33a54d62b0b1cfd6e54169a0f70201a9
+    'registry.k8s.io/kube-apiserver:v1.22.4':
+      sha1: 2fad255ce92b7ee12f206be9d9d098194a8bc151
 
-    'k8s.gcr.io/kube-controller-manager:v1.22.4':
-      sha1: 8fb47001234a741bcd9b1f76d863b8a818728145
+    'registry.k8s.io/kube-controller-manager:v1.22.4':
+      sha1: 51f7911deeadd69d90486a52a4f28e46acf47ef8
 
-    'k8s.gcr.io/kube-scheduler:v1.22.4':
-      sha1: 687d3836b2dfc047a3f146254efa0b1f6c692f69
+    'registry.k8s.io/kube-scheduler:v1.22.4':
+      sha1: eb715ec0defec88b946b4bb37a41b012968b0ac8
 
-    'k8s.gcr.io/kube-proxy:v1.22.4':
-      sha1: b3ce65eedfbf046f619d6f65f6d4cfe442f181a0
+    'registry.k8s.io/kube-proxy:v1.22.4':
+      sha1: 182c5c09e343f3d4e2072cd9e1f9bd93ca254892
 
-    'k8s.gcr.io/coredns/coredns:v1.8.4':
-      sha1: e89c23e998fa93d17a09d1b7cef6aae5cb24b049
+    'registry.k8s.io/coredns/coredns:v1.8.4':
+      sha1: a1cce4643a1e5e8455c96e3adaee141cd8732768
 
-    'k8s.gcr.io/etcd:3.5.0-0':
-      sha1: 3aa7fb15e643e0d199e7b7f7f165533bc4a67f39
+    'registry.k8s.io/etcd:3.5.0-0':
+      sha1: b20cc5eb05db5efaa0dbd17a4ce952bf1032958a
 
-    'k8s.gcr.io/pause:3.5':
-      sha1: 8be7eaa14c9425a6286635d0440f6611ca115d67
+    'registry.k8s.io/pause:3.5':
+      sha1: 95ce209a3229d539db6ec24722e0a86f67e8a157
 
     'quay.io/coreos/flannel:v0.14.0':
       sha1: 13b299bcaa8e0c78d9fe1f5cd9b2155651976d92
