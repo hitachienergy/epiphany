@@ -1,6 +1,12 @@
 <!-- markdownlint-disable-file no-duplicate-header -->
 # Changelog 2.0
 
+## [2.0.6] YYYY-MM-DD
+
+### Updated
+
+- [#3347](https://github.com/epiphany-platform/epiphany/issues/3347) - Switch from `k8s.gcr.io` to `registry.k8s.io`
+
 ## [2.0.5] 2023-03-01
 
 ### Fixed
