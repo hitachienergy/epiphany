@@ -1,5 +1,11 @@
 # Changelog 1.0
 
+## [1.0.11] YYYY-MM-DD
+
+### Updated
+
+- [#3346](https://github.com/epiphany-platform/epiphany/issues/3346) - Switch from `k8s.gcr.io` to `registry.k8s.io`
+
 ## [1.0.10] 2023-03-21
 
 ### Fixed
