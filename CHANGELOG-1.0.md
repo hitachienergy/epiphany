@@ -1,6 +1,6 @@
 # Changelog 1.0
 
-## [1.0.11] YYYY-MM-DD
+## [1.0.11] 2023-05-09
 
 ### Updated
 
