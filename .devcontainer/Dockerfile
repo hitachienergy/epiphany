@@ -1,4 +1,14 @@
-FROM python:3.10.6-slim
+ARG BASE_IMAGE="python:3.10.6-slim"
+
+# --- Proxy certificate stage ---
+FROM $BASE_IMAGE as proxy_cert
+RUN : GET PROXY CERT \
+ && openssl s_client -showcerts -connect google.com:443 2>/dev/null </dev/null \
+    | awk '/s:.*Root CA/,/-----END CERTIFICATE-----/' \
+    | awk '/-----BEGIN CERTIFICATE-----/,0' > /tmp/proxy-root-ca.crt
+
+# --- Final stage ---
+FROM $BASE_IMAGE
 
 ARG USERNAME=vscode
 ARG USER_UID=1000
@@ -9,13 +19,16 @@ ARG HELM_VERSION=3.3.1
 ARG KUBECTL_VERSION=1.22.4
 ARG TERRAFORM_VERSION=1.1.3
 
+COPY --from=proxy_cert /tmp/proxy-root-ca.crt /usr/local/share/ca-certificates/
+
 RUN : INSTALL APT REQUIREMENTS \
+ && update-ca-certificates \
  && export DEBIAN_FRONTEND=noninteractive \
  && apt-get -q update \
  && apt-get -q install -y --no-install-recommends \
     apt-utils dialog \
  && apt-get -q install -y --no-install-recommends \
-    autossh curl gcc git git-lfs iputils-ping \
+    autossh ca-certificates curl gcc git git-lfs iputils-ping \
     jq libc6-dev libcap2-bin libffi-dev lsb-release \
     make musl-dev openssh-client procps \
     psmisc rsync ruby-full sudo tar \
