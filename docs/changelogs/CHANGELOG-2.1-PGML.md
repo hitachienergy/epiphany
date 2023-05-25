@@ -23,3 +23,4 @@
 - RabbitMQ
 - Rook
 - `logging` role (merged with `opensearch`)
+- `openjdk-11-jdk-headless` from epicli Docker image
