@@ -34,7 +34,7 @@ jobs:
         inputs:
           targetType: inline
           script: |
-            python3 -m pip install --upgrade ansible==6.2.0 ansible-lint==6.5.0 ansible-lint-junit==0.16 lxml pip setuptools
+            python3 -m pip install --upgrade ansible==6.2.0 ansible-compat==3.* ansible-lint==6.5.0 ansible-lint-junit==0.16 lxml pip setuptools
 
       - task: Bash@3
         displayName: Run Ansible Lint
