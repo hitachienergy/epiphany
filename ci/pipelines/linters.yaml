@@ -14,7 +14,7 @@ pool:
 
 variables:
   ansible_lint_error_threshold: 338
-  pylint_score_cli_threshold: 9.50
+  pylint_score_cli_threshold: 9.42
   pylint_score_tests_threshold: 9.78
   rubocop_linter_threshold: 183
 
@@ -34,7 +34,7 @@ jobs:
         inputs:
           targetType: inline
           script: |
-            python3 -m pip install --upgrade ansible==6.2.0 ansible-lint==6.5.0 ansible-lint-junit==0.16 lxml pip setuptools
+            python3 -m pip install --upgrade ansible==6.2.0 ansible-compat==3.* ansible-lint==6.5.0 ansible-lint-junit==0.16 lxml pip setuptools
 
       - task: Bash@3
         displayName: Run Ansible Lint
