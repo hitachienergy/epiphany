@@ -20,7 +20,8 @@ groups:
     for: 15m
 
   - alert: Disk will run out of space in less than 48h
+    # https://www.robustperception.io/reduce-noise-from-disk-space-alerts/
     labels:
       severity: warning
     expr: predict_linear(node_filesystem_free_bytes{job="node"}[1h], 48 * 3600) < 0
-    for: 1m
+    for: 15m # helps avoid false positives from brief spikes

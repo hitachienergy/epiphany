@@ -17,6 +17,7 @@
 - Change default proxy mode for Keycloak from `reencrypt` to `edge` (HTTP is enabled)
 - Switch from `k8s.gcr.io` to `registry.k8s.io`
 - epicli base image `python:3.10.6-slim` to `python:3.10.11-slim`
+- Prometheus: Avoid false positives from brief spikes for alert "Disk will run out of space"
 
 ### Removed
 
