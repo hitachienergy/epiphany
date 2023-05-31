@@ -1,3 +1,5 @@
+# ⚠️UNSUPPORTED AS OF 30 Mar 2022⚠️
+
 # Epiphany Platform
 [![GitHub release](https://img.shields.io/github/v/release/epiphany-platform/epiphany.svg)](https://github.com/epiphany-platform/epiphany/releases)
 [![Github license](https://img.shields.io/github/license/epiphany-platform/epiphany)](https://github.com/epiphany-platform/epiphany/releases)
