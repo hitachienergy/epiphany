@@ -1,3 +1,6 @@
+# ⚠️UNSUPPORTED AS OF 01 Jul 2020⚠️
+For up-to-date Epiphany version lifecycle information check [here.](https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/LIFECYCLE.md)
+
 # Documentation
 
 ## Overview
