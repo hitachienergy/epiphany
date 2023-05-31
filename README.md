@@ -2,6 +2,14 @@
 [![GitHub release](https://img.shields.io/github/v/release/epiphany-platform/epiphany.svg)](https://github.com/epiphany-platform/epiphany/releases)
 [![Github license](https://img.shields.io/github/license/epiphany-platform/epiphany)](https://github.com/epiphany-platform/epiphany/releases)
 
+**⚠️ Epiphany is no longer under active development, no new features or upgrades will be done by the [core team](https://github.com/orgs/epiphany-platform/teams/epiphany-team). The [core team](https://github.com/orgs/epiphany-platform/teams/epiphany-team) however, will address critical defects and security issues during the [LTS versions](docs/home/LIFECYCLE.md) lifecycle. Finally the  [core team](https://github.com/orgs/epiphany-platform/teams/epiphany-team) will continue the [governance](docs/home/GOVERNANCE.md) of external contributions and publish intermittent releases for [LTS versions](docs/home/LIFECYCLE.md) during their lifecycle.⚠️**
+
+**As already announced, Docker is sunsetting Free Team organizations. That's why we decided to move to GitHub Packages, that remains free for public repositories.
+All the latest images are available [here.](https://github.com/epiphany-platform/epiphany/pkgs/container/epicli)**
+```
+docker pull ghcr.io/epiphany-platform/epicli:<tag>
+```
+
 ## Overview
 
 Epiphany at its core is a full automation of Kubernetes and Docker plus additional builtin services/components like:
