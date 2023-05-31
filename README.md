@@ -1,4 +1,5 @@
 # ⚠️UNSUPPORTED AS OF 30 Jun 2022⚠️
+For up-to-date Epiphany version lifecycle information check [here.](https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/LIFECYCLE.md)
 
 # Epiphany Platform
 [![GitHub release](https://img.shields.io/github/v/release/epiphany-platform/epiphany.svg)](https://github.com/epiphany-platform/epiphany/releases)
