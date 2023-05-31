@@ -1,3 +1,6 @@
+# ⚠️UNSUPPORTED -> v0.10 IS REBRANDED TO v1.0.X LTS⚠️
+For up-to-date Epiphany version lifecycle information check [here.](https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/LIFECYCLE.md)
+
 # Epiphany Platform
 [![GitHub release](https://img.shields.io/github/v/release/epiphany-platform/epiphany.svg)](https://github.com/epiphany-platform/epiphany/releases)
 [![Github license](https://img.shields.io/github/license/epiphany-platform/epiphany)](https://github.com/epiphany-platform/epiphany/releases)
