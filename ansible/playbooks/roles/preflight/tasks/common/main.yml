@@ -24,7 +24,7 @@
           The following components in inventory are not supported for {{ architecture }} architecture on {{ os_distro }} OS:
           {{ unsupported_components_checklist | join(', ') }}.
           If the components are not necessary, you may remove them from the feature-mapping
-          (see https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/howto/CLUSTER.md#how-to-create-custom-cluster-components).
+          (see https://github.com/hitachienergy/epiphany/blob/develop/docs/home/howto/CLUSTER.md#how-to-create-custom-cluster-components).
         success_msg: All components supported for {{ architecture }} architecture
         quiet: true
 
