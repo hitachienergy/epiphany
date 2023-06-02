@@ -785,7 +785,7 @@ specification:
 ---
 **NOTE**
 
-Not all components are supported for this action. There is a bunch of issues referenced below in this document, [one](https://github.com/epiphany-platform/epiphany/issues/1574) of them is that disks are not removed for all components after downscale.
+Not all components are supported for this action. There is a bunch of issues referenced below in this document, [one](https://github.com/hitachienergy/epiphany/issues/1574) of them is that disks are not removed for all components after downscale.
 
 ---
 
@@ -800,15 +800,15 @@ Epiphany has the ability to automaticly scale and cluster certain components on 
 
 Then when applying the changed configuration using Epicli additional VM's will be spawned and configured or removed. The following components support scaling/clustering:
 
-- kubernetes_master: When increased this will setup additional control plane nodes, but in the case of non-ha k8s cluster, existing control plane node must be promoted first. At the moment there is [no ability](https://github.com/epiphany-platform/epiphany/issues/1579) to downscale.
-- kubernetes_node: When increased this will setup additional nodes with `kubernetes_master`. There is [no ability](https://github.com/epiphany-platform/epiphany/issues/1580) to downscale.
+- kubernetes_master: When increased this will setup additional control plane nodes, but in the case of non-ha k8s cluster, existing control plane node must be promoted first. At the moment there is [no ability](https://github.com/hitachienergy/epiphany/issues/1579) to downscale.
+- kubernetes_node: When increased this will setup additional nodes with `kubernetes_master`. There is [no ability](https://github.com/hitachienergy/epiphany/issues/1580) to downscale.
 - ignite
-- kafka: When changed this will setup or remove additional nodes for the Kafka cluster. Note that there is an [issue](https://github.com/epiphany-platform/epiphany/issues/1576) that needs to be fixed before scaling usage.
+- kafka: When changed this will setup or remove additional nodes for the Kafka cluster. Note that there is an [issue](https://github.com/hitachienergy/epiphany/issues/1576) that needs to be fixed before scaling usage.
 - load_balancer
-- logging: Sometimes it works, but often there is an [issue](https://github.com/epiphany-platform/epiphany/issues/1575) with Kibana installation that needs to be resoved
+- logging: Sometimes it works, but often there is an [issue](https://github.com/hitachienergy/epiphany/issues/1575) with Kibana installation that needs to be resoved
 - monitoring
 - opendistro_for_elasticsearch: Works the same as `logging` component, without issues if there is no `kibana` part in feature mapping configuration.
-- postgresql: At the moment does not work correctly, there is an [issue](https://github.com/epiphany-platform/epiphany/issues/1577). When changed this will setup or remove additional nodes for Postgresql. Note that extra nodes can only be setup to do replication by adding the following additional `configuration/postgresql` configuration:
+- postgresql: At the moment does not work correctly, there is an [issue](https://github.com/hitachienergy/epiphany/issues/1577). When changed this will setup or remove additional nodes for Postgresql. Note that extra nodes can only be setup to do replication by adding the following additional `configuration/postgresql` configuration:
 
   ```yaml
   kind: configuration/postgresql
@@ -824,7 +824,7 @@ Then when applying the changed configuration using Epicli additional VM's will b
   ```
 
 - rabbitmq: At the moment downscaling is not supported, there is the known
-[issue](https://github.com/epiphany-platform/epiphany/issues/1578).
+[issue](https://github.com/hitachienergy/epiphany/issues/1578).
 If instance count is changed, then additional RabbitMQ nodes will be added or removed.
 Note that clustering requires a change in the `configuration/rabbitmq` document:
 

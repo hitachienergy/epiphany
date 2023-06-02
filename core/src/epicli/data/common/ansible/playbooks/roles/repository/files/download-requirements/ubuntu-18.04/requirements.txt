@@ -197,13 +197,13 @@ kubernetes-cni 0.7.5-00
 kubernetes-cni 0.8.6-00
 
 [packagesfromurl]
-https://github.com/epiphany-platform/alternative-repo/raw/main/1.0.x/ubuntu/packages/opendistro-alerting_1.13.1.0-1_all.deb
-https://github.com/epiphany-platform/alternative-repo/raw/main/1.0.x/ubuntu/packages/opendistro-index-management_1.13.1.0-1_all.deb
-https://github.com/epiphany-platform/alternative-repo/raw/main/1.0.x/ubuntu/packages/opendistro-job-scheduler_1.13.0.0-1_all.deb
-https://github.com/epiphany-platform/alternative-repo/raw/main/1.0.x/ubuntu/packages/opendistro-performance-analyzer_1.13.0.0-1_all.deb
-https://github.com/epiphany-platform/alternative-repo/raw/main/1.0.x/ubuntu/packages/opendistro-security_1.13.1.0-1_all.deb
-https://github.com/epiphany-platform/alternative-repo/raw/main/1.0.x/ubuntu/packages/opendistro-sql_1.13.0.0-1_all.deb
-https://github.com/epiphany-platform/alternative-repo/raw/main/1.0.x/ubuntu/packages/opendistroforelasticsearch-kibana_1.13.1_amd64.deb
+https://github.com/hitachienergy/alternative-repo/raw/main/1.0.x/ubuntu/packages/opendistro-alerting_1.13.1.0-1_all.deb
+https://github.com/hitachienergy/alternative-repo/raw/main/1.0.x/ubuntu/packages/opendistro-index-management_1.13.1.0-1_all.deb
+https://github.com/hitachienergy/alternative-repo/raw/main/1.0.x/ubuntu/packages/opendistro-job-scheduler_1.13.0.0-1_all.deb
+https://github.com/hitachienergy/alternative-repo/raw/main/1.0.x/ubuntu/packages/opendistro-performance-analyzer_1.13.0.0-1_all.deb
+https://github.com/hitachienergy/alternative-repo/raw/main/1.0.x/ubuntu/packages/opendistro-security_1.13.1.0-1_all.deb
+https://github.com/hitachienergy/alternative-repo/raw/main/1.0.x/ubuntu/packages/opendistro-sql_1.13.0.0-1_all.deb
+https://github.com/hitachienergy/alternative-repo/raw/main/1.0.x/ubuntu/packages/opendistroforelasticsearch-kibana_1.13.1_amd64.deb
 
 [files]
 https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.14.0/jmx_prometheus_javaagent-0.14.0.jar

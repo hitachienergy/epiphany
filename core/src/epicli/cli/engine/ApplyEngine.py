@@ -123,7 +123,7 @@ class ApplyEngine(Step):
                     raise Exception("ControlPlane downscale is not supported yet. Please revert your 'kubernetes_master' count to previous value or increase it to scale up Kubernetes.")
 
     def assert_consistent_os_family(self):
-        # Before this issue https://github.com/epiphany-platform/epiphany/issues/195 gets resolved,
+        # Before this issue https://github.com/hitachienergy/epiphany/issues/195 gets resolved,
         # we are forced to do assertion here.
 
         virtual_machine_docs = select_all(

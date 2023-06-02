@@ -24,7 +24,7 @@ setup(
     long_description=readme,
     author='Epiphany Team',
     author_email='',
-    url='https://github.com/epiphany-platform/epiphany',
+    url='https://github.com/hitachienergy/epiphany',
     license=license,
     packages=find_packages(exclude=('tests', 'docs')),
     data_files=datafiles,

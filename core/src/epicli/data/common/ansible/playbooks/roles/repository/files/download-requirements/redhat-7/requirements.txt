@@ -140,13 +140,13 @@ kubernetes-cni-0.7.5-0
 kubernetes-cni-0.8.6-0
 
 [packagesfromurl]
-https://github.com/epiphany-platform/alternative-repo/raw/main/1.0.x/redhat/packages/opendistro-alerting-1.13.1.0.rpm
-https://github.com/epiphany-platform/alternative-repo/raw/main/1.0.x/redhat/packages/opendistro-index-management-1.13.1.0.rpm
-https://github.com/epiphany-platform/alternative-repo/raw/main/1.0.x/redhat/packages/opendistro-job-scheduler-1.13.0.0.rpm
-https://github.com/epiphany-platform/alternative-repo/raw/main/1.0.x/redhat/packages/opendistro-performance-analyzer-1.13.0.0.rpm
-https://github.com/epiphany-platform/alternative-repo/raw/main/1.0.x/redhat/packages/opendistro-security-1.13.1.0.rpm
-https://github.com/epiphany-platform/alternative-repo/raw/main/1.0.x/redhat/packages/opendistro-sql-1.13.0.0.rpm
-https://github.com/epiphany-platform/alternative-repo/raw/main/1.0.x/redhat/packages/opendistroforelasticsearch-kibana-1.13.1-linux-x64.rpm
+https://github.com/hitachienergy/alternative-repo/raw/main/1.0.x/redhat/packages/opendistro-alerting-1.13.1.0.rpm
+https://github.com/hitachienergy/alternative-repo/raw/main/1.0.x/redhat/packages/opendistro-index-management-1.13.1.0.rpm
+https://github.com/hitachienergy/alternative-repo/raw/main/1.0.x/redhat/packages/opendistro-job-scheduler-1.13.0.0.rpm
+https://github.com/hitachienergy/alternative-repo/raw/main/1.0.x/redhat/packages/opendistro-performance-analyzer-1.13.0.0.rpm
+https://github.com/hitachienergy/alternative-repo/raw/main/1.0.x/redhat/packages/opendistro-security-1.13.1.0.rpm
+https://github.com/hitachienergy/alternative-repo/raw/main/1.0.x/redhat/packages/opendistro-sql-1.13.0.0.rpm
+https://github.com/hitachienergy/alternative-repo/raw/main/1.0.x/redhat/packages/opendistroforelasticsearch-kibana-1.13.1-linux-x64.rpm
 
 [files]
 # Github repository for erlang rpm is used since packagecloud repository is limited to a certain number of versions and erlang package from erlang-solutions repository is much more complex and bigger

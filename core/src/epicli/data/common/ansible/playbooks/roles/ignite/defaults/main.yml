@@ -12,7 +12,7 @@ block_to_append_to_ignite_functions_script: |
   #
   # The function exports JMX_MON variable with Java JMX options.
   # Overrides original version in order to:
-  # 1) Use fixed ports for JMX (https://github.com/epiphany-platform/epiphany/issues/1181)
+  # 1) Use fixed ports for JMX (https://github.com/hitachienergy/epiphany/issues/1181)
   # 2) Disable direct remote access to unsecured JMX (remote access possible through SSH tunnel)
   #
   findAvailableJmxPort() {

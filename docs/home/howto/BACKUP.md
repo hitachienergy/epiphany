@@ -54,7 +54,7 @@ If backup config is attached to cluster-config.yml use this file instead ``backu
 ---
 **NOTE for Epiphany versions < 1.0.2**
 
-After releasing Epiphany v1.0.1 we found a [bug](https://github.com/epiphany-platform/epiphany/issues/2920) in the backup
+After releasing Epiphany v1.0.1 we found a [bug](https://github.com/hitachienergy/epiphany/issues/2920) in the backup
 functionality. Only RHEL/CentOS based clusters with standalone (non-K8s) RabbitMQ component are affected.
 
 To work around this issue, install `python3` package (by yourself) on the first host of the `rabbitmq` group from your
