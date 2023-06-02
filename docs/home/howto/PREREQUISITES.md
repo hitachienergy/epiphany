@@ -23,7 +23,7 @@ docker pull ghcr.io/epiphany-platform/epicli:TAG
 
 Where `TAG` should be replaced with an existing tag.
 
-*Check [here](https://github.com/epiphany-platform/epiphany/pkgs/container/epicli) for the available tags.*
+*Check [here](../../../../../pkgs/container/epicli) for the available tags.*
 
 ### Running the Epicli image
 
@@ -37,7 +37,7 @@ Where:
 - `LOCAL_DIR` should be replaced with the local path to the directory for Epicli input (SSH keys, data yamls) and output (logs, build states),
 - `TAG` should be replaced with an existing tag.
 
-*Check [here](https://github.com/epiphany-platform/epiphany/pkgs/container/epicli) for the available tags.*
+*Check [here](../../../../../pkgs/container/epicli) for the available tags.*
 
 ## Epicli development
 

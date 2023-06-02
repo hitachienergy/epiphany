@@ -62,7 +62,7 @@ For more information about how to setup Prometheus alerting rules, refer to [the
 
 ## How to enable Alertmanager
 
-Epiphany provides Alertmanager configuration via configuration manifest. To see default configuration please refer to [default Prometheus configuration file](https://github.com/epiphany-platform/epiphany/blob/develop/core/src/epicli/data/common/defaults/configuration/prometheus.yml).  
+Epiphany provides Alertmanager configuration via configuration manifest. To see default configuration please refer to [default Prometheus configuration file](/core/src/epicli/data/common/defaults/configuration/prometheus.yml).  
 To enable Alertmanager you have to modify configuration manifest:
 
 1. Enable Alermanager

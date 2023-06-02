@@ -32,7 +32,7 @@ specification:
     ...
 ```
 >Optional feature (role) available for logging: **logstash**
->more details here: [link](https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/howto/LOGGING.md#how-to-export-elasticsearch-data-to-csv-format)
+>more details here: [link](/docs/home/howto/LOGGING.md#how-to-export-elasticsearch-data-to-csv-format)
 
 The `logging` role replaced `elasticsearch` role. This change was done to enable Elasticsearch usage also for data storage - not only for logs as it was till 0.5.0.
 

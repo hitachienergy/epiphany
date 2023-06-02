@@ -13,7 +13,7 @@ From Epicli 0.4.2 and up the CLI has the ability to perform upgrades on certain 
 
 *Note: Since v0.7.0 Epiphany does not support k8s version upgrades older than 1.14.6 (Epiphany v0.4.4).
 There is an assertion to check whether K8s version is supported before running upgrade,
-but upgrade for v0.3.1 is not possible due to the open [issue](https://github.com/epiphany-platform/epiphany/issues/1491).*
+but upgrade for v0.3.1 is not possible due to the open [issue](../../../../../issues/1491).*
 
 - Kubernetes (master and nodes): starting from version 1.14.6 to 1.18.6
 - common: Upgrades all common configurations to match them to current Epiphany version
@@ -188,7 +188,7 @@ specification:
 To upgrade applications on Kubernetes to the desired version after `epicli upgrade` you have to:
 
 - generate new configuration manifest using `epicli init`
-- in case of generating minimal configuration manifest (without --full argument), copy and paste [the default configuration](https://github.com/epiphany-platform/epiphany/blob/develop/core/src/epicli/data/common/defaults/configuration/applications.yml) into it
+- in case of generating minimal configuration manifest (without --full argument), copy and paste [the default configuration](/core/src/epicli/data/common/defaults/configuration/applications.yml) into it
 - run `epicli apply`
 
 *Note: The above link points to develop branch. Please choose the right branch that suits to Epiphany version you are using.*

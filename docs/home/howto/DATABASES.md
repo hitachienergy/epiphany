@@ -61,8 +61,7 @@ chown -R postgres:postgres -R /var/lib/pgsql
 
 ### Offline mode - machine to which you want to download packages for airgapped deployment:
 
-1).  Ensure that you have downloaded package that name stars with postgresql10-server. Refer to documentation about airgapped 
-installation HOWTO.md(https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/howto/CLUSTER.md#how-to-create-an-epiphany-cluster-on-existing-airgapped-infrastructure)
+1).  Ensure that you have downloaded package that name stars with postgresql10-server. Refer to documentation about [airgapped installation](/docs/home/howto/CLUSTER.md#how-to-create-an-epiphany-cluster-on-existing-air-gapped-infrastructure)
 for more details. If package doesn't exist re-run download-requirements.sh script again.
 
 ## How to configure PostgreSQL
@@ -336,7 +335,7 @@ Each of the components has hardware requirements that depend on its configuratio
         memory: 176Mi
 ```
 
-By default, each Pgpool pod requires 176 MB of memory. This value has been determined based on Pgpool [docs](https://www.pgpool.net/docs/41/en/html/resource-requiremente.html), however after stress testing we need to add several extra megabytes to avoid [failed to fork a child](https://github.com/epiphany-platform/epiphany/pull/1123) issue.
+By default, each Pgpool pod requires 176 MB of memory. This value has been determined based on Pgpool [docs](https://www.pgpool.net/docs/41/en/html/resource-requiremente.html), however after stress testing we need to add several extra megabytes to avoid [failed to fork a child](../../../../../pull/1123) issue.
 You may need to adjust `resources` after changing `num_init_children` or `max_pool` (`PGPOOL_MAX_POOL`) settings.
 Such changes should be synchronized with PostgreSQL and PgBouncer configuration.
 
