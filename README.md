@@ -7,7 +7,7 @@
 **As already announced, Docker is sunsetting Free Team organizations. That's why we decided to move to GitHub Packages, that remains free for public repositories.
 All the latest images are available [here.](https://github.com/hitachienergy/epiphany/pkgs/container/epicli)**
 ```
-docker pull ghcr.io/epiphany-platform/epicli:<tag>
+docker pull ghcr.io/hitachienergy/epicli:<tag>
 ```
 
 ## Overview

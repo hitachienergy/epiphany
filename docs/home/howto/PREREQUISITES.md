@@ -18,7 +18,7 @@ docker build --file Dockerfile --tag epicli:${TAG} .
 ### Pull Epicli image from the registry
 
 ```bash
-docker pull ghcr.io/epiphany-platform/epicli:TAG
+docker pull ghcr.io/hitachienergy/epicli:TAG
 ```
 
 Where `TAG` should be replaced with an existing tag.
@@ -30,7 +30,7 @@ Where `TAG` should be replaced with an existing tag.
 To run the image:
 
 ```bash
-docker run -it -v LOCAL_DIR:/shared --rm ghcr.io/epiphany-platform/epicli:TAG
+docker run -it -v LOCAL_DIR:/shared --rm ghcr.io/hitachienergy/epicli:TAG
 ```
 
 Where:
