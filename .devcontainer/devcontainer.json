@@ -31,8 +31,8 @@
                 "redhat.vscode-yaml"
             ],
             "settings": {
-                "python.envFile": "${workspaceFolder}/.devcontainer/python.env",
-                "python.pythonPath": "/usr/local/bin/python"
+                "python.defaultInterpreterPath": "/usr/local/bin/python3",
+                "python.envFile": "${workspaceFolder}/.devcontainer/python.env"
             }
         }
     },
