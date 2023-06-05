@@ -8,7 +8,7 @@ If You are an employee and have created the Contribution as part of your employm
 
 Please complete and sign this Agreement, and then email a pdf copy to pl-opensource@hitachienergy.com. Read this document carefully before signing and keep a copy for your records.
 
-If you are a person, please fill out here:
+### If you are a person, please fill out here:
 
 Full name:
 
@@ -20,7 +20,7 @@ E-Mail:
 
 Github nickname:
 
-If you are an entity, please fill out here:
+### If you are an entity, please fill out here:
 
 Corporation name:
 
@@ -42,19 +42,17 @@ Telephone:
 
 **IT IS AGREED:**
 
-1. Definitions
+1. Definitions:
 
-"Affiliate" means in relation to the Contributor, any subsidiary or parent company of the Contributor and any subsidiary of any such parent company.
+  - "Affiliate" means in relation to the Contributor, any subsidiary or parent company of the Contributor and any subsidiary of any such parent company.
 
-"Contribution" means object code, source code, documentation, or other original works of authorship, including any modifications or additions to an existing work, that is intentionally submitted by the Contributor to the Maintainer for inclusion in, or documentation of, the Project owned or managed by the Maintainer, excluding any submissions that are conspicuously marked or otherwise designated in writing by the Contributor as "Not a Contribution".
+  - "Contribution" means object code, source code, documentation, or other original works of authorship, including any modifications or additions to an existing work, that is intentionally submitted by the Contributor to the Maintainer for inclusion in, or documentation of, the Project owned or managed by the Maintainer, excluding any submissions that are conspicuously marked or otherwise designated in writing by the Contributor as "Not a Contribution".
 
-"OSS License Agreement" means an OSS License Agreement having terms and conditions in line with an OSS license selected by the Maintainer and approved by the Open Source Initiative as Open Source license (Annex A).
+  - "OSS License Agreement" means an OSS License Agreement having terms and conditions in line with an OSS license selected by the Maintainer and approved by the Open Source Initiative as Open Source license (Annex A).
 
-"Recipient" means anyone who receives the Contribution from the Project, including all Contributors.
+  - "Recipient" means anyone who receives the Contribution from the Project, including all Contributors.
 
-2. Grant of licence
-
-In consideration of the mutual obligations and covenants in this Agreement, and subject to the terms and conditions of this Agreement, the Contributor hereby grants to the Maintainer a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable, transferable copyright license to reproduce, prepare derivative works of, publicly display, publicly perform, use, and distribute the Contributions and such derivative works. For entities, the entity making a Contribution and all of its Affiliate(s) are considered to be a single Contributor.
+2. Grant of licence: In consideration of the mutual obligations and covenants in this Agreement, and subject to the terms and conditions of this Agreement, the Contributor hereby grants to the Maintainer a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable, transferable copyright license to reproduce, prepare derivative works of, publicly display, publicly perform, use, and distribute the Contributions and such derivative works. For entities, the entity making a Contribution and all of its Affiliate(s) are considered to be a single Contributor.
 
 3. The Contributor represents and warrants that the Contributor itself is legally entitled to grant the above license. The Contributor represents and warrants further that each employee of the Contributor designated on Annex B below (or in a subsequent written modification to Annex B) is authorized to submit Contributions on behalf of the Contributor.
 
@@ -64,13 +62,13 @@ In consideration of the mutual obligations and covenants in this Agreement, and 
 
 6. The Contributor agrees to notify the Maintainer of any facts or circumstances of which the Contributor becomes aware that would make these representations inaccurate in any respect.
 
-If you are a person:
+### If you are a person:
 
 Please sign:
 
 Date:
 
-If you are an entity:
+### If you are an entity:
 
 Please sign:
 
@@ -80,10 +78,10 @@ Title:
 
 Corporation:
 
-Annex A
+### Annex A
 
 Apache-2.0 license
 
-Annex B
+### Annex B
 
 [Initial list of designated employees, including Github nicknames]
