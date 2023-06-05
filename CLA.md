@@ -11,17 +11,25 @@ Please complete and sign this Agreement, and then email a pdf copy to pl-opensou
 If you are a person, please fill out here:
 
 Full name:
+
 Postal Address:
+
 Country:
+
 E-Mail:
+
 Github nickname:
 
 If you are an entity, please fill out here:
 
 Corporation name:
+
 Corporation address:
+
 Contact Person:
+
 E-Mail:
+
 Telephone:
 
 **WHEREAS:**
