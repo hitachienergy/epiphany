@@ -104,7 +104,7 @@ As presented there is `influences` section notifying that "there is something wh
 During implementation of mocks I found that: 
  * `influences` section would be required
  * name of method `validate-config` (or later just `validate`) should in fact be `plan`
- * there is no need to implement method `get-state` in module container provider as state will be local and shared between modules. In fact some state related operations would be probably implemented on [cli wrapper](https://github.com/epiphany-platform/cli) level.  
+ * there is no need to implement method `get-state` in module container provider as state will be local and shared between modules. In fact some state related operations would be probably implemented on cli wrapper level.  
  * instead, there is need of `audit` method which would be extremely important to check if no manual changes were applied to remote infrastructure
  
 # Required methods 

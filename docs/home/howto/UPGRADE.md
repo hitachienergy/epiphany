@@ -263,7 +263,7 @@ To upgrade applications on Kubernetes to the desired version after `epicli upgra
 
 - generate new configuration manifest using `epicli init`
 - in case of generating minimal configuration manifest (without --full argument), copy and
-  paste [the default configuration](https://github.com/epiphany-platform/epiphany/blob/develop/schema/common/defaults/configuration/applications.yml)
+  paste [the default configuration](/schema/common/defaults/configuration/applications.yml)
   into it
 - run `epicli apply`
 
@@ -304,7 +304,7 @@ with [breaking changes](https://github.com/prometheus/node_exporter/releases/tag
 ---
 
 Starting from Epiphany v0.8.0 it's possible to upgrade node exporter according
-to [components](https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/COMPONENTS.md) file. Upgrade will
+to [components](/docs/home/COMPONENTS.md) file. Upgrade will
 be performed automatically when the upgrade procedure detects node exporter hosts.
 
 ## Kubernetes upgrade

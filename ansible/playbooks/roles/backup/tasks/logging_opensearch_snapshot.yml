@@ -34,7 +34,7 @@
     msg: "[WARNING] No snapshot backup created as only single-node cluster backup is supported."
 
 - name: Snapshot backup
-  when: cluster_status.json.number_of_nodes == 1  # https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/howto/BACKUP.md#logging
+  when: cluster_status.json.number_of_nodes == 1  # https://github.com/hitachienergy/epiphany/blob/develop/docs/home/howto/BACKUP.md#logging
   block:
     - name: Ensure snapshot repository is defined
       uri:

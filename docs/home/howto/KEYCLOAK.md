@@ -41,7 +41,7 @@
    doc.
 
     The default applications configuration is
-    available [here](https://github.com/epiphany-platform/epiphany/blob/develop/schema/common/defaults/configuration/applications.yml)
+    available [here](/schema/common/defaults/configuration/applications.yml)
 
     Note: To get working with Pgbouncer, Keycloak requires Pgbouncer configuration parameter `POOL_MODE` set to `session`,
     see [Installing Pgbouncer and Pgpool](DATABASES.md#installing-pgbouncer-and-pgpool) section. The reason is that Keycloak

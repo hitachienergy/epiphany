@@ -1,14 +1,14 @@
 # Epiphany Platform
-[![GitHub release](https://img.shields.io/github/v/release/epiphany-platform/epiphany.svg)](https://github.com/epiphany-platform/epiphany/releases)
-[![Github license](https://img.shields.io/github/license/epiphany-platform/epiphany)](https://github.com/epiphany-platform/epiphany/releases)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=epiphany-platform_epiphany&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=epiphany-platform_epiphany)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=epiphany-platform_epiphany&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=epiphany-platform_epiphany)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=epiphany-platform_epiphany&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=epiphany-platform_epiphany)
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=epiphany-platform_epiphany&metric=bugs)](https://sonarcloud.io/summary/new_code?id=epiphany-platform_epiphany)
-[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=epiphany-platform_epiphany&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=epiphany-platform_epiphany)
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=epiphany-platform_epiphany&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=epiphany-platform_epiphany)
+[![GitHub release](https://img.shields.io/github/v/release/hitachienergy/epiphany.svg)](https://github.com/hitachienergy/epiphany/releases)
+[![Github license](https://img.shields.io/github/license/hitachienergy/epiphany)](https://github.com/hitachienergy/epiphany/releases)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=hitachienergy_epiphany&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=hitachienergy_epiphany)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=hitachienergy_epiphany&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=hitachienergy_epiphany)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=hitachienergy_epiphany&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=hitachienergy_epiphany)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=hitachienergy_epiphany&metric=bugs)](https://sonarcloud.io/summary/new_code?id=hitachienergy_epiphany)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=hitachienergy_epiphany&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=hitachienergy_epiphany)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=hitachienergy_epiphany&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=hitachienergy_epiphany)
 
-**⚠️ Epiphany is no longer under active development, no new features or upgrades will be done by the [core team](https://github.com/orgs/epiphany-platform/teams/epiphany-team). The [core team](https://github.com/orgs/epiphany-platform/teams/epiphany-team) however, will address critical defects and security issues during the [LTS versions](docs/home/LIFECYCLE.md) lifecycle. Finally the  [core team](https://github.com/orgs/epiphany-platform/teams/epiphany-team) will continue the [governance](docs/home/GOVERNANCE.md) of external contributions and publish intermittent releases for [LTS versions](docs/home/LIFECYCLE.md) during their lifecycle.⚠️**
+**⚠️ Epiphany is no longer under active development, no new features or upgrades will be done by the core team. The core team however, will address critical defects and security issues during the [LTS versions](docs/home/LIFECYCLE.md) lifecycle. Finally the core team will continue the [governance](docs/home/GOVERNANCE.md) of external contributions and publish intermittent releases for [LTS versions](docs/home/LIFECYCLE.md) during their lifecycle.⚠️**
 
 ## Overview
 
@@ -25,7 +25,7 @@ Epiphany at its core is a full automation of Kubernetes and Docker plus addition
 The following target platforms are available: AWS, Azure and on-prem installation.
 
 Epiphany can run on as few as one node (laptop, desktop, server) but the real value comes from running 3 or more nodes for scale and HA. Everything is data driven so simply changing the manifest data and running the automation will modify the environment.
-Kubernetes hosts (masters, nodes) and component VMs can be added depending on data in the initial manifest. More information [here](https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/howto/CLUSTER.md#how-to-scale-or-cluster-components).
+Kubernetes hosts (masters, nodes) and component VMs can be added depending on data in the initial manifest. More information [here](/docs/home/howto/CLUSTER.md#how-to-scale-or-cluster-components).
 
 Please note that currently Epiphany supports only creating new masters and nodes and adding them to the Kubernetes cluster. It doesn't support downscale. To remove them from Kubernetes cluster you have to do it manually.
 
@@ -44,7 +44,7 @@ At the link presented below you can find the information about deprecated compon
 
 ### Epicli
 
-Use the following command to see a full run-down of all [epicli](https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/howto/PREREQUISITES.md#run-epicli-from-docker-image) commands and flags:
+Use the following command to see a full run-down of all [epicli](/docs/home/howto/PREREQUISITES.md#run-epicli-from-docker-image) commands and flags:
 
 ```shell
 epicli --help
@@ -70,7 +70,7 @@ epicli apply -f demo.yml
 ```
 You will be asked for a password that will be used for encryption of some of build artifacts. More information [here](docs/home/howto/SECURITY.md#how-to-run-epicli-with-password).
 
-Since version 0.7 epicli has an option to backup/recovery some of its components. More information [here](https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/howto/BACKUP.md).
+Since version 0.7 epicli has an option to backup/recovery some of its components. More information [here](/docs/home/howto/BACKUP.md).
 ```shell
 epicli backup -f <file.yml> -b <build_folder>
 epicli recovery -f <file.yml> -b <build_folder>

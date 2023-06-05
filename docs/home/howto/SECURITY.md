@@ -340,10 +340,7 @@ Prerequisites: Epiphany Kubernetes cluster
 
 2. Click button `New application registration` fill the data and confirm.
 
-3. Deploy app from [example](https://github.com/epiphany-platform/examples/tree/develop/dotnet/Epiphany.SampleApps/Epiphany.SampleApps.AuthService).
-
-   This is a test service for verification Azure AD authentication of registered
-   app.
+3. Deploy sample AuthService app.
 
 4. Create secret key for your app `settings => keys`. Remember to copy value of key after creation.
 

@@ -4,7 +4,7 @@ This document describes the Security Groups layout which is used to deploy Epiph
 
 ## Introduction
 
-By default Epiphany platform is creating security groups required to handle communication by all components (like postgres etc). As per defaults, Epiphany creates a subnet per component and  each subnet has its own of security group, with rules that allow communication between them. This enables the smooth communication between all components. Please check our [security document](https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/SECURITY.md) too. *Be aware, that whenever you want to add a new rule, you need to copy all default rules from mentioned above url*. That this document is splited into two parts: AWS and Azure. The reason why we do that, is that there are diffrent values in AWS and AZure, when setting the security rules.
+By default Epiphany platform is creating security groups required to handle communication by all components (like postgres etc). As per defaults, Epiphany creates a subnet per component and  each subnet has its own of security group, with rules that allow communication between them. This enables the smooth communication between all components. Please check our [security document](/docs/home/SECURITY.md) too. *Be aware, that whenever you want to add a new rule, you need to copy all default rules from mentioned above url*. That this document is splited into two parts: AWS and Azure. The reason why we do that, is that there are diffrent values in AWS and AZure, when setting the security rules.
 
 ## Setting own security groups
 
@@ -21,7 +21,7 @@ Check bellow security diagram, which show how security groups are related to oth
 
 ## Azure Security groups
 
-List of all security groups and related services in Azure are described [here](https://github.com/epiphany-platform/epiphany/blob/develop/data/azure/defaults/infrastructure/virtual-machine.yml).
+List of all security groups and related services in Azure are described [here](/schema/azure/defaults/infrastructure/virtual-machine.yml).
 
 Rules description:
 ```yaml
@@ -201,7 +201,7 @@ specification:
 
 ## AWS Security groups
 
-List of all security groups and related services in AWS are described [here](https://github.com/epiphany-platform/epiphany/blob/develop/data/aws/defaults/infrastructure/virtual-machine.yml).
+List of all security groups and related services in AWS are described [here](/schema/aws/defaults/infrastructure/virtual-machine.yml).
 
 Rules description:
 ```yaml
