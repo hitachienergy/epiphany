@@ -291,7 +291,7 @@ resources: # Adjust to your configuration, see https://www.pgpool.net/docs/41/en
 By default, each PgPool pod requires 176 MB of memory. This value has been determined based on
 PgPool [docs](https://www.pgpool.net/docs/41/en/html/resource-requiremente.html), however after stress testing we need
 to add several extra megabytes to
-avoid [failed to fork a child](https://github.com/epiphany-platform/epiphany/pull/1123) issue. You may need to
+avoid [failed to fork a child](https://github.com/hitachienergy/epiphany/pull/1123) issue. You may need to
 adjust `resources` after changing `num_init_children` or `max_pool` (`PGPOOL_MAX_POOL`) settings. Such changes should be
 synchronized with PostgreSQL and PgBouncer configuration.
 
@@ -443,7 +443,7 @@ DROP EXTENSION IF EXISTS pgaudit;
 
 ## How to work with PostgreSQL connection pooling
 
-PostgreSQL connection pooling is described in [design documentaion page](https://github.com/epiphany-platform/epiphany/blob/develop/docs/design-docs/postgresql/connection-pooling.md).
+PostgreSQL connection pooling is described in [design documentaion page](/docs/design-docs/postgresql/connection-pooling.md).
 Properly configured application (kubernetes service) to use fully HA configuration should be set up to connect to pgbouncer service (kubernetes) instead directly to database host. This configuration provides all the benefits of user PostgreSQL in clusteres HA mode (including database failover). Both pgbouncer and pgpool stores database users and passwords in configuration files and needs to be restarted (pods) in case of PostgreSQL authentication changes like: create, alter username or password. Pods during restart process are refreshing stored database credentials automatically.
 
 ## How to configure PostgreSQL replication
