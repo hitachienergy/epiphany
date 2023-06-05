@@ -34,9 +34,9 @@ Telephone:
 
 **WHEREAS:**
 
-1. The Contributor has agreed to submit the Contribution to the Project owned or managed by the Maintainer.
-2. The Contributor has agreed to grant to the Recipient, in accordance with the terms and conditions of the OSS License Agreement, a license to reproduce, prepare derivative works of, publicly display, publicly perform, use, and distribute the Contributions and such derivative works.
-3. The Contributor and the Maintainer have agreed to enter into this Agreement to set out the terms on which the Contributor has agreed to grant a license to the Maintainer of certain intellectual property rights.
+(A) The Contributor has agreed to submit the Contribution to the Project owned or managed by the Maintainer.
+(B) The Contributor has agreed to grant to the Recipient, in accordance with the terms and conditions of the OSS License Agreement, a license to reproduce, prepare derivative works of, publicly display, publicly perform, use, and distribute the Contributions and such derivative works.
+(C) The Contributor and the Maintainer have agreed to enter into this Agreement to set out the terms on which the Contributor has agreed to grant a license to the Maintainer of certain intellectual property rights.
 
 **IT IS AGREED:**
 
@@ -50,17 +50,17 @@ Telephone:
 
 "Recipient" means anyone who receives the Contribution from the Project, including all Contributors.
 
-1. Grant of licence
+2. Grant of licence
 
 In consideration of the mutual obligations and covenants in this Agreement, and subject to the terms and conditions of this Agreement, the Contributor hereby grants to the Maintainer a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable, transferable copyright license to reproduce, prepare derivative works of, publicly display, publicly perform, use, and distribute the Contributions and such derivative works. For entities, the entity making a Contribution and all of its Affiliate(s) are considered to be a single Contributor.
 
-1. The Contributor represents and warrants that the Contributor itself is legally entitled to grant the above license. The Contributor represents and warrants further that each employee of the Contributor designated on Annex B below (or in a subsequent written modification to Annex B) is authorized to submit Contributions on behalf of the Contributor.
+3. The Contributor represents and warrants that the Contributor itself is legally entitled to grant the above license. The Contributor represents and warrants further that each employee of the Contributor designated on Annex B below (or in a subsequent written modification to Annex B) is authorized to submit Contributions on behalf of the Contributor.
 
-1. The Contributor represents and warrants that, except as disclosed in the Contribution submission(s), each of the Contributions is the Contributor's original creation. In addition to the OSS License Agreement, the Contributor represents and warrants that the Contribution submission(s) includes complete details of any license or other restriction (including, but not limited to, related patents, copyright and trademarks) associated with any part of the Contributions (including a copy of any applicable license agreement).
+4. The Contributor represents and warrants that, except as disclosed in the Contribution submission(s), each of the Contributions is the Contributor's original creation. In addition to the OSS License Agreement, the Contributor represents and warrants that the Contribution submission(s) includes complete details of any license or other restriction (including, but not limited to, related patents, copyright and trademarks) associated with any part of the Contributions (including a copy of any applicable license agreement).
 
-1. The Contributor is not expected to provide support for the Contributions, except to the extent the Contributor desires to provide support. The Contributor may provide support for free, for a fee, or not at all. Unless required by applicable law or agreed to in writing, the Contributions are provided on an "as is" basis, with all faults, defects and errors, and without any warranty of any kind (either express or implied) including, without limitation, any implied warranty of merchantability and fitness for a particular purpose and any warranty of non-infringement.
+5. The Contributor is not expected to provide support for the Contributions, except to the extent the Contributor desires to provide support. The Contributor may provide support for free, for a fee, or not at all. Unless required by applicable law or agreed to in writing, the Contributions are provided on an "as is" basis, with all faults, defects and errors, and without any warranty of any kind (either express or implied) including, without limitation, any implied warranty of merchantability and fitness for a particular purpose and any warranty of non-infringement.
 
-1. The Contributor agrees to notify the Maintainer of any facts or circumstances of which the Contributor becomes aware that would make these representations inaccurate in any respect.
+6. The Contributor agrees to notify the Maintainer of any facts or circumstances of which the Contributor becomes aware that would make these representations inaccurate in any respect.
 
 If you are a person:
 
