@@ -35,7 +35,9 @@ Telephone:
 **WHEREAS:**
 
 (A) The Contributor has agreed to submit the Contribution to the Project owned or managed by the Maintainer.
+
 (B) The Contributor has agreed to grant to the Recipient, in accordance with the terms and conditions of the OSS License Agreement, a license to reproduce, prepare derivative works of, publicly display, publicly perform, use, and distribute the Contributions and such derivative works.
+
 (C) The Contributor and the Maintainer have agreed to enter into this Agreement to set out the terms on which the Contributor has agreed to grant a license to the Maintainer of certain intellectual property rights.
 
 **IT IS AGREED:**
