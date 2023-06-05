@@ -2,7 +2,7 @@
 
 ## Template
 
-Thank you for your interest in [XXX] (the "Project") owned or managed by Hitachi Energy Switzerland AG (a company incorporated in Switzerland with registration number CHE-424.543.670, whose registered office is at Bruggerstrasse 72, CH-5400 Baden, Switzerland, the "Maintainer"). To clarify the intellectual property license granted with Contributions from any person or entity (the "Contributor"), the Maintainer would like to have a Contributor License Agreement ("CLA") on file signed by the Contributor, indicating agreement with the license terms below. This agreement is for your protection as a Contributor as well as the protection of the Maintainer and its users. It does not change your rights to use your own Contributions for any other purpose.
+Thank you for your interest in Epiphany owned or managed by Hitachi Energy Switzerland AG (a company incorporated in Switzerland with registration number CHE-424.543.670, whose registered office is at Bruggerstrasse 72, CH-5400 Baden, Switzerland, the "Maintainer"). To clarify the intellectual property license granted with Contributions from any person or entity (the "Contributor"), the Maintainer would like to have a Contributor License Agreement ("CLA") on file signed by the Contributor, indicating agreement with the license terms below. This agreement is for your protection as a Contributor as well as the protection of the Maintainer and its users. It does not change your rights to use your own Contributions for any other purpose.
 
 If You are an employee and have created the Contribution as part of your employment, you need to have your employer approve this Agreement and sign this document. If you do not own the copyright in the entire work of authorship, any other author of the Contribution should also sign this Agreement.
 
@@ -11,25 +11,17 @@ Please complete and sign this Agreement, and then email a pdf copy to pl-opensou
 If you are a person, please fill out here:
 
 Full name:
-
 Postal Address:
-
 Country:
-
 E-Mail:
-
 Github nickname:
 
 If you are an entity, please fill out here:
 
 Corporation name:
-
 Corporation address:
-
 Contact Person:
-
 E-Mail:
-
 Telephone:
 
 **WHEREAS:**
