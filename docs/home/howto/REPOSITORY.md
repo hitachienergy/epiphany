@@ -74,7 +74,7 @@ When this file is present and it isn't older than defined amount of time (2 hour
 
 ### Restoring system repositories
 
-If during the component installation an issue will arise (e.g. network issue), it might be the case that the cluster machines are left in a state where step 5 of the repository lifecycle is not run. This might leave the machines with a broken repository setup making re-running ```epicli apply``` impossible as noted in issue [#2324](https://github.com/epiphany-platform/epiphany/issues/2324).
+If during the component installation an issue will arise (e.g. network issue), it might be the case that the cluster machines are left in a state where step 5 of the repository lifecycle is not run. This might leave the machines with a broken repository setup making re-running ```epicli apply``` impossible as noted in issue [#2324](https://github.com/hitachienergy/epiphany/issues/2324).
 
 To restore the original repository setup on a machine, you can execute the following scripts:
 

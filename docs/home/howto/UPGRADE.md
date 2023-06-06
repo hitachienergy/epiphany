@@ -270,7 +270,7 @@ To upgrade applications on Kubernetes to the desired version after `epicli upgra
 
 - generate new configuration manifest using `epicli init`
 - in case of generating minimal configuration manifest (without --full argument), copy and
-  paste [the default configuration](https://github.com/epiphany-platform/epiphany/blob/develop/schema/common/defaults/configuration/applications.yml)
+  paste [the default configuration](/schema/common/defaults/configuration/applications.yml)
   into it
 - run `epicli apply`
 
@@ -308,7 +308,7 @@ in  [ZooKeeper documentation](https://cwiki.apache.org/confluence/display/ZOOKEE
 Make sure you have a backup before proceeding to migration steps described below!
 
 ---
-Following the decision of Elastic NV<sup>[1]</sup> on ceasing open source options available for Elasticsearch and Kibana and releasing them under the Elastic license (more info [here](https://github.com/epiphany-platform/epiphany/issues/2870)) Epiphany team decided to implement a mechanism of automatic migration from ElasticSearch 7.10.2 to OpenSearch 1.2.4.
+Following the decision of Elastic NV<sup>[1]</sup> on ceasing open source options available for Elasticsearch and Kibana and releasing them under the Elastic license (more info [here](https://github.com/hitachienergy/epiphany/issues/2870)) Epiphany team decided to implement a mechanism of automatic migration from ElasticSearch 7.10.2 to OpenSearch 1.2.4.
 
 It is important to remember, that while the new platform makes an effort to continue to support a broad set of third party tools (ie. Beats) there can be some drawbacks or even malfunctions as not everything has been tested or has explicitly been added to OpenSearch compatibility scope<sup>[2]</sup>.
 Additionally some of the components (ie. ElasticSearch Curator) or some embedded service accounts ( ie. *kibanaserver*) can be still found in OpenSearch environment but they will be phased out.
@@ -357,7 +357,7 @@ with [breaking changes](https://github.com/prometheus/node_exporter/releases/tag
 ---
 
 Starting from Epiphany v0.8.0 it's possible to upgrade node exporter according
-to [components](https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/COMPONENTS.md) file. Upgrade will
+to [components](/docs/home/COMPONENTS.md) file. Upgrade will
 be performed automatically when the upgrade procedure detects node exporter hosts.
 
 ## RabbitMQ upgrade
