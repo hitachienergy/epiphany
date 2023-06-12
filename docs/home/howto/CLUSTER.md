@@ -743,14 +743,14 @@ Component | Scale up | Scale down | HA | Clustered |Known issues
 Repository | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | --- |
 Monitoring | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | ---
 Logging | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | ---
-Kubernetes master | :heavy_check_mark: | :x: | :heavy_check_mark: | :heavy_check_mark: | [#1579](https://github.com/epiphany-platform/epiphany/issues/1579)
-Kubernetes node | :heavy_check_mark: | :x: | :heavy_check_mark: | :heavy_check_mark: | [#1580](https://github.com/epiphany-platform/epiphany/issues/1580)
+Kubernetes master | :heavy_check_mark: | :x: | :heavy_check_mark: | :heavy_check_mark: | [#1579](https://github.com/hitachienergy/epiphany/issues/1579)
+Kubernetes node | :heavy_check_mark: | :x: | :heavy_check_mark: | :heavy_check_mark: | [#1580](https://github.com/hitachienergy/epiphany/issues/1580)
 Kafka | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
 Load Balancer | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | ---
 OpenSearch | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
-Postgresql | :x: | :x: | :heavy_check_mark: | :heavy_check_mark: | [#1577](https://github.com/epiphany-platform/epiphany/issues/1577)
-RabbitMQ | :heavy_check_mark: | :heavy_check_mark: | :x: | :heavy_check_mark: |  [#1578](https://github.com/epiphany-platform/epiphany/issues/1578), [#1309](https://github.com/epiphany-platform/epiphany/issues/1309)
-RabbitMQ K8s | :heavy_check_mark: | :heavy_check_mark: | :x: | :heavy_check_mark: | [#1486](https://github.com/epiphany-platform/epiphany/issues/1486)
+Postgresql | :x: | :x: | :heavy_check_mark: | :heavy_check_mark: | [#1577](https://github.com/hitachienergy/epiphany/issues/1577)
+RabbitMQ | :heavy_check_mark: | :heavy_check_mark: | :x: | :heavy_check_mark: |  [#1578](https://github.com/hitachienergy/epiphany/issues/1578), [#1309](https://github.com/hitachienergy/epiphany/issues/1309)
+RabbitMQ K8s | :heavy_check_mark: | :heavy_check_mark: | :x: | :heavy_check_mark: | [#1486](https://github.com/hitachienergy/epiphany/issues/1486)
 Keycloak K8s | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
 Pgpool K8s | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
 Pgbouncer K8s | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
@@ -801,7 +801,7 @@ Note that clustering requires a change in the `configuration/rabbitmq` document:
 
 Additional known issues:
 
-- [#1574](https://github.com/epiphany-platform/epiphany/issues/1574) - Disks are not removed after downscale of any Epiphany component on Azure.
+- [#1574](https://github.com/hitachienergy/epiphany/issues/1574) - Disks are not removed after downscale of any Epiphany component on Azure.
 
 ## Multi master cluster
 

@@ -10,20 +10,20 @@ The list of components removed:
 The role related to Hashicorp Vault has never been developed beyond MVP/PoC stage and cannot be used for production
 usage. It also causes troubles with upgrade to new Kubernetes versions.
 
-Removed: Epiphany 2.0 Issue: [2834](https://github.com/epiphany-platform/epiphany/issues/2834)
+Removed: Epiphany 2.0 Issue: [2834](https://github.com/hitachienergy/epiphany/issues/2834)
 
 - Istio
 
 We are considering replacement of Istio component with different solution. Additionally, Istio causes problems during
 upgrade of Kubernetes.
 
-Removed: Epiphany 2.0 Issue: [2836](https://github.com/epiphany-platform/epiphany/issues/2836)
+Removed: Epiphany 2.0 Issue: [2836](https://github.com/hitachienergy/epiphany/issues/2836)
 
 - Apache Ignite
 
 Apache Ignite is prone to 1.x log4j issue.
 
-Removed: Epiphany 2.0 Issue: [2837](https://github.com/epiphany-platform/epiphany/issues/2837)
+Removed: Epiphany 2.0 Issue: [2837](https://github.com/hitachienergy/epiphany/issues/2837)
 
 - Logstash
 
@@ -31,7 +31,7 @@ The functionality that the Logstash is serving in Epiphany - exporting csv can r
 Distro for Elasticsearch plugin. The Logstash in this version is prone to log4j issue and this is also the reason it
 should be removed.
 
-Removed: Epiphany 2.0 Issue: [2833](https://github.com/epiphany-platform/epiphany/issues/2833)
+Removed: Epiphany 2.0 Issue: [2833](https://github.com/hitachienergy/epiphany/issues/2833)
 
 ## Next steps
 

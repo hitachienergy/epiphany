@@ -18,26 +18,26 @@ docker build --file Dockerfile --tag epicli:${TAG} .
 ### Pull Epicli image from the registry
 
 ```bash
-docker pull ghcr.io/epiphany-platform/epicli:TAG
+docker pull ghcr.io/hitachienergy/epicli:TAG
 ```
 
 Where `TAG` should be replaced with an existing tag.
 
-*Check [here](https://github.com/epiphany-platform/epiphany/pkgs/container/epicli) for the available tags.*
+*Check [here](https://github.com/hitachienergy/epiphany/pkgs/container/epicli) for the available tags.*
 
 ### Running the Epicli image
 
 To run the image:
 
 ```bash
-docker run -it -v LOCAL_DIR:/shared --rm ghcr.io/epiphany-platform/epicli:TAG
+docker run -it -v LOCAL_DIR:/shared --rm ghcr.io/hitachienergy/epicli:TAG
 ```
 
 Where:
 - `LOCAL_DIR` should be replaced with the local path to the directory for Epicli input (SSH keys, data yaml files) and output (logs, build states),
 - `TAG` should be replaced with an existing tag.
 
-*Check [here](https://github.com/epiphany-platform/epiphany/pkgs/container/epicli) for the available tags.*
+*Check [here](https://github.com/hitachienergy/epiphany/pkgs/container/epicli) for the available tags.*
 
 ## Epicli development
 

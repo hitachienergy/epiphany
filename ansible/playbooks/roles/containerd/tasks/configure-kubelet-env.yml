@@ -1,4 +1,4 @@
-# To be replaced by filter plugin (https://github.com/epiphany-platform/epiphany/issues/2943)
+# To be replaced by filter plugin (https://github.com/hitachienergy/epiphany/issues/2943)
 - name: Reconfigure kubelet args
   notify:
     - Restart containerd

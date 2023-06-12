@@ -1,5 +1,5 @@
 ---
-# TODO Refactor containerd role upgrade tasks (https://github.com/epiphany-platform/epiphany/issues/3048)
+# TODO Refactor containerd role upgrade tasks (https://github.com/hitachienergy/epiphany/issues/3048)
 - name: Patch stateful apps
   include_tasks: upgrade/patch-statesfulset.yml
   when:
@@ -57,7 +57,7 @@
 
 # There are already bandlers responsible for restart of these services however it is required
 # to restart them earlier, before uncordoning the hosts
-# TODO Refactor containerd role upgrade tasks (https://github.com/epiphany-platform/epiphany/issues/3048)
+# TODO Refactor containerd role upgrade tasks (https://github.com/hitachienergy/epiphany/issues/3048)
 - name: Restart containerd
   systemd:
     name: containerd
@@ -86,7 +86,7 @@
     - inventory_hostname not in groups.image_registry
     - ansible_facts.packages['docker-ce'] is defined
 
-# TODO Refactor containerd role upgrade tasks (https://github.com/epiphany-platform/epiphany/issues/3048)
+# TODO Refactor containerd role upgrade tasks (https://github.com/hitachienergy/epiphany/issues/3048)
 - name: Wait for cluster's readiness
   include_role:
     name: upgrade
