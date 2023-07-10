@@ -13,7 +13,7 @@ grafana-dashboards:
   # Node Exporter for Prometheus
   grafana_dashboard_11074:
     url: 'https://grafana.com/api/dashboards/11074/revisions/9/download'
-    sha256: 151b23305da46eab84930e99175e1c07e375af73dbbb4b8f501ca25f5ac62785
+    sha256: 893f4029ee9b3e0797ebad989dd47b8df516ed4d078f28ded2d6d8df7bbd1065
 
   # Node Exporter Server Metrics
   grafana_dashboard_405:
