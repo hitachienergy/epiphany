@@ -1,6 +1,12 @@
 <!-- markdownlint-disable-file no-duplicate-header -->
 # Changelog 2.0
 
+## [2.0.7] YYYY-MM-DD
+
+### Fixed
+
+- [#3374](https://github.com/hitachienergy/epiphany/issues/3374) - Grafana dashboard id 11074 - checksum mismatch
+
 ## [2.0.6] 2023-05-08
 
 ### Updated

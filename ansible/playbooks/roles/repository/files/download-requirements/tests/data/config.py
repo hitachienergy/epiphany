@@ -103,7 +103,7 @@ grafana-dashboards:
     sha256: ee46dd6e68a9950aa78e8c88ae5e565c8ebde6cbdbe08972a70f06c5486618fb
   grafana_dashboard_11074:
     url: 'https://grafana.com/api/dashboards/11074/revisions/9/download'
-    sha256: 151b23305da46eab84930e99175e1c07e375af73dbbb4b8f501ca25f5ac62785
+    sha256: 893f4029ee9b3e0797ebad989dd47b8df516ed4d078f28ded2d6d8df7bbd1065
   grafana_dashboard_405:
     url: 'https://grafana.com/api/dashboards/405/revisions/8/download'
     sha256: 97675027cbd5b7241e93a2b598654c4b466bc909eeb6358ba123d500094d913c
@@ -356,7 +356,7 @@ ALL_REQUIREMENTS: Dict[str, Dict] = {
         },
         'grafana_dashboard_11074': {
             'url': 'https://grafana.com/api/dashboards/11074/revisions/9/download',
-            'sha256': '151b23305da46eab84930e99175e1c07e375af73dbbb4b8f501ca25f5ac62785'
+            'sha256': '893f4029ee9b3e0797ebad989dd47b8df516ed4d078f28ded2d6d8df7bbd1065'
         }
     },
     'images': {

@@ -220,7 +220,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | --------- | ------- | ------------ | ------- |
 | Kubernetes Cluster | 7249 | https://grafana.com/grafana/dashboards/7249 | None |
 | Kubernetes cluster monitoring (via Prometheus) | 315 | https://grafana.com/grafana/dashboards/315 | [MIT License](https://github.com/instrumentisto/grafana-dashboard-kubernetes-prometheus/blob/master/LICENSE.md) |
-| 1 Node Exporter for Prometheus Dashboard EN v20201010 | 11074 | https://grafana.com/grafana/dashboards/11074 | [Apache License 2.0](https://github.com/starsliao/Prometheus/blob/master/LICENSE) |
+| Node Exporter Dashboard EN 20201010-StarsL.cn | 11074 | https://grafana.com/grafana/dashboards/11074 | [Apache License 2.0](https://github.com/starsliao/Prometheus/blob/master/LICENSE) |
 | Node Exporter Server Metrics | 405 | https://grafana.com/grafana/dashboards/405 | None |
 | Postgres Overview | 455 | https://grafana.com/grafana/dashboards/455 | None |
 | PostgreSQL Database | 9628 | https://grafana.com/grafana/dashboards/9628 | [Apache License 2.0](https://github.com/lstn/misc-grafana-dashboards/blob/master/LICENSE) |
