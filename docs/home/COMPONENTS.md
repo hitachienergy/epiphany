@@ -27,6 +27,8 @@ Note that versions are default versions and can be changed in certain cases thro
 | Bitnami Node Exporter Helm Chart      | 1.1.2    | https://github.com/bitnami/charts          | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Kafka Exporter             | 1.4.0    | https://github.com/danielqsj/kafka_exporter           | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | JMX Exporter               | 0.16.1   | https://github.com/prometheus/jmx_exporter            | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
+| OpenSearch                 | 2.8.0    | https://github.com/opensearch-project/OpenSearch      | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
+| OpenSearch Dashboards      | 2.8.0    | https://github.com/opensearch-project/OpenSearch-Dashboards | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Postgres Exporter          | 0.10.0    | https://github.com/prometheus-community/postgres_exporter | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | PostgreSQL                 | 13       | https://www.postgresql.org/                           | [PostgreSQL license](http://www.postgresql.org/about/licence/)    |
 | HAProxy                    | 2.2.2    | https://www.haproxy.org/                              | [GNU General Public License 2.0](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html) |

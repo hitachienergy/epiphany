@@ -12,6 +12,14 @@ repositories:
     content: 'deb https://artifacts.elastic.co/packages/oss-7.x/apt stable main'
     key: 'https://artifacts.elastic.co/GPG-KEY-elasticsearch'
 
+  opensearch:
+    content: 'deb https://artifacts.opensearch.org/releases/bundle/opensearch/2.x/apt stable main'
+    key: 'https://artifacts.opensearch.org/publickeys/opensearch.pgp'
+
+  opensearch-dashboards:
+    content: 'deb https://artifacts.opensearch.org/releases/bundle/opensearch-dashboards/2.x/apt stable main'
+    key: 'https://artifacts.opensearch.org/publickeys/opensearch.pgp'
+
   # postgresql
   pgdg:
     content: 'deb http://apt.postgresql.org/pub/repos/apt focal-pgdg main'

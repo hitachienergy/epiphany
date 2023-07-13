@@ -16,7 +16,8 @@ packages:
     - 'ebtables'
 
     # for opensearch role
-    - 'elasticsearch-oss=7.10.2*'
+    - 'opensearch=2.8.0*'
+    - 'opensearch-dashboards=2.8.0*'
     # for curator-opensearch
     - 'python3-venv'
     # for python3-venv

@@ -3,10 +3,8 @@ kind: configuration/opensearch-dashboards
 title: "OpenSearch-Dashboards"
 name: default
 specification:
-  dashboards_os_user: opensearch_dashboards
-  dashboards_os_group: opensearch_dashboards
+  dashboards_os_user: opensearch-dashboards
+  dashboards_os_group: opensearch-dashboards
   paths:
-    dashboards_home: /usr/share/opensearch-dashboards
-    dashboards_conf_dir: /usr/share/opensearch-dashboards/config
+    dashboards_conf_dir: /etc/opensearch-dashboards
     dashboards_plugin_bin_path: /usr/share/opensearch-dashboards/bin/opensearch-dashboards-plugin
-    dashboards_log_dir: /var/log/opensearch-dashboards

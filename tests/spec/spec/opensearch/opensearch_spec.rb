@@ -30,13 +30,13 @@ describe 'Check if opensearch user exists' do
     it { should belong_to_group 'opensearch' }
   end
 end
-describe 'Check if opensearch_dashboards user exists' do
-  describe group('opensearch_dashboards') do
+describe 'Check if opensearch-dashboards user exists' do
+  describe group('opensearch-dashboards') do
     it { should exist }
   end
-  describe user('opensearch_dashboards') do
+  describe user('opensearch-dashboards') do
     it { should exist }
-    it { should belong_to_group 'opensearch_dashboards' }
+    it { should belong_to_group 'opensearch-dashboards' }
   end
 end
 describe 'Check OpenSearch directories and config files' do
@@ -45,7 +45,7 @@ describe 'Check OpenSearch directories and config files' do
     it { should exist }
     it { should be_a_directory }
   end
-  describe file('/usr/share/opensearch/config/opensearch.yml') do
+  describe file('/etc/opensearch/opensearch.yml') do
     it { should exist }
     it { should be_a_file }
   end
@@ -87,7 +87,7 @@ listInventoryHosts('opensearch').each do |val|
   end
   describe 'Check OpenSearch Dashboards health' do
     let(:disable_sudo) { false }
-    describe command("curl http://#{val}:#{opensearch_dashboards_port}/api/status") do
+    describe command("curl -k -u admin:#{es_admin_password} http://#{val}:#{opensearch_dashboards_port}/api/status") do
       its(:stdout_as_json) { should include('status' => include('overall' => include('state' => 'green'))) }
       its(:exit_status) { should eq 0 }
     end
