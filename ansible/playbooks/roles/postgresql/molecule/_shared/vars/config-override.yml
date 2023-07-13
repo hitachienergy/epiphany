@@ -1,5 +1,0 @@
----
-specification:
-  extensions:
-    pgaudit:
-      enabled: true

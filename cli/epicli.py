@@ -261,15 +261,10 @@ def upgrade_parser(subparsers):
     component_list = sorted([
         'filebeat',
         'grafana',
-        'image_registry',
         'jmx_exporter',
         'kafka',
         'kafka_exporter',
-        'kubernetes',
-        'load_balancer',
         'node_exporter',
-        'postgresql',
-        'postgres_exporter',
         'prometheus',
         'zookeeper',
         ])

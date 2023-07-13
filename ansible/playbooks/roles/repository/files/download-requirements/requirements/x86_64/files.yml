@@ -19,12 +19,6 @@ files:
         sha256: 68f3802c2dd3980667e4ba65ea2e1fb03f4a4ba026cca375f15a0390ff850949
     deps: [node-exporter]
 
-  postgres-exporter:
-    options:
-      - url: 'https://github.com/prometheus-community/postgres_exporter/releases/download/v0.10.0/postgres_exporter-0.10.0.linux-amd64.tar.gz'
-        sha256: 1d1a008c5e29673b404a9ce119b7516fa59974aeda2f47d4a0446d102abce8a1
-    deps: [postgres-exporter]
-
   # --- Misc ---
   kafka:
     options:
@@ -74,22 +68,3 @@ files:
       - url: 'https://github.com/codecentric/helm-charts/releases/download/keycloakx-2.1.1/keycloakx-2.1.1.tgz'
         sha256: 1ae37a17d10d159f793dc6a42ec4182bb230fccadd092badb45a36986fe45d71
     deps: [keycloak]
-
-  # --- OpenSearch Bundle ---
-  opensearch:
-    options:
-      - url: 'https://artifacts.opensearch.org/releases/bundle/opensearch/1.2.4/opensearch-1.2.4-linux-x64.tar.gz'
-        sha256: d40f2696623b6766aa235997e2847a6c661a226815d4ba173292a219754bd8a8
-    deps: [opensearch]
-
-  opensearch-dashboards:
-    options:
-      - url: 'https://artifacts.opensearch.org/releases/bundle/opensearch-dashboards/1.2.0/opensearch-dashboards-1.2.0-linux-x64.tar.gz'
-        sha256: 14623798e61be6913e2a218d6ba3e308e5036359d7bda58482ad2f1340aa3c85
-    deps: [opensearch-dashboards]
-
-  opensearch-perf-top:
-    options:
-      - url: 'https://github.com/opensearch-project/perftop/releases/download/1.2.0.0/opensearch-perf-top-1.2.0.0-linux-x64.zip'
-        sha256: e8f9683976001a8cf59a9f86da5caafa10b88643315f0af2baa93a9354d41e2b
-    deps: [opensearch]

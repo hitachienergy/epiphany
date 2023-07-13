@@ -6,13 +6,7 @@ packages:
     - 'auditd'
     - 'bash-completion'
     - 'ca-certificates'
-    - 'cifs-utils'
-    - 'containerd.io=1.5.11*'
-    - 'cri-tools=1.25.0*'
     - 'curl'
-    - 'docker-ce=5:20.10.8*'
-    - 'docker-ce-cli=5:20.10.8*'
-    - 'docker-ce-rootless-extras=5:20.10.8*'
     - 'ebtables'
 
     # for opensearch role
@@ -50,7 +44,6 @@ packages:
     - 'libtirpc3'
     - 'openjdk-8-jre-headless'
     - 'openssl'
-    - 'postgresql-13'
     - 'python3-psycopg2'
     - 'python3-selinux'
     - 'smbclient'
@@ -97,64 +90,17 @@ packages:
     - 'samba-libs'
     - 'libsmbclient'
 
-    # postgres related packages
-    # if version is not specified, it's not related to postgres version and the latest is used
-    - 'pgdg-keyring'
-    - 'postgresql-13-pgaudit=1.5.0*'
-    - 'postgresql-10-repmgr=5.2.1*'
-    - 'postgresql-13-repmgr=5.2.1*'
-    - 'postgresql-client-13'
-    - 'postgresql-client-common'
-    - 'postgresql-common'
-    - 'repmgr-common=5.2.1*'
-
     # for firewalld
     - 'ipset'
     - 'python3-decorator'
     - 'python3-slip'
     - 'python3-slip-dbus'
 
-    # for ansible module postgresql_query in role postgres-exporter
-    - 'libpq5'
-    - 'python3-jmespath'
-
     # for Ansible (certificate modules)
     - 'python3-cryptography'
 
     # for python3-cryptography
     - 'python3-cffi-backend'
-
-    # K8s v1.18.6 (Epiphany >= v0.7.1)
-    - 'kubeadm=1.18.6*'
-    - 'kubectl=1.18.6*'
-    - 'kubelet=1.18.6*'
-
-    # K8s v1.19.15 (Epiphany >= v1.3, transitional version)
-    - 'kubeadm=1.19.15*'
-    - 'kubectl=1.19.15*'
-    - 'kubelet=1.19.15*'
-
-    # K8s v1.20.12 (Epiphany >= v1.3, transitional version)
-    - 'kubeadm=1.20.12*'
-    - 'kubectl=1.20.12*'
-    - 'kubelet=1.20.12*'
-
-    # K8s v1.21.7 (Epiphany >= v1.3, transitional version)
-    - 'kubeadm=1.21.7*'
-    - 'kubectl=1.21.7*'
-    - 'kubelet=1.21.7*'
-
-    # K8s v1.22.4
-    - 'kubeadm=1.22.4*'
-    - 'kubectl=1.22.4*'
-    - 'kubelet=1.22.4*'
-
-    # Kubernetes Generic
-    # kubernetes-cni-0.8.6 since K8s v1.18.6
-    - 'kubernetes-cni=0.8.6-00*'
-
-    # kubernetes-cni-0.8.7 since K8s v1.19.15
-    - 'kubernetes-cni=0.8.7-00*'
 
   from_url:
     # Grafana package is not downloaded from repository since it was not reliable (issue #2449)

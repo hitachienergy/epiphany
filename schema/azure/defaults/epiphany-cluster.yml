@@ -21,24 +21,6 @@ specification:
     default_os_image: default
     hostname_domain_extension: '' # Domain name that will be added to every machines hostname with a . seperator
   components:
-    kubernetes_master:
-      count: 1
-      alt_component_name: '' # GH issue #2996. Used to modify hostname part, e.g. kubernetes-master -> k8s-master
-      machine: kubernetes-master-machine
-      configuration: default
-      subnets:
-        - address_pool: 10.1.1.0/24
-          service_endpoints:
-            - Microsoft.Storage
-    kubernetes_node:
-      count: 2
-      alt_component_name: ''
-      machine: kubernetes-node-machine
-      configuration: default
-      subnets:
-        - address_pool: 10.1.1.0/24
-          service_endpoints:
-            - Microsoft.Storage
     logging:
       count: 1
       alt_component_name: ''
@@ -62,22 +44,6 @@ specification:
       configuration: default
       subnets:
         - address_pool: 10.1.5.0/24
-          service_endpoints: []
-    postgresql:
-      count: 0
-      alt_component_name: ''
-      machine: postgresql-machine
-      configuration: default
-      subnets:
-        - address_pool: 10.1.6.0/24
-          service_endpoints: []
-    load_balancer:
-      count: 1
-      alt_component_name: ''
-      machine: load-balancer-machine
-      configuration: default
-      subnets:
-        - address_pool: 10.1.7.0/24
           service_endpoints: []
     repository:
       count: 1

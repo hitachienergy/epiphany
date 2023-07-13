@@ -55,14 +55,6 @@
         success_msg: Kubeconfig file exists.
         quiet: true
 
-- import_role:
-    name: preflight_facts
-    tasks_from: store
-
-- import_role:
-    name: preflight_facts
-    tasks_from: assert
-
 - name: Wait for epiphany-lvm-merge.service to finish  # to avoid 'Read-only file system' error
   when: ansible_os_family == "RedHat"
   block:

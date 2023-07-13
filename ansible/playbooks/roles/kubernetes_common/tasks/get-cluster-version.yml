@@ -1,8 +1,0 @@
----
-- name: Get cluster version
-  command: kubectl version --output yaml
-  register: kubectl_cluster_version
-  until: kubectl_cluster_version is success
-  retries: 60
-  delay: 5
-  changed_when: false

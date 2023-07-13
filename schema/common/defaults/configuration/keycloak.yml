@@ -5,12 +5,6 @@ name: default
 specification:
   namespace: keycloak
 
-  database:
-    epiphany_managed: true  # if true, Keycloak database and user are created by Epiphany in `postgresql` component
-
-  image_registry:
-    use_local: true
-
   chart_values:
     # Refs:
     #   - https://github.com/codecentric/helm-charts/tree/keycloakx-1.6.1/charts/keycloakx
@@ -202,7 +196,7 @@ specification:
 
     database:
       vendor: postgres
-      hostname: AUTOCONFIGURED
+      hostname: HOSTNAME_TO_CHANGE
       database: keycloak
       port: 5432
       username: keycloak

@@ -10,14 +10,6 @@ specification:
     name: operations # YOUR-ADMIN-USERNAME
     key_path: /root/.ssh/epiphany-operations/id_rsa # YOUR-SSH-KEY-PATH
   components:
-    kubernetes_master:
-      count: 1
-      machines: []
-      configuration: default
-    kubernetes_node:
-      count: 2
-      machines: []
-      configuration: default
     logging:
       count: 1
       machines: []
@@ -28,14 +20,6 @@ specification:
       configuration: default
     kafka:
       count: 2
-      machines: []
-      configuration: default
-    postgresql:
-      count: 0
-      machines: []
-      configuration: default
-    load_balancer:
-      count: 1
       machines: []
       configuration: default
     repository:

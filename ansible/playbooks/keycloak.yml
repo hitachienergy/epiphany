@@ -1,10 +1,6 @@
 ---
 # Ansible playbook that deploys Keycloak on Kubernetes
 
-- hosts: postgresql
-  gather_facts: true
-  tasks: []
-
 - hosts: 127.0.0.1
   gather_facts: false
   become: false

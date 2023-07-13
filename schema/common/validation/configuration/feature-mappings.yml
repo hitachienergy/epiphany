@@ -11,19 +11,7 @@ properties:
         type: array
         items:
           type: string
-      logging:
-        type: array
-        items:
-          type: string
-      load_balancer:
-        type: array
-        items:
-          type: string
       monitoring:
-        type: array
-        items:
-          type: string
-      postgresql:
         type: array
         items:
           type: string
@@ -32,14 +20,6 @@ properties:
         items:
           type: string
       single_machine:
-        type: array
-        items:
-          type: string
-      kubernetes_master:
-        type: array
-        items:
-          type: string
-      kubernetes_node:
         type: array
         items:
           type: string

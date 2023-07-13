@@ -86,42 +86,15 @@ different values. The list does not include ports that are bound to the loopback
 
     - 3000 - Grafana web UI
 
-10. PostgreSQL:
-
-    - 5432 - PostgreSQL server
-
-11. Kubernetes:
-
-    - 111/tcp - rpcbind (NFS)
-    - 111/udp - rpcbind (+1 random UDP port, see note [[2]](#notes))
-    - 179 - calico networking (BGP) [if Calico CNI plugin is used]
-    - 6443 - kube-apiserver
-    - 2379 - etcd server clients
-    - 2380 - etcd server peers
-    - 3446 - haproxy (when using HA control plane)
-    - 8472/udp - flannel (vxlan backend) [if flannel or Canal CNI plugin is used]
-    - 10250 - kubelet API
-    - 10251 - kube-scheduler
-    - 10252 - kube-controller-manager
-    - 10256 - kube-proxy
-
-12. Kubernetes apps:
+10. Kubernetes apps:
 
     - 30103,30104 - Keycloak
 
-13. HAProxy:
-
-    - 443 - HTTPS frontend
-    - 9000 - stats page
-    - 9101 - metrics
-    - unconfigurable random UDP port from ephemeral range* - local connection to rsyslog UDP server (remote access not needed), see note [[3]](#notes)
-
     **NOTE:** Not applicable for Ubuntu where UNIX socket is used (deb package's default).
 
-14. Repository:
+11. Repository:
 
     - 80 - deb/rpm package repository (httpd is stopped at the end of installation)
-    - 5000 - Docker image registry
 
 ### Connection protocols and ciphers used by components in Epiphany
 
@@ -137,17 +110,7 @@ Below you can find list of cipersuites and protocols used for communication set 
         - kexalgorithms:  
           curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256
 
-2. HAProxy:
-
-    - protocols:  
-      TLSv1.2
-
-    - ciphersuites:  
-      ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:
-      ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:
-      DHE-RSA-AES256-GCM-SHA384
-
-3. Kafka:
+2. Kafka:
 
     - protocols:  
       TLSv1.2,TLSv1.1,TLSv1
@@ -157,7 +120,7 @@ Below you can find list of cipersuites and protocols used for communication set 
       file is not needed to enable restricted ciphers as all ciphers are enabled by default. Documentation about ciphers
       is available under [link](https://docs.oracle.com/javase/8/docs/technotes/guides/security/SunProviders.html).
 
-4. Open Distro:
+3. Open Distro:
 
     - protocols:  
       TLSv1.1,TLSv1.2
@@ -167,7 +130,7 @@ Below you can find list of cipersuites and protocols used for communication set 
       ECDHE-RSA-AES256-SHA384 ECDHE-RSA-AES128-SHA256 DHE-RSA-AES256-SHA256 DHE-RSA-AES128-SHA256 ECDHE-RSA-AES256-SHA
       ECDHE-RSA-AES128-SHA DHE-RSA-AES256-SHA DHE-RSA-AES128-SHA
 
-5. OpenSearch Dashboards:
+4. OpenSearch Dashboards:
 
     - protocols:  
       TLSv1.1,TLSv1.2
@@ -177,7 +140,7 @@ Below you can find list of cipersuites and protocols used for communication set 
       ECDHE-RSA-AES256-SHA ECDHE-RSA-AES128-SHA AES256-GCM-SHA384 AES128-GCM-SHA256 AES256-SHA256 AES128-SHA256
       AES256-SHA AES128-SHA
 
-6. Grafana:
+5. Grafana:
 
     - protocols:  
       TLSv1.2
@@ -186,16 +149,7 @@ Below you can find list of cipersuites and protocols used for communication set 
       ECDHE-RSA-AES128-GCM-SHA256 ECDHE-RSA-AES256-GCM-SHA384 ECDHE-RSA-AES128-SHA ECDHE-RSA-AES256-SHA
       AES128-GCM-SHA256 AES256-GCM-SHA384 AES128-SHA AES256-SHA
 
-7. Kubernetes:
-
-    - protocols:  
-      TLSv1.2
-
-    - ciphersuites:  
-      ECDHE-RSA-AES256-GCM-SHA384 ECDHE-RSA-AES256-SHA AES256-GCM-SHA384 AES256-SHA ECDHE-RSA-AES128-GCM-SHA256
-      ECDHE-RSA-AES128-SHA AES128-GCM-SHA256 AES128-SHA ECDHE-RSA-DES-CBC3-SHA DES-CBC3-SHA
-
-8. Kubernetes apps:
+6. Kubernetes apps:
 
     - Keycloak:
 
@@ -225,14 +179,3 @@ Below you can find list of cipersuites and protocols used for communication set 
       UDP port
     - Bug [1595170](https://bugzilla.redhat.com/show_bug.cgi?id=1595170) - rpcbind sometimes uses port 749/UDP, which
       breaks Kerberos admin and FreeIPA
-
-3. HAProxy:
-
-    - Stack Overflow:
-      [What is the purpose of haproxy random udp listening port?](https://stackoverflow.com/questions/52306468/what-is-the-purpose-of-haproxy-random-udp-listening-port)
-    - HAProxy source code:
-      [__send_log()](https://github.com/haproxy/haproxy/blob/0b78792bbe61fec420e4e7298d145ec7d498f8f2/src/log.c#L1088)
-      function
-
-   The use of UNIX socket was not implemented because it
-   is [not recommended](https://www.haproxy.com/documentation/hapee/1-8r2/onepage/management/#8).

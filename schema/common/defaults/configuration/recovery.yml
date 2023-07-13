@@ -4,15 +4,9 @@ title: Recovery Config
 name: default
 specification:
   components:
-    load_balancer:
-      enabled: false
-      snapshot_name: latest
     logging:
       enabled: false
       snapshot_name: latest
     monitoring:
-      enabled: false
-      snapshot_name: latest
-    postgresql:
       enabled: false
       snapshot_name: latest

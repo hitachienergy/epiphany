@@ -9,111 +9,6 @@
         name: upgrade
         tasks_from: common
 
-- hosts: image_registry
-  become: true
-  become_method: sudo
-  tasks:
-    - import_role:
-        name: docker
-      when: "'image_registry' in upgrade_components or upgrade_components|length == 0"
-
-- hosts: kubernetes_master
-  become: true
-  become_method: sudo
-  pre_tasks:
-    # Needed for tasks upgrade playbook borrows from kubernetes_master role.
-    - import_role:
-        name: kubernetes_common
-        tasks_from: gather-facts
-      when: "'kubernetes' in upgrade_components or upgrade_components|length == 0"
-
-    - include_role:
-        name: upgrade
-        tasks_from: kubernetes/gather-static-facts
-      run_once: true
-      when: "'kubernetes' in upgrade_components or upgrade_components|length == 0"
-  environment:
-    KUBECONFIG: "{{ kubeconfig.remote }}"
-
-- hosts: kubernetes_master:kubernetes_node
-  serial: 1
-  become: true
-  become_method: sudo
-  tasks:
-    - include_role:
-        name: containerd
-        tasks_from: upgrade/main
-      when: "'kubernetes' in upgrade_components or upgrade_components|length == 0"
-  environment:
-    KUBECONFIG: "{{ kubeconfig.remote }}"
-
-- hosts: kubernetes_master:kubernetes_node
-  serial: 1
-  become: true
-  become_method: sudo
-  tasks:
-    - import_role:
-        name: upgrade
-        tasks_from: kubernetes
-      vars: { ver: "1.19.15", cni_ver: "0.8.7", upgrade_to_final_version: false }
-      when: "'kubernetes' in upgrade_components or upgrade_components|length == 0"
-  environment:
-    KUBECONFIG: "{{ kubeconfig.remote }}"
-
-- hosts: kubernetes_master:kubernetes_node
-  serial: 1
-  become: true
-  become_method: sudo
-  tasks:
-    - import_role:
-        name: upgrade
-        tasks_from: kubernetes
-      vars: { ver: "1.20.12", cni_ver: "0.8.7", upgrade_to_final_version: false }
-      when: "'kubernetes' in upgrade_components or upgrade_components|length == 0"
-  environment:
-    KUBECONFIG: "{{ kubeconfig.remote }}"
-
-- hosts: kubernetes_master:kubernetes_node
-  serial: 1
-  become: true
-  become_method: sudo
-  tasks:
-    - import_role:
-        name: upgrade
-        tasks_from: kubernetes
-      vars: { ver: "1.21.7", cni_ver: "0.8.7", upgrade_to_final_version: false }
-      when: "'kubernetes' in upgrade_components or upgrade_components|length == 0"
-  environment:
-    KUBECONFIG: "{{ kubeconfig.remote }}"
-
-- hosts: kubernetes_master:kubernetes_node
-  serial: 1
-  become: true
-  become_method: sudo
-  tasks:
-    - import_role:
-        name: upgrade
-        tasks_from: kubernetes
-      vars: { ver: "1.22.4", cni_ver: "0.8.7", upgrade_to_final_version: true }
-      when: "'kubernetes' in upgrade_components or upgrade_components|length == 0"
-  environment:
-    KUBECONFIG: "{{ kubeconfig.remote }}"
-
-# K8s dashboard upgraded only after control plane upgrade
-# Otherwise there can be issues, such as hitting not upgraded apiserver by controller manager
-# which results to forever terminating namespace after deletion
-- hosts: kubernetes_master
-  become: true
-  become_method: sudo
-  tasks:
-    - include_role:
-        name: upgrade
-        tasks_from: kubernetes/upgrade-k8s-dashboard
-      run_once: true
-      when: "'kubernetes' in upgrade_components or upgrade_components|length == 0"
-  environment:
-    KUBECONFIG: "{{ kubeconfig.remote }}"
-
 - hosts: filebeat
   become: true
   become_method: sudo
@@ -178,15 +73,6 @@
       vars: { lock_file: /var/tmp/kafka-exporter-upgrade-in-progress.flag }
       when: "'kafka_exporter' in upgrade_components or upgrade_components|length == 0"
 
-- hosts: haproxy
-  become: true
-  become_method: sudo
-  tasks:
-    - import_role:
-        name: upgrade
-        tasks_from: load_balancer
-      when: "'load_balancer' in upgrade_components or upgrade_components|length == 0"
-
 - hosts: node_exporter
   become: true
   become_method: sudo
@@ -211,43 +97,6 @@
         tasks_from: upgrade/main
       vars: { lock_file: /var/tmp/jmx-exporter-upgrade-in-progress.flag }
       when: "'jmx_exporter' in upgrade_components or upgrade_components|length == 0"
-
-# === postgresql ===
-
-- hosts: postgresql
-  become: true
-  become_method: sudo
-  module_defaults:
-    shell:
-      executable: /bin/bash
-  tasks:
-    # step 1: prepare (python3-psycopg2 may be removed by Ubuntu release upgrade)
-    - include_role:
-        name: postgresql
-        tasks_from: upgrade/nodes/common/ensure-ansible-requirements
-      when: "'postgresql' in upgrade_components or upgrade_components|length == 0"
-
-    # step 2: upgrade repmgr
-    - include_role:
-        name: postgresql
-        tasks_from: upgrade/extensions/replication/pg-old/repmgr-main
-      when: "'postgresql' in upgrade_components or upgrade_components|length == 0"
-
-    # step 3: upgrade postgresql
-    - include_role:
-        name: postgresql
-        tasks_from: upgrade/main
-      when: "'postgresql' in upgrade_components or upgrade_components|length == 0"
-
-- hosts: postgres_exporter
-  become: true
-  become_method: sudo
-  tasks:
-    - include_role:
-        name: postgres_exporter
-        tasks_from: upgrade/main
-      vars: { lock_file: /var/tmp/postgres-exporter-upgrade-in-progress.flag }
-      when: "'postgres_exporter' in upgrade_components or upgrade_components|length == 0"
 
 - hosts: prometheus
   become: true

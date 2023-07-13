@@ -1,9 +1,0 @@
----
-exporter:
-  version: "0.10.0"
-  file_name:
-    x86_64: "postgres_exporter-0.10.0.linux-amd64.tar.gz"
-    aarch64: "postgres_exporter-0.10.0.linux-arm64.tar.gz"
-  service:
-    description: "Service that runs Postgres Exporter"
-  binary_path: /opt/postgres_exporter/postgres_exporter

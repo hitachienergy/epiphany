@@ -6,20 +6,6 @@ type: object
 properties:
   namespace:
     type: string
-  database:
-    type: object
-    properties:
-      epiphany_managed:
-        type: boolean
-    required:
-    - epiphany_managed
-  image_registry:
-    type: object
-    properties:
-      use_local:
-        type: boolean
-    required:
-    - use_local
   chart_values:
     type: object
     properties:

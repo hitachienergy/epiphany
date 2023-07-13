@@ -6,22 +6,6 @@
     - groups.repository | length == 1
     - "'repository' in group_names"
 
-- name: Kubernetes checks
-  include_tasks: roles/kubernetes_master/tasks/preflight/upgrade.yml
-  when:
-    - "'kubernetes' in upgrade_components or upgrade_components|length == 0" # K8s is going to be upgraded
-    - groups.kubernetes_master is defined
-    - groups.kubernetes_master | length > 0
-    - "'kubernetes_master' in group_names" # run only on K8s control plane hosts
-
-- name: PostgreSQL checks
-  include_tasks: roles/postgresql/tasks/preflight/upgrade.yml
-  when:
-    - "'postgresql' in upgrade_components or upgrade_components|length == 0" # PostgreSQL is going to be upgraded
-    - groups.postgresql is defined
-    - groups.postgresql | length > 0
-    - "'postgresql' in group_names" # run only on PostgreSQL hosts
-
 - name: Node Exporter in K8s checks
   include_tasks: roles/node_exporter/tasks/preflight/upgrade.yml
   when:

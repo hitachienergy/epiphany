@@ -1,7 +1,0 @@
----
-# This file is meant to be also used by upgrade role
-
-- name: Upload and deploy Kubernetes Dashboard
-  include_tasks: deployments/deploy-template.yml
-  vars:
-    file_name: kubernetes-dashboard.yml.j2

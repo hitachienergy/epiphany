@@ -1,6 +1,0 @@
----
-- name: HAProxy/uninstall | Uninstall haproxy package
-  apt:
-    name: haproxy
-    update_cache: true
-    state: absent

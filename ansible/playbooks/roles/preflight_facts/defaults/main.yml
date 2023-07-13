@@ -1,2 +1,0 @@
----
-facts_file_path: "{{ vault_location }}/../preflight_facts.yml"

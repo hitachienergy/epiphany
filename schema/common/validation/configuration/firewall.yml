@@ -18,15 +18,6 @@ properties:
   rules:
     type: object
     properties:
-      applications:
-        type: object
-        properties:
-          enabled:
-            type: boolean
-          ports:
-            type: array
-            items:
-              type: string
       common:
         type: object
         properties:
@@ -37,24 +28,6 @@ properties:
             items:
               type: string
       grafana:
-        type: object
-        properties:
-          enabled:
-            type: boolean
-          ports:
-            type: array
-            items:
-              type: string
-      haproxy:
-        type: object
-        properties:
-          enabled:
-            type: boolean
-          ports:
-            type: array
-            items:
-              type: string
-      image_registry:
         type: object
         properties:
           enabled:
@@ -99,24 +72,6 @@ properties:
             type: array
             items:
               type: string
-      kubernetes_master:
-        type: object
-        properties:
-          enabled:
-            type: boolean
-          ports:
-            type: array
-            items:
-              type: string
-      kubernetes_node:
-        type: object
-        properties:
-          enabled:
-            type: boolean
-          ports:
-            type: array
-            items:
-              type: string
       node_exporter:
         type: object
         properties:
@@ -127,15 +82,6 @@ properties:
             items:
               type: string
       opensearch:
-        type: object
-        properties:
-          enabled:
-            type: boolean
-          ports:
-            type: array
-            items:
-              type: string
-      postgresql:
         type: object
         properties:
           enabled:

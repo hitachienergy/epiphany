@@ -7,7 +7,5 @@
   become_flags: --login
   tasks:
     - import_role:
-        name: helm_charts
-    - import_role:
         name: repository
         tasks_from: setup

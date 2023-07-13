@@ -9,10 +9,6 @@ specification:
   apply_configuration: false      # if false only service state is managed
   managed_zone_name: epiphany
   rules:
-    applications:
-      enabled: false
-      ports:
-        - 30104/tcp       # auth-service
     common: # for all inventory hosts
       enabled: true
       ports:
@@ -21,15 +17,6 @@ specification:
       enabled: true
       ports:
         - 3000/tcp
-    haproxy:
-      enabled: true
-      ports:
-        - 443/tcp
-        - 9000/tcp # stats and metrics
-    image_registry:
-      enabled: true
-      ports:
-        - 5000/tcp
     jmx_exporter:
       enabled: true
       ports:
@@ -48,20 +35,6 @@ specification:
       enabled: true
       ports:
         - 5601/tcp
-    kubernetes_master:
-      enabled: true
-      ports:
-        - 6443/tcp      # API server
-        - 2379-2380/tcp # etcd server client API
-        - 8472/udp      # flannel (vxlan backend)
-        - 10250/tcp     # Kubelet API
-        - 10251/tcp     # kube-scheduler
-        - 10252/tcp     # kube-controller-manager
-    kubernetes_node:
-      enabled: true
-      ports:
-        - 8472/udp  # flannel (vxlan backend)
-        - 10250/tcp # Kubelet API
     opensearch:
       enabled: true
       ports:
@@ -70,10 +43,6 @@ specification:
       enabled: true
       ports:
         - 9100/tcp
-    postgresql:
-      enabled: true
-      ports:
-        - 5432/tcp
     prometheus:
       enabled: true
       ports:

@@ -20,9 +20,5 @@ properties:
         properties:
           files:
             type: boolean
-          helm_charts:
-            type: boolean
-          images:
-            type: boolean
           packages:
             type: boolean

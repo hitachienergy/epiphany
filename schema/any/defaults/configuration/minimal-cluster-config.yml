@@ -13,15 +13,6 @@ specification:
       count: 1
       machines:
         - default-repository
-    kubernetes_master:
-      count: 1
-      machines:
-        - default-k8s-master1
-    kubernetes_node:
-      count: 2
-      machines:
-        - default-k8s-node1
-        - default-k8s-node2
     logging:
       count: 1
       machines:
@@ -35,14 +26,6 @@ specification:
       machines:
         - default-kafka1
         - default-kafka2
-    postgresql:
-      count: 1
-      machines:
-        - default-postgresql
-    load_balancer:
-      count: 1
-      machines:
-        - default-loadbalancer
 ---
 kind: infrastructure/machine
 provider: any
@@ -50,27 +33,6 @@ name: default-repository
 specification:
   hostname: repository # YOUR-MACHINE-HOSTNAME
   ip: 192.168.100.112 # YOUR-MACHINE-IP
----
-kind: infrastructure/machine
-provider: any
-name: default-k8s-master1
-specification:
-  hostname: master1 # YOUR-MACHINE-HOSTNAME
-  ip: 192.168.100.101 # YOUR-MACHINE-IP
----
-kind: infrastructure/machine
-provider: any
-name: default-k8s-node1
-specification:
-  hostname: node1 # YOUR-MACHINE-HOSTNAME
-  ip: 192.168.100.102 # YOUR-MACHINE-IP
----
-kind: infrastructure/machine
-provider: any
-name: default-k8s-node2
-specification:
-  hostname: node2 # YOUR-MACHINE-HOSTNAME
-  ip: 192.168.100.103 # YOUR-MACHINE-IP
 ---
 kind: infrastructure/machine
 provider: any
@@ -99,17 +61,4 @@ name: default-kafka2
 specification:
   hostname: kafka2 # YOUR-MACHINE-HOSTNAME
   ip: 192.168.100.108 # YOUR-MACHINE-IP
----
-kind: infrastructure/machine
-provider: any
-name: default-postgresql
-specification:
-  hostname: postgresql # YOUR-MACHINE-HOSTNAME
-  ip: 192.168.100.109 # YOUR-MACHINE-IP
----
-kind: infrastructure/machine
-provider: any
-name: default-loadbalancer
-specification:
-  hostname: loadbalancer # YOUR-MACHINE-HOSTNAME
-  ip: 192.168.100.110 # YOUR-MACHINE-IP
+

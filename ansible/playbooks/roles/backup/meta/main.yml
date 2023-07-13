@@ -1,5 +1,0 @@
----
-dependencies:
-  - role: preflight_facts
-    when:
-      - specification.components.kubernetes.enabled

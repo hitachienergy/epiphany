@@ -1,8 +1,0 @@
----
-# Ansible playbook that creates local docker image registry
-
-- hosts: image_registry
-  become: true
-  become_method: sudo
-  roles:
-    - image_registry

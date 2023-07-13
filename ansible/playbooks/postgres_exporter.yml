@@ -1,6 +1,0 @@
----
-- hosts: postgres_exporter
-  become: true
-  become_method: sudo
-  roles:
-    - postgres_exporter

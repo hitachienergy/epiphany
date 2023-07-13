@@ -2,9 +2,6 @@
 local_repository_url: "http://{{ hostvars[groups.repository[0]].ansible_default_ipv4.address }}/epirepo"
 repository_url: "{{ custom_repository_url | default(local_repository_url, true) }}"
 
-local_image_registry: "{{ groups.image_registry[0] }}:5000"
-image_registry_address: "{{ custom_image_registry_address | default(local_image_registry, true) }}"
-
 kubeconfig:
   local: "{{ inventory_dir }}/kubeconfig"
   remote: /etc/kubernetes/admin.conf

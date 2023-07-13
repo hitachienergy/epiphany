@@ -1,7 +1,0 @@
----
-- name: Primary | Remove temporary files
-  file:
-    path: "{{ item }}"
-    state: absent
-  loop:
-    - "{{ pg_upgrade_working_dir }}/rollback-upgrade.sh"

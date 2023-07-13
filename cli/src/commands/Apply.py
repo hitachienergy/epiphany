@@ -88,8 +88,6 @@ class Apply(Step):
             schema_validator.run()
 
         # Some other general checks we should add with advanced schema validation later
-        self.assert_no_master_downscale()
-        self.assert_no_postgres_nodes_number_change()
         self.assert_compatible_terraform()
         self.assert_consistent_os_family()
 
@@ -167,26 +165,6 @@ class Apply(Step):
         if len(os_indicators) > 1:
             raise Exception("Detected mixed Linux distros in config, Epirepo will not work properly. Please inspect your config manifest. Forgot to define repository VM document?")
 
-    def assert_no_master_downscale(self):
-        components = self.output_mhandler.cluster_model.specification.components
-
-        # Skip downscale assertion for single machine clusters
-        if ('single_machine' in components) and (int(components['single_machine']['count']) > 0):
-            return
-
-        if self.inventory:
-            both_present = all([
-                'kubernetes_master' in self.inventory.list_groups(),
-                'kubernetes_master' in components,
-            ])
-
-            if both_present:
-                prev_master_count = len(self.inventory.list_hosts(pattern='kubernetes_master'))
-                next_master_count = int(components['kubernetes_master']['count'])
-
-                if prev_master_count > next_master_count:
-                    raise Exception("ControlPlane downscale is not supported yet. Please revert your 'kubernetes_master' count to previous value or increase it to scale up Kubernetes.")
-
     def __load_configuration_doc(self, kind: str) -> dict:
         doc = self.input_mhandler[kind]
 
@@ -195,21 +173,3 @@ class Apply(Step):
                 return doc_merger.run()[0]
         else:
             return load_schema_obj(schema_types.DEFAULT, 'common', kind)
-
-
-    def assert_no_postgres_nodes_number_change(self):
-        feature_mappings = self.__load_configuration_doc('configuration/feature-mappings')
-        features = self.__load_configuration_doc('configuration/features')
-
-        components = self.output_mhandler.cluster_model.specification.components
-        if self.inventory:
-            next_postgres_node_count = 0
-            prev_postgres_node_count = len(self.inventory.list_hosts(pattern='postgresql'))
-            postgres_available = [x for x in features.specification.features if x.name == 'postgresql']
-            if postgres_available[0].enabled:
-                for key, features in feature_mappings.specification.mappings.items():
-                    if ('postgresql') in features and key in components:
-                        next_postgres_node_count = next_postgres_node_count + components[key].count
-
-            if prev_postgres_node_count > 0 and prev_postgres_node_count != next_postgres_node_count:
-                    raise Exception("Postgresql scaling is not supported yet. Please revert your 'postgresql' node count to previous value.")

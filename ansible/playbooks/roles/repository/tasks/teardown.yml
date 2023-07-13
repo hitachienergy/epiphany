@@ -1,6 +1,4 @@
 ---
-- import_tasks: gather-facts.yml
-
 - name: Restore repositories to initial state
   block:
     - name: Re-enable system repositories
@@ -33,22 +31,6 @@
     - specification.teardown.remove.packages is defined
     - specification.teardown.remove.packages
 
-- name: Remove Helm charts from epirepo
-  file:
-    state: absent
-    path: "{{ apache_epirepo_path }}/charts"
-  when:
-    - specification.teardown.remove.helm_charts is defined
-    - specification.teardown.remove.helm_charts
-
-- name: Remove Docker images from epirepo
-  file:
-    state: absent
-    path: "{{ apache_epirepo_path }}/images"
-  when:
-    - specification.teardown.remove.images is defined
-    - specification.teardown.remove.images
-
 - name: Remove files directory from epirepo
   file:
     state: absent
@@ -66,7 +48,6 @@
       include_tasks: firewall/clean-up-rule.yml
   when:
     - not custom_repository_url
-    - inventory_hostname in target_repository_hostnames
     - specification.teardown.disable_http_server
 
 - name: Clean up temporary files

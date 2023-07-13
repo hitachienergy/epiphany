@@ -22,20 +22,6 @@ specification:
       use_network_security_groups: True
     default_os_image: default
   components:
-    kubernetes_master:
-      count: 1
-      machine: kubernetes-master-machine
-      configuration: default
-      subnets:
-        - address_pool: 10.1.1.0/24
-          availability_zone: eu-west-2a
-    kubernetes_node:
-      count: 2
-      machine: kubernetes-node-machine
-      configuration: default
-      subnets:
-        - address_pool: 10.1.1.0/24
-          availability_zone: eu-west-2a
     logging:
       count: 1
       machine: logging-machine
@@ -56,20 +42,6 @@ specification:
       configuration: default
       subnets:
         - address_pool: 10.1.5.0/24
-          availability_zone: eu-west-2a
-    postgresql:
-      count: 0
-      machine: postgresql-machine
-      configuration: default
-      subnets:
-        - address_pool: 10.1.6.0/24
-          availability_zone: eu-west-2a
-    load_balancer:
-      count: 1
-      machine: load-balancer-machine
-      configuration: default
-      subnets:
-        - address_pool: 10.1.7.0/24
           availability_zone: eu-west-2a
     repository:
       count: 1

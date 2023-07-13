@@ -75,61 +75,6 @@ filebeat.inputs:
   # Note: After is the equivalent to previous and before is the equivalent to to next in Logstash
   #multiline.match: after
 
-{% if 'postgresql' in group_names %}
-
-# -------------------------- PostgreSQL input --------------------------
-
-# Filebeat postgresql module doesn't support custom log_line_prefix (without patching), see https://discuss.elastic.co/t/filebeats-with-postgresql-module-custom-log-line-prefix/204457
-# Dedicated configuration to handle log messages spanning multiple lines.
-
-{# postgresql only #}
-- type: log
-  enabled: true
-  paths:
-    - /var/log/postgresql/postgresql*.log*
-  exclude_files: [".gz$"]
-  {% if specification.postgresql_input.multiline is defined %}
-  multiline:
-    {% for k, v in specification.postgresql_input.multiline.items() %}
-    {{ k }}: {{ v }}
-    {% endfor %}
-  {% endif %}
-
-{# postgresql extensions - logs without multiline entries #}
-- type: log
-  enabled: true
-  paths:
-    - /var/log/postgresql/repmgr.log*
-  exclude_files: [".gz$"]
-{% endif %}
-
-{% if 'kubernetes_master' in group_names or 'kubernetes_node' in group_names %}
-
-# -------------------------- Kubernetes input --------------------------
-
-# K8s metadata are fetched from Docker labels to not make Filebeat on worker nodes dependent on K8s master
-# since Filebeat should start even if K8s master is not available.
-
-- type: container
-  enabled: true
-  format: cri
-  paths:
-    - /var/log/containers/*.log
-  {% if specification.container_input.multiline is defined %}
-  multiline:
-    {% for k, v in specification.container_input.multiline.items() %}
-    {{ k }}: {{ v }}
-    {% endfor %}
-  {% endif %}
-
-  processors:
-    - dissect:
-        tokenizer: "/var/log/containers/%{kubernetes.pod.name}_%{kubernetes.namespace}_%{container.id}.log"
-        field: "log.file.path"
-        target_prefix: ""
-        overwrite_keys: true
-{% endif %}
-
 # ============================== Filebeat modules ==============================
 
 filebeat.config.modules:

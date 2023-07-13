@@ -7,20 +7,4 @@ Keep data structure in sync with Helm chart's values.
 ref: https://github.com/codecentric/helm-charts/blob/keycloakx-1.6.1/charts/keycloakx/values.yaml
 -#}
 
-{% if specification.image_registry.use_local %}
-image:
-  repository: {{ image_registry_address }}/{{ _chart_values.image.repository }}
-dbchecker:
-  image:
-    repository: {{ image_registry_address }}/{{ _chart_values.dbchecker.image.repository }}
-{% endif %}
-
-{% if specification.database.epiphany_managed and _chart_values.database.hostname | lower == 'autoconfigured' %}
-database:
-  {% set pgbouncer_items = applications_vars.specification.applications | default([]) | selectattr('name', '==', 'pgbouncer') %}
-  {% if pgbouncer_items | count > 0 and pgbouncer_items[0].enabled is defined and pgbouncer_items[0].enabled %}
-  hostname: {{ pgbouncer_items[0].pgbouncer.env.DB_HOST }}
-  {% else %}
-  hostname: {{ hostvars[groups.postgresql[0]].ansible_default_ipv4.address }}
-  {% endif %}
-{% endif %}
+{}

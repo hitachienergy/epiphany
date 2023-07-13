@@ -59,118 +59,6 @@ specification:
 kind: infrastructure/virtual-machine
 title: "Virtual Machine Infra"
 provider: aws
-name: load-balancer-machine
-specification:
-  size: t3.micro
-  os_type: linux
-  security:
-    rules:
-     - _merge: true
-     - name: haproxy_metrics
-       description: Allow haproxy_metrics traffic
-       direction: Inbound
-       protocol: Tcp
-       destination_port_range: "9101"
-       source_address_prefix: "10.1.0.0/20"
-       destination_address_prefix: "0.0.0.0/0"
----
-kind: infrastructure/virtual-machine
-title: "Virtual Machine Infra"
-provider: aws
-name: kubernetes-master-machine
-specification:
-  size: t3.medium
-  authorized_to_efs: true
-  mount_efs: true
-  security:
-    rules:
-     - _merge: true
-     - name: repository
-       description: Allow repository traffic
-       direction: Inbound
-       protocol: Tcp
-       destination_port_range: "80"
-       source_address_prefix: "10.1.0.0/20"
-       destination_address_prefix: "0.0.0.0/0"
-     - name: subnet-traffic
-       description: Allow subnet traffic
-       direction: Inbound
-       protocol: ALL
-       destination_port_range: "0"
-       source_address_prefix: "10.1.1.0/24"
-       destination_address_prefix: "0.0.0.0/0"
-     - name: monitoring-traffic
-       description: Allow monitoring subnet traffic
-       direction: Inbound
-       protocol: ALL
-       destination_port_range: "0"
-       source_address_prefix: "10.1.4.0/24"
-       destination_address_prefix: "0.0.0.0/0"
-     - name: node-subnet-traffic
-       description: Allow node subnet traffic
-       direction: Inbound
-       protocol: ALL
-       destination_port_range: "0"
-       source_address_prefix: "10.1.2.0/24"
-       destination_address_prefix: "0.0.0.0/0"
-     - name: node2-subnet-traffic
-       description: Allow node subnet traffic
-       direction: Inbound
-       protocol: ALL
-       destination_port_range: "0"
-       source_address_prefix: "10.1.4.0/24"
-       destination_address_prefix: "0.0.0.0/0"
-     - name: load-balancer-subnet-traffic
-       description: Allow load-balancer subnet traffic
-       direction: Inbound
-       protocol: ALL
-       destination_port_range: "0"
-       source_address_prefix: "10.1.7.0/24"
-       destination_address_prefix: "0.0.0.0/0"
----
-kind: infrastructure/virtual-machine
-title: "Virtual Machine Infra"
-provider: aws
-name: kubernetes-node-machine
-specification:
-  size: t3.medium
-  authorized_to_efs: true
-  mount_efs: true
-  security:
-    rules:
-     - _merge: true
-     - name: subnet-traffic
-       description: Allow master subnet traffic
-       direction: Inbound
-       protocol: ALL
-       destination_port_range: "0"
-       source_address_prefix: "10.1.1.0/24"
-       destination_address_prefix: "0.0.0.0/0"
-     - name: monitoring-traffic
-       description: Allow monitoring subnet traffic
-       direction: Inbound
-       protocol: ALL
-       destination_port_range: "0"
-       source_address_prefix: "10.1.4.0/24"
-       destination_address_prefix: "0.0.0.0/0"
-     - name: node-subnet-traffic
-       description: Allow node subnet traffic
-       direction: Inbound
-       protocol: ALL
-       destination_port_range: "0"
-       source_address_prefix: "10.1.2.0/24"
-       destination_address_prefix: "0.0.0.0/0"
-     - name: load-balancer-subnet-traffic
-       description: Allow load-balancer subnet traffic
-       direction: Inbound
-       protocol: ALL
-       destination_port_range: "0"
-       source_address_prefix: "10.1.7.0/24"
-       destination_address_prefix: "0.0.0.0/0"
----
-kind: infrastructure/virtual-machine
-title: "Virtual Machine Infra"
-provider: aws
 name: kafka-machine
 specification:
   size: t3.medium
@@ -268,44 +156,6 @@ specification:
 kind: infrastructure/virtual-machine
 title: "Virtual Machine Infra"
 provider: aws
-name: postgresql-machine
-specification:
-  size: t3.medium
-  security:
-    rules:
-     - _merge: true
-     - name: postgres_exporter
-       description: Allow postgres exporter traffic
-       direction: Inbound
-       protocol: Tcp
-       destination_port_range: "9187"
-       source_address_prefix: "10.1.0.0/20"
-       destination_address_prefix: "0.0.0.0/0"
-     - name: kubernetes-traffic
-       description: Allow Kubernetes subnet traffic
-       direction: Inbound
-       protocol: ALL
-       destination_port_range: "0"
-       source_address_prefix: "10.1.1.0/24"
-       destination_address_prefix: "0.0.0.0/0"
-     - name: kubernetes-traffic2
-       description: Allow Kubernetes subnet traffic
-       direction: Inbound
-       protocol: ALL
-       destination_port_range: "0"
-       source_address_prefix: "10.1.2.0/24"
-       destination_address_prefix: "0.0.0.0/0"
-     - name: postgres_clustering
-       description: Allow Postgres clustering traffic
-       direction: Inbound
-       protocol: Tcp
-       destination_port_range: "5432"
-       source_address_prefix: "10.1.6.0/24"
-       destination_address_prefix: "0.0.0.0/0"
----
-kind: infrastructure/virtual-machine
-title: "Virtual Machine Infra"
-provider: aws
 name: logging-machine
 specification:
   size: t3.large
@@ -386,4 +236,3 @@ specification:
        destination_port_range: "5000"
        source_address_prefix: "10.1.0.0/20"
        destination_address_prefix: "0.0.0.0/0"
-

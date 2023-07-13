@@ -6,18 +6,11 @@ Note that versions are default versions and can be changed in certain cases thro
 
 | Component                  | Version  | Repo/Website                                          | License                                                           |
 | -------------------------- | -------- | ----------------------------------------------------- | ----------------------------------------------------------------- |
-| Kubernetes                 | 1.22.4   | https://github.com/kubernetes/kubernetes              | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| Kubernetes Dashboard       | 2.3.1    | https://github.com/kubernetes/dashboard               | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| Kubernetes metrics-scraper | 1.0.7    | https://github.com/kubernetes-sigs/dashboard-metrics-scraper | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| containerd                 | 1.5.11   | https://github.com/containerd/containerd | [Apache License 2.0](https://github.com/containerd/containerd/blob/main/LICENSE) |
-| Calico                     | 3.23.3   | https://github.com/projectcalico/calico               | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| Flannel                    | 0.14.0   | https://github.com/coreos/flannel/                    | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)     |
-| Canal                      | 3.23.3   | https://github.com/projectcalico/calico               | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| Coredns                    | 1.8.4    | https://github.com/coredns/coredns                    | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
+| Alertmanager               | 0.23.0   | https://github.com/prometheus/alertmanager            | [Apache License 2.0](https://github.com/prometheus/alertmanager/blob/master/LICENSE) |
+| Apache2                    | 2.4.29   | https://httpd.apache.org/                             | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | curator-opensearch         | 0.0.9    | https://github.com/flant/curator-opensearch           | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Kafka                      | 2.8.1    | https://github.com/apache/kafka                       | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Zookeeper                  | 3.5.8    | https://github.com/apache/zookeeper                   | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| Docker CE                  | 20.10.8  | https://docs.docker.com/engine/release-notes/         | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | KeyCloak                   | 20.0.5-0 | https://github.com/keycloak/keycloak                  | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Filebeat                   | 7.12.1    | https://github.com/elastic/beats                      | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Filebeat Helm Chart        | 7.12.1    | https://github.com/elastic/helm-charts                | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
@@ -29,14 +22,6 @@ Note that versions are default versions and can be changed in certain cases thro
 | JMX Exporter               | 0.16.1   | https://github.com/prometheus/jmx_exporter            | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | OpenSearch                 | 2.8.0    | https://github.com/opensearch-project/OpenSearch      | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | OpenSearch Dashboards      | 2.8.0    | https://github.com/opensearch-project/OpenSearch-Dashboards | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| Postgres Exporter          | 0.10.0    | https://github.com/prometheus-community/postgres_exporter | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| PostgreSQL                 | 13       | https://www.postgresql.org/                           | [PostgreSQL license](http://www.postgresql.org/about/licence/)    |
-| HAProxy                    | 2.2.2    | https://www.haproxy.org/                              | [GNU General Public License 2.0](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html) |
-| PgAudit                    | 1.5.0    | https://github.com/pgaudit/pgaudit                    | [PostgreSQL license](http://www.postgresql.org/about/licence/)    |
-| repmgr                     | 5.2.1    | https://github.com/EnterpriseDB/repmgr                | [GNU General Public License 3.0](https://github.com/EnterpriseDB/repmgr/blob/master/LICENSE) |
-| Pgpool                     | 4.2.4    | https://www.pgpool.net/                               | [License](https://www.pgpool.net/mediawiki/index.php/pgpool-II_License) |
-| Alertmanager               | 0.23.0   | https://github.com/prometheus/alertmanager            | [Apache License 2.0](https://github.com/prometheus/alertmanager/blob/master/LICENSE) |
-| Apache2                    | 2.4.29   | https://httpd.apache.org/                             | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 
 ## Epicli binary dependencies
 

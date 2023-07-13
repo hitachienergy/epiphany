@@ -8,8 +8,3 @@ specification:
       index: filebeat-*
       enabled: auto
   disable_helm_chart: false
-  postgresql_input:
-    multiline:
-      pattern: '''^\d{4}-\d{2}-\d{2} '''
-      negate: true
-      match: after

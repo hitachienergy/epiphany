@@ -10,6 +10,4 @@ specification:
     disable_http_server: true # whether to stop and disable Apache HTTP Server service
     remove:
       files: false
-      helm_charts: false
-      images: false
       packages: false

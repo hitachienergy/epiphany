@@ -1,18 +1,4 @@
 ---
-- name: Provide database
-  when: specification.database.epiphany_managed
-  vars:
-    _chart_values: "{{ specification.chart_values }}"
-  block:
-    - name: Include vars from application role
-      include_vars:
-        file: roles/applications/vars/main.yml
-        name: applications_vars
-      when: groups.applications is defined
-
-    - name: Include database configuration when Epiphany storage is used
-      include_tasks: create-database.yml
-
 - name: Download Keycloak Helm chart
   include_role:
     name: download

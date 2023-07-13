@@ -30,23 +30,6 @@ filebeatConfig:
         - /var/log/secure
         - /var/log/syslog
 
-{# -------------------------- PostgreSQL input -------------------------- #}
-
-{% if 'postgresql' in groups %}
-{# configuration based on postgresql module #}
-    - type: log
-      enabled: true
-      paths:
-        - /var/log/postgresql/*.log*
-      exclude_files: [".gz$"]
-{% if specification.postgresql_input.multiline is defined %}
-      multiline:
-{% for k, v in specification.postgresql_input.multiline.items() %}
-        {{ k }}: {{ v }}
-{% endfor %}
-{% endif %}
-{% endif %}
-
 {# -------------------------- Kubernetes input -------------------------- #}
 
 {% if (k8s_as_cloud_service is defined and k8s_as_cloud_service) or ('kubernetes_master' in groups or 'kubernetes_node' in groups) %}

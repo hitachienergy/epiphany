@@ -1,6 +1,4 @@
 ---
-- import_tasks: gather-facts.yml
-
 - name: Set mode
   set_fact:
     offline_mode: "{{ offline_requirements | length > 0 }}"
@@ -42,7 +40,6 @@
   when:
     - not offline_mode
     - not custom_repository_url
-    - inventory_hostname in target_repository_hostnames
 
 - name: Copy repository client configuration scripts
   copy:
@@ -57,13 +54,11 @@
     mode: a+x
   when:
     - not custom_repository_url
-    - inventory_hostname in target_repository_hostnames
 
 - include_tasks: check-whether-to-run-download.yml  # sets 'skip_download_requirements_script'
   when:
     - not offline_mode
     - not custom_repository_url
-    - inventory_hostname in target_repository_hostnames
 
 - name: Clean up epirepo
   block:
@@ -91,7 +86,6 @@
       files: "{{ _arch_dir }}/files.yml"
   when:
     - is_upgrade_run
-    - inventory_hostname in target_repository_hostnames
     - custom_repository_url or
       offline_mode or
       not skip_download_requirements_script  # do not clean up when skipping download
@@ -106,7 +100,6 @@
   when:
     - offline_mode
     - not custom_repository_url
-    - inventory_hostname in target_repository_hostnames
 
 # Put it down here as the script download-requirements.sh relies on some files
 # in the folder /var/tmp/epi-repository-setup-scripts that until now it should be available
@@ -115,14 +108,7 @@
   when:
     - not offline_mode
     - not custom_repository_url
-    - inventory_hostname in target_repository_hostnames
     - not skip_download_requirements_script
 
 - name: Set up repositories
   include_tasks: "{{ ansible_os_family }}/setup.yml"
-
-- name: Include Helm repository creation
-  include_tasks: "create-helm-repo.yml"
-  when:
-    - inventory_hostname == target_repository_hostnames[0]
-    - (groups['kubernetes_master'] is defined and inventory_hostname in groups['kubernetes_master'])

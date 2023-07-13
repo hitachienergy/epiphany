@@ -1,7 +1,0 @@
----
-- name: K8s/master | Patch keycloak's statefulset
-  include_role:
-    name: upgrade
-    tasks_from: kubernetes/utils/patch-statefulset.yml
-  vars:
-    image_regexp: '.*/keycloak:.*'

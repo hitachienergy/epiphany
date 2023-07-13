@@ -1,7 +1,0 @@
----
-# Expected vars:
-# - packages (list)
-
-- name: "K8s/install | Hold packages: {{ packages | join( ', ' ) }}"
-  command: >-
-    apt-mark hold {{ packages | join( ' ' ) }}

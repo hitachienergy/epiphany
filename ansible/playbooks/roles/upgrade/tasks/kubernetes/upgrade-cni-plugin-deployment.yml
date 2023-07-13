@@ -1,9 +1,0 @@
----
-# Note: If DaemonSet has updateStrategy 'OnDelete', then applying deployment file does not upgrade existing pods.
-- name: K8s/master | Upgrade network plugin
-  include_role:
-    name: kubernetes_master
-    tasks_from: apply-cni-plugin
-  vars:
-    network_plugin: "{{ cni_plugin_name }}"
-    k8s_server_version: "{{ cluster_version }}"

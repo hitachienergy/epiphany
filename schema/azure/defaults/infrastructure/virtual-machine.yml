@@ -75,106 +75,6 @@ specification:
 kind: infrastructure/virtual-machine
 title: "Virtual Machine Infra"
 provider: azure
-name: kubernetes-master-machine
-specification:
-  size: Standard_DS2_v2
-  security:
-    rules:
-      - _merge: true
-      - name: subnet-traffic
-        description: Allow subnet traffic
-        priority: 201
-        direction: Inbound
-        access: Allow
-        protocol: "*"
-        source_port_range: "*"
-        destination_port_range: "0"
-        source_address_prefix: "10.1.1.0/24"
-        destination_address_prefix: "0.0.0.0/0"
-      - name: monitoring-traffic
-        description: Allow monitoring subnet traffic
-        priority: 203
-        direction: Inbound
-        access: Allow
-        protocol: "*"
-        source_port_range: "*"
-        destination_port_range: "0"
-        source_address_prefix: "10.1.4.0/24"
-        destination_address_prefix: "0.0.0.0/0"
-      - name: node-subnet-traffic
-        description: Allow node subnet traffic
-        priority: 204
-        direction: Inbound
-        access: Allow
-        protocol: "*"
-        source_port_range: "*"
-        destination_port_range: "0"
-        source_address_prefix: "10.1.2.0/24"
-        destination_address_prefix: "0.0.0.0/0"
-      - name: package_repository
-        description: Allow package repository traffic
-        priority: 205
-        direction: Inbound
-        access: Allow
-        protocol: Tcp
-        source_port_range: "*"
-        destination_port_range: "80"
-        source_address_prefix: "10.1.0.0/20"
-        destination_address_prefix: "0.0.0.0/0"
-      - name: image_repository
-        description: Allow image repository traffic
-        priority: 206
-        direction: Inbound
-        access: Allow
-        protocol: Tcp
-        source_port_range: "*"
-        destination_port_range: "5000"
-        source_address_prefix: "10.1.0.0/20"
-        destination_address_prefix: "0.0.0.0/0"
----
-kind: infrastructure/virtual-machine
-title: "Virtual Machine Infra"
-provider: azure
-name: kubernetes-node-machine
-specification:
-  size: Standard_DS1_v2
-  security:
-    rules:
-      - _merge: true
-      - name: subnet-traffic
-        description: Allow master subnet traffic
-        priority: 201
-        direction: Inbound
-        access: Allow
-        protocol: "*"
-        source_port_range: "*"
-        destination_port_range: "0"
-        source_address_prefix: "10.1.1.0/24"
-        destination_address_prefix: "0.0.0.0/0"
-      - name: monitoring-traffic
-        description: Allow monitoring subnet traffic
-        priority: 203
-        direction: Inbound
-        access: Allow
-        protocol: "*"
-        source_port_range: "*"
-        destination_port_range: "0"
-        source_address_prefix: "10.1.4.0/24"
-        destination_address_prefix: "0.0.0.0/0"
-      - name: node-subnet-traffic
-        description: Allow node subnet traffic
-        priority: 204
-        direction: Inbound
-        access: Allow
-        protocol: "*"
-        source_port_range: "*"
-        destination_port_range: "0"
-        source_address_prefix: "10.1.2.0/24"
-        destination_address_prefix: "0.0.0.0/0"
----
-kind: infrastructure/virtual-machine
-title: "Virtual Machine Infra"
-provider: azure
 name: kafka-machine
 specification:
   size: Standard_DS2_v2
@@ -305,36 +205,6 @@ specification:
 kind: infrastructure/virtual-machine
 title: "Virtual Machine Infra"
 provider: azure
-name: postgresql-machine
-specification:
-  size: Standard_DS1_v2
-  security:
-    rules:
-      - _merge: true
-      - name: postgres_exporter
-        description: Allow postgres exporter traffic
-        priority: 201
-        direction: Inbound
-        access: Allow
-        protocol: Tcp
-        source_port_range: "*"
-        destination_port_range: "9187"
-        source_address_prefix: "10.1.0.0/20"
-        destination_address_prefix: "0.0.0.0/0"
-      - name: kubernetes-traffic
-        description: Allow Kubernetes subnet traffic
-        priority: 202
-        direction: Inbound
-        access: Allow
-        protocol: "*"
-        source_port_range: "*"
-        destination_port_range: "0"
-        source_address_prefix: "10.1.1.0/24"
-        destination_address_prefix: "0.0.0.0/0"
----
-kind: infrastructure/virtual-machine
-title: "Virtual Machine Infra"
-provider: azure
 name: logging-machine
 specification:
   size: Standard_DS2_v2
@@ -369,26 +239,6 @@ specification:
         protocol: "Tcp"
         source_port_range: "*"
         destination_port_range: "5601"
-        source_address_prefix: "10.1.0.0/20"
-        destination_address_prefix: "0.0.0.0/0"
----
-kind: infrastructure/virtual-machine
-title: "Virtual Machine Infra"
-provider: azure
-name: load-balancer-machine
-specification:
-  size: Standard_DS1_v2
-  security:
-    rules:
-      - _merge: true
-      - name: haproxy_metrics
-        description: Allow haproxy_metrics traffic
-        priority: 201
-        direction: Inbound
-        access: Allow
-        protocol: Tcp
-        source_port_range: "*"
-        destination_port_range: "9101"
         source_address_prefix: "10.1.0.0/20"
         destination_address_prefix: "0.0.0.0/0"
 ---

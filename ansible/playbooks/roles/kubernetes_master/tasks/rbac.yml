@@ -1,9 +1,0 @@
----
-- name: Upload and deploy RBAC
-  vars:
-    file_name: "{{ item }}"
-  include_tasks: deployments/deploy-file.yml
-  loop:
-    - users.yml
-    - roles.yml
-    - role-bindings.yml

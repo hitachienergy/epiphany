@@ -16,9 +16,7 @@ supported_oses:
 # The list of unsupported K8s applications per architecture
 unsupported_apps:
   x86_64: []
-  aarch64:
-    - pgbouncer
-    - pgpool
+  aarch64: []
 
 unsupported_roles:
   - distro: Ubuntu
@@ -27,23 +25,16 @@ unsupported_roles:
   - distro: Ubuntu
     arch: aarch64
     roles:
-      - applications
       - filebeat
       - firewall
       - grafana
-      - haproxy
       - helm
-      - image_registry
       - jmx_exporter
       - kafka
       - kafka_exporter
-      - kubernetes_master
-      - kubernetes_node
       - node_exporter
       - opensearch
       - opensearch_dashboards
-      - postgresql
-      - postgres_exporter
       - prometheus
       - repository
       - zookeeper
@@ -60,28 +51,20 @@ unsupported_roles:
   - distro: RedHat
     arch: aarch64
     roles:
-      - applications
       - filebeat
       - firewall
       - grafana
-      - haproxy
       - helm
-      - image_registry
       - jmx_exporter
       - kafka
       - kafka_exporter
-      - kubernetes_master
-      - kubernetes_node
       - node_exporter
       - opensearch
       - opensearch_dashboards
-      - postgresql
-      - postgres_exporter
       - prometheus
       - repository
       - zookeeper
 
 unsupported_postgres_extensions:
   x86_64: []
-  aarch64:
-    - replication
+  aarch64: []
