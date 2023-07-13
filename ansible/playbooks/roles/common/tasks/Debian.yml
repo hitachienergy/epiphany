@@ -1,6 +1,13 @@
 ---
 # Common Debian family specific tasks
 
+- name: Disable unattended-upgrades
+  systemd:
+    name: unattended-upgrades
+    masked: true
+    state: stopped
+    enabled: false
+
 - name: Install prerequisites for selinux module
   apt:
     name:
