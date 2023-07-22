@@ -19,6 +19,7 @@
 - epicli base image `python:3.10.6-slim` to `python:3.10.11-slim`
 - Prometheus: Avoid false positives from brief spikes for alert "Disk will run out of space"
 - OpenSearch to 2.8.0
+- node_exporter to 1.6.1
 
 ### Removed
 

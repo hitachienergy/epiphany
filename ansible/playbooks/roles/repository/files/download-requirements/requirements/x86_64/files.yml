@@ -15,8 +15,8 @@ files:
 
   node-exporter:
     options:
-      - url: 'https://github.com/prometheus/node_exporter/releases/download/v1.3.1/node_exporter-1.3.1.linux-amd64.tar.gz'
-        sha256: 68f3802c2dd3980667e4ba65ea2e1fb03f4a4ba026cca375f15a0390ff850949
+      - url: 'https://github.com/prometheus/node_exporter/releases/download/v1.6.1/node_exporter-1.6.1.linux-amd64.tar.gz'
+        sha256: ecc41b3b4d53f7b9c16a370419a25a133e48c09dfc49499d63bcc0c5e0cf3d01
     deps: [node-exporter]
 
   # --- Misc ---
@@ -53,15 +53,15 @@ files:
   # --- Helm charts ---
   node-exporter-chart:
     options:
-      - url: 'https://charts.bitnami.com/bitnami/node-exporter-2.3.17.tgz'
-        sha256: ec586fabb775a4f05510386899cf348391523c89ff5a1d4097b0592e675ade7f
-    deps: [kubernetes-master, k8s-as-cloud-service]
+      - url: 'https://charts.bitnami.com/bitnami/node-exporter-3.6.2.tgz'
+        sha256: c0bade03764603927d2f7b71e9a658afcb9f425e6f4f6d1968eccbe43eaf1a0a
+    deps: [k8s-as-cloud-service]
 
   filebeat-chart:
     options:
       - url: 'https://helm.elastic.co/helm/filebeat/filebeat-7.12.1.tgz'
         sha256: 5838058fe06372390dc335900a7707109cc7287a84164ca245d395af1f9c0a79
-    deps: [kubernetes-master, k8s-as-cloud-service]
+    deps: [k8s-as-cloud-service]
 
   keycloak:
     options:
