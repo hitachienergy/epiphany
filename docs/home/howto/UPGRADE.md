@@ -82,8 +82,6 @@ Your airgapped existing cluster should meet the following requirements:
 1. The cluster machines/vm`s are connected by a network or virtual network of some sorts and can communicate which each
    other and have access to the internet:
 2. The cluster machines/vm`s are **upgraded** to the following versions:
-  - AlmaLinux 8.4+
-  - RedHat 8.4+
   - Ubuntu 20.04
 3. The cluster machines/vm`s should be accessible through SSH with a set of SSH keys you provided and configured on each
    machine yourself.
@@ -114,13 +112,11 @@ Your airgapped existing cluster should meet the following requirements:
 1. The airgapped cluster machines/vm`s are connected by a network or virtual network of some sorts and can communicate
    with each other:
 2. The airgapped cluster machines/vm`s are **upgraded** to the following versions:
-  - AlmaLinux 8.4+
-  - RedHat 8.4+
   - Ubuntu 20.04
 3. The airgapped cluster machines/vm`s should be accessible through SSH with a set of SSH keys you provided and
    configured on each machine yourself.
 4. A requirements machine that:
-  - Runs the same distribution as the airgapped cluster machines/vm`s (AlmaLinux 8, RedHat 8, Ubuntu 20.04)
+  - Runs the same distribution as the airgapped cluster machines/vm`s (Ubuntu 20.04)
   - Has access to the internet.
 5. A provisioning machine that:
 - Has access to the SSH keys
@@ -146,8 +142,8 @@ To upgrade the cluster components run the following steps:
     ```
 
     Where:
-    - OS should be `almalinux-8`, `rhel-8`, `ubuntu-20.04`
-    - ARCH should be `x86_64`, `arm64`
+    - OS should be `ubuntu-20.04`
+    - ARCH should be `x86_64`
 
    This will create a directory called `prepare_scripts` with the needed files inside.
 
@@ -159,7 +155,7 @@ To upgrade the cluster components run the following steps:
     ```
 
     Where:
-    - OS should be `almalinux-8`, `rhel-8`, `ubuntu-20.04`, `detect`
+    - OS should be `ubuntu-20.04`, `detect`
     - /requirementsoutput/ where to output downloaded requirements
 
     This will run the download-requirements script for target OS type and save requirements under /requirementsoutput/. Once run successfully the `/requirementsoutput/` needs to be copied to the provisioning machine to be used later on.
@@ -257,23 +253,6 @@ specification:
 ...
 ```
 
-## Kubernetes applications
-
-To upgrade applications on Kubernetes to the desired version after `epicli upgrade` you have to:
-
-- generate new configuration manifest using `epicli init`
-- in case of generating minimal configuration manifest (without --full argument), copy and
-  paste [the default configuration](/schema/common/defaults/configuration/applications.yml)
-  into it
-- run `epicli apply`
-
----
-**NOTE**
-
-The above link points to develop branch. Please choose the right branch that suits to Epiphany version you are using.
-
----
-
 ## How to upgrade Kafka
 
 ### Kafka upgrade
@@ -306,210 +285,3 @@ with [breaking changes](https://github.com/prometheus/node_exporter/releases/tag
 Starting from Epiphany v0.8.0 it's possible to upgrade node exporter according
 to [components](/docs/home/COMPONENTS.md) file. Upgrade will
 be performed automatically when the upgrade procedure detects node exporter hosts.
-
-## Kubernetes upgrade
-
-### Prerequisites
-
-Before K8s version upgrade make sure that deprecated API versions are not used:
-
-- [v1.19](https://v1-19.docs.kubernetes.io/docs/setup/release/notes/#deprecation)
-- [v1.20](https://v1-20.docs.kubernetes.io/docs/setup/release/notes/#deprecation)
-- [v1.21](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.21.md)
-- [v1.22](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.22.md)
-
-## PostgreSQL upgrade
-
----
-**NOTE**
-
-Before upgrade procedure, make sure you have a data backup.
-
----
-
-### Versions
-
-Epiphany upgrades PostgreSQL 10 to 13 with the following extensions
-(for versions, see [COMPONENTS.md](../COMPONENTS.md#epiphany-cluster-components)):
-
-- PgAudit
-- PgBouncer
-- PgPool
-- repmgr
-
-### Prerequisites
-
-The prerequisites below are checked by the preflight script before upgrading PostgreSQL. Nevertheless, it's good to
-check these manually before doing any upgrade:
-
-- Diskspace: When Epiphany upgrades PostgreSQL 10 to 13 it will make a copy of the data directory on each node to ensure
-  easy recovery in the case of a failed data migration. It is up to the user to make sure there is enough space
-  available. The used rule is:
-
-  total storage used on the data volume + total size of the data directory < 95% of total size of the data volume
-
-  We use 95% of used storage after data directory copy as some space is needed during the upgrade.
-
-- Cluster health: Before starting the upgrade the state of the PostgreSQL cluster needs to be healthy. This means that
-  executing:
-
-  ```shell
-  repmgr cluster show
-  repmgr node check
-  test $(repmgr node check | grep -c CRITICAL) -eq 0
-  ```
-
-  Should not fail and return 0 as exit code.
-
-### Upgrade
-
-Upgrade procedure is based on [PostgreSQL documentation](https://www.postgresql.org/docs/13/pgupgrade.html) and requires
-downtime as there is a need to stop old service(s) and start new one(s).
-
-There is a possibility to provide a custom configuration for upgrade with `epicli upgrade -f`, and there are a few
-limitations related to specifying parameters for upgrade:
-
-- If there were non-default values provided for installation (`epicli apply`), they have to be used again not to be
-  overwritten by defaults.
-
-- `wal_keep_segments` parameter for replication is replaced
-  by [wal_keep_size](https://www.postgresql.org/docs/13/runtime-config-replication.html#GUC-WAL-KEEP-SIZE) with the
-  default value of 500 MB. Previous parameter is not supported.
-
-- `archive_command` parameter for replication is set to `/bin/true` by default. It was planned to disable archiving, but
-  changes to `archive_mode` require a full PostgreSQL server restart, while `archive_command` changes can be applied via
-  a normal configuration reload. See [documentation](https://repmgr.org/docs/repmgr.html#CONFIGURATION-POSTGRESQL).
-
-- There is no possibility to disable an extension after installation, so `specification.extensions.*.enabled: false`
-  value will be ignored during upgrade if it was set to `true` during installation.
-
-### Manual actions
-
-Epiphany runs `pg_upgrade` (on primary node only) from a dedicated location (`pg_upgrade_working_dir`). For Ubuntu, this
-is `/var/lib/postgresql/upgrade/$PG_VERSION` and for RHEL `/var/lib/pgsql/upgrade/$PG_VERSION`. Epiphany saves
-there output from `pg_upgrade` as logs which should be checked after the upgrade.
-
-#### Post-upgrade processing
-
-As the "Post-upgrade processing" step in [PostgreSQL documentation](https://www.postgresql.org/docs/13/pgupgrade.html)
-states if any post-upgrade processing is required, `pg_upgrade` will issue warnings as it completes. It will also
-generate SQL script files that must be run by the administrator. There is no clear description in which cases they are
-created, so please check logs in `pg_upgrade_working_dir` after the upgrade to see if additional steps are required.
-
-#### Statistics
-
-Because optimizer statistics are not transferred by `pg_upgrade`, you may need to run a command to regenerate that
-information after the upgrade. For this purpose, consider running `analyze_new_cluster.sh` script (created
-in `pg_upgrade_working_dir`)
-as `postgres` user.
-
-#### Delete old cluster
-
-For safety Epiphany does not remove old PostgreSQL data. This is a user responsibility to identify if data is ready to
-be removed and take care about that. Once you are satisfied with the upgrade, you can delete the old cluster's data
-directories by running `delete_old_cluster.sh` script (created in `pg_upgrade_working_dir` on primary node) **on all
-nodes**. The script is not created if you have user-defined tablespaces inside the old data directory. You can also
-delete the old installation directories (e.g., `bin`, `share`). You may delete `pg_upgrade_working_dir`
-on primary node once the upgrade is completely over.
-
-## Terraform upgrade from Epiphany 1.x to 2.x
-
-From Epiphany 1.x to 2.x the Terraform stack received the following major updates:
-- Terraform 0.12.6 to 1.1.3
-- Azurerm provider 1.38.0 to 3.45.0
-- AWS provider 2.26 to 3.71.0
-- Removal of auto-scaling-groups in favor of plain EC2 instances on AWS.
-
-These introduce some breaking changes which will require manual steps for upgrading an existing 1.x clusters. As this is not straight forward we recommend deploying a new cluster on 2.x and migrating data instead.
-
-If you do want to upgrade a 1.x manually it will require you to upgrade between a few different versions of Terraform. The basic steps are described below for each provider. As always ensure backup of any data required.
-
-Final note is that you can also leave the Terraform in place and use the `--no-infra` flag to skip applying the new Terraform scripts. This however makes you unable to make any changes to your cluster layout.
-
-### Azure
-
-Notes:
-- If you made any manual changes to your cluster infrastructure outside of Terraform this might cause issues.
-- Some resources might be changed or added which are usually security-groups and security-groups-association or NIC's. This is normal behaviour and is ok, just make sure no other resources like VM's are included when reviewing the `terraform plan` output.
-- Only run `terraform apply` if `terraform plan` shows your infrastructure does not match the configuration.
-- Manual Terraform upgrade up to v1.0.x should be completed before running `epicli apply` command with Epiphany 2.x.
-- Terraform can be installed as a binary package or by using package managers, see more: https://learn.hashicorp.com/tutorials/terraform/install-cli
-
-#### v0.12.6 => v0.13.x
-
-The official documentation can be found here: https://www.terraform.io/language/upgrade-guides/0-13
-
-General steps:
-- Download the latest Terraform v0.13.x: https://releases.hashicorp.com/terraform/
-- Run the following sets of commands in the `build/clustername/terraform` folder and follow the steps if asked:
-  ```shell
-  terraform init
-  terraform 0.13upgrade
-  terraform plan
-  terraform apply (if needed)
-  ```
-
-#### v0.13.x => v0.14.x
-
-The official documentation can be found here: https://www.terraform.io/language/upgrade-guides/0-14
-
-General steps:
-- Download the latest Terraform v0.14.x: https://releases.hashicorp.com/terraform/
-- Run the following sets of commands in the `build/clustername/terraform` folder and follow the steps if asked:
-  ```shell
-  terraform init
-  terraform plan
-  terraform apply (if needed)
-  ```
-
-#### v0.14.x => v1.0.x
-
-Note: From v0.14.x we can upgrade straight to v1.0.x. No need to upgrade to v0.15.x first.
-
-The official documentation can be found here: https://www.terraform.io/language/upgrade-guides/1-0
-
-General steps:
-- Download the latest Terraform v1.0.x: https://releases.hashicorp.com/terraform/
-- Run the following sets of commands in the `build/clustername/terraform` folder and follow the steps if asked:
-  ```shell
-  terraform init
-  terraform plan
-  terraform apply (if needed)
-  ```
-
-#### v1.0.x => v1.1.3
-
-In this step we also force the upgrade from Azurerm provider 1.38.0 to 2.91.0 which requires a few more steps to resolve some pending issues.
-At this point, the steps assume that you are already running Epiphany 2.x image.
-
-The official documentation can be found here: https://www.terraform.io/language/upgrade-guides/1-1
-
-General steps:
-- Run epicli to generate new Azurerm provider Terraform scripts:
-  ```shell
-  epicli apply -f data.yml
-  ```
-  After the Terraform scripts generation `terraform init ...` will result in the following error:
-  `Error: Failed to query available provider packages`
-- To fix the issue from previous step manually run from the epicli container in `build/clustername/terraform`:
-  ```shell
-  terraform init -upgrade
-  ```
-- Now re-run epicli again:
-  ```shell
-  epicli apply -f data.yml
-  ```
-  This might succeed but depending on the cluster configuration this might lead to several errors for each NIC:
-  `Error: A resource with the ID "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/prefix-name-rg/providers/Microsoft.Network/networkInterfaces/prefix-name-component-nic-x|/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/prefix-name-rg/providers/Microsoft.Network/networkSecurityGroups/prefix-name-component-nsg-x" already exists - to be managed via Terraform this resource needs to be imported into the State. Please see the resource documentation for "azurerm_network_interface_security_group_association" for more information.`
-- To resolve the above error we need to import the azurerm_network_interface_security_group_association for each NIC by using the `terraform input` command for each of the above errors using the ID and the propper name from the xxx_prefix-name-component-nsga-x.tf Terraform resources like so:
-  ```shell
-  terraform import 'azurerm_network_interface_security_group_association.prefix-name-component-nsga-0' '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/prefix-name-rg/providers/Microsoft.Network/networkInterfaces/prefix-name-component-nic-x|/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/prefix-name-rg/providers/Microsoft.Network/networkSecurityGroups/prefix-name-component-nsg-x'
-  ```
-- Once all azurerm_network_interface_security_group_association are imported sucessfully you can re-run epicli apply one more time:
-  ```shell
-  epicli apply -f data.yml
-  ```
-
-### AWS
-
-The Terraform for AWS deployments between Epiphany 1.x and 2.x is not compatible and migration is not possible without destruction of the enviroment. The only options is to deploy a new cluster and migrate the data.

@@ -1,13 +1,5 @@
 ---
 supported_oses:
-  - name: AlmaLinux
-    version:
-      min: '8.4'
-      max: '8.10'
-  - name: RedHat
-    version:
-      min: '8.4'
-      max: '8.10'  # based on https://access.redhat.com/support/policy/updates/errata#RHEL8_Life_Cycle
   - name: Ubuntu
     version:
       min: '20.04'
@@ -16,55 +8,8 @@ supported_oses:
 # The list of unsupported K8s applications per architecture
 unsupported_apps:
   x86_64: []
-  aarch64: []
 
 unsupported_roles:
   - distro: Ubuntu
     arch: x86_64
     roles: []  # all supported
-  - distro: Ubuntu
-    arch: aarch64
-    roles:
-      - filebeat
-      - firewall
-      - grafana
-      - helm
-      - jmx_exporter
-      - kafka
-      - kafka_exporter
-      - node_exporter
-      - opensearch
-      - opensearch_dashboards
-      - prometheus
-      - repository
-      - zookeeper
-
-  - distro: AlmaLinux
-    arch: x86_64
-    roles: []  # all supported
-  - distro: AlmaLinux
-    arch: aarch64
-    roles: []  # all supported
-  - distro: RedHat
-    arch: x86_64
-    roles: []  # all supported
-  - distro: RedHat
-    arch: aarch64
-    roles:
-      - filebeat
-      - firewall
-      - grafana
-      - helm
-      - jmx_exporter
-      - kafka
-      - kafka_exporter
-      - node_exporter
-      - opensearch
-      - opensearch_dashboards
-      - prometheus
-      - repository
-      - zookeeper
-
-unsupported_postgres_extensions:
-  x86_64: []
-  aarch64: []

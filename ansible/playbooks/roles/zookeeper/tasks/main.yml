@@ -19,11 +19,6 @@
     _packages:
       Debian:
         - openjdk-8-jre-headless
-      RedHat:
-        - java-1.8.0-openjdk-headless
-  module_defaults:
-    yum:
-      lock_timeout: "{{ yum_lock_timeout }}"
 
 - name: Download and unpack Zookeeper's binary
   include_tasks: common/download_and_unpack_binary.yml

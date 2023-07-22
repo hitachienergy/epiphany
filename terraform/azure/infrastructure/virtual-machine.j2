@@ -35,12 +35,6 @@ resource "azurerm_virtual_machine" "{{ specification.name }}" {
   os_profile {
     computer_name  = "{{ specification.hostname }}"
     admin_username = "{{ specification.admin_username }}"
-    {%- if specification.os_type == "windows" %}
-    admin_password = "{{ specification.admin_password }}"
-    {%- endif %}
-    {%- if specification.storage_image_reference.offer == "RHEL" and specification.use_cloud_init_custom_data %}
-    custom_data    = file("${path.module}/cloud-config.yml")
-    {%- endif %}
   }
 
   {%- if specification.os_type == "linux" %}
@@ -51,10 +45,6 @@ resource "azurerm_virtual_machine" "{{ specification.name }}" {
       key_data = file("{{ specification.public_key }}")
     }
   }
-  {%- endif %}
-
-  {%- if specification.os_type == "windows" %}
-  # windows specific stuff here maybe... hopefully never.
   {%- endif %}
 
   {%- if specification.storage_os_disk.managed %}

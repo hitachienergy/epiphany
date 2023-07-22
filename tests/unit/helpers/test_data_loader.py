@@ -39,13 +39,9 @@ TEST_MINIMAL_CLUSTER_CONFIG = {
         'components':
         {
             'repository': {'count': 1},
-            'kubernetes_master': {'count': 1},
-            'kubernetes_node': {'count': 2},
             'logging': {'count': 1},
             'monitoring': {'count': 1},
-            'kafka': {'count': 2},
-            'postgresql': {'count': 1},
-            'load_balancer': {'count': 1}
+            'kafka': {'count': 2}
         }
     }
 }

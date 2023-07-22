@@ -8,14 +8,6 @@
   user:
     name: "{{ admin_user.name }}"
     shell: /bin/bash
-    groups: "{{ admin_user.name }},wheel"
-    append: true
-  when: ansible_os_family == "RedHat"
-
-- name: Ensure user {{ admin_user.name }} exists, has correct shell, and groups, and no password
-  user:
-    name: "{{ admin_user.name }}"
-    shell: /bin/bash
     groups: "{{ admin_user.name }},sudo"
     append: true
   when: ansible_os_family == "Debian"

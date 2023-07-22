@@ -100,12 +100,10 @@
           vars:
             grep_cmd:
               Debian: grep 'interface name="{{ ansible_default_ipv4.interface }}"'
-              RedHat: grep -iE "^ZONE=[\"']?{{ specification.managed_zone_name }}[\"']?$"
           when: config_file_stat.stat.exists
       vars:
         config_file_to_check:
           Debian: /etc/firewalld/zones/{{ specification.managed_zone_name }}.xml
-          RedHat: /etc/sysconfig/network-scripts/ifcfg-{{ ansible_default_ipv4.interface }}
 
     - name: Set grep result as fact
       set_fact:

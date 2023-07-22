@@ -5,11 +5,6 @@ from src.command.crane import Crane
 from src.command.debian.apt import Apt
 from src.command.debian.apt_cache import AptCache
 from src.command.debian.apt_key import AptKey
-from src.command.redhat.dnf import Dnf
-from src.command.redhat.dnf_config_manager import DnfConfigManager
-from src.command.redhat.dnf_download import DnfDownload
-from src.command.redhat.dnf_repoquery import DnfRepoquery
-from src.command.redhat.rpm import Rpm
 from src.command.tar import Tar
 from src.command.wget import Wget
 from src.config.os_type import OSFamily
@@ -60,31 +55,6 @@ class Toolchain:
             return True
 
 
-class RedHatFamilyToolchain(Toolchain):
-    """
-    Specific tools used by RedHat based distributions
-    """
-
-    def __init__(self, retries: int):
-        super().__init__(retries)
-
-        self.repoquery = DnfRepoquery(retries)
-        self.rpm = Rpm(retries)
-        self.dnf = Dnf(retries)
-        self.dnf_config_manager = DnfConfigManager(retries)
-        self.dnf_download = DnfDownload(retries)
-
-    @property
-    def pyyaml_package(self) -> str:
-        return 'python3-pyyaml'
-
-    def _install_pyyaml(self):
-        self.dnf.install(self.pyyaml_package)
-
-    def uninstall_pyyaml(self):
-        self.dnf.remove(self.pyyaml_package)
-
-
 class DebianFamilyToolchain(Toolchain):
     """
     Specific tools used by Debian based distributions
@@ -109,6 +79,5 @@ class DebianFamilyToolchain(Toolchain):
 
 
 TOOLCHAINS: Dict[OSFamily, Toolchain] = {
-    OSFamily.Debian: DebianFamilyToolchain,
-    OSFamily.RedHat: RedHatFamilyToolchain
+    OSFamily.Debian: DebianFamilyToolchain
 }

@@ -7,7 +7,3 @@
     _packages:  # see docs of 'community.crypto.x509_certificate' module
       Debian:
         - python3-cryptography
-      RedHat:
-        - python3-cryptography
-  module_defaults:
-    yum: {lock_timeout: "{{ yum_lock_timeout }}"}

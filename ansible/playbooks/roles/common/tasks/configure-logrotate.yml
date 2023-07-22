@@ -36,7 +36,6 @@
         state: restarted
       vars:
         cron_service:
-          RedHat: crond
           Debian: cron
       when:
         - copy_logrotate_script.changed

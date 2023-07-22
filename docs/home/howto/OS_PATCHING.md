@@ -1,10 +1,10 @@
 # Patching OS with running Epiphany components
 
-This guide describes steps you have to perform to patch RHEL and Ubuntu operating systems in a way to not to interrupt working Epiphany components.
+This guide describes steps you have to perform to patch Ubuntu operating system in a way to not to interrupt working Epiphany components.
 
 ### Disclaimer
 
-We provide a recommended way to patch your RHEL and Ubuntu operating systems. Before proceeding with patching the production environment we strongly recommend patching your test cluster first.
+We provide a recommended way to patch your Ubuntu operating system. Before proceeding with patching the production environment we strongly recommend patching your test cluster first.
 This document will help you decide how you should patch your OS. This is not a step-by-step guide.
 
 ### Requirements
@@ -18,7 +18,6 @@ This document will help you decide how you should patch your OS. This is not a s
 - [AZURE](#azure)
 - [Patching with Package Manager](#patching-with-package-manager)
   - [Repositories](#repositories)
-  - [RHEL](#rhel)
   - [Ubuntu](#ubuntu)
 - [Patching with external tools](#patching-with-external-tools)
 
@@ -28,7 +27,6 @@ This document will help you decide how you should patch your OS. This is not a s
 
 For Epiphany >= v2.0 we recommend the following image (AMI):
 
-- RHEL: `RHEL-8.4.0_HVM-20210825-x86_64-0-Hourly2-GP2` (kernel 4.18.0-305.12.1.el8_4.x86_64),
 - Ubuntu: `ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20221010` (kernel 5.15.0-1021-aws).
 
 Note: For different supported OS versions this guide may be useful as well.
@@ -56,7 +54,6 @@ For more information, refer to [AWS Systems Manager User Guide](https://docs.aws
 
 For Epiphany >= v2.0 we recommend the following image (urn):
 
-- RHEL: `RedHat:rhel-raw:8-raw-gen2:8.4.2022031606` (kernel 4.18.0-305.el8.x86_64),
 - Ubuntu: `Canonical:0001-com-ubuntu-server-focal:20_04-lts-gen2:20.04.202307010` (kernel 5.15.0-1021-azure).
 
 Note: For different supported OS versions this guide may be useful as well.
@@ -78,46 +75,6 @@ For information how to check state of specific Epiphany components, see [here](.
 ### Repositories
 
 Epiphany uses the repository role to provide all required packages. The role disables all existing repositories and provides a new one. After successful Epiphany deployment, official repositories should be re-enabled and Epiphany-provided repository should be disabled.
-
-### RHEL
-
-Verify if *epirepo* is disabled:
-`yum repolist epirepo`
-
-Verify if repositories you want to use for upgrade are enabled:
-`yum repolist all`
-
-List installed security patches:
-`yum updateinfo list security installed`
-
-List available patches without installing them:
-`yum updateinfo list security available`
-
-Grab more details about available patches:
-`yum updateinfo info security available` or specific patch: `yum updateinfo info security <patch_name>`
-
-Install system security patches:
-`sudo yum update-minimal --sec-severity=critical,important --bugfix`
-
-Install all patches and updates, not only flagged as critical and important:
-`sudo yum update`
-
-You can also specify the exact bugfix you want to install or even which CVE vulnerability to patch, for example:
-`sudo yum update --cve CVE-2008-0947`
-
-Available options:
-
-```shell
-  --advisory=ADVS, --advisories=ADVS
-                        Include packages needed to fix the given advisory, in updates
-  --bzs=BZS             Include packages needed to fix the given BZ, in updates
-  --cves=CVES           Include packages needed to fix the given CVE, in updates
-  --sec-severity=SEVS, --secseverity=SEVS
-                        Include security relevant packages matching the severity, in updates
-```
-
-**Additional information**
-Red Hat provides notifications about security flaws that affect its products in the form of security advisories. For more information, see [here](https://access.redhat.com/security/updates/advisory).
 
 ### Ubuntu
 
@@ -160,7 +117,6 @@ Canonical provides notifications about security flaws that affect its products i
 
 Solutions are available to perform kernel patching without system reboot.
 
-- [Red Hat kpatch](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/kernel_administration_guide/applying_patches_with_kernel_live_patching) only for RHEL,
 - [Canonical Livepatch Service](https://ubuntu.com/livepatch) only for Ubuntu,
 - [KernelCare](https://www.kernelcare.com/) - third-party software. Available also in [AWS Marketplace](https://aws.amazon.com/marketplace/pp/B085ZLFK7B) in SaaS model.
 

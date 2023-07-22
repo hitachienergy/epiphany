@@ -32,3 +32,4 @@
 - Image registry
 - Helm chart repository
 - HAProxy
+- Support for RHEL and ARM

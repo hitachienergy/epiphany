@@ -5,13 +5,11 @@ from typing import Dict, List
 class OSArch(Enum):
     """ Supported architecture types """
     X86_64 = 'x86_64'
-    ARM64 = 'aarch64'
 
 
 class OSFamily(Enum):
     """ Supported distro type families """
     Debian = 'debian'
-    RedHat = 'redhat'
 
 
 class OSConfig:
@@ -24,8 +22,6 @@ class OSConfig:
 
 class OSType(Enum):
     """ Supported operating system types """
-    Almalinux = OSConfig(OSFamily.RedHat, 'almalinux-8')
-    RHEL = OSConfig(OSFamily.RedHat, 'rhel-8')
     Ubuntu = OSConfig(OSFamily.Debian, 'ubuntu-20.04')
 
     @property
@@ -44,11 +40,6 @@ class OSType(Enum):
 # Supported operating systems:
 SUPPORTED_OS_TYPES: Dict[OSArch, OSConfig] = {
     OSArch.X86_64: [
-        OSType.Almalinux,
-        OSType.RHEL,
         OSType.Ubuntu
-    ],
-    OSArch.ARM64: [
-        OSType.Almalinux
     ]
 }

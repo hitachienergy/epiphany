@@ -12,36 +12,6 @@ Enable for Ubuntu (default):
           count: 1
     ```
 
-Enable for AlmaLinux on AWS/Azure:
-
-1. Enable `repository` component and specify `default_os_image`:
-
-    ```yaml
-    specification:
-    ...
-      cloud:
-        default_os_image: almalinux-8-x86_64
-        ...
-      components:
-        repository:
-          count: 1
-    ```
-
-Enable for RHEL on AWS/Azure:
-
-1. Enable `repository` component and specify `default_os_image`:
-
-    ```yaml
-    specification:
-    ...
-      cloud:
-        default_os_image: rhel-8-x86_64
-        ...
-      components:
-        repository:
-          count: 1
-    ```
-
 Disable:
 
 1. Disable `repository` component:
@@ -63,7 +33,6 @@ Disable:
       ...
         kubernetes_master:
           - repository
-          - image-registry
     ```
 
 ## How to create an Epiphany cluster on existing infrastructure
@@ -78,8 +47,6 @@ Epicli has the ability to set up a cluster on infrastructure provided by you. Th
 At least one of them (with `repository` role) has Internet access in order to download dependencies.
 If there is no Internet access, you can use [air gap feature (offline mode)](#how-to-create-an-epiphany-cluster-on-existing-air-gapped-infrastructure).
 2. The cluster machines/VMs are running one of the following Linux distributions:
-    - AlmaLinux 8.4+
-    - RedHat 8.4+
     - Ubuntu 20.04
 3. The cluster machines/VMs are accessible through SSH with a set of SSH keys you provide and configure on each machine yourself (key-based authentication).
 4. The user used for SSH connection (`admin_user`) has passwordless root privileges through `sudo`.
@@ -154,12 +121,11 @@ or VMs and should meet the following requirements:
 
 1. The air-gapped cluster machines/VMs are connected by a network or virtual network of some sorts and can communicate with each other.
 2. The air-gapped cluster machines/VMs are running one of the following Linux distributions:
-    - RedHat 7.6+ and < 8
     - Ubuntu 20.04
 3. The cluster machines/VMs are accessible through SSH with a set of SSH keys you provide and configure on each machine yourself (key-based authentication).
 4. The user used for SSH connection (`admin_user`) has passwordless root privileges through `sudo`.
 5. A requirements machine that:
-    - Runs the same distribution as the air-gapped cluster machines/VMs (RedHat 7, Ubuntu 20.04)
+    - Runs the same distribution as the air-gapped cluster machines/VMs (Ubuntu 20.04)
     - Has access to the internet.
    If you don't have access to a similar machine/VM with internet access, you can also try to download the requirements with a Docker container. More information [here](./CLUSTER.md#downloading-offline-requirements-with-a-docker-container).
 6. A provisioning machine that:
@@ -177,8 +143,8 @@ To set up the cluster do the following steps:
     ```
 
     Where:
-    - OS should be `almalinux-8`, `rhel-8`, `ubuntu-20.04`
-    - ARCH should be `x86_64`, `arm64`
+    - OS should be `ubuntu-20.04`
+    - ARCH should be `x86_64`
 
     This will create a directory called `prepare_scripts` with the needed files inside.
 
@@ -189,7 +155,7 @@ To set up the cluster do the following steps:
     ```
 
     Where:
-    - OS should be `almalinux-8`, `rhel-8`, `ubuntu-20.04`, `detect`
+    - OS should be `ubuntu-20.04`, `detect`
     - /requirementsoutput/ where to output downloaded requirements
 
     This will run the download-requirements script for target OS type and save requirements under /requirementsoutput/. Once run successfully the `/requirementsoutput/` needs to be copied to the provisioning machine to be used later on.
@@ -383,7 +349,6 @@ To set up the cluster do the following steps from the provisioning machine:
     For `AWS` the admin name is already specified and is dependent on the Linux distro image you are using for the VM's:
 
     - Username for Ubuntu Server: `ubuntu`
-    - Username for AlmaLinux/RHEL: `ec2-user`
 
 3. Set up the cloud specific data:
 
@@ -443,9 +408,6 @@ To set up the cluster do the following steps from the provisioning machine:
                   The following values are accepted:
                   - `default`: Applies user defined `infrastructure/virtual-machine` documents when generating a new configuration.
                   - `ubuntu-20.04-x86_64`: Applies the latest validated and tested Ubuntu 20.04 image to all `infrastructure/virtual-machine` documents on `x86_64` on Azure and AWS.
-                  - `rhel-8-x86_64`: Applies the latest validated and tested RedHat 8.x image to all `infrastructure/virtual-machine` documents on `x86_64` on Azure and AWS.
-                  - `almalinux-8-x86_64`: Applies the latest validated and tested AlmaLinux 8.x image to all `infrastructure/virtual-machine` documents on `x86_64` on Azure and AWS.
-                  - `almalinux-8-arm64`: Applies the latest validated and tested AlmaLinux 8.x image to all `infrastructure/virtual-machine` documents on `arm64` on AWS. Azure currently doesn't support `arm64`.
                   The images which will be used for these values will be updated and tested on regular basis.
 
 4. Define the components you want to install:
@@ -475,21 +437,6 @@ To set up the cluster do the following steps from the provisioning machine:
     ```shell
     epicli apply -f newcluster.yml
     ```
-
-### Note for RHEL Azure images
-
-Epiphany currently supports RHEL 8 RAW-partitioned images (`rhel-raw` [offer](https://azuremarketplace.microsoft.com/en-us/marketplace/apps/redhat.rhel-raw))
-attached to standard RHEL repositories. For more details, refer to [Azure documentation](https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/redhat/redhat-images).
-
-In the past Epiphany supported LVM-partitioned images (`RHEL` [offer](https://azuremarketplace.microsoft.com/en-us/marketplace/apps/redhat.rhel-20190605))
-which require merging small logical volumes in order to deploy a cluster. This feature is still present but not tested.
-It uses cloud-init custom data to merge small logical volumes (`homelv`, `optlv`, `tmplv` and `varlv`)
-into the `rootlv` which is extended (with underlying filesystem) by the current free space in its volume group.
-The `usrlv` LV, which has 10G, is not merged since it would require a reboot.
-The merging [can be disabled](#how-to-disable-merging-lvm-logical-volumes) for troubleshooting since it performs some
-administrative tasks (such as remounting filesystems or restarting services).
-
-NOTE: RHEL LVM images require at least 64 GB for OS disk.
 
 ### How to disable merging LVM logical volumes
 
@@ -973,17 +920,16 @@ This paragraph describes how to use a Docker container to download the requireme
 A few points:
 
 - This only describes how to set up the Docker containers for downloading. The rest of the steps are similar as in the paragraph [here](./CLUSTER.md#how-to-create-an-epiphany-cluster-on-existing-air-gapped-infrastructure).
-- Main reason why you might want to give this a try is to download ```arm64``` architecture requirements on a ```x86_64``` machine. More information on the current state of ```arm64``` support can be found [here](./../ARM.md#arm).
 
 ### Ubuntu 20.04
 
 For Ubuntu, you can use the following command to launch a container:
 
 ```shell
-docker run -v /shared_folder:/home <--platform linux/amd64 or --platform linux/arm64> --rm -it ubuntu:20.04
+docker run -v /shared_folder:/home --platform linux/amd64 --rm -it ubuntu:20.04
 ```
 
-As the ```ubuntu:20.04``` image is multi-arch you can include ```--platform linux/amd64``` or ```--platform linux/arm64``` to run the container as the specified architecture. The ```/shared_folder``` should be a folder on your local machine containing the required scripts.
+The ```/shared_folder``` should be a folder on your local machine containing the required scripts.
 
 When you are inside the container run the following commands to prepare for the running of the ```download-requirements.py``` script:
 
@@ -994,54 +940,6 @@ sudo chmod +x /home/download-requirements.py # make the requirements script exec
 ```
 
 After this you should be able to run the ```download-requirements.py``` from the ```home``` folder.
-
-### RedHat 8.x
-
-For RedHat you can use the following command to launch a container:
-
-```shell
-docker run -v /shared_folder:/home <--platform linux/amd64 or --platform linux/arm64> --rm -it registry.access.redhat.com/ubi8/ubi:8.4
-```
-
-As the ```registry.access.redhat.com/ubi8/ubi:8.4``` image is multi-arch you can include ```--platform linux/amd64``` or ```--platform linux/arm64``` to run the container as the specified architecture. The ```/shared_folder``` should be a folder on your local machine containing the requirement scripts.
-
-For running the ```download-requirements.py``` script you will need a RedHat developer subscription to register the running container and make sure you can access to official Redhat repos for the packages needed. More information on getting this free subscription [here](https://developers.redhat.com/articles/getting-red-hat-developer-subscription-what-rhel-users-need-know).
-
-When you are inside the container run the following commands to prepare for the running of the ```download-requirements.py``` script:
-
-```shell
-subscription-manager register # will ask for you credentials of your RedHat developer subscription and setup the container
-subscription-manager attach --auto # will enable the RedHat official repositories
-chmod +x /home/download-requirements.py # make the requirements script executable
-```
-
-After this you should be able to run the ```download-requirements.py```  from the ```home``` folder:
-
-```shell
-/usr/libexec/platform-python /home/download-requirements.py /home/offline_requirements_rhel_8_x86_64 rhel-8
-```
-
-### AlmaLinux 8.x
-
-For AlmaLinux, you can use the following command to launch a container:
-
-```shell
-docker run -v /shared_folder:/home --rm -it almalinux:8.4
-```
-
-The ```almalinux:8.4``` image is amd64 arch only. The ```/shared_folder``` should be a folder on your local machine containing the requirement scripts.
-
-When you are inside the container run the following command to prepare for the running of the ```download-requirements.py``` script:
-
-```shell
-chmod +x /home/download-requirements.py # make the requirements script executable
-```
-
-After this you should be able to run the ```download-requirements.py```  from the ```home``` folder:
-
-```shell
-/usr/libexec/platform-python /home/download-requirements.py /home/offline_requirements_almalinux_8_4_x86_64 almalinux-8
-```
 
 ### Known issues
 

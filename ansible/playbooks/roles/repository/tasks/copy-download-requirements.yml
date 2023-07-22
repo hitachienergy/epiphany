@@ -68,9 +68,3 @@
         synchronize:
           src: /tmp/filtered_manifest.yml
           dest: "{{ download_requirements_dir }}/manifest.yml"
-
-    - name: Copy RedHat family specific download requirements file
-      synchronize:
-        src: "download-requirements/{{ _family_packages }}"
-        dest: "{{ download_requirements_dir }}/{{ _family_packages }}"
-      when: ansible_os_family == 'RedHat'

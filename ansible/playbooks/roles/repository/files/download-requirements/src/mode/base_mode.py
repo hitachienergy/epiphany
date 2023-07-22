@@ -230,7 +230,7 @@ class BaseMode:
         """
         Download images under `self._requirements['images']` using Crane.
         """
-        platform: str = 'linux/amd64' if self._cfg.os_arch == OSArch.X86_64 else 'linux/arm64'
+        platform: str = 'linux/amd64'
         images = self._requirements['images']
 
         images_to_download: Dict[str, Dict] = {}

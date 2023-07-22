@@ -97,24 +97,24 @@ def test_get_network_interface_should_set_proper_values_to_model():
     cluster_model = get_cluster_model(cluster_name='TestCluster')
     builder = InfrastructureBuilder([cluster_model])
     component_value = dict_to_objdict({
-        'machine': 'kubernetes-master-machine'
+        'machine': 'repository-machine'
     })
     vm_config = builder.get_virtual_machine(component_value)
 
     actual = builder.get_network_interface(
-                                'kubernetes_master',
+                                'repository',
                                 vm_config,
                                 'prefix-testcluster-component-subnet-1',
-                                'prefix-testcluster-kubernetes-master-pubip-1',
+                                'prefix-testcluster-repository-pubip-1',
                                 'prefix-testcluster-component-sga-1',
                                 1)
 
-    assert actual.specification.name == 'prefix-testcluster-kubernetes-master-nic-1'
+    assert actual.specification.name == 'prefix-testcluster-repository-nic-1'
     assert actual.specification.security_group_association_name == 'prefix-testcluster-component-sga-1'
-    assert actual.specification.ip_configuration_name == 'prefix-testcluster-kubernetes-master-ipconf-1'
+    assert actual.specification.ip_configuration_name == 'prefix-testcluster-repository-ipconf-1'
     assert actual.specification.subnet_name == 'prefix-testcluster-component-subnet-1'
     assert actual.specification.use_public_ip is True
-    assert actual.specification.public_ip_name == 'prefix-testcluster-kubernetes-master-pubip-1'
+    assert actual.specification.public_ip_name == 'prefix-testcluster-repository-pubip-1'
     assert actual.specification.enable_accelerated_networking is False
 
 
@@ -122,13 +122,13 @@ def test_get_public_ip_should_set_proper_values_to_model():
     cluster_model = get_cluster_model(cluster_name='TestCluster')
     builder = InfrastructureBuilder([cluster_model])
     component_value = dict_to_objdict({
-        'machine': 'kubernetes-master-machine'
+        'machine': 'repository-machine'
     })
     vm_config = builder.get_virtual_machine(component_value)
 
-    actual = builder.get_public_ip('kubernetes_master', vm_config, 1)
+    actual = builder.get_public_ip('repository', vm_config, 1)
 
-    assert actual.specification.name == 'prefix-testcluster-kubernetes-master-pubip-1'
+    assert actual.specification.name == 'prefix-testcluster-repository-pubip-1'
     assert actual.specification.allocation_method == 'Static'
     assert actual.specification.idle_timeout_in_minutes == 30
     assert actual.specification.sku == 'Standard'

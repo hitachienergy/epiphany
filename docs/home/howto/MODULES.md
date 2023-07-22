@@ -62,10 +62,8 @@ NOTE - Default OS users:
 
 ```yaml
 Azure:
-    redhat: ec2-user
     ubuntu: operations
 AWS:
-    redhat: ec2-user
     ubuntu: ubuntu
 ```
 

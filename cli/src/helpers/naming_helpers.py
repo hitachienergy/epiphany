@@ -55,24 +55,17 @@ def storage_account_name(prefix, cluster_name, storage_use):
 
 def get_os_name_normalized(vm_doc):
     expected_indicators = {
-        "almalinux": "almalinux",
-        "redhat": "rhel",
-        "rhel": "rhel",
         "ubuntu": "ubuntu",
     }
     if vm_doc.provider == "azure":
         # Example image offers:
         # - 0001-com-ubuntu-server-focal
-        # - RHEL
-        # - almalinux
         for indicator in expected_indicators:
             if indicator in vm_doc.specification.storage_image_reference.offer.lower():
                 return expected_indicators[indicator]
     if vm_doc.provider == "aws":
         # Example public/official AMI names:
         # - ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20221010
-        # - RHEL-8.4.0_HVM-20210825-x86_64-0-Hourly2-GP2
-        # - AlmaLinux OS 8.4.20211015 x86_64
         for indicator in expected_indicators:
             if indicator in vm_doc.specification.os_full_name.lower():
                 return expected_indicators[indicator]

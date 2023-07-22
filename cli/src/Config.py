@@ -8,8 +8,6 @@ LOG_TYPES = ['plain', 'json']
 
 
 SUPPORTED_OS: Dict[str, List[str]] = {
-    'almalinux-8': ['x86_64','aarch64'],
-    'rhel-8': ['x86_64'],
     'ubuntu-20.04': ['x86_64']
 }
 
