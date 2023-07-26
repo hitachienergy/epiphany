@@ -41,15 +41,6 @@ scrape_configs:
       - files:
           - "{{ specification.config_directory }}/file_sd/*.yml"
 
-{% if haproxy_monitoring_enabled is defined and haproxy_monitoring_enabled %}
-  - job_name: 'haproxy'
-    static_configs:
-      - targets:
-      {% for haproxy_node in groups['haproxy'] %}
-          - "{{ haproxy_node }}:{{ haproxy_monitoring_port }}"
-      {% endfor %}
-{% endif %}
-
 {% if bearer_token is defined %}
   - job_name: 'kubernetes-apiservers'
     kubernetes_sd_configs:

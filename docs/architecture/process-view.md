@@ -14,7 +14,7 @@ Load balancing integration with `Kubernetes` uses backend configurations. The co
 ## Monitoring
 
 Epiphany uses `Prometheus` and related components for gathering data from
-different exporters: `Node-exporter`, `Kafka-exporter`, `HAProxy-exporter`. This
+different exporters: `Node-exporter`, `Kafka-exporter`. This
 data is stored in `Prometheus`. `Grafana` connects to `Prometheus` to display
 metrics from different kinds of exporters.
 
