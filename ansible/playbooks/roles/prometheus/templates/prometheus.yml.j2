@@ -3,8 +3,8 @@
 # http://prometheus.io/docs/operating/configuration/
 
 global:
-  scrape_interval: {{ specification.scrape_interval }} #15s
-  scrape_timeout: {{ specification.scrape_timeout }} #10s
+  scrape_interval: {{ specification.scrape_interval }} # 15s
+  scrape_timeout: {{ specification.scrape_timeout }} # 10s
   evaluation_interval: {{ specification.evaluation_interval }}
   external_labels:
     {{ prometheus_external_labels | to_nice_yaml(indent=2) | indent(4, False) }}
@@ -36,172 +36,168 @@ scrape_configs:
     static_configs:
       - targets:
           - "{{ ansible_fqdn | default(ansible_host) | default('localhost') }}:9090"
+
   - job_name: "file_service_discovery"
     file_sd_configs:
       - files:
           - "{{ specification.config_directory }}/file_sd/*.yml"
 
-{% if bearer_token is defined %}
-  - job_name: 'kubernetes-apiservers'
-    kubernetes_sd_configs:
-    - role: endpoints
-      api_server: "{{ api_server_address }}"
-      tls_config:
-        insecure_skip_verify: true
-      bearer_token: "{{ bearer_token }}"
-    tls_config:
-      insecure_skip_verify: true
-    bearer_token: "{{ bearer_token }}"
-    scheme: https
-    relabel_configs:
-    - action: keep
-      regex: default;kubernetes;https
-      source_labels:
-      - __meta_kubernetes_namespace
-      - __meta_kubernetes_service_name
-      - __meta_kubernetes_endpoint_port_name
-
-# Scrape config for node exporters in "k8s as cloud service"
-
 {% if k8s_as_cloud_service is defined and k8s_as_cloud_service %}
-  - job_name: 'kubernetes-node-exporters'
-    kubernetes_sd_configs:
-    - role: endpoints
-      api_server: "{{ api_server_address }}"
-      tls_config:
-        insecure_skip_verify: true
-      bearer_token: "{{ bearer_token }}"
-    tls_config:
-      insecure_skip_verify: true
-    bearer_token: "{{ bearer_token }}"
-    relabel_configs:
-    - source_labels:
-      - __meta_kubernetes_endpoints_name
-      regex: 'node-exporter'
-      action: keep
-    - source_labels:
-      - __meta_kubernetes_endpoint_node_name
-      target_label: instance
-{% endif %}
+{#
+Refs:
+- https://github.com/prometheus/prometheus/blob/release-2.31/documentation/examples/prometheus-kubernetes.yml
+- https://prometheus.io/docs/prometheus/2.37/configuration/configuration/#kubernetes_sd_config
+- https://github.com/techiescamp/kubernetes-prometheus/blob/master/config-map.yaml
+- https://devopscube.com/node-exporter-kubernetes/
+#}
 
-# Scrape config for nodes (kubelet).
+  # Scrape config for API servers
 
-  - job_name: 'kubernetes-pods'
+  - job_name: 'kubernetes-apiservers'
+
     kubernetes_sd_configs:
-    - role: pod
-      api_server: "{{ api_server_address }}"
-      tls_config:
-        insecure_skip_verify: true
-      bearer_token: "{{ bearer_token }}"
-    tls_config:
-      insecure_skip_verify: true
-    bearer_token: "{{ bearer_token }}"
+      - role: endpoints
+        kubeconfig_file: kubeconfig
+
     scheme: https
-    relabel_configs:
-      - action: keep
-        regex: true
-        source_labels:
-        - __meta_kubernetes_pod_annotation_prometheus_io_scrape
-      - action: replace
-        regex: (.+)
-        source_labels:
-        - __meta_kubernetes_pod_annotation_prometheus_io_path
-        target_label: __metrics_path__
-      - action: replace
-        regex: ([^:]+)(?::\d+)?;(\d+)
-        replacement: $1:$2
-        source_labels:
-        - __address__
-        - __meta_kubernetes_pod_annotation_prometheus_io_port
-        target_label: __address__
-      - action: labelmap
-        regex: __meta_kubernetes_pod_label_(.+)
-      - action: replace
-        source_labels:
-        - __meta_kubernetes_namespace
-        target_label: kubernetes_namespace
-      - action: replace
-        source_labels:
-        - __meta_kubernetes_pod_name
-        target_label: kubernetes_pod_name
+    authorization:
+      credentials_file: /etc/prometheus/k8s-token
+    # Workaround for 'Get "https://10.58.4.4:443/metrics": x509: certificate is valid for 10.96.0.1, not 10.58.4.4':
+    tls_config:
+      insecure_skip_verify: true
 
-# Scrape config for Kubelet cAdvisor.
+    relabel_configs:
+      - source_labels:
+          [
+            __meta_kubernetes_namespace,
+            __meta_kubernetes_service_name,
+            __meta_kubernetes_endpoint_port_name,
+          ]
+        action: keep
+        regex: default;kubernetes;https
+
+  # Scrape config for nodes (node-exporter)
+
+  - job_name: 'node-exporter'
+
+    kubernetes_sd_configs:
+      - role: endpoints
+        kubeconfig_file: kubeconfig
+
+    relabel_configs:
+    - source_labels: [__meta_kubernetes_endpoints_name]
+      regex: node-exporter
+      action: keep
+    - source_labels: [__meta_kubernetes_endpoint_node_name, __meta_kubernetes_pod_container_port_number]
+      separator: ':'
+      target_label: instance
+
+  # Scrape config for nodes (kubelet)
+
+  - job_name: 'kubernetes-nodes'
+
+    kubernetes_sd_configs:
+      - role: node
+        kubeconfig_file: kubeconfig
+
+    scheme: https
+    authorization:
+      credentials_file: /etc/prometheus/k8s-token
+    tls_config:
+      insecure_skip_verify: true
+
+    relabel_configs:
+      - action: labelmap
+        regex: __meta_kubernetes_node_label_(.+)
+
+  # Scrape config for Kubelet cAdvisor
 
   - job_name: 'kubernetes-cadvisor'
+
+    metrics_path: /metrics/cadvisor
+
     kubernetes_sd_configs:
-    - role: node
-      api_server: "{{ api_server_address }}"
-      tls_config:
-        insecure_skip_verify: true
-      bearer_token: "{{ bearer_token }}"
+      - role: node
+        kubeconfig_file: kubeconfig
+
+    scheme: https
     tls_config:
       insecure_skip_verify: true
-    bearer_token: "{{ bearer_token }}"
-    scheme: https
+    authorization:
+      credentials_file: /etc/prometheus/k8s-token
+
     relabel_configs:
       - action: labelmap
         regex: __meta_kubernetes_node_label_(.+)
       - target_label: __metrics_path__
         replacement: /metrics/cadvisor
 
+  # Scrape config for service endpoints
 
-  - job_name: 'kubernetes-nodes'
+  - job_name: 'kubernetes-service-endpoints'
+
     kubernetes_sd_configs:
-    - role: node
-      api_server: "{{ api_server_address }}"
-      tls_config:
-        insecure_skip_verify: true
-      bearer_token: "{{ bearer_token }}"
-
-    tls_config:
-      insecure_skip_verify: true
-    bearer_token: "{{ bearer_token }}"
-
-    scheme: https
-    relabel_configs:
-    - action: labelmap
-      regex: __meta_kubernetes_node_label_(.+)
-
-
-  - job_name: 'kubernetes-services'
-    kubernetes_sd_configs:
-    - role: service
-      api_server: "{{ api_server_address }}"
-      tls_config:
-        insecure_skip_verify: true
-      bearer_token: "{{ bearer_token }}"
-
-    tls_config:
-      insecure_skip_verify: true
-    bearer_token: "{{ bearer_token }}"
-
-    scheme: https
-    metrics_path: /probe
-    params:
-      module:
-      - http_2xx
+      - role: endpoints
+        kubeconfig_file: kubeconfig
 
     relabel_configs:
-      - action: keep
+      - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape]
+        action: keep
         regex: true
-        source_labels:
-        - __meta_kubernetes_service_annotation_prometheus_io_probe
-      - source_labels:
-        - __address__
-        target_label: __param_target
-      - replacement: blackbox
+      - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scheme]
+        action: replace
+        target_label: __scheme__
+        regex: (https?)
+      - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_path]
+        action: replace
+        target_label: __metrics_path__
+        regex: (.+)
+      - source_labels: [__address__, __meta_kubernetes_service_annotation_prometheus_io_port]
+        action: replace
         target_label: __address__
-      - source_labels:
-        - __param_target
-        target_label: instance
+        regex: ([^:]+)(?::\d+)?;(\d+)
+        replacement: $1:$2
       - action: labelmap
         regex: __meta_kubernetes_service_label_(.+)
-      - source_labels:
-        - __meta_kubernetes_namespace
+      - source_labels: [__meta_kubernetes_namespace]
+        action: replace
         target_label: kubernetes_namespace
-      - source_labels:
-        - __meta_kubernetes_service_name
+      - source_labels: [__meta_kubernetes_service_name]
+        action: replace
         target_label: kubernetes_name
 
+  # Scrape config for pods
 
+  - job_name: 'kubernetes-pods'
+
+    kubernetes_sd_configs:
+      - role: pod
+        kubeconfig_file: kubeconfig
+
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+        action: keep
+        regex: true
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+        action: replace
+        target_label: __metrics_path__
+        regex: (.+)
+      - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+        action: replace
+        regex: ([^:]+)(?::\d+)?;(\d+)
+        replacement: $1:$2
+        target_label: __address__
+      - action: labelmap
+        regex: __meta_kubernetes_pod_label_(.+)
+      - source_labels: [__meta_kubernetes_namespace]
+        action: replace
+        target_label: kubernetes_namespace
+      - source_labels: [__meta_kubernetes_pod_name]
+        action: replace
+        target_label: kubernetes_pod_name
+
+{#
+TODO: Install and configure Blackbox Exporter to probe services and ingresses,
+      see: https://www.infracloud.io/blogs/monitoring-endpoints-kubernetes-blackbox-exporter/
+#}
 {% endif %}

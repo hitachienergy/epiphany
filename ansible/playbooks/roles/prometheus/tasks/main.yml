@@ -4,7 +4,7 @@
   changed_when: false
   register: prometheus_systemd_version
 
-- name: Set master exists flag
+- name: Set K8s exists flag
   set_fact:
     does_k8s_exist: "{{ k8s_as_cloud_service }}"
 

@@ -45,5 +45,5 @@ specification:
     exporter_listen_port: "9100"
     prometheus_config_dir: /etc/prometheus
     file_sd_labels:
-      - label: "job"
-        value: "node"
+      - label: job
+        value: node-exporter

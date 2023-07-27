@@ -1,46 +1,33 @@
 ---
-- name: Set facts for "classic epiphany k8s"
-  when: k8s_as_cloud_service is defined and not k8s_as_cloud_service
-  block:
-    - name: Set master hostname variable
-      set_fact:
-        master_hostname: "{{ groups['kubernetes_master'] | first }}"
+- name: Copy kubeconfig to Prometheus host
+  copy:
+    src: "{{ kubeconfig.local }}"
+    dest: "{{ specification.config_directory }}/kubeconfig"
+    owner: prometheus
+    group: prometheus
+    mode: u=r,go=
 
-    - name: Set api server address variable
-      set_fact:
-        api_server_address: "https://{{ master_hostname }}:6443"
+- name: Load kubeconfig
+  include_vars:
+    file: "{{ kubeconfig.local }}"
+    name: kubeconfig_content
+  no_log: True
 
-- name: Set facts for "k8s as cloud service"
-  when: k8s_as_cloud_service is defined and k8s_as_cloud_service
-  block:
-    - name: Get api server address from "k8s as cloud service"
-      become: false
-      command: "kubectl config view -o jsonpath='{.clusters[0].cluster.server}'"
-      register: cluster_api_server_address
-      run_once: true
-      delegate_to: localhost
+- name: Create K8s token file
+  copy:
+    content: "{{ kubeconfig_content.users[0].user.token }}"
+    dest: "{{ specification.config_directory }}/k8s-token"
+    owner: prometheus
+    group: prometheus
+    mode: u=r,go=
+  no_log: True
 
-    - name: Set api server address variable
-      set_fact:
-        api_server_address: "{{ cluster_api_server_address.stdout }}"
+- name: Clear kubeconfig content in memory
+  set_fact:
+    kubeconfig_content: null
 
 - name: Apply rolebinding to K8s for Prometheus
   become: false
   command: "kubectl apply -f {{ role_path }}/files/k8s-rolebinding.yml"
   run_once: true
   delegate_to: localhost
-
-- name: Get kubernetes bearer token for prometheus
-  become: false
-  shell: |-
-    kubectl get $(kubectl get secrets -n kube-system -o name | grep prometheus) \
-      -n kube-system \
-      -o jsonpath='{.data.token}' \
-    | base64 -d
-  register: kube_token
-  delegate_to: localhost
-  run_once: true
-
-- name: Set bearer token variable
-  set_fact:
-    bearer_token: "{{ kube_token.stdout }}"
