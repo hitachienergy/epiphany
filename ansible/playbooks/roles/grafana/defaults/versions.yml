@@ -1,6 +1,6 @@
 ---
-grafana_version: 8.3.2
+grafana_version: 10.0.3
 
 grafana_package:
   Debian:
-    x86_64: grafana:amd64=8.3.2
+    x86_64: grafana:amd64=10.0.3

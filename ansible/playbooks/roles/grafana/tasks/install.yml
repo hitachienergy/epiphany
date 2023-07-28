@@ -8,11 +8,6 @@
   set_fact:
     grafana_package: "{{ grafana_version_vars.grafana_package }}"
 
-- name: Remove conflicting grafana packages
-  package:
-    name: grafana-data
-    state: absent
-
 - include_tasks: install-packages-{{ ansible_os_family }}.yml
   vars:
     _package_name: "{{ grafana_package[ansible_os_family][ansible_architecture] }}"

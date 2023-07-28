@@ -1,8 +1,0 @@
----
-- name: Install Grafana with dependencies
-  yum:
-    name: "{{ _package_name }}"
-    state: present
-    disable_gpg_check: true  # installed from URL
-  module_defaults:
-    yum: {lock_timeout: "{{ yum_lock_timeout }}"}
