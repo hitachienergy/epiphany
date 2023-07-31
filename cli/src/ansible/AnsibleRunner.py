@@ -66,16 +66,6 @@ class AnsibleRunner(Step):
                                                        playbook_path=self.playbook_path('preflight'),
                                                        retries=1)
 
-        self.logger.info('Setting up SSH tunnel for kubectl')
-        self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
-                                                       playbook_path=self.playbook_path('sshtunnel_setup_k8s'),
-                                                       retries=1)
-
-        self.logger.info('Setting up SSH tunnel for helm')
-        self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
-                                                       playbook_path=self.playbook_path('sshtunnel_setup_helm'),
-                                                       retries=1)
-
         self.logger.info('Setting up repository for cluster provisioning. This will take a while...')
         self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
                                                        playbook_path=self.playbook_path('repository_setup'),
@@ -85,14 +75,6 @@ class AnsibleRunner(Step):
                                           playbook_path=self.playbook_path('common'))
 
     def post_flight(self, inventory_path):
-        self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
-                                                       playbook_path=self.playbook_path('sshtunnel_teardown_k8s'),
-                                                       retries=1)
-
-        self.ansible_command.run_playbook_with_retries(inventory=inventory_path,
-                                                       playbook_path=self.playbook_path('sshtunnel_teardown_helm'),
-                                                       retries=1)
-
         self.ansible_command.run_playbook(inventory=inventory_path,
                                           playbook_path=self.playbook_path('repository_teardown'))
 

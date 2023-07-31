@@ -37,3 +37,4 @@
 - HAProxy
 - Support for RHEL and ARM
 - Keycloak
+- sshtunnel role

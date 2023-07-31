@@ -28,7 +28,7 @@ RUN : INSTALL APT REQUIREMENTS \
  && apt-get -q install -y --no-install-recommends \
     apt-utils dialog \
  && apt-get -q install -y --no-install-recommends \
-    autossh ca-certificates curl gcc git git-lfs iputils-ping \
+    ca-certificates curl gcc git git-lfs iputils-ping \
     jq libc6-dev libcap2-bin libffi-dev lsb-release \
     make musl-dev openssh-client procps \
     psmisc rsync ruby-full sudo tar \
