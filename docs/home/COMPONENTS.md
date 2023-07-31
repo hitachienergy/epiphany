@@ -200,19 +200,3 @@ Note that versions are default versions and can be changed in certain cases thro
 | websocket-client | 0.56.0 | https://github.com/websocket-client/websocket-client.git | BSD |
 | wrapt | 1.14.1 | https://github.com/GrahamDumpleton/wrapt | [BSD 2-Clause "Simplified" License](https://api.github.com/repos/grahamdumpleton/wrapt/license) |
 | xmltodict | 0.13.0 | https://github.com/martinblech/xmltodict | [MIT License](https://api.github.com/repos/martinblech/xmltodict/license) |
-
-## Predefined Grafana dashboards
-
-| Dashboard name | Dashboard ID | Repo/Website | License |
-| --------- | ------- | ------------ | ------- |
-| Kubernetes Cluster | 7249 | https://grafana.com/grafana/dashboards/7249 | None |
-| Kubernetes cluster monitoring (via Prometheus) | 315 | https://grafana.com/grafana/dashboards/315 | [MIT License](https://github.com/instrumentisto/grafana-dashboard-kubernetes-prometheus/blob/master/LICENSE.md) |
-| Node Exporter Dashboard EN 20201010-StarsL.cn | 11074 | https://grafana.com/grafana/dashboards/11074 | [Apache License 2.0](https://github.com/starsliao/Prometheus/blob/master/LICENSE) |
-| Node Exporter Server Metrics | 405 | https://grafana.com/grafana/dashboards/405 | None |
-| Postgres Overview | 455 | https://grafana.com/grafana/dashboards/455 | None |
-| PostgreSQL Database | 9628 | https://grafana.com/grafana/dashboards/9628 | [Apache License 2.0](https://github.com/lstn/misc-grafana-dashboards/blob/master/LICENSE) |
-| Node Exporter Full | 1860 | https://grafana.com/grafana/dashboards/1860 | [LGPL-3.0 License](https://github.com/rfrail3/grafana-dashboards/blob/master/LICENSE) |
-| Kafka Exporter Overview | 7589 | https://grafana.com/grafana/dashboards/7589 | [Apache License 2.0](https://github.com/danielqsj/kafka_exporter/blob/master/LICENSE) |
-| HaProxy backend (or frontend/servers) | 789 | https://grafana.com/grafana/dashboards/367 | None, [Source Code](https://github.com/tcheronneau/grafana_dashboard) | |
-| Docker and Host Monitoring w/ Prometheus | 179 | https://grafana.com/grafana/dashboards/179 | [MIT License](https://github.com/vegasbrianc/prometheus/blob/master/LICENSE) |
-| Kubernetes pod and cluster monitoring (via Prometheus) | 6663 | https://grafana.com/grafana/dashboards/6663 | None |

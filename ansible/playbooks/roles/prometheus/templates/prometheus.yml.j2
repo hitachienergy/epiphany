@@ -75,6 +75,10 @@ Refs:
           ]
         action: keep
         regex: default;kubernetes;https
+      # For https://grafana.com/grafana/dashboards/15761-kubernetes-system-api-server/
+      - action: replace
+        target_label: job
+        replacement: apiserver
 
   # Scrape config for nodes (node-exporter)
 
@@ -109,6 +113,10 @@ Refs:
     relabel_configs:
       - action: labelmap
         regex: __meta_kubernetes_node_label_(.+)
+      # For https://grafana.com/grafana/dashboards/15759-kubernetes-views-nodes/
+      - action: replace
+        source_labels: [instance]
+        target_label: node
 
   # Scrape config for Kubelet cAdvisor
 
@@ -131,6 +139,10 @@ Refs:
         regex: __meta_kubernetes_node_label_(.+)
       - target_label: __metrics_path__
         replacement: /metrics/cadvisor
+      # For https://grafana.com/grafana/dashboards/15759-kubernetes-views-nodes/
+      - action: replace
+        source_labels: [instance]
+        target_label: node
 
   # Scrape config for service endpoints
 

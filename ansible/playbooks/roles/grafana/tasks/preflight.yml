@@ -5,7 +5,6 @@
       - grafana_server is mapping
       - grafana_database is mapping
       - grafana_security is mapping
-      - grafana_external_dashboards is sequence
       - grafana_online_dashboards is sequence
       - grafana_datasources is sequence
 
@@ -13,8 +12,7 @@
   fail:
     msg: "You need to specify datasources for dashboards!"
   when:
-    - ( grafana_external_dashboards != [] and grafana_datasources == [] ) or
-      ( grafana_online_dashboards != [] and grafana_datasources == [] )
+    - grafana_online_dashboards != [] and grafana_datasources == []
 
 - name: Fail when grafana admin user isn't set
   fail:

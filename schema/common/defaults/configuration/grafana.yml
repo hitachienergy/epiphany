@@ -51,47 +51,115 @@ specification:
   #  max_open_conn: ""
   #  log_queries: ""
 
-  # Default dashboards predefined and available in online & offline mode
-  grafana_external_dashboards: []
-    #   # Kubernetes cluster monitoring (via Prometheus)
-    # - dashboard_id: '315'
-    #   datasource: 'Prometheus'
-    #   # Node Exporter Server Metrics
-    # - dashboard_id: '405'
-    #   datasource: 'Prometheus'
-    #   # Postgres Overview
-    # - dashboard_id: '455'
-    #   datasource: 'Prometheus'
-    #   # Node Exporter Full
-    # - dashboard_id: '1860'
-    #   datasource: 'Prometheus'
-    #   # Kubernetes Cluster
-    # - dashboard_id: '7249'
-    #   datasource: 'Prometheus'
-    #   # Kafka Exporter Overview
-    # - dashboard_id: '7589'
-    #   datasource: 'Prometheus'
-    #   # PostgreSQL Database
-    # - dashboard_id: '9628'
-    #   datasource: 'Prometheus'
-    #   # 1 Node Exporter for Prometheus Dashboard EN v20201010
-    # - dashboard_id: '11074'
-    #   datasource: 'Prometheus'
-    #   # HaProxy backend (or frontend/servers)
-    # - dashboard_id: '789'
-    #   datasource: 'Prometheus'
-
   # Get dashboards from https://grafana.com/dashboards. Only for online mode
-  grafana_online_dashboards: []
-    # - dashboard_id: '4271'
-    #   revision_id: '3'
-    #   datasource: 'Prometheus'
-    # - dashboard_id: '1860'
-    #   revision_id: '4'
-    #   datasource: 'Prometheus'
-    # - dashboard_id: '358'
-    #   revision_id: '1'
-    #   datasource: 'Prometheus'
+  grafana_online_dashboards:
+    ## Kafka
+
+    # Kafka Exporter Overview
+    # https://grafana.com/grafana/dashboards/7589-kafka-exporter-overview/
+    - dashboard_id: 7589
+      revision_id: 5
+      datasource: Prometheus
+
+    ## Kubernetes
+
+    # k8s Memory namespace
+    # https://grafana.com/grafana/dashboards/17386-k8s-memory-namespace/
+    - dashboard_id: 17386
+      revision_id: 1
+      datasource: Prometheus
+
+    # Kubernetes / System / API Server
+    # https://grafana.com/grafana/dashboards/15761-kubernetes-system-api-server/
+    - dashboard_id: 15761
+      revision_id: 13
+      datasource: Prometheus
+
+    # Kubernetes / Views / Global
+    # https://grafana.com/grafana/dashboards/15757-kubernetes-views-global/
+    - dashboard_id: 15757
+      revision_id: 30
+      datasource: Prometheus
+
+    # Kubernetes / Views / Namespaces
+    # https://grafana.com/grafana/dashboards/15758-kubernetes-views-namespaces/
+    - dashboard_id: 15758
+      revision_id: 25
+      datasource: Prometheus
+
+    # Kubernetes / Views / Nodes
+    # https://grafana.com/grafana/dashboards/15759-kubernetes-views-nodes/
+    - dashboard_id: 15759
+      revision_id: 19
+      datasource: Prometheus
+
+    # Kubernetes / Views / Pods
+    # https://grafana.com/grafana/dashboards/15760-kubernetes-views-pods/
+    - dashboard_id: 15760
+      revision_id: 20
+      datasource: Prometheus
+
+    ## NGINX
+
+    # NGINX Ingress controller
+    # https://grafana.com/grafana/dashboards/9614-nginx-ingress-controller/
+    - dashboard_id: 9614
+      revision_id: 1
+      datasource: Prometheus
+
+    ## Node Exporter
+
+    # Node Exporter Dashboard EN 20201010-StarsL.cn
+    # https://grafana.com/grafana/dashboards/11074-node-exporter-for-prometheus-dashboard-en-v20201010/
+    - dashboard_id: 11074
+      revision_id: 9
+      datasource: Prometheus
+
+    # Node Exporter Full
+    # https://grafana.com/grafana/dashboards/1860-node-exporter-full/
+    - dashboard_id: 1860
+      revision_id: 31
+      datasource: Prometheus
+
+    # Node Exporter Server Metrics
+    # https://grafana.com/grafana/dashboards/405-node-exporter-server-metrics/
+    - dashboard_id: 405
+      revision_id: 8
+      datasource: Prometheus
+
+    ## PostgreSQL
+
+    # PostgreSQL Database
+    # https://grafana.com/grafana/dashboards/9628-postgresql-database/
+    - dashboard_id: 9628
+      revision_id: 7
+      datasource: Prometheus
+
+    # PostgreSQL Overview
+    # https://grafana.com/grafana/dashboards/455-postgres-overview/
+    - dashboard_id: 455
+      revision_id: 2
+      datasource: Prometheus
+
+    # PostgreSQL Overview (Postgres_exporter)
+    # https://grafana.com/grafana/dashboards/12273-postgresql-overview-postgres-exporter/
+    - dashboard_id: 12273
+      revision_id: 4
+      datasource: Prometheus
+
+    # PostgreSQL Statistics
+    # https://grafana.com/grafana/dashboards/13494-postgresql-statistics/
+    - dashboard_id: 13494
+      revision_id: 5
+      datasource: Prometheus
+
+    ## Prometheus
+
+    # Prometheus 2.0 Overview
+    # https://grafana.com/grafana/dashboards/3662-prometheus-2-0-overview/
+    - dashboard_id: 3662
+      revision_id: 2
+      datasource: Prometheus
 
   # Deployer local folder with dashboard definitions in .json format
   grafana_dashboards_dir: "dashboards" # Replace with your dashboard directory if you have dashboards to include

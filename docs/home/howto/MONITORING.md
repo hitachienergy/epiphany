@@ -184,32 +184,10 @@ kind: configuration/grafana
 specification:
   ...
   grafana_online_dashboards:
-    - dashboard_id: '4271'
-      revision_id: '3'
+    - dashboard_id: 4271
+      revision_id: 3
       datasource: 'Prometheus'
 ```
-
-### Enabling predefined Grafana dashboards
-
-Since v1.1.0 Epiphany provides predefined Grafana dashboards. These dashboards are available in online and offline deployment modes.
-To enable particular Grafana dashboard, refer to [default Grafana configuration file](/schema/common/defaults/configuration/grafana.yml), copy `kind: configuration/grafana` section to your configuration manifest and uncomment desired dashboards.
-
-Example:
-
-```yaml
-kind: configuration/grafana
-specification:
-  ...
-  grafana_external_dashboards:
-  # Kubernetes cluster monitoring (via Prometheus)
-    - dashboard_id: '315'
-      datasource: 'Prometheus'
-  # Node Exporter Server Metrics
-    - dashboard_id: '405'
-      datasource: 'Prometheus'
-```
-
-*Note: The above link points to develop branch. Please choose the right branch that suits to Epiphany version you are using.*
 
 ### Components used for monitoring
 

@@ -79,24 +79,15 @@ properties:
         type: string
       log_queries:
         type: string
-  grafana_external_dashboards:
-    type: array
-    items:
-      type: object
-      properties:
-        dashboard_id:
-          type: string
-        datasource:
-          type: string
   grafana_online_dashboards:
     type: array
     items:
       type: object
       properties:
         dashboard_id:
-          type: string
+          type: integer
         revision_id:
-          type: string
+          type: integer
   grafana_dashboards_dir:
     type: string
   grafana_welcome_email_on_sign_up:

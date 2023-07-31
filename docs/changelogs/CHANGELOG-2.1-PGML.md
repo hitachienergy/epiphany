@@ -21,6 +21,7 @@
 - OpenSearch to 2.8.0
 - node_exporter to 1.6.1
 - Grafana to 10.0.3
+- Grafana dashboards
 
 ### Removed
 

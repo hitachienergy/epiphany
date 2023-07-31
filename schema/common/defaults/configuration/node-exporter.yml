@@ -21,6 +21,7 @@ specification:
     - meminfo
     - netdev
     - netstat
+    - processes
     - sockstat
     - stat
     - textfile

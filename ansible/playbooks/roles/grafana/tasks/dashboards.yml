@@ -24,18 +24,6 @@
       loop: "{{ grafana_online_dashboards }}"
       when: grafana_online_dashboards != []
 
-    - name: Download Grafana dashboards from local repository to temporary directory
-      include_role:
-        name: download
-        tasks_from: download_file
-      vars:
-        file_name: "grafana_dashboard_{{ item.dashboard_id }}.json"
-        download_directory: "{{ tmp_dashboards.path }}/{{ item.dashboard_id }}.json"
-        force: true # to keep indepotency (avoid HTTP Error 304: Not Modified)
-        _subdir: grafana_dashboards
-      loop: "{{ grafana_external_dashboards }}"
-      when: grafana_external_dashboards != []
-
     # As noted in [1] an exported dashboard replaces the exporter's datasource
     # name with a representative name, something like 'DS_GRAPHITE'. The name
     # is different for each datasource plugin, but always begins with 'DS_'.
@@ -72,7 +60,7 @@
         path: "{{ tmp_dashboards.path }}/{{ item.dashboard_id }}.json"
         regexp: '"(?:\${)?DS_[A-Z0-9_-]+(?:})?"'
         replace: '"{{ item.datasource }}"'
-      loop: "{{ grafana_online_dashboards | union(grafana_external_dashboards) | unique | list }}"
+      loop: "{{ grafana_online_dashboards | unique | list }}"
 
 - name: Create/Update dashboards file (provisioning)
   copy:
