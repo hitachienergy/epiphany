@@ -30,5 +30,3 @@ specification:
       enabled: true
     - name: kafka-exporter
       enabled: true
-    - name: keycloak
-      enabled: false

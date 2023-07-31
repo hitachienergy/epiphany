@@ -18,15 +18,7 @@ Here are some materials concerning Epiphany tooling and cluster components - bot
 
 ## Cluster Components
 
-1. [Docker](https://www.docker.com/)
-    - (Pluralsight) [Introduction to Docker and containerization](https://app.pluralsight.com/library/courses/docker-containers-big-picture/table-of-contents)
-    - [A Beginner-Friendly Introduction to Containers, VMs and Docker](https://medium.freecodecamp.org/a-beginner-friendly-introduction-to-containers-vms-and-docker-79a9e3e119b)
-2. [Kubernetes](https://kubernetes.io/)
-    - (Pluralsight) [Introduction to Kubernetes](https://app.pluralsight.com/library/courses/getting-started-kubernetes/table-of-contents)
-    - [Kubernetes Basics](https://kubernetes.io/docs/tutorials/kubernetes-basics/)
-    - (Free Udacity course) [Scalable Microservices with Kubernetes](https://www.udacity.com/course/scalable-microservices-with-kubernetes--ud615)
-    - Curated list of [Kubernetes resources](https://legacy.gitbook.com/book/ramitsurana/awesome-kubernetes/details)
-3. Monitoring
+1. Monitoring
     1. [Prometheus](https://prometheus.io/)
         - Query [examples](https://prometheus.io/docs/prometheus/latest/querying/examples/)
         - [Integration with Grafana](https://prometheus.io/docs/visualization/grafana/)
@@ -35,22 +27,12 @@ Here are some materials concerning Epiphany tooling and cluster components - bot
         - Alertmanager [Alerts from Prometheus](https://prometheus.io/docs/alerting/alertmanager/)
     2. [Grafana](https://grafana.com/)
         - Community supplied, ready to use [dashboards](https://grafana.com/dashboards)
-4. Messaging
+2. Messaging
     1. [Kafka](http://kafka.apache.org/)
         - [Kafka introduction](http://kafka.apache.org/intro)
         - (Pluralsight) [Getting Started with Apache Kafka](https://app.pluralsight.com/library/courses/apache-kafka-getting-started/table-of-contents)
-5. Central logging
+3. Central logging
     1. [OpenSearch Dashboards](https://opensearch.org/docs/latest/dashboards/index/)
     2. [OpenSearch](https://opensearch.org/docs/latest)
     3. [Filebeat](https://www.elastic.co/guide/en/beats/filebeat/current/index.html)
         - Beats platform reference(https://www.elastic.co/guide/en/beats/libbeat/current/index.html)
-6. Load Balancing
-    1. [HaProxy](http://www.haproxy.org/)
-7. Databases
-    1. [PostgreSQL](https://www.postgresql.org/docs/)
-        - [repmgr](https://repmgr.org/)
-        - [PGBouncer](https://www.pgbouncer.org/)
-        - [PGPool](https://www.pgpool.net/mediawiki/index.php/Main_Page)
-        - [PGAudit](https://www.pgaudit.org/)
-8. Authentication
-    1. [KeyCloak](https://www.keycloak.org/documentation.html)

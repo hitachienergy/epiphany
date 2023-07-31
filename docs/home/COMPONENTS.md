@@ -11,7 +11,6 @@ Note that versions are default versions and can be changed in certain cases thro
 | curator-opensearch         | 0.0.9    | https://github.com/flant/curator-opensearch           | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Kafka                      | 2.8.1    | https://github.com/apache/kafka                       | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Zookeeper                  | 3.5.8    | https://github.com/apache/zookeeper                   | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| KeyCloak                   | 20.0.5-0 | https://github.com/keycloak/keycloak                  | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Filebeat                   | 7.12.1   | https://github.com/elastic/beats                      | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Filebeat Helm Chart        | 7.12.1   | https://github.com/elastic/helm-charts                | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Prometheus                 | 2.31.1   | https://github.com/prometheus/prometheus              | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |

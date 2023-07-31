@@ -1,8 +1,5 @@
 ---
 - include_tasks: common/main.yml
 
-- include_tasks: apply.yml
-  when: not is_upgrade_run
-
 - include_tasks: upgrade.yml
   when: is_upgrade_run

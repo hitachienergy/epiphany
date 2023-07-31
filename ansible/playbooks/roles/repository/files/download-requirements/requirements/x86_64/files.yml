@@ -62,9 +62,3 @@ files:
       - url: 'https://helm.elastic.co/helm/filebeat/filebeat-7.12.1.tgz'
         sha256: 5838058fe06372390dc335900a7707109cc7287a84164ca245d395af1f9c0a79
     deps: [k8s-as-cloud-service]
-
-  keycloak:
-    options:
-      - url: 'https://github.com/codecentric/helm-charts/releases/download/keycloakx-2.1.1/keycloakx-2.1.1.tgz'
-        sha256: 1ae37a17d10d159f793dc6a42ec4182bb230fccadd092badb45a36986fe45d71
-    deps: [keycloak]

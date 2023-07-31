@@ -41,50 +41,6 @@ kubectl get pods -A --kubeconfig=/etc/kubernetes/admin.conf
 For more detailed information please refer
 to [the official documentation](https://kubernetes.io/docs/reference/kubectl/overview/).
 
-##### - crictl
-
-Check state of Kubernetes components using the `crictl` command:
-
-List all pods:
-
-```shell
-crictl pods
-```
-
-List all images:
-
-```shell
-crictl images
-```
-
-List all containers:
-
-```shell
-crictl ps -a
-```
-
-The crictl tool provides the possibility to run a sandbox container which may be useful for debugging purposes.
-For more information, refer to [the official documentation](https://kubernetes.io/docs/tasks/debug-application-cluster/crictl).
-
-#### - Keycloak
-
-To check the if a Keycloak service deployed on Kubernetes is running with the command:
-
-```shell
-kubectl get pods --kubeconfig=/etc/kubernetes/admin.conf --namespace=keycloak --field-selector=status.phase=Running | grep keycloak
-```
-
-#### - HAProxy
-
-To check status of HAProxy, use the command:
-
-```shell
-systemctl status haproxy
-```
-
-Additionally, you can check if the application is listening on ports defined in the file haproxy.cfg running netstat
-command.
-
 #### - Prometheus
 
 To check status of Prometheus, use the command:

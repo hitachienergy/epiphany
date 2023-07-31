@@ -86,13 +86,7 @@ different values. The list does not include ports that are bound to the loopback
 
     - 3000 - Grafana web UI
 
-10. Kubernetes apps:
-
-    - 30103,30104 - Keycloak
-
-    **NOTE:** Not applicable for Ubuntu where UNIX socket is used (deb package's default).
-
-11. Repository:
+10. Repository:
 
     - 80 - deb/rpm package repository (httpd is stopped at the end of installation)
 
@@ -148,19 +142,6 @@ Below you can find list of cipersuites and protocols used for communication set 
     - ciphersuites:  
       ECDHE-RSA-AES128-GCM-SHA256 ECDHE-RSA-AES256-GCM-SHA384 ECDHE-RSA-AES128-SHA ECDHE-RSA-AES256-SHA
       AES128-GCM-SHA256 AES256-GCM-SHA384 AES128-SHA AES256-SHA
-
-6. Kubernetes apps:
-
-    - Keycloak:
-
-        - protocols:  
-          TLSv1.2
-
-        - ciphers:  
-          ECDHE-RSA-AES256-GCM-SHA384 ECDHE-RSA-AES256-SHA384 ECDHE-RSA-AES256-SHA DHE-RSA-AES256-GCM-SHA384
-          DHE-RSA-AES256-SHA256 DHE-RSA-AES256-SHA AES256-GCM-SHA384 AES256-SHA256 AES256-SHA
-          ECDHE-RSA-AES128-GCM-SHA256 ECDHE-RSA-AES128-SHA256 ECDHE-RSA-AES128-SHA DHE-RSA-AES128-GCM-SHA256
-          DHE-RSA-AES128-SHA256 DHE-RSA-AES128-SHA AES128-GCM-SHA256 AES128-SHA256 AES128-SHA
 
 #### Notes
 

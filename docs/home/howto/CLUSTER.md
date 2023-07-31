@@ -472,11 +472,7 @@ Single machine cannot be scaled up or deployed alongside other types of cluster.
 
 ---
 
-Sometimes it might be desirable to run an Epiphany cluster on a single machine. For this purpose Epiphany ships with a `single_cluster` component configuration. This cluster comes with the following main components:
-
-- kubernetes-master: Untainted so pods can be deployed on it
-- keycloak: For deploying authentication service
-- postgresql: To provide a database for Keycloak
+Sometimes it might be desirable to run an Epiphany cluster on a single machine. For this purpose Epiphany ships with a `single_cluster` component configuration.
 
 Note that components like logging and monitoring are missing since they do not provide much benefit in a single machine scenario.
 
@@ -495,101 +491,14 @@ specification:
   cloud:
     ... # add other cloud configuration as needed
   components:
-    kubernetes_master:
-      count: 0
-    kubernetes_node:
-      count: 0
     logging:
       count: 0
     monitoring:
       count: 0
     kafka:
       count: 0
-    postgresql:
-      count: 0
-    load_balancer:
-      count: 0
     single_machine:
       count: 1
-```
-
-To create a single machine cluster using the "any" provider (with extra load\_balancer config included) use the following template below:
-
-```yaml
-kind: epiphany-cluster
-title: "Epiphany cluster Config"
-provider: any
-name: single
-specification:
-  name: single
-  admin_user:
-    name: ubuntu
-    key_path: /shared/id_rsa
-  components:
-    kubernetes_master:
-      count: 0
-    kubernetes_node:
-      count: 0
-    logging:
-      count: 0
-    monitoring:
-      count: 0
-    kafka:
-      count: 0
-    postgresql:
-      count: 0
-    load_balancer:
-      count: 1
-      configuration: default
-      machines: [single-machine]
-    single_machine:
-      count: 1
-      configuration: default
-      machines: [single-machine]
----
-kind: configuration/haproxy
-title: "HAProxy"
-provider: any
-name: default
-specification:
-  logs_max_days: 60
-  self_signed_certificate_name: self-signed-fullchain.pem
-  self_signed_private_key_name: self-signed-privkey.pem
-  self_signed_concatenated_cert_name: self-signed-test.tld.pem
-  haproxy_log_path: "/var/log/haproxy.log"
-
-  stats:
-    enable: true
-    bind_address: 127.0.0.1
-    port: 9000
-    uri: "/haproxy?stats"
-    user: operations
-    password: your-haproxy-stats-pwd
-  metrics:
-    enable: true
-    bind_address: "*"
-    port: 9101
-  frontend:
-    - name: https_front
-      port: 443
-      https: yes
-      backend:
-      - http_back1
-  backend: # example backend config below
-    - name: http_back1
-      server_groups:
-      - kubernetes_node
-      # servers: # Definition for server to that hosts the application.
-      # - name: "node1"
-      #   address: "epiphany-vm1.domain.com"
-      port: 30104
----
-kind: infrastructure/machine
-provider: any
-name: single-machine
-specification:
-  hostname: x1a1
-  ip: 10.20.2.10
 ```
 
 ## How to create custom cluster components
@@ -598,7 +507,7 @@ Epiphany gives you the ability to define custom components. This allows you to d
 
 The first thing you will need to do is define it in the `configuration/features` and the `configuration/feature-mappings` configurations. To get these configurations you can run `epicli init ... --full` command. In the `configuration/features` doc you can see all the available features that Epiphany provides. The `configuration/feature-mappings` doc is where all the Epiphany components are defined and where you can add your custom components.
 
-Below are parts of an example `configuration/features` and `configuration/feature-mappings` docs where we define a new `single_machine_new` component. We want to use Kafka and don't need applications and postgres since we don't want a Keycloak deployment:
+Below are parts of an example `configuration/features` and `configuration/feature-mappings` docs where we define a new `single_machine_new` component. We want to use Kafka:
 
 ```yaml
 kind: configuration/features
@@ -610,7 +519,6 @@ specification:
       enabled: yes
     - name: firewall
       enabled: yes
-    - name: image-registry
     ...
 ---
 kind: configuration/feature-mappings
@@ -620,17 +528,10 @@ specification:
   mappings: # All entries here represent the default components provided with Epiphany
     single_machine:
       - repository
-      - image-registry
-      - kubernetes-master
-      - applications
-      - keycloak
-      - postgresql
       - firewall
     # Below is the new single_machine_new definition
     single_machine_new:
       - repository
-      - image-registry
-      - kubernetes-master
       - kafka
       - firewall
     ...
@@ -666,7 +567,7 @@ Epiphany has the ability to automatically scale and cluster certain components o
 
   ```yaml
   components:
-    kubernetes_node:
+    kafka:
       count: ...
       ...
   ```
@@ -678,14 +579,7 @@ Component | Scale up | Scale down | HA | Clustered |Known issues
 Repository | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | --- |
 Monitoring | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | ---
 Logging | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
-Kubernetes master | :heavy_check_mark: | :x: | :heavy_check_mark: | :heavy_check_mark: | [#1579](https://github.com/hitachienergy/epiphany/issues/1579)
-Kubernetes node | :heavy_check_mark: | :x: | :heavy_check_mark: | :heavy_check_mark: | [#1580](https://github.com/hitachienergy/epiphany/issues/1580)
 Kafka | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
-Load Balancer | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | ---
-Postgresql | :x: | :x: | :heavy_check_mark: | :heavy_check_mark: | [#1577](https://github.com/hitachienergy/epiphany/issues/1577)
-Keycloak K8s | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
-Pgpool K8s | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
-Pgbouncer K8s | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | ---
 
 Additional notes:
 
@@ -694,15 +588,6 @@ In standard Epiphany deployment only one repository machine is required.
 :arrow_up: Scaling up the repository component will create a new standalone VM.  
 :arrow_down: Scaling down will remove it in LIFO order (Last In, First Out).  
 However, even if you create more than one VM, by default all other components will use the first one.
-- Kubernetes master:  
-:arrow_up: When increased this will set up additional control plane nodes, but in the case of non-ha k8s cluster, the existing control plane node must be promoted first.  
-:arrow_down: At the moment there is no ability to downscale.
-- Kubernetes node:  
-:arrow_up: When increased this will set up an additional node and join into the Kubernetes cluster.  
-:arrow_down: There is no ability to downscale.
-- Load balancer:  
-:arrow_up: Scaling up the load_balancer component will create a new standalone VM.  
-:arrow_down: Scaling down will remove it in LIFO order (Last In, First Out).
 - Logging:  
 :arrow_up:  Scaling up will create new VM with both OpenSearch and OpenSearch Dashboards components inside.  
 OpenSearch will join the cluster but OpenSearch Dashboards will be a standalone instance.  
@@ -710,91 +595,10 @@ OpenSearch will join the cluster but OpenSearch Dashboards will be a standalone 
 - Monitoring:  
 :arrow_up: Scaling up the monitoring component will create a new standalone VM.  
 :arrow_down: Scaling down will remove it in LIFO order (Last In, First Out).
-- Postgresql:  
-:arrow_up: At the moment does not support scaling up. Check known issues.  
-:arrow_down: At the moment does not support scaling down. Check known issues.
 
 Additional known issues:
 
 - [#1574](https://github.com/hitachienergy/epiphany/issues/1574) - Disks are not removed after downscale of any Epiphany component on Azure.
-
-## Multi master cluster
-
-Epiphany can deploy [HA Kubernetes clusters](../../design-docs/kubernetes-ha/kubernetes-ha.md) (since v0.6). To achieve that, it is required that:
-
-- the master count must be higher than 1 (proper values should be 1, 3, 5, 7):
-
-  ```yaml
-  kubernetes_master:
-    count: 3
-  ```
-
-- the HA mode must be enabled in `configuration/shared-config`:
-
-  ```yaml
-  kind: configuration/shared-config
-  ...
-  specification:
-    use_ha_control_plane: true
-    promote_to_ha: false
-  ```
-
-- the regular epicli apply cycle must be executed
-
-Epiphany can promote / convert older single-master clusters to HA mode (since v0.6). To achieve that, it is required that:
-
-- the existing cluster is legacy single-master cluster
-
-- the existing cluster has been [upgraded](UPGRADE.md) to Kubernetes 1.17 or above first
-
-- the HA mode and HA promotion must be enabled in `configuration/shared-config`:
-
-  ```yaml
-  kind: configuration/shared-config
-  ...
-  specification:
-    use_ha_control_plane: true
-    promote_to_ha: true
-  ```
-
-- the regular epicli apply cycle must be executed
-
-- since it is one-time operation, after successful promotion, the HA promotion must be disabled in the config:
-
-  ```yaml
-  kind: configuration/shared-config
-  ...
-  specification:
-    use_ha_control_plane: true
-    promote_to_ha: false
-  ```
-
-*Note: It is not supported yet to reverse HA promotion.*
-
-Epiphany can scale-up existing HA clusters (including ones that were promoted). To achieve that, it is required that:
-
-- the existing cluster must be already running in HA mode
-
-- the master count must be higher than previous value (proper values should be 3, 5, 7):
-
-  ```yaml
-  kubernetes_master:
-    count: 5
-  ```
-
-- the HA mode must be enabled in `configuration/shared-config`:
-
-  ```yaml
-  kind: configuration/shared-config
-  ...
-  specification:
-    use_ha_control_plane: true
-    promote_to_ha: false
-  ```
-
-- the regular epicli apply cycle must be executed
-
-*Note: It is not supported yet to scale-down clusters (master count cannot be decreased).*
 
 ## Build artifacts
 

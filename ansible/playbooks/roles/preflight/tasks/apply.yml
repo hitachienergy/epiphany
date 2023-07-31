@@ -1,6 +1,0 @@
----
-- name: Keycloak checks
-  include_tasks: roles/keycloak/tasks/preflight/apply.yml
-  when:
-    - groups.keycloak is defined
-    - groups.keycloak | length > 0

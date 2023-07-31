@@ -87,21 +87,11 @@ AWS:
         count: 1
         machines:
           - default-epiphany-modules-test-all-0 # <----- make sure that it is correct VM name
-      kubernetes_master:
-        count: 0
-      kubernetes_node:
-        count: 0
       logging:
         count: 0
       monitoring:
         count: 0
       kafka:
-        count: 0
-      postgresql:
-        count: 1
-        machines:
-          - default-epiphany-modules-test-all-1 # <----- make sure that it is correct VM name
-      load_balancer:
         count: 0
   ---
   kind: configuration/feature-mappings
@@ -112,11 +102,9 @@ AWS:
     mappings:
       repository:
         - repository
-        - image-registry
         - firewall
         - filebeat
         - node-exporter
-        - applications
   ---
   kind: infrastructure/machine
   name: default-epiphany-modules-test-all-0
@@ -147,218 +135,6 @@ AWS:
         images: false
         packages: false
   provider: any
-  ---
-  kind: configuration/postgresql
-  title: PostgreSQL
-  name: default
-  specification:
-    config_file:
-      parameter_groups:
-        - name: CONNECTIONS AND AUTHENTICATION
-          subgroups:
-            - name: Connection Settings
-              parameters:
-                - name: listen_addresses
-                  value: "'*'"
-                  comment: listen on all addresses
-            - name: Security and Authentication
-              parameters:
-                - name: ssl
-                  value: 'off'
-                  comment: to have the default value also on Ubuntu
-        - name: RESOURCE USAGE (except WAL)
-          subgroups:
-            - name: Kernel Resource Usage
-              parameters:
-                - name: shared_preload_libraries
-                  value: AUTOCONFIGURED
-                  comment: set by automation
-        - name: ERROR REPORTING AND LOGGING
-          subgroups:
-            - name: Where to Log
-              parameters:
-                - name: log_directory
-                  value: "'/var/log/postgresql'"
-                  comment: to have standard location for Filebeat and logrotate
-                - name: log_filename
-                  value: "'postgresql.log'"
-                  comment: to use logrotate with common configuration
-        - name: WRITE AHEAD LOG
-          subgroups:
-            - name: Settings
-              parameters:
-                - name: wal_level
-                  value: replica
-                  when: replication
-            - name: Archiving
-              parameters:
-                - name: archive_mode
-                  value: 'on'
-                  when: replication
-                - name: archive_command
-                  value: "'test ! -f /dbbackup/{{ inventory_hostname }}/backup/%f &&\
-                      \ gzip -c < %p > /dbbackup/{{ inventory_hostname }}/backup/%f'"
-                  when: replication
-        - name: REPLICATION
-          subgroups:
-            - name: Sending Server(s)
-              parameters:
-                - name: max_wal_senders
-                  value: 10
-                  comment: maximum number of simultaneously running WAL sender processes
-                  when: replication
-                - name: wal_keep_segments
-                  value: 34
-                  comment: number of WAL files held for standby servers
-                  when: replication
-    extensions:
-      pgaudit:
-        enabled: false
-        shared_preload_libraries:
-          - pgaudit
-        config_file_parameters:
-          log_connections: 'off'
-          log_disconnections: 'off'
-          log_statement: 'none'
-          log_line_prefix: "'%m [%p] %q%u@%d,host=%h '"
-          pgaudit.log: "'write, function, role, ddl' # 'misc_set' is not supported for\
-              \ PG 10"
-          pgaudit.log_catalog: 'off # to reduce overhead of logging'
-          pgaudit.log_relation: 'on # separate log entry for each relation'
-          pgaudit.log_statement_once: 'off'
-          pgaudit.log_parameter: 'on'
-      replication:
-        replication_user_name: epi_repmgr
-        replication_user_password: PASSWORD_TO_CHANGE
-        privileged_user_name: epi_repmgr_admin
-        privileged_user_password: PASSWORD_TO_CHANGE
-        repmgr_database: epi_repmgr
-        shared_preload_libraries:
-          - repmgr
-    logrotate:
-      config: |-
-        /var/log/postgresql/postgresql*.log {
-            maxsize 10M
-            daily
-            rotate 6
-            copytruncate
-        # delaycompress is for Filebeat
-            delaycompress
-            compress
-            notifempty
-            missingok
-            su root root
-            nomail
-        # to have multiple unique filenames per day when dateext option is set
-            dateformat -%Y%m%dH%H
-        }
-  provider: any
-  ---
-  kind: configuration/applications
-  title: "Kubernetes Applications Config"
-  name: default
-  specification:
-    applications:
-      - name: auth-service
-        enabled: false
-        image_path: jboss/keycloak:9.0.0
-        use_local_image_registry: false
-        service:
-          name: as-testauthdb
-          port: 30104
-          replicas: 2
-          namespace: namespace-for-auth
-          admin_user: auth-service-username
-          admin_password: PASSWORD_TO_CHANGE
-        database:
-          name: auth-database-name
-          user: auth-db-user
-          password: PASSWORD_TO_CHANGE
-      - name: pgpool
-        enabled: true
-        image:
-          path: bitnami/pgpool:4.1.1-debian-10-r29
-          debug: false
-        use_local_image_registry: false
-        namespace: postgres-pool
-        service:
-          name: pgpool
-          port: 5432
-        replicas: 3
-        pod_spec:
-          affinity:
-            podAntiAffinity:
-              preferredDuringSchedulingIgnoredDuringExecution:
-                - weight: 100
-                  podAffinityTerm:
-                    labelSelector:
-                      matchExpressions:
-                        - key: app
-                          operator: In
-                          values:
-                            - pgpool
-                    topologyKey: kubernetes.io/hostname
-          nodeSelector: {}
-          tolerations: {}
-        resources:
-          limits:
-            memory: 176Mi
-          requests:
-            cpu: 250m
-            memory: 176Mi
-        pgpool:
-          env:
-            PGPOOL_BACKEND_NODES: autoconfigured
-            PGPOOL_POSTGRES_USERNAME: epi_pgpool_postgres_admin
-            PGPOOL_SR_CHECK_USER: epi_pgpool_sr_check
-            PGPOOL_ADMIN_USERNAME: epi_pgpool_admin
-            PGPOOL_ENABLE_LOAD_BALANCING: true
-            PGPOOL_MAX_POOL: 4
-            PGPOOL_POSTGRES_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_postgres_password
-            PGPOOL_SR_CHECK_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_sr_check_password
-            PGPOOL_ADMIN_PASSWORD_FILE: /opt/bitnami/pgpool/secrets/pgpool_admin_password
-          secrets:
-            pgpool_postgres_password: PASSWORD_TO_CHANGE
-            pgpool_sr_check_password: PASSWORD_TO_CHANGE
-            pgpool_admin_password: PASSWORD_TO_CHANGE
-          pgpool_conf_content_to_append: |
-            #------------------------------------------------------------------------------
-            # CUSTOM SETTINGS (appended by Epiphany to override defaults)
-            #------------------------------------------------------------------------------
-            # num_init_children = 32
-            connection_life_time = 900
-            reserved_connections = 1
-          pool_hba_conf: autoconfigured
-      - name: pgbouncer
-        enabled: true
-        image_path: brainsam/pgbouncer:1.12
-        init_image_path: bitnami/pgpool:4.1.1-debian-10-r29
-        use_local_image_registry: false
-        namespace: postgres-pool
-        service:
-          name: pgbouncer
-          port: 5432
-        replicas: 2
-        resources:
-          requests:
-            cpu: 250m
-            memory: 128Mi
-          limits:
-            cpu: 500m
-            memory: 128Mi
-        pgbouncer:
-          env:
-            DB_HOST: pgpool.postgres-pool.svc.cluster.local
-            DB_LISTEN_PORT: 5432
-            LISTEN_ADDR: "*"
-            LISTEN_PORT: 5432
-            AUTH_FILE: "/etc/pgbouncer/auth/users.txt"
-            AUTH_TYPE: md5
-            MAX_CLIENT_CONN: 150
-            DEFAULT_POOL_SIZE: 25
-            RESERVE_POOL_SIZE: 25
-            POOL_MODE: transaction
-  provider: any
   ```
 
 * Run `epicli` tool to install Epiphany:
@@ -367,10 +143,8 @@ AWS:
   epicli --auto-approve apply --file='/tmp/shared/epi.yml' --vault-password='secret'
   ```
 
-  This will install PostgreSQL on one of the machines and configure PgBouncer, Pgpool and additional services to manage database connections.
-
-  Please make sure you disable applications that you don't need. Also, you can enable standard Epiphany services like Kafka, by increasing the number of virtual machines in the basic infrastructure config and assigning them to Epiphany components you want to use.
+  You can enable standard Epiphany services like Kafka, by increasing the number of virtual machines in the basic infrastructure config and assigning them to Epiphany components you want to use.
 
   If you would like to deploy custom resources into managed Kubernetes, then the standard kubeconfig yaml document can be found inside the shared state file (you should be able to use vendor tools as well to get it).
 
-  We highly recommend using the `Ingress` resource in Kubernetes to allow access to web applications inside the cluster. Since it's managed Kubernetes and fully supported by the cloud platform, the classic HAProxy load-balancer solution seems to be deprecated here.
+  We highly recommend using the `Ingress` resource in Kubernetes to allow access to web applications inside the cluster. Since it's managed Kubernetes and fully supported by the cloud platform.

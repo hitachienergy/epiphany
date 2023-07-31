@@ -36,7 +36,6 @@ specification:
     single_machine:
       - repository
       - helm
-      - keycloak
       - firewall
     repository:
       - repository

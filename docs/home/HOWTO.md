@@ -44,9 +44,6 @@
   - [Persistent storage](./howto/kubernetes/PERSISTENT_STORAGE.md)
   - [Certificate management](./howto/kubernetes/CERTIFICATES.md)
 
-- [Keycloak](./howto/KEYCLOAK.md)
-  - [How to run Keycloak](./howto/KEYCLOAK.md#how-to-run-keycloak)
-
 - [Upgrade](./howto/UPGRADE.md)
   - [Online upgrade](./howto/UPGRADE.md#online-upgrade)
   - [Offline upgrade](./howto/UPGRADE.md#offline-upgrade)
