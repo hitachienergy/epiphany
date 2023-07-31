@@ -131,8 +131,6 @@ AWS:
       disable_http_server: true
       remove:
         files: false
-        helm_charts: false
-        images: false
         packages: false
   provider: any
   ```

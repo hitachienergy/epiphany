@@ -265,7 +265,6 @@ specification:
       - repository
       - image-registry
       - kubernetes-master
-      - helm
       - applications
       - node-exporter
       - filebeat

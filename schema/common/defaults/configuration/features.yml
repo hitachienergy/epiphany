@@ -8,8 +8,6 @@ specification:
       enabled: true
     - name: firewall
       enabled: true
-    - name: helm
-      enabled: true
     - name: opensearch
       enabled: true
     - name: opensearch-dashboards

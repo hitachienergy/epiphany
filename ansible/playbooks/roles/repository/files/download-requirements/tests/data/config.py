@@ -53,12 +53,6 @@ files:
         sha256: 7852dc11cfaa039577c1804fe6f082a07c5eb06be50babcffe29214aedf318b3
     deps: [prometheus]
 
-  helm:
-    options:
-      - url: 'https://get.helm.sh/helm-v3.2.0-linux-amd64.tar.gz'
-        sha256: 4c3fd562e64005786ac8f18e7334054a24da34ec04bbd769c206b03b8ed6e457
-    deps: [helm]
-
   # --- Helm charts ---
   node-exporter-chart:
     options:
@@ -137,192 +131,7 @@ grafana-dashboards:
 """
 
 IMAGE_REQUIREMENTS = """
-images:
-  haproxy:
-    'haproxy:2.2.2-alpine':
-      sha1: dff8993b065b7f7846adb553548bcdcfcd1b6e8e
-
-  image-registry:
-    'registry:2.8.0':
-      sha1: 89795c17099199c752d02ad8797c1d4565a08aff
-      allow_mismatch: true
-
-  applications:
-    'bitnami/pgpool:4.2.4':
-      sha1: 66741f3cf4a508bd1f80e2965b0086a4c0fc3580
-
-    'bitnami/pgbouncer:1.16.0':
-      sha1: f2e37eecbf9aed44d5566f06dcc101c1ba9edff9
-
-  kubernetes-master:
-    'haproxy:2.2.2-alpine':
-      sha1: dff8993b065b7f7846adb553548bcdcfcd1b6e8e
-
-    'kubernetesui/dashboard:v2.3.1':
-      sha1: 8c8a4ac7a643f9c5dd9e5d22876c434187312db8
-
-    'kubernetesui/metrics-scraper:v1.0.7':
-      sha1: 5a0052e2afd3eef3ae638be21938b29b1d608ebe
-
-    # K8s
-    # v1.18.6
-    'registry.k8s.io/kube-apiserver:v1.18.6':
-      sha1: 7376c22211a4e854efb9c7d486d125cd6b9ad937
-
-    'registry.k8s.io/kube-controller-manager:v1.18.6':
-      sha1: cd96d2d94dc62a93e8603f362d981dfba8a5917a
-
-    'registry.k8s.io/kube-scheduler:v1.18.6':
-      sha1: c40ae182f4af1ddbd7b57fff832979c42847655a
-
-    'registry.k8s.io/kube-proxy:v1.18.6':
-      sha1: 75418f30f6e3e6d502ee71d3c7b1253e42cfa6b2
-
-    'registry.k8s.io/coredns:1.6.7':
-      sha1: ff4a87c424b1997544d61542c0f0152625466985
-
-    'registry.k8s.io/etcd:3.4.3-0':
-      sha1: 6afca8c0f0be353a7262c9a4f75cc51e7f77e019
-
-    'quay.io/coreos/flannel:v0.12.0-amd64':
-      sha1: 3516522e779373983992095e61eb6615edd50d1f
-
-    'quay.io/coreos/flannel:v0.12.0':
-      sha1: 2cb6ce8f1361886225526767c4a0422c039453c8
-
-    'calico/cni:v3.15.0':
-      sha1: aa59f624c223bc398a42c7ba9e628e8143718e58
-
-    'calico/kube-controllers:v3.15.0':
-      sha1: f8921f5d67ee7db1c619aa9fdb74114569684ceb
-
-    'calico/node:v3.15.0':
-      sha1: b15308e1aa8b9c56253c142e4361e47125bb4ac5
-
-    'calico/pod2daemon-flexvol:v3.15.0':
-      sha1: dd1a6525bde05937a28e3d9176b826162ae489af
-
-    # v1.19.15
-    'registry.k8s.io/kube-apiserver:v1.19.15':
-      sha1: 8ba2f1966563a1cee14c308fb35269a468529fc7
-
-    'registry.k8s.io/kube-controller-manager:v1.19.15':
-      sha1: 36a0dde7704d782291158ed3fc4170f887fa7aca
-
-    'registry.k8s.io/kube-scheduler:v1.19.15':
-      sha1: 3ba7a05cc19f1accec94557e81c36d146993f76b
-
-    'registry.k8s.io/kube-proxy:v1.19.15':
-      sha1: de785d5892a9394a7cd8c432f40dc1e2874c565f
-
-    # v1.20.12
-    'registry.k8s.io/kube-apiserver:v1.20.12':
-      sha1: b8c79267b9cbe1310f407f787e7d1643841a4b30
-
-    'registry.k8s.io/kube-controller-manager:v1.20.12':
-      sha1: 88e0b52ce2abe3fbe3bcaf2043fd6a2e8ff4d428
-
-    'registry.k8s.io/kube-scheduler:v1.20.12':
-      sha1: 47934c2c8fbb8e7051ecf3481c466f5021201710
-
-    'registry.k8s.io/kube-proxy:v1.20.12':
-      sha1: 0e562fedb15086e613bf6c6fbc2e4193bc49cc76
-
-    'registry.k8s.io/coredns:1.7.0':
-      sha1: 521d9f2b461ce4b8a1407715596fec93bfb27e64
-
-    'registry.k8s.io/pause:3.2':
-      sha1: a107a151b90d28890f247d4fe951b7b8cf1c7ee7
-
-    # v1.21.7
-    'registry.k8s.io/kube-apiserver:v1.21.7':
-      sha1: 8aa1733cdf257a58f02df6ad6e23176d97e81b79
-
-    'registry.k8s.io/kube-controller-manager:v1.21.7':
-      sha1: cf43f4a88e3b6c79014e5b1e31dd2c0de0da3300
-
-    'registry.k8s.io/kube-scheduler:v1.21.7':
-      sha1: f2e62ec380344ea246b40b90cadb3171d211cdab
-
-    'registry.k8s.io/kube-proxy:v1.21.7':
-      sha1: a121226c3a55b10fd607d280fc9c471f60b86632
-
-    'registry.k8s.io/coredns/coredns:v1.8.0':
-      sha1: 43da34af984b00bd2fcdf5364ff9526433e499c8
-
-    'registry.k8s.io/etcd:3.4.13-0':
-      sha1: ee125946a39ce208cb7e38d0fc9a985150f1c3fe
-
-    'registry.k8s.io/pause:3.4.1':
-      sha1: c4a3022683dee873dc861328dca2d5524910bbc5
-
-    # v1.22.4
-    'registry.k8s.io/kube-apiserver:v1.22.4':
-      sha1: 753ff29805d9ac873f409f0cd8dec0818dba4b2d
-
-    'registry.k8s.io/kube-controller-manager:v1.22.4':
-      sha1: 3e6936ed6984505bcd194da11b8fcd3e77b52ac4
-
-    'registry.k8s.io/kube-scheduler:v1.22.4':
-      sha1: d1fa695dbae08408cf22c8e14b6a70058d5873e1
-
-    'registry.k8s.io/kube-proxy:v1.22.4':
-      sha1: b0e3b50e84060be942e48ea67a5c4a95b7355973
-
-    'registry.k8s.io/coredns/coredns:v1.8.4':
-      sha1: 447ce8fb5c1ef69298658d976e8aa3a55da28675
-
-    'registry.k8s.io/etcd:3.5.0-0':
-      sha1: 78f42080da842ff9454ba9420ad48d90e84de045
-
-    'registry.k8s.io/pause:3.5':
-      sha1: 98f71abc4bdab5a3d5eb779b18483caed2544c5d
-
-    'quay.io/coreos/flannel:v0.14.0-amd64':
-      sha1: cff47465996a51de4632b53abf1fca873f147027
-
-    'quay.io/coreos/flannel:v0.14.0':
-      sha1: a487a36f7b31677e50e74b96b944f27fbce5ac13
-
-    'calico/cni:v3.20.3':
-      sha1: 95e4cf79e92715b13e500a0efcfdb65590de1e04
-
-    'calico/kube-controllers:v3.20.3':
-      sha1: 5769bae60830abcb3c5d97eb86b8f9938a587b2d
-
-    'calico/node:v3.20.3':
-      sha1: cc3c8727ad30b4850e8d0042681342a4f2351eff
-
-    'calico/pod2daemon-flexvol:v3.20.3':
-      sha1: 97c1b7ac90aa5a0f5c52e7f137549e598ff80f3e
-
-    'registry.k8s.io/sig-storage/csi-attacher:v3.4.0':
-      sha1: a65c9b964b98b0a908a577350a03a5166ab467b3
-
-    'registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.5.0':
-      sha1: 49304df65bfbb463bb4be7db688a95c2b1c1a1a5
-
-    'registry.k8s.io/sig-storage/csi-provisioner:v3.1.0':
-      sha1: 0d909f211b06853aaaea6e2533f91e7b7ecfd210
-
-    'registry.k8s.io/sig-storage/csi-resizer:v1.4.0':
-      sha1: 8acc84db171b9b8efc17290e17ea7e12e9a09219
-
-    'registry.k8s.io/sig-storage/csi-snapshotter:v5.0.1':
-      sha1: d5d1b7d2b3eee884dda7d5cd9a6b553d4d997d50
-
-    'quay.io/ceph/ceph:v16.2.7':
-      sha1: fe9b7802c67e19111f83ffe4754ab62df66fd417
-      allow_mismatch: true
-
-    'quay.io/cephcsi/cephcsi:v3.5.1':
-      sha1: 51dee9ea8ad76fb95ebd16f951e8ffaaaba95eb6
-
-    'quay.io/csiaddons/k8s-sidecar:v0.2.1':
-      sha1: f0fd757436ac5075910c460c1991ff67c4774d09
-
-    'quay.io/csiaddons/volumereplication-operator:v0.3.0':
-      sha1: d3cd17f14fcbf09fc6c8c2c5c0419f098f87a70f
+images: {}
 """
 
 
@@ -359,24 +168,7 @@ ALL_REQUIREMENTS: Dict[str, Dict] = {
             'sha256': '893f4029ee9b3e0797ebad989dd47b8df516ed4d078f28ded2d6d8df7bbd1065'
         }
     },
-    'images': {
-        'haproxy': {
-            'haproxy:2.2.2-alpine': {
-                'sha1': 'dff8993b065b7f7846adb553548bcdcfcd1b6e8e'
-            }
-        },
-        'image-registry': {
-            'registry:2.8.0': {
-                'sha1': '89795c17099199c752d02ad8797c1d4565a08aff',
-                'allow_mismatch': True
-            }
-        },
-        'applications': {
-            'bitnami/pgpool:4.2.4': {
-                'sha1': '66741f3cf4a508bd1f80e2965b0086a4c0fc3580'
-            }
-        }
-    },
+    'images': {},
     'packages': {}
 }
 
@@ -391,7 +183,6 @@ Components requested:
 Features requested:
 - filebeat
 - firewall
-- image-registry
 - jmx-exporter
 - kafka
 - kafka-exporter
@@ -413,7 +204,6 @@ Features requested:
 - filebeat
 - firewall
 - grafana
-- image-registry
 - node-exporter
 - prometheus
 - repository
@@ -446,7 +236,6 @@ Components requested:
 Features requested:
 - filebeat
 - firewall
-- image-registry
 - jmx-exporter
 - kafka
 - kafka-exporter
@@ -474,16 +263,12 @@ Components requested:
 Features requested:
 - filebeat
 - firewall
-- image-registry
 - jmx-exporter
 - kafka
 - kafka-exporter
 - node-exporter
 - repository
 - zookeeper
-
-Images to download:
-- registry:2.8.0
 --------------------------------------------------
 """
 
@@ -497,7 +282,6 @@ Components requested:
 Features requested:
 - filebeat
 - firewall
-- image-registry
 - k8s-as-cloud-service
 - node-exporter
 - repository
@@ -522,10 +306,5 @@ Dashboards to download:
 - grafana_dashboard_11074
 - grafana_dashboard_315
 - grafana_dashboard_7249
-
-Images to download:
-- bitnami/pgpool:4.2.4
-- haproxy:2.2.2-alpine
-- registry:2.8.0
 
 """

@@ -44,12 +44,6 @@ files:
         sha256: 7852dc11cfaa039577c1804fe6f082a07c5eb06be50babcffe29214aedf318b3
     deps: [prometheus]
 
-  helm:
-    options:
-      - url: 'https://get.helm.sh/helm-v3.2.0-linux-amd64.tar.gz'
-        sha256: 4c3fd562e64005786ac8f18e7334054a24da34ec04bbd769c206b03b8ed6e457
-    deps: [helm]
-
   # --- Helm charts ---
   node-exporter-chart:
     options:

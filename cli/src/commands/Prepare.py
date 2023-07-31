@@ -11,7 +11,6 @@ from cli.src.Step import Step
 
 class Prepare(Step):
     PREPARE_PATH: Path = Path(f'{BASE_DIR}/ansible/playbooks/roles/repository/files/download-requirements')
-    CHARTS_PATH: Path = Path(f'{BASE_DIR}/ansible/playbooks/roles/helm_charts/files/system')
     FAMILY_MAPPER: Dict[str, str] = {
         'ubuntu':    'debian'
     }
@@ -50,14 +49,11 @@ class Prepare(Step):
         arch = self.arch.replace('-', '_').replace('.', '')
         dest_path /= self.output_dir if self.output_dir else f'prepare_scripts_{os_type}_{arch}'
 
-        charts_path = dest_path / 'charts/system'
-
         # source : destination
         download_requirements_paths: Dict[Path, Path] = {
             arch_path / 'cranes.yml':                       dest_path / f'requirements/{self.arch}',
             arch_path / 'files.yml':                        dest_path / f'requirements/{self.arch}',
             arch_path / 'images.yml':                       dest_path / f'requirements/{self.arch}',
-            charts_path:                                    dest_path / 'charts/system',
             distro_path / 'packages.yml':                   dest_path / f'requirements/{self.arch}/{self.os_family}/{self.os}',
             repositories_file_path:                         dest_path / f'repositories/{self.arch}/{self.os_family}',
             requirements_path / 'grafana-dashboards.yml':   dest_path / 'requirements',

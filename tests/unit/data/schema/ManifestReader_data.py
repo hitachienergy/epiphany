@@ -63,7 +63,6 @@ specification:
     - firewall
     single_machine:
     - repository
-    - helm
     - firewall
     repository:
     - repository
@@ -142,7 +141,6 @@ EXPECTED_PARSED_MANIFEST_DOCS: List[Dict] = [
              ],
              'single_machine': [
                  'repository',
-                 'helm',
                  'firewall'
              ],
              'repository': [

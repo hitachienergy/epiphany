@@ -243,7 +243,6 @@ specification:
   mappings:
     kubernetes_master:
       - kubernetes-master
-      - helm
       - applications
       - node-exporter
       - filebeat

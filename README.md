@@ -12,13 +12,11 @@
 
 ## Overview
 
-Epiphany at its core is a full automation of Kubernetes and Docker plus additional builtin services/components like:
+Epiphany at its core is a full automation of services/components like:
 
 - Kafka for high speed messaging/events
 - Prometheus and Alertmanager for monitoring with Graphana for visualization
 - OpenSearch for centralized logging
-- KeyCloak for authentication
-- Helm as package manager for Kubernetes
 
 The following target platforms are available: AWS, Azure and on-prem installation.
 

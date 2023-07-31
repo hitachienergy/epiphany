@@ -19,30 +19,16 @@ specification:
       - node-exporter
       - filebeat
       - firewall
-    load_balancer:
-      - haproxy
-      - node-exporter
-      - filebeat
-      - firewall
     monitoring:
       - prometheus
       - grafana
       - node-exporter
       - filebeat
       - firewall
-    postgresql:
-      - postgresql
-      - postgres-exporter
-      - node-exporter
-      - filebeat
-      - firewall
     custom:
       - repository
-      - image-registry
-      - kubernetes-master
       - node-exporter
       - filebeat
-      - postgresql
       - prometheus
       - grafana
       - node-exporter
@@ -50,27 +36,9 @@ specification:
       - firewall
     single_machine:
       - repository
-      - image-registry
-      - kubernetes-master
-      - helm
-      - applications
-      - postgresql
-      - firewall
-    kubernetes_master:
-      - kubernetes-master
-      - helm
-      - applications
-      - node-exporter
-      - filebeat
-      - firewall
-    kubernetes_node:
-      - kubernetes-node
-      - node-exporter
-      - filebeat
       - firewall
     repository:
       - repository
-      - image-registry
       - firewall
       - filebeat
       - node-exporter
@@ -92,20 +60,12 @@ specification:
   components:
     repository:
       count: 1
-    kubernetes_master:
-      count: 0
-    kubernetes_node:
-      count: 0
     logging:
       count: 0
     monitoring:
       count: 0
     kafka:
       count: 2
-    postgresql:
-      count: 0
-    load_balancer:
-      count: 0
 version: 2.0.1dev
 {FEATURE_MAPPINGS}
 """
@@ -124,19 +84,11 @@ specification:
   components:
     repository:
       count: 1
-    kubernetes_master:
-      count: 0
-    kubernetes_node:
-      count: 0
     logging:
       count: 0
     monitoring:
       count: 1
     kafka:
-      count: 0
-    postgresql:
-      count: 0
-    load_balancer:
       count: 0
 version: 2.0.1dev
 {FEATURE_MAPPINGS}
@@ -156,20 +108,12 @@ specification:
   components:
     repository:
       count: 1
-    kubernetes_master:
-      count: 0
-    kubernetes_node:
-      count: 0
     logging:
       count: 0
     monitoring:
       count: 0
     kafka:
       count: 2
-    postgresql:
-      count: 0
-    load_balancer:
-      count: 0
 version: 2.0.1dev
 {FEATURE_MAPPINGS}
 """
@@ -190,19 +134,11 @@ specification:
   components:
     repository:
       count: 1
-    kubernetes_master:
-      count: 0
-    kubernetes_node:
-      count: 0
     logging:
       count: 0
     monitoring:
       count: 0
     kafka:
-      count: 0
-    postgresql:
-      count: 0
-    load_balancer:
       count: 0
 version: 2.0.1dev
 {FEATURE_MAPPINGS}
@@ -213,7 +149,6 @@ EXPECTED_FEATURE_MAPPINGS = {
     'requested-components': ['kafka', 'repository'],
     'requested-features': ['filebeat',
                            'firewall',
-                           'image-registry',
                            'jmx-exporter',
                            'kafka',
                            'kafka-exporter',
@@ -228,7 +163,6 @@ EXPECTED_FEATURE_MAPPINGS_WITH_DASHBOARDS = {
     'requested-features': ['filebeat',
                            'firewall',
                            'grafana',
-                           'image-registry',
                            'node-exporter',
                            'prometheus',
                            'repository']

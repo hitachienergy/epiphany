@@ -35,7 +35,6 @@ specification:
       - firewall
     single_machine:
       - repository
-      - helm
       - firewall
     repository:
       - repository
