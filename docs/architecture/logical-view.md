@@ -43,7 +43,6 @@ Source | Purpose
 /var/log/audit/audit.log | Logs from Linux audit daemon
 /var/log/auth.log | System authorization information and user logins
 /var/log/firewalld | Firewall logs
-/var/log/haproxy.log | HAProxy logs
 /var/log/kafka/server.log | Kafka logs
 /var/log/messages | Global system messages
 /var/log/secure | Logs from authentication and authorization
@@ -105,12 +104,3 @@ Kafka is a distributed streaming and messaging platform.
 Zookeepers are usually deployed in more than one instance - this is called Zookeepers ensemble.
 
 [Read more](https://cwiki.apache.org/confluence/display/ZOOKEEPER/Index)
-
-## Load Balancing
-
-### HAProxy
-
-`HAProxy` is a high performance load balancer. Applications deployed on `Kubernetes` can be exposed through `HAProxy` that supports TLS termination and supports multiple backends.
-Epiphany Platform automates the configuration for backend and frontend of `HAProxy`.
-
-[Read more](http://www.haproxy.org/#desc)

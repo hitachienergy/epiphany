@@ -266,29 +266,6 @@ Epiphany upgrade of OpenSearch, OpenSearch Dashboards or Filebeat components wil
 
 <sup>[1] For the backward compatibility needs, some naming conventions (ie. kibanaserver user name) are still present within the new (OpenSearch) platform though they will be suppresed in the future. In aftermath, Epiphany stack is also still using these names.</sup>
 
-# HAProxy
-
-## How to enable HAProxy monitoring
-
-HAProxy metrics are enabled by default. To disable change `specification/metrics/enable` to `false`:
-
-```yaml
-kind: configuration/haproxy
-title: "HAProxy"
-provider: any
-name: default
-specification:
-  metrics:
-    enable: true
-    bind_address: "*"
-    port: 9101
-```
-
-You can also change the rest of parameters but note, that you would have to change your security group as well.
-
-
-# Azure
-
 ## How to configure Azure additional monitoring and alerting
 
 Setting up addtional monitoring on Azure for redundancy is good practice and might catch issues the Epiphany monitoring might miss like:
@@ -301,9 +278,3 @@ More information about Azure monitoring and alerting you can find under links pr
 https://docs.microsoft.com/en-us/azure/azure-monitor/overview
 
 https://docs.microsoft.com/en-us/azure/monitoring-and-diagnostics/monitoring-overview-alerts
-
-# AWS
-
-## How to configure AWS additional monitoring and alerting
-
-TODO

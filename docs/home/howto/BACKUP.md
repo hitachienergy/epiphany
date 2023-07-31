@@ -106,15 +106,6 @@ epicli recovery -f recovery.yml -b build_folder
 
 ## 4. How backup and recovery work
 
-### Load Balancer
-
-Load balancer backup includes:
-
-- Configuration files: ``/etc/haproxy/``
-- SSL certificates: ``/etc/ssl/haproxy/``
-
-Recovery includes all backed up files
-
 ### Logging
 
 Logging backup includes:

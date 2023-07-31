@@ -20,9 +20,6 @@ filebeatConfig:
         - /var/log/audit/audit.log
         - /var/log/auth.log
         - /var/log/firewalld
-{% if 'haproxy' in groups %}
-        - /var/log/haproxy.log
-{% endif %}
 {% if 'kafka' in groups %}
         - /var/log/kafka/server.log
 {% endif %}

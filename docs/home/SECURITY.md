@@ -48,7 +48,6 @@ different values. The list does not include ports that are bound to the loopback
     - 7071 - JMX Kafka exporter
     - 7072 - JMX Zookeeper exporter
     - 9100 - Node exporter
-    - 9101 - HAProxy exporter
     - 9308 - Kafka exporter
 
 3. Zookeeper:

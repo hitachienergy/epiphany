@@ -31,9 +31,6 @@ filebeat.inputs:
 #   - /var/log/audit/audit.log
     - /var/log/auth.log
     - /var/log/firewalld
-    {% if 'haproxy' in group_names %}
-    - /var/log/haproxy.log
-    {% endif %}
     {% if 'kafka' in group_names %}
     - /var/log/kafka/server.log
     {% endif %}

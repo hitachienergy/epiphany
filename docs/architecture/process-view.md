@@ -1,16 +1,5 @@
 # Epiphany Process View
 
-## Computing and Load Balancing
-
-Epiphany strongly utilizes the `Kubernetes` platform and follows its rules and principles.
-Read more about `Kubernetes architecture` using this [link](https://kubernetes.io/docs/concepts/architecture/).
-
-Epiphany computing modules use standard implementation of `Kubernetes` and combine it with the load balancing capabilities of `HAProxy`.
-
-![Computing and Load Balancing process view](diagrams/process-view/computing-process-view.svg)
-
-Load balancing integration with `Kubernetes` uses backend configurations. The configurations point to created `Kubernetes services` but this traffic goes through `Kube Proxy` to resolve internal IP address of pod that is currently available.  
-
 ## Monitoring
 
 Epiphany uses `Prometheus` and related components for gathering data from
