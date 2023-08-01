@@ -13,7 +13,6 @@
             "env": { "PYTHONPATH": "${workspaceFolder}" },
             "console": "integratedTerminal",
             // "args": ["--debug", "1", "apply", "-f", "${workspaceFolder}/clusters/<YOUR_CONFIG>.yml"]
-            //"args": ["apply", "-f", "${workspaceFolder}/clusters/azure-ubuntu.yml"]
             // "args": ["apply", "-f", "${workspaceFolder}/clusters/<YOUR_CONFIG>.yml", "--vault-password", "<ANSIBLE_VAULT_PASSWORD>"]
             // "args": ["apply", "-f", "${workspaceFolder}/clusters/<YOUR_CONFIG>.yml", "--offline-requirements", "${workspaceFolder}/downloads/epirepo"]
             // "args": ["delete", "-b", "${workspaceFolder}/clusters/build/<DIR>"]
