@@ -6,10 +6,6 @@ type: object
 properties:
   enabled:
     type: boolean
-  admin:
-    type: string
-  admin_pwd:
-    type: string
   javax_net_debug:
     type: string
   security:
@@ -46,8 +42,6 @@ properties:
             type: string
           client_auth:
             type: string
-      encrypt_at_rest:
-        type: boolean
       inter_broker_protocol:
         type: string
       authorization:
@@ -83,8 +77,6 @@ properties:
             type: 'null'
           sasl_enabled_mechanisms:
             type: string
-  sha:
-    type: string
   port:
     type: integer
   min_insync_replicas:
@@ -110,8 +102,6 @@ properties:
   offset_retention_minutes:
     type: integer
   heap_opts:
-    type: string
-  opts:
     type: string
   jmx_opts:
     type: 'null'

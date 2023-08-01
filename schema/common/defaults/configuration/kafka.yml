@@ -1,11 +1,9 @@
 ---
 kind: configuration/kafka
-title: "Kafka"
+title: Kafka
 name: default
 specification:
   enabled: True
-  admin: kafka
-  admin_pwd: epiphany
   # javax_net_debug: all # uncomment to activate debugging, other debug options: https://colinpaice.blog/2020/04/05/using-java-djavax-net-debug-to-examine-data-flows-including-tls/
   security:
     ssl:
@@ -22,7 +20,6 @@ specification:
           key: PasswordToChange
       endpoint_identification_algorithm: HTTPS
       client_auth: required
-    encrypt_at_rest: False
     inter_broker_protocol: PLAINTEXT
     authorization:
       enabled: False
@@ -39,7 +36,6 @@ specification:
       authentication_method: certificates
       sasl_mechanism_inter_broker_protocol:
       sasl_enabled_mechanisms: PLAIN
-  sha: "b28e81705e30528f1abb6766e22dfe9dae50b1e1e93330c880928ff7a08e6b38ee71cbfc96ec14369b2dfd24293938702cab422173c8e01955a9d1746ae43f98"
   port: 9092
   min_insync_replicas: 1 # Minimum number of replicas (ack write)
   default_replication_factor: 1 # Minimum number of automatically created topics
@@ -53,7 +49,6 @@ specification:
   log_retention_bytes: -1 # -1 is no size limit only a time limit (log_retention_hours). This limit is enforced at the partition level, multiply it by the number of partitions to compute the topic retention in bytes.
   offset_retention_minutes: 10080 # Offsets older than this retention period will be discarded
   heap_opts: "-Xmx2G -Xms2G"
-  opts: "-Djavax.net.debug=all"
   jmx_opts:
   max_incremental_fetch_session_cache_slots: 1000
   controlled_shutdown_enable: true

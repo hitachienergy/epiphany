@@ -77,9 +77,6 @@
     owner: "{{ specification.user }}"
     group: "{{ specification.group }}"
 
-# - name: link conf_dir to /opt/kafka/config
-#   file: dest=/etc/kafka owner=kafka group=kafka state=link src=/opt/kafka/config
-
 # Setup log4j.properties
 - name: Create log4j.properties
   file:
@@ -148,8 +145,3 @@
 
 - name: Reload settings from all system configuration files
   command: sysctl --system
-
-# SASL Setup
-# - name: copy SASL config file
-#   template: src=kafka_server_jaas.conf.j2 dest={{kafka_var.conf_dir}}/kafka_server_jaas.conf owner={{kafka_var.user}} group={{kafka_var.group}} mode=640
-#   when: kafka_sasl_enabled

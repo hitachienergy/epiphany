@@ -5,7 +5,3 @@
     state: started
     enabled: true
     daemon-reload: true
-
-# - name: wait for kafka port
-#   wait_for: host={{kafka.listen_address| default('localhost')}} port={{kafka.port}} state=started timeout={{ kafka.wait_for_period }}
-#   when: verify
