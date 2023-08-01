@@ -1,27 +1,6 @@
 {
     "recommendations": [
-        // Ansible
-        "redhat.ansible",
-        // Common
-        "shardulm94.trailing-spaces",
-        // Git
-        "eamodio.gitlens",
-        // Jinja
-        "samuelcolvin.jinjahtml",
-        // Markdown
-        "davidanson.vscode-markdownlint",
-        // Python
-        "ms-python.python",
-        // Ruby
-        "rebornix.Ruby",
-        "castwide.solargraph",
-        // Shell
-        "timonwong.shellcheck",
-        // Terraform
-        "hashicorp.terraform",
-        // VS Code
-        "ms-vscode-remote.remote-containers",
-        // YAML
-        "redhat.vscode-yaml",
+        // VS Code devcontainers
+        "ms-vscode-remote.remote-containers"
     ]
 }

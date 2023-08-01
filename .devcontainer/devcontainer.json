@@ -1,39 +1,62 @@
 {
     "name": "epicli",
     "dockerFile": "Dockerfile",
-    "extensions": [
-        // Ansible
-        "redhat.ansible",
-        // Black Duck Scan
-        "synopsyscodesight.vscode-codesight",
-        // Common
-        "shardulm94.trailing-spaces",
-        // Git
-        "eamodio.gitlens",
-        // Jinja
-        "samuelcolvin.jinjahtml",
-        // Kubernetes
-        "ms-kubernetes-tools.vscode-kubernetes-tools",
-        // Markdown
-        "davidanson.vscode-markdownlint",
-        // Python
-        "ms-python.python",
-        // Ruby
-        "rebornix.Ruby",
-        "castwide.solargraph",
-        // Shell
-        "timonwong.shellcheck",
-        // Terraform
-        "hashicorp.terraform",
-        // YAML
-        "redhat.vscode-yaml",
-    ],
+    "customizations":{
+        "vscode": {
+            "extensions": [
+                // Ansible
+                "redhat.ansible",
+                // Common
+                "shardulm94.trailing-spaces",
+                // Jinja
+                "samuelcolvin.jinjahtml",
+                // Kubernetes
+                "ms-kubernetes-tools.vscode-kubernetes-tools",
+                // Markdown
+                "davidanson.vscode-markdownlint",
+                // Python
+                "ms-python.python",
+                // Ruby
+                "rebornix.Ruby",
+                "castwide.solargraph",
+                // Shell
+                "timonwong.shellcheck",
+                // Terraform
+                "hashicorp.terraform",
+                // YAML
+                "redhat.vscode-yaml"
+            ],
+			"settings": {
+                // Common
+                "trailing-spaces.highlightCurrentLine": false, // highlighting currently edited line can be annoying
+                "trailing-spaces.syntaxIgnore": [
+                    "markdown" // "two spaces" syntax is for line breaks
+                ],
+
+                // Python
+                "python.linting.enabled": true,
+                "python.linting.pylintEnabled": true,
+                "python.linting.pylintArgs": [
+                    "--rcfile",
+                    "${workspaceFolder}/.pylintrc"
+                ],
+                "python.testing.pytestEnabled": true,
+                "python.testing.unittestEnabled": false,
+                "python.envFile": "${workspaceFolder}/.devcontainer/python.env",
+                "python.pythonPath": "/usr/local/bin/python",
+
+                // Ruby
+                "ruby.format": false,
+                "ruby.lint": {
+                    "rubocop": true
+                },
+                "solargraph.diagnostics": false,
+                "solargraph.formatting": true
+			}
+        }
+    },
     "mounts": [
         "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,type=bind",
     ],
-    "settings": {
-        "python.envFile": "${workspaceFolder}/.devcontainer/python.env",
-        "python.pythonPath": "/usr/local/bin/python",
-    },
     "remoteUser": "vscode",
 }
