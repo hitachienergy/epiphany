@@ -12,9 +12,9 @@ boto3 = "*"
 jsonschema = "*"
 python-json-logger = "*"
 "ruamel.yaml" = "*"
-azure-cli = "2.51.0"
 click = "*"
 ansible = "6.7.0"
+azure-cli = "2.51.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
