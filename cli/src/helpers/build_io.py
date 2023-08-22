@@ -19,14 +19,6 @@ ANSIBLE_VAULT_OUTPUT_DIR = 'vault/'
 SPEC_OUTPUT_DIR = 'spec_tests/'
 
 
-def save_sp(service_principle, cluster_name):
-    terraform_dir = get_terraform_path(cluster_name)
-    path = os.path.join(terraform_dir, SP_FILE_NAME)
-    with open(path, 'w') as stream:
-        dump(service_principle, stream)
-    return path
-
-
 def save_inventory(inventory, cluster_model, build_dir=None):
     if build_dir is None:
         cluster_name = cluster_model.specification.name

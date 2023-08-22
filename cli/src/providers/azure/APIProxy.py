@@ -4,7 +4,7 @@ import time
 import os
 from subprocess import PIPE, Popen
 
-from cli.src.helpers.build_io import SP_FILE_NAME, get_terraform_path, save_sp
+from cli.src.helpers.build_io import SP_FILE_NAME, get_terraform_path
 from cli.src.helpers.data_loader import load_yaml_file
 from cli.src.helpers.doc_list_helpers import select_first
 from cli.src.helpers.naming_helpers import cluster_tag, resource_name
@@ -48,13 +48,6 @@ class APIProxy:
         subscription = self.run(self, 'az account show')
         return subscription
 
-    def create_sp(self, app_name, subscription_id):
-        #TODO: make role configurable?
-        sp = self.run(self, f'az ad sp create-for-rbac -n \'{app_name}\' --role=\'Contributor\' --scopes=\'/subscriptions/{subscription_id}\'')
-        # Sleep for a while. Sometimes the call returns before the rights of the SP are finished creating.
-        self.wait(self, 60)
-        return sp
-
     def get_ips_for_feature(self, component_key):
         look_for_public_ip = self.cluster_model.specification.cloud.use_public_ips
         cluster = cluster_tag(self.cluster_prefix, self.cluster_name)
@@ -89,22 +82,11 @@ class APIProxy:
         else:
             # Service principal
             sp_file = os.path.join(get_terraform_path(self.cluster_model.specification.name), SP_FILE_NAME)
-            if not os.path.exists(sp_file):
-                # If no service principal exists or is defined we created one and for that we need to login using an account
-                subscription = self.login_account()
-                self.set_active_subscription(subscription['id'])
-
-                # Create the service principal, for now we use the default subscription
-                self.logger.info('Creating service principal')
-                cluster_name = self.cluster_model.specification.name.lower()
-                cluster_prefix = self.cluster_model.specification.prefix.lower()
-                resource_group_name = resource_name(cluster_prefix, cluster_name, 'rg')
-                sp = self.create_sp(resource_group_name, subscription['id'])
-                sp['subscriptionId'] = subscription['id']
-                save_sp(sp, self.cluster_model.specification.name)
-            else:
+            if os.path.exists(sp_file):
                 self.logger.info('Using service principal from file')
                 sp = load_yaml_file(sp_file)
+            else:
+                raise Exception(f'No service principal defined: "{sp_file}"')
 
             # Login as SP and get the default subscription.
             subscription = self.login_sp(sp)
