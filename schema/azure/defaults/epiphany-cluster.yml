@@ -17,8 +17,6 @@ specification:
     use_service_principal: False
     service_principal: # todo change it to get service principal credentials from vault
       appId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
-      displayName: "app-name"
-      name: "http://app-name"
       password: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
       tenant: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
       subscriptionId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"

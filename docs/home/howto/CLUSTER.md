@@ -412,8 +412,6 @@ To set up the cluster do the following steps from the provisioning machine:
       use_service_principal: false
       service_principal:
         appId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
-        displayName: "app-name"
-        name: "http://app-name"
         password: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
         tenant: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
         subscriptionId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
@@ -435,8 +433,6 @@ To set up the cluster do the following steps from the provisioning machine:
 
     ```yaml
     appId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
-    displayName: "app-name"
-    name: "http://app-name"
     password: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
     tenant: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
     subscriptionId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
