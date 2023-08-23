@@ -6,7 +6,6 @@ import pytest
 from cli.src.helpers.build_io import (ANSIBLE_CFG_FILE, ANSIBLE_INVENTORY_FILE,
                                       ANSIBLE_OUTPUT_DIR,
                                       ANSIBLE_VAULT_OUTPUT_DIR,
-                                      SP_FILE_NAME,
                                       TERRAFORM_OUTPUT_DIR,
                                       get_ansible_config_file_path,
                                       get_ansible_config_file_path_for_build,
@@ -17,8 +16,7 @@ from cli.src.helpers.build_io import (ANSIBLE_CFG_FILE, ANSIBLE_INVENTORY_FILE,
                                       get_inventory_path_for_build,
                                       get_output_path,
                                       get_terraform_path,
-                                      save_ansible_config_file, save_inventory,
-                                      save_sp)
+                                      save_ansible_config_file, save_inventory)
 from cli.src.helpers.objdict_helpers import dict_to_objdict
 from cli.src.helpers.yaml_helpers import safe_load
 from tests.unit.helpers.constants import (CLUSTER_NAME_SAVE,
@@ -26,11 +24,6 @@ from tests.unit.helpers.constants import (CLUSTER_NAME_SAVE,
                                           TEST_CLUSTER_MODEL,
                                           TEST_INVENTORY)
 
-TEST_SP = {'appId': 'xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx',
-           'displayName': 'test-rg',
-           'name': 'http://test-rg',
-           'password': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-           'tenant': 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'}
 ANSIBLE_CONFIG_FILE_SETTINGS = [('defaults', {
                                  'interpreter_python': 'auto_legacy_silent',
                                  'allow_world_readable_tmpfiles': 'true'
@@ -97,14 +90,6 @@ def test_get_ansible_config_file_path_for_build():
     assert get_ansible_config_file_path_for_build(os.path.join(
         OUTPUT_PATH, CLUSTER_NAME_SAVE)) == os.path.join(
         OUTPUT_PATH, CLUSTER_NAME_SAVE, ANSIBLE_OUTPUT_DIR,  ANSIBLE_CFG_FILE)
-
-
-def test_save_sp():
-    save_sp(TEST_SP, CLUSTER_NAME_SAVE)
-    sp_path = os.path.join(OUTPUT_PATH, CLUSTER_NAME_SAVE, TERRAFORM_OUTPUT_DIR, SP_FILE_NAME)
-    with open(sp_path, 'r', encoding='utf-8') as sp_stream:
-        sp_file_content = safe_load(sp_stream)
-        assert TEST_SP == sp_file_content
 
 
 def test_save_inventory():
