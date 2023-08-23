@@ -71,8 +71,8 @@ class APIProxy:
         return result
 
     def login(self, env=None):
-        # From the 4 methods terraform provides to login to
-        # Azure we support (https://www.terraform.io/docs/providers/azurerm/auth/azure_cli.html):
+        # https://learn.microsoft.com/en-us/azure/developer/terraform/authenticate-to-azure
+        # We support:
         # - Authenticating to Azure using the Azure CLI
         # - Authenticating to Azure using a Service Principal and a Client Secret
         if not self.cluster_model.specification.cloud.use_service_principal:
@@ -83,10 +83,13 @@ class APIProxy:
             # Service principal
             sp_file = os.path.join(get_terraform_path(self.cluster_model.specification.name), SP_FILE_NAME)
             if os.path.exists(sp_file):
-                self.logger.info('Using service principal from file')
+                self.logger.info('Using service principal from sp.yml file')
                 sp = load_yaml_file(sp_file)
+            elif hasattr(self.cluster_model.specification.cloud, 'service_principal'):
+                self.logger.info('Using service principal from cloud section in the cluster configuration file')
+                sp = self.cluster_model.specification.cloud.service_principal
             else:
-                raise Exception(f'No service principal defined: "{sp_file}"')
+                raise Exception(f'No service principal defined in the cloud section of the cluster configuration file or in an sp.yml file.')
 
             # Login as SP and get the default subscription.
             subscription = self.login_sp(sp)
