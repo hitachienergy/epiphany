@@ -374,15 +374,20 @@ To set up the cluster do the following steps from the provisioning machine:
       region: West Europe
       subscription_name: Subscribtion_name
       use_service_principal: false
+      service_principal:
+        appId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
+        password: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
+        tenant: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
+        subscriptionId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
       use_public_ips: false
       default_os_image: default
     ```
 
     The [region](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) lets you chose the most optimal place to deploy your cluster. The `subscription_name` is the Azure subscription under which you want to deploy the cluster.
 
-    Terraform will ask you to sign in to your Microsoft Azure subscription when it prepares to build/modify/destroy the infrastructure on `azure`. In case you need to share cluster management with other people you can set the `use_service_principal` tag to true. This will create a service principle and uses it to manage the resources.
-
-    If you already have a service principle and don't want to create a new one you can do the following. Make sure the `use_service_principal` tag is set to true. Then before you run `epicli apply -f yourcluster.yml` create the following folder structure from the path you are running Epicli:
+    Terraform will ask you to sign in to your Microsoft Azure subscription when it prepares to build/modify/destroy the infrastructure on `azure`. In case you need to share cluster management with other people you can use a service principal with he proper premissions created before hand. To use a service principal set the `use_service_principal` tag to true and fill the service principal details in the `service_principal` section of the `cloud` configuration.
+  
+    Alternatively you can specicify a `sp.yml` file before you run `epicli apply -f yourcluster.yml`. To use this method create the following folder structure from the path you are running Epicli:
 
     ```shell
     /path/to/build_dir/clustername/terraform
@@ -392,8 +397,6 @@ To set up the cluster do the following steps from the provisioning machine:
 
     ```yaml
     appId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
-    displayName: "app-name"
-    name: "http://app-name"
     password: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
     tenant: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
     subscriptionId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"

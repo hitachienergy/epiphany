@@ -63,10 +63,39 @@ properties:
       use_service_principal:
         "$id": "#/properties/specification/properties/cloud/properties/use_service_principal"
         type: boolean
-        title: The Use_service_principal Schema
+        title: The use_service_principal Schema
         default: false
         examples:
         - false
+      service_principal:
+        "$id": "#/properties/specification/properties/cloud/properties/service_principal"
+        type: object
+        title: The Azure service principal Schema
+        required:
+        - tenant
+        - appId
+        - password
+        properties:
+          appId:
+            "$id": "#/properties/specification/properties/cloud/properties/credentials/properties/appId"
+            type: string
+            title: The Azure service principal application ID
+            pattern: "^[^\\s]*$"
+          password:
+            "$id": "#/properties/specification/properties/cloud/properties/credentials/properties/password"
+            type: string
+            title: The Azure service principal password
+            pattern: "^[^\\s]*$"
+          tenant:
+            "$id": "#/properties/specification/properties/cloud/properties/credentials/properties/tenant"
+            type: string
+            title: The Azure service principal tenant
+            pattern: "^[^\\s]*$"
+          subscriptionId:
+            "$id": "#/properties/specification/properties/cloud/properties/credentials/properties/subscriptionId"
+            type: string
+            title: The Azure service principal subscription Id
+            pattern: "^[^\\s]*$"
       region:
         "$id": "#/properties/specification/properties/cloud/properties/region"
         type: string
@@ -78,7 +107,7 @@ properties:
       credentials:
         "$id": "#/properties/specification/properties/cloud/properties/credentials"
         type: object
-        title: The Credentials Schema
+        title: The AWS Credentials Schema
         required:
         - access_key_id
         - secret_access_key
@@ -86,17 +115,17 @@ properties:
           access_key_id:
             "$id": "#/properties/specification/properties/cloud/properties/credentials/properties/access_key_id"
             type: string
-            title: The Key Id Schema
+            title: The AWS Key Id Schema
             pattern: "^(.*)$"
           secret_access_key:
             "$id": "#/properties/specification/properties/cloud/properties/credentials/properties/secret_access_key"
             type: string
-            title: The Secret Schema
+            title: The AWS Secret Schema
             pattern: "^(.*)$"
           session_token:
             "$id": "#/properties/specification/properties/cloud/properties/credentials/properties/session_token"
             type: string
-            title: The session token
+            title: The AWS session token
             description: "Session token cannot contain whitespaces"
             pattern: "^[^\\s]*$"
       network:

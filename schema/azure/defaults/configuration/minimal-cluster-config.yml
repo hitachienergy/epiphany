@@ -11,6 +11,12 @@ specification:
   cloud:
     subscription_name: YOUR-SUB-NAME
     k8s_as_cloud_service: False
+    use_service_principal: False
+    service_principal: # todo change it to get service principal credentials from vault
+      appId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
+      password: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
+      tenant: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
+      subscriptionId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
     use_public_ips: False # When not using public IPs you have to provide connectivity via private IPs (VPN)
     default_os_image: default
   components:

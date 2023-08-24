@@ -14,6 +14,11 @@ specification:
     vnet_address_pool: 10.1.0.0/20
     use_public_ips: False # When not using public IPs you have to provide connectivity via private IPs (VPN)
     use_service_principal: False
+    service_principal: # todo change it to get service principal credentials from vault
+      appId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
+      password: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
+      tenant: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
+      subscriptionId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
     region: West Europe
     network:
       use_network_security_groups: True
