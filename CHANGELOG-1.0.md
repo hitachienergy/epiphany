@@ -3,6 +3,12 @@
 ### NOTE: ⚠️[**Ubuntu 18.04 LTS EOL**](https://ubuntu.com/blog/18-04-end-of-standard-support)⚠️
 Ubuntu 18.04 LTS reached the end of the standard support on 31 May 2023.
 
+## [1.0.13] YYYY-MM-DD
+
+### Fixed
+
+- [#3389](https://github.com/hitachienergy/epiphany/issues/3389) - PostgreSQL 10 yum repository not available
+
 ## [1.0.12] 2023-06-05
 
 ### Updated
