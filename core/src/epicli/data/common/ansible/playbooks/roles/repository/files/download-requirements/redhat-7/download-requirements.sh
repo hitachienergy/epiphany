@@ -717,16 +717,6 @@ gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cl
 EOF
 )
 
-POSTGRESQL_REPO_CONF=$(cat <<'EOF'
-[pgdg10]
-name=PostgreSQL 10 for RHEL/CentOS $releasever - $basearch
-baseurl=https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-$releasever-$basearch
-enabled=1
-gpgcheck=1
-gpgkey=https://download.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG
-EOF
-)
-
 RABBITMQ_SERVER_REPO_CONF=$(cat <<'EOF'
 [rabbitmq-server]
 name=rabbitmq-rpm
@@ -752,7 +742,6 @@ add_repo_as_file 'elasticsearch-7' "$ELASTICSEARCH_7_REPO_CONF"
 add_repo_as_file 'elasticsearch-curator-5' "$ELASTICSEARCH_CURATOR_REPO_CONF"
 add_repo_as_file 'grafana' "$GRAFANA_REPO_CONF"
 add_repo_as_file 'kubernetes' "$KUBERNETES_REPO_CONF"
-add_repo_as_file 'postgresql-10' "$POSTGRESQL_REPO_CONF"
 add_repo_as_file 'bintray-rabbitmq-rpm' "$RABBITMQ_SERVER_REPO_CONF"
 add_repo_from_script 'https://dl.2ndquadrant.com/default/release/get/10/rpm'
 disable_repo '2ndquadrant-dl-default-release-pg10-debug'
