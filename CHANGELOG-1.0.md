@@ -3,7 +3,7 @@
 ### NOTE: ⚠️[**Ubuntu 18.04 LTS EOL**](https://ubuntu.com/blog/18-04-end-of-standard-support)⚠️
 Ubuntu 18.04 LTS reached the end of the standard support on 31 May 2023.
 
-## [1.0.13] YYYY-MM-DD
+## [1.0.13] 2023-09-06
 
 ### Fixed
 
