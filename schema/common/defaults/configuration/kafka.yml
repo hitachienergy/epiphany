@@ -37,18 +37,17 @@ specification:
       sasl_mechanism_inter_broker_protocol:
       sasl_enabled_mechanisms: PLAIN
   port: 9092
-  min_insync_replicas: 1 # Minimum number of replicas (ack write)
-  default_replication_factor: 1 # Minimum number of automatically created topics
-  offsets_topic_replication_factor: 1 # Minimum number of offsets topic (consider higher value for HA)
-  num_recovery_threads_per_data_dir: 1 # Minimum number of recovery threads per data dir
-  num_replica_fetchers: 1 # Minimum number of replica fetchers
-  replica_fetch_max_bytes: 1048576
-  replica_socket_receive_buffer_bytes: 65536
+
+  # Availability
+  min_insync_replicas: 2 # Minimum number of replicas that must acknowledge data was received (ack write)
+  default_replication_factor: 3 # Recommended value for production is 3
+  offsets_topic_replication_factor: 3 # Minimum number of offsets topic (3 for HA)
+
   partitions: 8 # 100 x brokers x replicas for reasonable size cluster. Small clusters can be less
   log_retention_hours: 168 # The minimum age of a log file to be eligible for deletion due to age
   log_retention_bytes: -1 # -1 is no size limit only a time limit (log_retention_hours). This limit is enforced at the partition level, multiply it by the number of partitions to compute the topic retention in bytes.
   offset_retention_minutes: 10080 # Offsets older than this retention period will be discarded
-  heap_opts: "-Xmx2G -Xms2G"
+  heap_opts: "-Xmx2G -Xms2G" # Values for VM with 8 GiB of RAM (based on https://bitnami.com/stack/kafka/cloud/azure)
   jmx_opts:
   max_incremental_fetch_session_cache_slots: 1000
   controlled_shutdown_enable: true
