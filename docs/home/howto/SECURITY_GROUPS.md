@@ -63,7 +63,6 @@ provider: azure
 title: Epiphany cluster Config
 specification:
   name: azure
-  prefix: azure
   admin_user:
     name: operations
     key_path:  /workspaces/epiphany/clusters/keys/abb_rsa

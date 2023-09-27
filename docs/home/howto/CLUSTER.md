@@ -667,7 +667,6 @@ name: default
 provider: azure
 specification:
   name: test-cluster
-  prefix: test
   admin_user:
     key_path: /path/to/ssk/key
     name: di-dev

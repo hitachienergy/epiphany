@@ -16,7 +16,7 @@ class APIProxy:
     def __init__(self, cluster_model, config_docs=[]):
         self.cluster_model = cluster_model
         self.cluster_name = self.cluster_model.specification.name.lower()
-        self.cluster_prefix = self.cluster_model.specification.prefix.lower()
+        self.cluster_prefix = None
         self.resource_group_name = resource_name(self.cluster_prefix, self.cluster_name, 'rg')
         self.config_docs = config_docs
         self.logger = Log(__name__)

@@ -7,7 +7,6 @@ provider: azure
 name: default
 specification:
   name: custom-cluster
-  prefix: prefix
   admin_user:
     name: operations
     key_path: /root/id_rsa
@@ -81,7 +80,6 @@ EXPECTED_PARSED_MANIFEST_DOCS: List[Dict] = [
      'name': 'default',
      'specification': {
          'name': 'custom-cluster',
-         'prefix': 'prefix',
          'admin_user': {
              'name': 'operations',
              'key_path': '/root/id_rsa'
@@ -164,7 +162,6 @@ INPUT_DOC_TO_UPDATE_BASE = [
      'name': 'default',
      'specification': {
          'name': 'custom-cluster',
-         'prefix': 'prefix',
          'admin_user': {
              'name': 'operations',
              'key_path': '/root/id_rsa'
@@ -230,7 +227,6 @@ EXPECTED_UPDATED_DOC_BASE = [
      'name': 'default',
      'specification': {
          'name': 'custom-cluster',
-         'prefix': 'prefix',
          'admin_user': {
              'name': 'operations',
              'key_path': '/root/id_rsa'

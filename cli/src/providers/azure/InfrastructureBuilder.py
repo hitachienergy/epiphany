@@ -20,7 +20,7 @@ class InfrastructureBuilder(Step):
         super().__init__(__name__)
         self.cluster_model = select_single(docs, lambda x: x.kind == 'epiphany-cluster')
         self.cluster_name = self.cluster_model.specification.name.lower()
-        self.cluster_prefix = self.cluster_model.specification.prefix.lower()
+        self.cluster_prefix = None
         self.resource_group_name = resource_name(self.cluster_prefix, self.cluster_name, 'rg')
         self.region = self.cluster_model.specification.cloud.region
         self.use_network_security_groups = self.cluster_model.specification.cloud.network.use_network_security_groups

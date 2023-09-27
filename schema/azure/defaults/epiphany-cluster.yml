@@ -4,7 +4,6 @@ title: "Epiphany cluster Config"
 provider: azure
 name: "default"
 specification:
-  prefix: default
   name: epiphanycluster
   admin_user:
     name: operations # YOUR-ADMIN-USERNAME

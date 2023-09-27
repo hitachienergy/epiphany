@@ -38,3 +38,4 @@
 - Support for RHEL and ARM
 - Keycloak
 - sshtunnel role
+- `prefix` setting from `epiphany-cluster` input manifest for Azure provider

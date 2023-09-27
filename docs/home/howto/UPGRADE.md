@@ -232,7 +232,6 @@ specification:
     postgresql:
       count: 1
   name: clustername
-  prefix: 'prefix'
 title: Epiphany cluster Config
 ---
 kind: configuration/feature-mappings

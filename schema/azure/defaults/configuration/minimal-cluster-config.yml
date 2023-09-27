@@ -5,7 +5,6 @@ provider: azure
 name: "default"
 specification:
   name: name
-  prefix: prefix
   admin_user:
     name: operations # YOUR-ADMIN-USERNAME
     key_path: /shared/.ssh/epiphany-operations/id_rsa # YOUR-SSH-KEY-PATH
