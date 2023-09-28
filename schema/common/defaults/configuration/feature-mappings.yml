@@ -1,6 +1,6 @@
 ---
 kind: configuration/feature-mappings
-title: "Feature mapping to components"
+title: Feature mapping to components
 name: default
 specification:
   mappings:
@@ -24,6 +24,7 @@ specification:
       - node-exporter
       - filebeat
       - firewall
+      - repository # to reduce costs
     custom:
       - repository
       - node-exporter

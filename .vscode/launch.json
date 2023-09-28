@@ -12,19 +12,27 @@
             "cwd": "${workspaceFolder}",
             "env": { "PYTHONPATH": "${workspaceFolder}" },
             "console": "integratedTerminal",
-            // "args": ["--debug", "1", "apply", "-f", "${workspaceFolder}/clusters/<YOUR_CONFIG>.yml"]
+            // init
+            "args": ["init", "--provider", "azure", "--name", "nostai-dev1", "--full"]
+
+            // apply
+            // "args": ["--debug", "0", "apply", "-f", "${workspaceFolder}/clusters/nostai-dev1.yml", "--vault-password", "1IAtsoN"]
+            // "args": ["--debug", "0", "apply", "-f", "${workspaceFolder}/clusters/nostai-dev1.yml", "--no-infra", "--vault-password", "1IAtsoN"]
+            // "args": ["--debug", "0", "apply", "-f", "${workspaceFolder}/clusters/nostai-dev1.yml", "--skip-config"]
+            // "args": ["--debug", "1", "apply", "-f", "${workspaceFolder}/clusters/nostai-dev1.yml", "--vault-password", "1IAtsoN"]
+
+            // test
+            // "args": ["--auto-approve", "test", "-b", "${workspaceFolder}/clusters/build/nostai-dev1"]
+            // "args": ["--auto-approve", "test", "-b", "${workspaceFolder}/clusters/build/nostai-dev1", "-i", "common,filebeat,grafana"]
+            // "args": ["--auto-approve", "test", "-b", "${workspaceFolder}/clusters/build/nostai-dev1", "-i", "jmx_exporter,kafka,kafka_exporter"]
+            // "args": ["--auto-approve", "test", "-b", "${workspaceFolder}/clusters/build/nostai-dev1", "-i", "node_exporter,opensearch,prometheus,zookeeper"]
+
+            // delete
+            // "args": ["delete", "-b", "${workspaceFolder}/clusters/build/nostai-dev1"]
+
+            // help
             // "args": ["--help"]
-            "args": ["apply", "-f", "${workspaceFolder}/clusters/azure-ubuntu.yml"]
-            // "args": ["apply", "-f", "${workspaceFolder}/clusters/<YOUR_CONFIG>.yml", "--vault-password", "<ANSIBLE_VAULT_PASSWORD>"]
-            // "args": ["apply", "-f", "${workspaceFolder}/clusters/<YOUR_CONFIG>.yml", "--offline-requirements", "${workspaceFolder}/downloads/epirepo"]
-            // "args": ["delete", "-b", "${workspaceFolder}/clusters/build/<DIR>"]
-            // "args": ["init", "-p", "<PROVIDER>", "-n", "<NAME>"]
-            // "args": ["init", "-p", "<PROVIDER>", "-n", "<NAME>", "--full"]
-            // "args": ["prepare", "--os", "<OS>", "--arch", "<ARCH>"]
-            // "args": ["--auto-approve", "test", "-b", "${workspaceFolder}/clusters/build/<DIR>", "-k", "/etc/kubernetes/admin.conf"]
-            // "args": ["--auto-approve", "test", "-b", "${workspaceFolder}/clusters/build/<DIR>", "-i", "<GROUPS>", "-k", "/etc/kubernetes/admin.conf"]
-            // "args": ["upgrade", "-b", "${workspaceFolder}/clusters/build/<DIR>"]
-            // "args": ["upgrade", "-b", "${workspaceFolder}/clusters/build/<DIR>", "--upgrade-components", "kafka"]
+            // "args": ["apply", "--help"]
         }
     ]
 }

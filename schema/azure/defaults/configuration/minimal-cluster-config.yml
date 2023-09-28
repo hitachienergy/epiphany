@@ -1,30 +1,21 @@
 ---
 kind: epiphany-cluster
-title: "Epiphany cluster Config"
+title: Epiphany cluster Config
 provider: azure
-name: "default"
+name: default
 specification:
-  name: name
+  name: SET_BY_AUTOMATION
   admin_user:
-    name: operations # YOUR-ADMIN-USERNAME
-    key_path: /shared/.ssh/epiphany-operations/id_rsa # YOUR-SSH-KEY-PATH
+    name: <INPUT_ADMIN_USER>
+    key_path: /home/epiuser/.ssh/id_rsa
   cloud:
-    subscription_name: YOUR-SUB-NAME
-    k8s_as_cloud_service: False
-    use_service_principal: False
-    service_principal: # todo change it to get service principal credentials from vault
-      appId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
-      password: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
-      tenant: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
-      subscriptionId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
-    use_public_ips: False # When not using public IPs you have to provide connectivity via private IPs (VPN)
-    default_os_image: default
+    subscription_name: <INPUT_SUBSCRIPTION_NAME>
   components:
-    repository:
-      count: 1
+    kafka:
+      count: 3
     logging:
-      count: 1
+      count: 3
     monitoring:
       count: 1
-    kafka:
-      count: 2
+    repository:
+      count: 0 # by default the 'repository' role is mapped to the 'monitoring' component to reduce costs

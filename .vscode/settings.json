@@ -22,4 +22,10 @@
     },
     "solargraph.diagnostics": false,
     "solargraph.formatting": true,
+
+    // YAML
+    "yaml.schemas":{
+        // https://stackoverflow.com/questions/71765669/dont-use-json-schema-when-edition-yaml-file-in-visual-studio-code
+        "https://json.schemastore.org/yamllint.json": "epiphany-cluster.yml"
+    }
 }
