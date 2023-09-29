@@ -8,6 +8,7 @@
 - Allow to define service endpoints for subnets
 - curator-opensearch 0.0.9
 - Proxy's root CA certificate in dev container's Dockerfile
+- `use_device_code` option for `az login`
 
 ### Updated
 

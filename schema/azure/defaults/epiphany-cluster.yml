@@ -10,6 +10,9 @@ specification:
     key_path: /home/epiuser/.ssh/id_rsa
   cloud:
     subscription_name: <INPUT_SUBSCRIPTION_NAME>
+    azure_login:
+      tenant_id: <INPUT_TENANT_ID>
+      use_device_code: False
     k8s_as_cloud_service: True # AKS
     vnet_address_pool: 10.58.10.0/24
     use_public_ips: False # When not using public IPs you have to provide connectivity via private IPs (VPN)

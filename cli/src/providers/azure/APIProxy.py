@@ -29,7 +29,12 @@ class APIProxy:
 
     def login_account(self):
         subscription_name = self.cluster_model.specification.cloud.subscription_name
-        all_subscription = self.run(self, 'az login')
+        tenant_id = self.cluster_model.specification.cloud.azure_login.tenant_id
+        use_device_code = self.cluster_model.specification.cloud.azure_login.use_device_code
+        login_command = f'az login --tenant {tenant_id}'
+        if use_device_code:
+            login_command = ' '.join([login_command, '--use-device-code'])
+        all_subscription = self.run(self, login_command)
         subscription = select_first(all_subscription, lambda x: x['name'] == subscription_name)
         if subscription is None:
             raise Exception(f'User does not have access to subscription: "{subscription_name}"')

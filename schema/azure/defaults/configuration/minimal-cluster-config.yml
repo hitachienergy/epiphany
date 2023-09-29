@@ -10,6 +10,8 @@ specification:
     key_path: /home/epiuser/.ssh/id_rsa
   cloud:
     subscription_name: <INPUT_SUBSCRIPTION_NAME>
+    azure_login:
+      tenant_id: <INPUT_TENANT_ID>
   components:
     kafka:
       count: 3
