@@ -102,19 +102,6 @@ class Apply(Step):
         with TerraformRunner(self.output_mhandler.cluster_model, self.output_mhandler.infra_docs) as tf_runner:
             tf_runner.apply()
 
-    def collect_infrastructure_config(self):
-        if  self.output_mhandler.cluster_model['provider'] == 'any':
-            return
-
-        with provider_class_loader(self.output_mhandler.cluster_model.provider,
-                                   'InfrastructureConfigCollector')(self.output_mhandler.docs) as config_collector:
-            kube_doc = config_collector.run()
-            if kube_doc:
-                self.output_mhandler.update_doc(kube_doc)  # update kubernetes config doc
-
-        # Save manifest again as we have some new information for Ansible apply
-        self.output_mhandler.write_manifest()
-
     def apply_ansible(self):
         if self.skip_config:
             return
@@ -131,8 +118,6 @@ class Apply(Step):
         self.validate_documents()
 
         self.apply_terraform()
-
-        self.collect_infrastructure_config()
 
         self.apply_ansible()
 

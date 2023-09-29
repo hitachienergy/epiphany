@@ -134,17 +134,6 @@ def test_get_public_ip_should_set_proper_values_to_model():
     assert actual.specification.sku == 'Standard'
 
 
-def test_get_storage_share_config_should_set_proper_values_to_model():
-    cluster_model = get_cluster_model(cluster_name='TestCluster')
-    builder = InfrastructureBuilder([cluster_model])
-
-    actual = builder.get_storage_share_config()
-
-    assert actual.specification.name == 'testcluster-k8s-ss'
-    assert actual.specification.storage_account_name == 'testclusterk8s'
-    assert actual.specification.quota == 50
-
-
 def get_cluster_model(address_pool='10.22.0.0/22', cluster_name='EpiphanyTestCluster'):
     cluster_model = dict_to_objdict({
         'kind': 'epiphany-cluster',

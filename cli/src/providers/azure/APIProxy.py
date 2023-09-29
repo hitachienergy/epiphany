@@ -112,10 +112,6 @@ class APIProxy:
             env['ARM_CLIENT_ID'] = sp['appId']
             env['ARM_CLIENT_SECRET'] = sp['password']
 
-    def get_storage_account_primary_key(self, storage_account_name):
-        keys = self.run(self, f'az storage account keys list -g \'{self.resource_group_name}\' -n \'{storage_account_name}\'')
-        return keys[0]['value']
-
     @staticmethod
     def wait(self, seconds):
         for x in range(0, seconds):

@@ -286,7 +286,6 @@ name: kubernetes-master-machine
 specification:
   size: t3.medium
   authorized_to_efs: true
-  mount_efs: true
   security:
     rules:
      - name: ssh

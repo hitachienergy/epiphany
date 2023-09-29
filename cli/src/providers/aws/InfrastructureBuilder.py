@@ -53,8 +53,6 @@ class InfrastructureBuilder(Step):
         route_table = self.get_routing_table(vpc_name, internet_gateway.specification.name)
         infrastructure.append(route_table)
 
-        efs_config = self.get_efs_config()
-
         for component_key, component_value in self.cluster_model.specification.components.items():
             vm_count = component_value['count']
             if vm_count < 1:
@@ -78,9 +76,6 @@ class InfrastructureBuilder(Step):
                 subnet = self.get_subnet(subnet_definition, component_key, vpc_name, 0)
                 infrastructure.append(subnet)
 
-                if vm_config.specification.mount_efs:
-                    self.efs_add_mount_target_config(efs_config, subnet)
-
                 route_table_association = self.get_route_table_association(route_table.specification.name,
                                                                              component_key,
                                                                              subnet.specification.name, 0)
@@ -102,10 +97,6 @@ class InfrastructureBuilder(Step):
                                  index)
                 infrastructure.append(vm)
 
-        if self.has_efs_any_mounts(efs_config):
-            infrastructure.append(efs_config)
-            self.add_security_rules_inbound_efs(infrastructure, default_security_group)
-
         return infrastructure
 
     def get_resource_group(self):
@@ -126,13 +117,6 @@ class InfrastructureBuilder(Step):
         sg_config.specification.vpc_name = vpc_config.specification.name
         sg_config.specification.cluster_name = self.cluster_name
         return sg_config
-
-    def get_efs_config(self):
-        efs_config = self.get_config_or_default(self.docs, 'infrastructure/efs-storage')
-        efs_config.specification.token = "aws-efs-token-" + self.cluster_name
-        efs_config.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'efs')
-        efs_config.specification.cluster_name = self.cluster_name
-        return efs_config
 
     def get_vm(self, component_key, vm_config, subnet, public_key_config, security_group, index):
         vm = dict_to_objdict(deepcopy(vm_config))
@@ -275,20 +259,6 @@ class InfrastructureBuilder(Step):
                 model_with_defaults.specification.os_full_name = manifest_firstvm_config.specification.os_full_name
 
         return model_with_defaults
-
-
-    @staticmethod
-    def efs_add_mount_target_config(efs_config, subnet):
-        efs_config.specification.mount_targets.append(
-            {'name': 'efs-'+subnet.specification.name+'-mount',
-             'subnet_name': subnet.specification.name})
-
-
-    @staticmethod
-    def has_efs_any_mounts(efs_config):
-        if len(efs_config.specification.mount_targets) > 0:
-            return True
-        return False
 
 
     @staticmethod

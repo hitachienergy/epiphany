@@ -28,31 +28,6 @@ def cluster_tag(prefix, cluster_name):
         return '%s-%s' % (prefix.lower(), cluster_name.lower())
 
 
-def storage_account_name(prefix, cluster_name, storage_use):
-    pre = ''
-    if not ((not prefix) or (prefix == 'default')):
-        if len(prefix) > 8:
-            pre = prefix[:8].lower()
-        else:
-            pre = prefix.lower()
-
-    sto = ''
-    if len(storage_use) > 5:
-        sto = storage_use[:5].lower()
-    else:
-        sto = storage_use.lower()
-
-    clu = ''
-    cn = cluster_name.replace('-', '')
-    length = 24 - (len(pre)+len(sto))
-    if len(cn) > length:
-        clu = cn[:length].lower()
-    else:
-        clu = cn.lower()
-
-    return f'{pre}{clu}{sto}'
-
-
 def get_os_name_normalized(vm_doc):
     expected_indicators = {
         "ubuntu": "ubuntu",

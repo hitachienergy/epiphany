@@ -36,16 +36,6 @@ def test_get_default_security_group_config_should_set_proper_values_to_model():
     assert actual.specification.vpc_name == 'prefix-testcluster-vpc'
 
 
-def test_get_efs_config_should_set_proper_values_to_model():
-    cluster_model = get_cluster_model(cluster_name='TestCluster', address_pool='10.20.0.0/22')
-    builder = InfrastructureBuilder([cluster_model])
-
-    actual = builder.get_efs_config()
-
-    assert actual.specification.token == 'aws-efs-token-testcluster'
-    assert actual.specification.name == 'prefix-testcluster-efs'
-
-
 def test_get_subnet_config_should_set_proper_values_to_model():
     cluster_model = get_cluster_model(cluster_name='TestCluster')
     component_value = dict_to_objdict({

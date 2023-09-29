@@ -1,5 +1,4 @@
 from cli.src.helpers.naming_helpers import (cluster_tag, resource_name,
-                                            storage_account_name,
                                             to_feature_name, to_role_name)
 
 
@@ -51,29 +50,3 @@ def test_cluster_tag_no_prefix3():
 def test_cluster_tag():
     actual = cluster_tag('prefix', 'Cluster')
     assert actual == "prefix-cluster"
-
-
-def test_storage_account_name_no_prefix1():
-    actual = storage_account_name('default', 'Cluster', 'use')
-    assert actual == "clusteruse"
-
-
-def test_storage_account_name_no_prefix2():
-    actual = storage_account_name('', 'Cluster', 'use')
-    assert actual == "clusteruse"
-
-
-def test_storage_account_name_no_prefix3():
-    actual = storage_account_name(None, 'Cluster', 'use')
-    assert actual == "clusteruse"
-
-
-def test_storage_account_short():
-    actual = storage_account_name('Prefix', 'Cluster', 'Use')
-    assert actual == "prefixclusteruse"
-
-
-def test_storage_account_long():
-    actual = storage_account_name('Prefix', 'SuperLongClusterName', 'SuperLongUse')
-    assert len(actual) == 24
-    assert actual == "prefixsuperlongclussuper"

@@ -41,3 +41,4 @@
 - Keycloak
 - sshtunnel role
 - `prefix` setting from `epiphany-cluster` input manifest for Azure provider
+- Cloud storage for K8s

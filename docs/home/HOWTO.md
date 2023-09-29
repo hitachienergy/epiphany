@@ -41,7 +41,6 @@
   - [How to do Kubernetes RBAC](./howto/KUBERNETES.md#how-to-do-kubernetes-rbac)
   - [How to set resource requests and limits for Containers](./howto/KUBERNETES.md#how-to-set-resource-requests-and-limits-for-containers)
   - [How to tunnel Kubernetes dashboard from remote kubectl to your PC](./howto/KUBERNETES.md#how-to-tunnel-kubernetes-dashboard-from-remote-kubectl-to-your-pc)
-  - [Persistent storage](./howto/kubernetes/PERSISTENT_STORAGE.md)
   - [Certificate management](./howto/kubernetes/CERTIFICATES.md)
 
 - [Upgrade](./howto/UPGRADE.md)

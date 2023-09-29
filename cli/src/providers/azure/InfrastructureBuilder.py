@@ -6,8 +6,7 @@ from cli.src.helpers.data_loader import load_schema_obj, schema_types
 from cli.src.helpers.doc_list_helpers import select_first, select_single
 from cli.src.helpers.naming_helpers import (cluster_tag,
                                             get_os_name_normalized,
-                                            resource_name,
-                                            storage_account_name)
+                                            resource_name)
 from cli.src.helpers.objdict_helpers import dict_to_objdict
 from cli.src.Step import Step
 from cli.version import VERSION
@@ -53,9 +52,6 @@ class InfrastructureBuilder(Step):
 
         vnet = self.get_virtual_network()
         infrastructure.append(vnet)
-
-        shared_storage = self.get_storage_share_config()
-        infrastructure.append(shared_storage)
 
         cloud_init_custom_data = self.get_cloud_init_custom_data()
 
@@ -219,12 +215,6 @@ class InfrastructureBuilder(Step):
         public_ip.specification.idle_timeout_in_minutes = vm_config.specification.network_interface.public_ip.idle_timeout_in_minutes
         public_ip.specification.sku = vm_config.specification.network_interface.public_ip.sku
         return public_ip
-
-    def get_storage_share_config(self):
-        storage_share = self.get_config_or_default(self.docs, 'infrastructure/storage-share')
-        storage_share.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'k8s-ss')
-        storage_share.specification.storage_account_name = storage_account_name(self.cluster_prefix, self.cluster_name, 'k8s')
-        return storage_share
 
     def get_vm(self, component_key, alt_component_name, vm_config, availability_set, network_interface_name, security_group_association_name, index):
         vm = dict_to_objdict(deepcopy(vm_config))

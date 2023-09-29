@@ -250,23 +250,6 @@ disks:
 ...
 ```
 
-### EFS storage
-
-Encryption at rest for EFS storage is turned on by default. To change this one can modify the `encrypted` flag inside
-the `infrastructure/efs-storage` document:
-
-```yaml
-kind: infrastructure/efs-storage
-title: "Elastic File System Config"
-provider: aws
-name: default
-specification:
-  encrypted: true
-...
-```
-
-Additional information can be found [here](https://docs.aws.amazon.com/efs/latest/ug/encryption-at-rest.html).
-
 ## How to use Kubernetes Secrets
 
 Prerequisites: Epiphany Kubernetes cluster

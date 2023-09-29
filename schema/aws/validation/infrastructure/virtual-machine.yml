@@ -28,8 +28,6 @@ properties:
       type: string
   authorized_to_efs:
     type: boolean
-  mount_efs:
-    type: boolean
   size:
     type: string
   os_full_name:

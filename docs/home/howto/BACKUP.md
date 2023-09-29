@@ -93,9 +93,6 @@ specification:
     monitoring:
       enabled: false
       snapshot_name: latest
-    postgresql:
-      enabled: false
-      snapshot_name: latest
 ```
 
 Run ``epicli recovery`` command:
@@ -126,31 +123,3 @@ Monitoring backup includes:
 - Grafana data snapshot
 
 Recovery includes all backed up configurations and snapshots.
-
-### Postgresql
-
-Postgresql backup includes:
-
-- Database data and metadata dump using ``pg_dumpall``
-- Configuration files: ``*.conf``
-
-When multiple node configuration is used, and failover action has changed database cluster status (one node down,
-switchover) it's still possible to create backup. But before database restore, cluster needs to be recovered by
-running ``epicli apply`` and next ``epicli recovery`` to restore database data. By default, we don't support recovery
-database configuration from backup since this needs to be done using ``epicli apply`` or manually by copying backed up
-files accordingly to cluster state. The reason of this is that is very risky to restore configuration files among
-different database cluster configurations.
-
-### Kubernetes
-
-Epiphany backup provides:
-
-- Etcd snapshot
-- Public Key Infrastructure ``/etc/kubernetes/pki``
-- Kubeadm configuration files
-
-Following features are not supported yet (use related documentation to do that manually):
-
-- Kubernetes cluster recovery
-- Backup and restore of data stored on persistent volumes described in [persistent storage](./PERSISTENT_STORAGE.md)
-  documentation

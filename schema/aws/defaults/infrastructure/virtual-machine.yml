@@ -15,7 +15,6 @@ specification:
   availability_zone: SET_BY_AUTOMATION
   security_groups: [] # SET_BY_AUTOMATION
   authorized_to_efs: false
-  mount_efs: false
   size: t2.micro
   os_full_name: ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20221010
   os_type: linux
@@ -191,7 +190,6 @@ name: single-machine
 specification:
   size: t3.xlarge
   authorized_to_efs: true
-  mount_efs: true
   security:
     rules:
      - _merge: true
