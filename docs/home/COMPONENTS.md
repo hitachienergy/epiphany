@@ -27,7 +27,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | Component                 | Version | Repo/Website                                          | License                                                           |
 | ------------------------- | ------- | ----------------------------------------------------- | ----------------------------------------------------------------- |
 | Terraform                 | 1.1.3   | https://www.terraform.io/                             | [Mozilla Public License 2.0](https://github.com/hashicorp/terraform/blob/master/LICENSE) |
-| Terraform AzureRM provider | 3.45.0 | https://github.com/terraform-providers/terraform-provider-azurerm | [Mozilla Public License 2.0](https://github.com/terraform-providers/terraform-provider-azurerm/blob/master/LICENSE) |
+| Terraform AzureRM provider | 3.74.0 | https://github.com/terraform-providers/terraform-provider-azurerm | [Mozilla Public License 2.0](https://github.com/terraform-providers/terraform-provider-azurerm/blob/master/LICENSE) |
 | Terraform AWS provider     | 3.71.0  | https://github.com/terraform-providers/terraform-provider-aws | [Mozilla Public License 2.0](https://github.com/terraform-providers/terraform-provider-aws/blob/master/LICENSE) |
 | Crane                      | 0.11.0  | https://github.com/google/go-containerregistry/tree/main/cmd/crane     | [Apache License 2.0](https://github.com/google/go-containerregistry/blob/main/LICENSE) |
 | Git                        | latest | https://github.com/git/git | [GNU GENERAL PUBLIC LICENSE Version 2](https://github.com/git/git/blob/master/COPYING) |
