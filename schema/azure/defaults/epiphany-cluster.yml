@@ -27,6 +27,7 @@ specification:
   components:
     kafka:
       count: 3
+      availability_set: kafka
       alt_component_name: ''
       machine: kafka-machine
       configuration: default
@@ -35,6 +36,7 @@ specification:
           service_endpoints: []
     logging:
       count: 3
+      availability_set: logging
       alt_component_name: ''
       machine: logging-machine
       configuration: default
