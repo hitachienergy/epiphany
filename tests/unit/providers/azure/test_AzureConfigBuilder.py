@@ -26,9 +26,9 @@ def test_get_network_security_group_should_set_proper_values_to_model():
     cluster_model = get_cluster_model(cluster_name='TestCluster')
     builder = InfrastructureBuilder([cluster_model])
 
-    actual = builder.get_network_security_group('component', [], 1)
+    actual = builder.get_network_security_group('component', [])
 
-    assert actual.specification.name == 'testcluster-component-nsg-1'
+    assert actual.specification.name == 'testcluster-component-nsg'
 
 
 def test_get_subnet_should_set_proper_values_to_model():
@@ -37,9 +37,9 @@ def test_get_subnet_should_set_proper_values_to_model():
         'address_pool': '10.20.0.0/24'
     })
     builder = InfrastructureBuilder([cluster_model])
-    actual = builder.get_subnet(subnet_definition, 'component', 1)
+    actual = builder.get_subnet(subnet_definition, 'component')
 
-    assert actual.specification.name == 'testcluster-component-subnet-1'
+    assert actual.specification.name == 'testcluster-component-snet'
     assert actual.specification.address_prefix == subnet_definition['address_pool']
     assert actual.specification.cluster_name == 'testcluster'
 
@@ -60,7 +60,7 @@ def test_get_availability_set_should_set_proper_values_to_model():
     actual = builder.get_availability_set('availability-set')
 
     assert actual.name == 'availability-set'
-    assert actual.specification.name == 'testcluster-availability-set-aset'
+    assert actual.specification.name == 'testcluster-availability-set-avail'
 
 
 def test_get_subnet_network_security_group_association_should_set_proper_values_to_model():
@@ -68,12 +68,10 @@ def test_get_subnet_network_security_group_association_should_set_proper_values_
     builder = InfrastructureBuilder([cluster_model])
 
     actual = builder.get_subnet_network_security_group_association(
-                                'component',
                                 'testcluster-component-subnet-1',
-                                'testcluster-component-sg-1',
-                                1)
+                                'testcluster-component-sg-1')
 
-    assert actual.specification.name == 'testcluster-component-ssga-1'
+    assert actual.specification.name == 'testcluster-component-subnet-1-nsga'
     assert actual.specification.subnet_name == 'testcluster-component-subnet-1'
     assert actual.specification.security_group_name == 'testcluster-component-sg-1'
 
@@ -83,12 +81,10 @@ def test_get_network_interface_security_group_association_should_set_proper_valu
     builder = InfrastructureBuilder([cluster_model])
 
     actual = builder.get_network_interface_security_group_association(
-                                'component',
                                 'testcluster-component-nic-1',
-                                'testcluster-component-sg-1',
-                                1)
+                                'testcluster-component-sg-1')
 
-    assert actual.specification.name == 'testcluster-component-nsga-1'
+    assert actual.specification.name == 'testcluster-component-nic-1-nsga'
     assert actual.specification.network_interface_name == 'testcluster-component-nic-1'
     assert actual.specification.security_group_name == 'testcluster-component-sg-1'
 
@@ -102,16 +98,15 @@ def test_get_network_interface_should_set_proper_values_to_model():
     vm_config = builder.get_virtual_machine(component_value)
 
     actual = builder.get_network_interface(
-                                'repository',
+                                'repository-01',
                                 vm_config,
                                 'testcluster-component-subnet-1',
                                 'testcluster-repository-pubip-1',
-                                'testcluster-component-sga-1',
-                                1)
+                                'testcluster-component-sga-1')
 
-    assert actual.specification.name == 'testcluster-repository-nic-1'
+    assert actual.specification.name == 'testcluster-repository-01-nic'
     assert actual.specification.security_group_association_name == 'testcluster-component-sga-1'
-    assert actual.specification.ip_configuration_name == 'testcluster-repository-ipconf-1'
+    assert actual.specification.ip_configuration_name == 'testcluster-repository-01-nic-ipconf-01'
     assert actual.specification.subnet_name == 'testcluster-component-subnet-1'
     assert actual.specification.use_public_ip is True
     assert actual.specification.public_ip_name == 'testcluster-repository-pubip-1'

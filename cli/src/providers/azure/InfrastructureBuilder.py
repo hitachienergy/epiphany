@@ -72,23 +72,22 @@ class InfrastructureBuilder(Step):
 
             subnet_definition = component_value.subnets[0]
             subnet = select_first(infrastructure, lambda item: item.kind == 'infrastructure/subnet' and
-                                    item.specification.address_prefix == subnet_definition['address_pool'])
+                                  item.specification.address_prefix == subnet_definition['address_pool'])
 
             if subnet is None:
                 subnet_nsg_association_name = ''
-                subnet = self.get_subnet(subnet_definition, component_key, 0)
+                subnet = self.get_subnet(subnet_definition, component_key)
                 infrastructure.append(subnet)
 
                 if self.use_network_security_groups:
                     nsg = self.get_network_security_group(component_key,
-                                                            vm_config.specification.security.rules,
-                                                            0)
+                                                          vm_config.specification.security.rules)
 
                     infrastructure.append(nsg)
-                    subnet_nsg_association = self.get_subnet_network_security_group_association(component_key,
-                                                                                        subnet.specification.name,
-                                                                                        nsg.specification.name,
-                                                                                        0)
+                    subnet_nsg_association = self.get_subnet_network_security_group_association(
+                                                subnet.specification.name,
+                                                nsg.specification.name
+                                             )
                     infrastructure.append(subnet_nsg_association)
                     subnet_nsg_association_name = subnet_nsg_association.specification.name
 
@@ -112,21 +111,21 @@ class InfrastructureBuilder(Step):
                     infrastructure.append(public_ip)
                     public_ip_name = public_ip.specification.name
 
-                network_interface = self.get_network_interface(component_key,
+                vm_name = self.__get_vm_name(component_key, component_value['alt_component_name'], self.__normalize_index(index))
+
+                network_interface = self.get_network_interface(vm_name,
                                                                vm_config,
                                                                subnet.specification.name,
                                                                public_ip_name,
-                                                               subnet_nsg_association_name,
-                                                               index)
+                                                               subnet_nsg_association_name)
                 infrastructure.append(network_interface)
 
                 security_group_association_name = ''
                 if self.use_network_security_groups:
                     nic_nsg_association = self.get_network_interface_security_group_association(
-                                                               component_key,
-                                                               network_interface.specification.name,
-                                                               nsg.specification.name,
-                                                               index)
+                                              network_interface.specification.name,
+                                              nsg.specification.name
+                                          )
                     infrastructure.append(nic_nsg_association)
                     security_group_association_name = nic_nsg_association.specification.name
 
@@ -136,7 +135,8 @@ class InfrastructureBuilder(Step):
                                  availability_set,
                                  network_interface.specification.name,
                                  security_group_association_name,
-                                 index)
+                                 self.__normalize_index(index),
+                                 vm_name)
                 infrastructure.append(vm)
 
         first_vm_doc = select_first(infrastructure, lambda x: x.kind == 'infrastructure/virtual-machine')
@@ -159,15 +159,15 @@ class InfrastructureBuilder(Step):
         vnet.specification.address_space = self.cluster_model.specification.cloud.vnet_address_pool
         return vnet
 
-    def get_network_security_group(self, component_key, security_rules,  index):
+    def get_network_security_group(self, component_key, security_rules):
         security_group = self.get_config_or_default(self.docs, 'infrastructure/network-security-group')
-        security_group.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'nsg' + '-' + str(index), component_key)
+        security_group.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'nsg', component_key)
         security_group.specification.rules = security_rules
         return security_group
 
-    def get_subnet(self, subnet_definition, component_key, index):
+    def get_subnet(self, subnet_definition, component_key):
         subnet = self.get_config_or_default(self.docs, 'infrastructure/subnet')
-        subnet.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'subnet' + '-' + str(index), component_key)
+        subnet.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'snet', component_key)
         subnet.specification.address_prefix = subnet_definition['address_pool']
         subnet.specification.cluster_name = self.cluster_name
         subnet.specification.service_endpoints = subnet_definition['service_endpoints'] if 'service_endpoints' in subnet_definition else []
@@ -179,29 +179,29 @@ class InfrastructureBuilder(Step):
             lambda item: item.kind == 'infrastructure/availability-set' and item.name == availability_set_name,
         )
         if availability_set is not None:
-            availability_set.specification.name = resource_name(self.cluster_prefix, self.cluster_name, availability_set_name + '-' + 'aset')
+            availability_set.specification.name = resource_name(self.cluster_prefix, self.cluster_name, availability_set_name + '-' + 'avail')
         return availability_set
 
-    def get_subnet_network_security_group_association(self, component_key, subnet_name, security_group_name, index):
+    def get_subnet_network_security_group_association(self, subnet_name, security_group_name):
         ssga = self.get_config_or_default(self.docs, 'infrastructure/subnet-network-security-group-association')
-        ssga.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'ssga' + '-' + str(index), component_key)
+        ssga.specification.name = f'{subnet_name}-nsga'
         ssga.specification.subnet_name = subnet_name
         ssga.specification.security_group_name = security_group_name
         return ssga
 
-    def get_network_interface_security_group_association(self, component_key, network_interface_name, security_group_name, index):
+    def get_network_interface_security_group_association(self, network_interface_name, security_group_name):
         nsga = self.get_config_or_default(self.docs, 'infrastructure/network-interface-security-group-association')
-        nsga.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'nsga' + '-' + str(index), component_key)
+        nsga.specification.name = f'{network_interface_name}-nsga'
         nsga.specification.network_interface_name = network_interface_name
         nsga.specification.security_group_name = security_group_name
         return nsga
 
-    def get_network_interface(self, component_key, vm_config, subnet_name, public_ip_name, security_group_association_name, index):
+    def get_network_interface(self, vm_name, vm_config, subnet_name, public_ip_name, security_group_association_name):
         network_interface = self.get_config_or_default(self.docs, 'infrastructure/network-interface')
-        network_interface.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'nic' + '-' + str(index), component_key)
+        network_interface.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'nic', vm_name)
         network_interface.specification.use_network_security_groups = self.use_network_security_groups
         network_interface.specification.security_group_association_name = security_group_association_name
-        network_interface.specification.ip_configuration_name = resource_name(self.cluster_prefix, self.cluster_name, 'ipconf' + '-' + str(index), component_key)
+        network_interface.specification.ip_configuration_name = network_interface.specification.name + '-ipconf-01'
         network_interface.specification.subnet_name = subnet_name
         network_interface.specification.use_public_ip = self.cluster_model.specification.cloud.use_public_ips
         network_interface.specification.public_ip_name = public_ip_name
@@ -216,12 +216,12 @@ class InfrastructureBuilder(Step):
         public_ip.specification.sku = vm_config.specification.network_interface.public_ip.sku
         return public_ip
 
-    def get_vm(self, component_key, alt_component_name, vm_config, availability_set, network_interface_name, security_group_association_name, index):
+    def get_vm(self, component_key, alt_component_name, vm_config, availability_set, network_interface_name, security_group_association_name, index, vm_name):
         vm = dict_to_objdict(deepcopy(vm_config))
-        host_component_key = alt_component_name if alt_component_name and alt_component_name.strip() else component_key
-        vm.specification.name = resource_name(self.cluster_prefix, self.cluster_name, f'vm-{index}', host_component_key)
+        vm.specification.name = vm_name
         if self.hostname_domain_extension != '':
-            vm.specification.hostname = resource_name(self.cluster_prefix, self.cluster_name, f'vm-{index}.{self.hostname_domain_extension}', host_component_key)
+            component_name = self.__get_component_name(component_key, alt_component_name)
+            vm.specification.hostname = resource_name(self.cluster_prefix, self.cluster_name, f'vm-{index}.{self.hostname_domain_extension}', component_name)
         else:
             vm.specification.hostname = vm.specification.name
         if len(vm.specification.hostname) > HOST_NAME_MAX_LENGTH:
@@ -292,6 +292,13 @@ class InfrastructureBuilder(Step):
 
         return model_with_defaults
 
+    def __get_component_name(self, component_key, alt_component_name):
+        return alt_component_name if alt_component_name and alt_component_name.strip() else component_key
+
+    def __get_vm_name(self, component_key, alt_component_name, index):
+        component_name = self.__get_component_name(component_key, alt_component_name)
+        return resource_name(self.cluster_prefix, self.cluster_name, f'vm-{index}', component_name)
+
     @staticmethod
     def get_config_or_default(docs, kind):
         config = select_first(docs, lambda x: x.kind == kind)
@@ -299,3 +306,8 @@ class InfrastructureBuilder(Step):
             config = load_schema_obj(schema_types.DEFAULT, 'azure', kind)
             config['version'] = VERSION
         return config
+
+    @staticmethod
+    def __normalize_index(index: int):
+        index += 1 # 0 -> 1
+        return str(index).zfill(2) # 1 -> 01
