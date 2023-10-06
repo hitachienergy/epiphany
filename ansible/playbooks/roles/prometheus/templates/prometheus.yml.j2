@@ -31,13 +31,19 @@ alerting:
 {% endif %}
 
 scrape_configs:
-  - job_name: "prometheus"
+{% if is_alertmanager_enabled == True %}
+  - job_name: alertmanager
     metrics_path: "{{ specification.metrics_path }}"
     static_configs:
-      - targets:
-          - "{{ ansible_fqdn | default(ansible_host) | default('localhost') }}:9090"
+      - targets: ["{{ ansible_fqdn }}:9093"]
 
-  - job_name: "file_service_discovery"
+{% endif %}
+  - job_name: prometheus
+    metrics_path: "{{ specification.metrics_path }}"
+    static_configs:
+      - targets: ["{{ ansible_fqdn }}:9090"]
+
+  - job_name: file_service_discovery
     file_sd_configs:
       - files:
           - "{{ specification.config_directory }}/file_sd/*.yml"
