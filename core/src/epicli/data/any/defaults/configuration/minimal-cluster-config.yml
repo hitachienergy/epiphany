@@ -7,6 +7,8 @@ specification:
   admin_user:
     name: operations # YOUR-ADMIN-USERNAME
     key_path: /user/.ssh/epiphany-operations/id_rsa # YOUR-SSH-KEY-PATH
+  cloud:
+    k8s_as_cloud_service: False
   components:
     repository:
       count: 1
