@@ -1,10 +1,23 @@
 ---
 kind: infrastructure/availability-set
-title: "Availability Set Config"
+title: Availability Set Config
 provider: azure
 name: default
 specification:
     name: SET_BY_AUTOMATION
-    platform_fault_domain_count: 2
+    platform_fault_domain_count: 3
     platform_update_domain_count: 5
-    managed: true
+---
+kind: infrastructure/availability-set
+title: Availability Set Config
+provider: azure
+name: kafka
+specification:
+    name: SET_BY_AUTOMATION
+---
+kind: infrastructure/availability-set
+title: Availability Set Config
+provider: azure
+name: logging
+specification:
+    name: SET_BY_AUTOMATION

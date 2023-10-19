@@ -642,7 +642,6 @@ specification:
 # The "name" attribute is generated automatically according to Epiphany's naming conventions
   platform_fault_domain_count: 2
   platform_update_domain_count: 5
-  managed: true
 provider: azure
 ```
 
@@ -705,7 +704,6 @@ specification:
 # The "name" attribute (omitted here) is generated automatically according to Epiphany's naming conventions
   platform_fault_domain_count: 2
   platform_update_domain_count: 5
-  managed: true
 provider: azure
 ---
 kind: infrastructure/availability-set
@@ -714,7 +712,6 @@ specification:
 # The "name" attribute (omitted here) is generated automatically according to Epiphany's naming conventions
   platform_fault_domain_count: 2
   platform_update_domain_count: 5
-  managed: true
 provider: azure
 ```
 

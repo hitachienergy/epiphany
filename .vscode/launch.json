@@ -19,7 +19,6 @@
             // "args": ["--debug", "0", "apply", "-f", "${workspaceFolder}/clusters/nostai-dev1.yml", "--vault-password", "1IAtsoN"]
             // "args": ["--debug", "0", "apply", "-f", "${workspaceFolder}/clusters/nostai-dev1.yml", "--no-infra", "--vault-password", "1IAtsoN"]
             // "args": ["--debug", "0", "apply", "-f", "${workspaceFolder}/clusters/nostai-dev1.yml", "--skip-config"]
-            // "args": ["--debug", "1", "apply", "-f", "${workspaceFolder}/clusters/nostai-dev1.yml", "--vault-password", "1IAtsoN"]
 
             // test
             // "args": ["--auto-approve", "test", "-b", "${workspaceFolder}/clusters/build/nostai-dev1"]

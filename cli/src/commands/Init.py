@@ -34,7 +34,10 @@ class Init(Step):
             # Add infrastructure and configuration documents
             if self.provider != 'any':
                 # Add VM infrastructure docs as these are most likely to be changed
-                infra_docs = load_all_schema_objs(schema_types.DEFAULT, self.provider, 'infrastructure/virtual-machine')
+                infra_vm_docs = load_all_schema_objs(schema_types.DEFAULT, self.provider, 'infrastructure/virtual-machine')
+                # Add availability set doc
+                infra_as_docs = load_all_schema_objs(schema_types.DEFAULT, self.provider, 'infrastructure/availability-set')
+                infra_docs = [*infra_vm_docs, *infra_as_docs]
             else:
                 # For any provider, infrastructure docs are already part of the minimal-cluster-config template
                 infra_docs = select_all(docs, lambda x: x.kind.startswith('infrastructure/machine'))

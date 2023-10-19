@@ -22,6 +22,7 @@
 - node_exporter to 1.6.1
 - Grafana to 10.0.3
 - Grafana dashboards
+- Use availability set for `kafka` and `logging` components in the default configuration
 
 ### Removed
 
