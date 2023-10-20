@@ -75,7 +75,7 @@ packages:
     - 'perl-Pod-Perldoc'  # for vim
     - 'perl-Pod-Simple'  # for vim
     - 'perl-Pod-Usage'  # for vim
-    - 'pgaudit15_13-1.5.0'
+    # - 'pgaudit15_13-1.5.0' # Removed from aarch64 installations. More info: https://github.com/hitachienergy/epiphany/issues/3302
     - 'pkgconf'  # for bash-completion
     - 'pkgconf-pkg-config'  # for bash-completion
     - 'policycoreutils'
