@@ -37,6 +37,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | Apache2                    | 2.4.29   | https://httpd.apache.org/                             | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Rook                    | 1.8.8   | https://rook.io/                             | [Apache License 2.0](https://github.com/rook/rook/blob/master/LICENSE) |
 | OpenSearch                 | 1.2.4   | https://opensearch.org/                                | [Apache License 2.0](https://github.com/opensearch-project/OpenSearch/blob/main/LICENSE.txt) |
+| OpenSearch Dashboards      | 1.2.0   | https://opensearch.org/                                | [Apache License 2.0](https://github.com/opensearch-project/OpenSearch-Dashboards/blob/main/LICENSE.txt) |
 
 ## Epicli binary dependencies
 
