@@ -30,11 +30,11 @@ jobs:
 
       - task: Bash@3
         displayName: Install Ansible Lint and its dependencies
-        # Installing Ansible 5.2.0 to be compatible with the epicli image.
+        # Installing Ansible 6.7.0 to be compatible with the epicli image.
         inputs:
           targetType: inline
           script: |
-            python3 -m pip install --upgrade ansible==6.2.0 ansible-compat==3.* ansible-lint==6.5.0 ansible-lint-junit==0.16 lxml pip setuptools
+            python3 -m pip install --upgrade ansible==6.7.0 ansible-compat==3.* ansible-lint==6.5.0 ansible-lint-junit==0.16 lxml pip setuptools
 
       - task: Bash@3
         displayName: Run Ansible Lint
