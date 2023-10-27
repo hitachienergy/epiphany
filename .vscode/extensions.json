@@ -11,6 +11,7 @@
         // Markdown
         "davidanson.vscode-markdownlint",
         // Python
+        "ms-python.pylint",
         "ms-python.python",
         // Ruby
         "rebornix.Ruby",

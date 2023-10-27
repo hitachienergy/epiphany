@@ -1,7 +1,6 @@
 import glob
 import os
 
-from cli.src.helpers.build_io import get_build_path
 from cli.src.helpers.data_loader import (SCHEMA_DIR, load_all_schema_objs,
                                          load_all_schema_objs_from_directory,
                                          load_json_obj, load_schema_obj,

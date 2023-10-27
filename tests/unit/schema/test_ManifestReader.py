@@ -2,12 +2,10 @@ from io import StringIO
 
 from pytest_mock import MockerFixture
 
-from cli.src.helpers.objdict_helpers import dict_to_objdict
 from cli.src.helpers.yaml_helpers import safe_load_all
 from cli.src.schema.ManifestHandler import ManifestHandler
 from tests.unit.data.schema.ManifestReader_data import (
     EXPECTED_PARSED_MANIFEST_DOCS,
-    EXPECTED_UPDATED_DOC_BASE,
     EXPECTED_UPDATED_DOC_WITH_NEW_DOC_ADDED,
     EXPECTED_UPDATED_DOC_WITH_TWO_INFRA_DOCS,
     INPUT_DOC_TO_UPDATE_BASE,
