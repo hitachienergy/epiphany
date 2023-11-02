@@ -30,6 +30,14 @@
   run_once: true
   delegate_to: localhost
 
+# Starting from K8s v1.24, secrets are not automatically generated when service accounts are created
+- name: Create secret
+  when: k8s_as_cloud_service is defined and k8s_as_cloud_service
+  become: false
+  command: "kubectl apply -f {{ role_path }}/files/secret.yml"
+  run_once: true
+  delegate_to: localhost
+
 - name: Get kubernetes bearer token for prometheus
   become: false
   shell: |-
