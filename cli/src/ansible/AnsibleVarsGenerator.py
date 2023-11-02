@@ -148,10 +148,6 @@ class AnsibleVarsGenerator(Step):
         main_vars['full_download'] = Config().full_download
 
         # Consider to move this to the provider level.
-        #if self.cluster_model.provider != 'any':
-        #    main_vars['k8s_as_cloud_service'] = self.cluster_model.specification.cloud.k8s_as_cloud_service
-        #else:
-        #    main_vars['k8s_as_cloud_service'] = False
         main_vars['k8s_as_cloud_service'] = self.cluster_model.specification.cloud.k8s_as_cloud_service
 
         if self.is_upgrade_run:

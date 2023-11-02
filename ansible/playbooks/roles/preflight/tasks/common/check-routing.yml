@@ -35,13 +35,13 @@
     name: common_vars
 
 
-#- name: Validate if ansible_default_ipv4.address matches address from inventory
-#  when:
-#    - common_vars.provider == "any"
-#    - common_vars.specification.cloud is undefined
-#  assert:
-#    that: ansible_default_ipv4.address == ansible_host
-#    fail_msg: >-
-#      ansible_default_ipv4.address is {{ ansible_default_ipv4.address }} but inventory uses ip: {{ ansible_host }}.
-#      Check default routing configuration, read more in troubleshooting document.
-#    quiet: true
+- name: Validate if ansible_default_ipv4.address matches address from inventory
+  when:
+    - common_vars.provider == "any"
+    - not k8s_as_cloud_service
+  assert:
+    that: ansible_default_ipv4.address == ansible_host
+    fail_msg: >-
+      ansible_default_ipv4.address is {{ ansible_default_ipv4.address }} but inventory uses ip: {{ ansible_host }}.
+      Check default routing configuration, read more in troubleshooting document.
+    quiet: true
