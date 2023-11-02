@@ -47,7 +47,8 @@ data:
       ## Set to "hostname" to use pod hostnames.
       ## When this value is changed, so should the variable used to set the RABBITMQ_NODENAME
       ## environment variable.
-      cluster_formation.k8s.address_type = ip
+      cluster_formation.k8s.address_type = hostname
+      cluster_formation.k8s.hostname_suffix = .{{ rabbitmq_service_name }}.{{ namespace_name }}.svc.cluster.local
       ## How often should node cleanup checks run?
       cluster_formation.node_cleanup.interval = 30
       ## Set to false if automatic removal of unknown/absent nodes
@@ -120,9 +121,6 @@ spec:
                 fieldPath: status.podIP
           - name: RABBITMQ_USE_LONGNAME
             value: "true"
-          # See a note on cluster_formation.k8s.address_type in the config file section
-          - name: RABBITMQ_NODENAME
-            value: "rabbit@$(MY_POD_IP)"
           - name: K8S_SERVICE_NAME
             value: "{{ rabbitmq_service_name }}"
           - name: RABBITMQ_ERLANG_COOKIE

@@ -8,6 +8,10 @@
     state: present
     install_recommends: no
   when: ansible_os_family == 'Debian'
+  register: result
+  until: result is succeeded
+  retries: "{{ specification.retries }}"
+  delay: "{{ specification.delay }}"
 
 - name: Create postgres_exporter system group
   group:

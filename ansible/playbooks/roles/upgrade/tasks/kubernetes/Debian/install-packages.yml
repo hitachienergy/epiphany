@@ -7,6 +7,10 @@
 - name: Install K8s packages
   when: packages_to_install_or_upgrade | length
      or packages_to_downgrade | length
+  register: result
+  until: result is succeeded
+  retries: "{{ specification.retries }}"
+  delay: "{{ specification.delay }}"
   vars:
     target_packages:
       kubeadm: "{{ version }}-00" # kubeadm may be removed as dependency and then has to be reinstalled
@@ -52,6 +56,10 @@
       apt:
         name: "{{ packages_to_downgrade }}"
         state: absent
+      register: result
+      until: result is succeeded
+      retries: "{{ specification.retries }}"
+      delay: "{{ specification.delay }}"
       when: packages_to_downgrade | length
 
     - name: "K8s/install | Install packages: {{ packages_to_install_with_version | join( ', ' ) }}"

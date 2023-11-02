@@ -4,6 +4,8 @@ title: "Postgresql specification schema"
 description: "Postgresql specification schema"
 type: object
 properties:
+  custom_postgresql_config:
+    type: string
   config_file:
     type: object
     properties:
