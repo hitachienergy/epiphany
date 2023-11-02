@@ -1,6 +1,12 @@
 ---
 files:
   # --- Exporters ---
+  blackbox-exporter:
+    options:
+      - url: 'https://github.com/prometheus/blackbox_exporter/releases/download/v0.24.0/blackbox_exporter-0.24.0.linux-amd64.tar.gz'
+        sha256: 81b36cece040491ac0d9995db2a0964c40e24838a03a151c3333a7dc3eef94ff
+    deps: [blackbox-exporter]
+
   kafka-exporter:
     options:
       - url: 'https://github.com/danielqsj/kafka_exporter/releases/download/v1.4.0/kafka_exporter-1.4.0.linux-amd64.tar.gz'

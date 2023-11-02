@@ -22,6 +22,7 @@ specification:
       - prometheus
       - grafana
       - node-exporter
+      - blackbox-exporter
       - filebeat
       - firewall
       - repository # to reduce costs

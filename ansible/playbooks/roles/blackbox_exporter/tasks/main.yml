@@ -1,0 +1,79 @@
+- name: Create blackbox_exporter system group
+  group:
+    name: blackbox_exporter
+    system: true
+    state: present
+
+- name: Create blackbox_exporter system user
+  user:
+    name: blackbox_exporter
+    system: true
+    shell: /usr/sbin/nologin
+    group: blackbox_exporter
+    createhome: false
+
+- name: Download Blackbox exporter binaries
+  include_role:
+    name: download
+    tasks_from: download_file
+  vars:
+    file_name: "{{ blackbox_exporter.file_name }}"
+
+- name: Create blackbox_exporter directories
+  file:
+    path: "{{ item }}"
+    owner: root
+    group: blackbox_exporter
+    mode: u=rwx,go=rx
+    state: directory
+  loop:
+    - /etc/blackbox_exporter
+    - /opt/blackbox_exporter
+
+- name: Unpack blackbox_exporter binary
+  unarchive:
+    remote_src: true
+    src: "{{ download_directory }}/{{ blackbox_exporter.file_name }}"
+    dest: /opt/blackbox_exporter
+    extra_opts: [--strip-components=1]
+    mode: u=rwx,g=rx,o=rx
+    owner: root
+    group: blackbox_exporter
+  check_mode: false
+
+- name: Copy configuration files
+  template:
+    src: "{{ item }}"
+    dest: "/etc/blackbox_exporter/{{ item | regex_replace('\\.j2$', '') }}"
+    owner: root
+    group: blackbox_exporter
+    mode: u=rw,g=r,o=
+  register: blackbox_exporter_config_files
+  loop:
+    - blackbox.yml.j2
+    - web-config.yml.j2
+
+- name: Install Blackbox exporter systemd service
+  copy:
+    src: blackbox-exporter.service
+    dest: /etc/systemd/system/blackbox-exporter.service
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+
+- name: Configure systemd to use blackbox-exporter service
+  systemd:
+    daemon_reload: true
+    enabled: true
+    name: blackbox-exporter.service
+
+- name: Start blackbox-exporter
+  systemd:
+    name: blackbox-exporter
+    state: started
+
+- name: Restart blackbox-exporter
+  systemd:
+    name: blackbox-exporter
+    state: restarted
+  when: blackbox_exporter_config_files.changed

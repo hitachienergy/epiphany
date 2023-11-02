@@ -1,0 +1,13 @@
+[Unit]
+Description=Blackbox exporter
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=blackbox_exporter
+Group=blackbox_exporter
+ExecStart=/opt/blackbox_exporter/blackbox_exporter --config.file=/etc/blackbox_exporter/blackbox.yml --web.config.file=/etc/blackbox_exporter/web-config.yml
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

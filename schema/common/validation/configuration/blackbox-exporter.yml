@@ -1,0 +1,15 @@
+---
+"$id": "#/specification"
+title: Blackbox exporter specification schema
+type: object
+properties:
+  web_config:
+    type: object
+    properties:
+      basic_auth:
+        type: object
+        properties:
+          user:
+            type: string
+          password:
+            type: string

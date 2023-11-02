@@ -15,6 +15,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | Filebeat Helm Chart        | 7.12.1   | https://github.com/elastic/helm-charts                | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Prometheus                 | 2.31.1   | https://github.com/prometheus/prometheus              | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Grafana                    | 10.0.3   | https://github.com/grafana/grafana                    | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
+| Blackbox Exporter          | 0.24.0   | https://github.com/prometheus/blackbox_exporter       | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Node Exporter              | 1.6.1    | https://github.com/prometheus/node_exporter           | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Bitnami Node Exporter Helm Chart      | 3.6.2    | https://github.com/bitnami/charts          | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |
 | Kafka Exporter             | 1.4.0    | https://github.com/danielqsj/kafka_exporter           | [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) |

@@ -18,6 +18,8 @@ specification:
       enabled: true
     - name: grafana
       enabled: true
+    - name: blackbox-exporter
+      enabled: true
     - name: node-exporter
       enabled: true
     - name: jmx-exporter
