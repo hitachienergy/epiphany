@@ -1,5 +1,6 @@
+# Ansible managed
 groups:
-- name: promethues.rules
+- name: Promethues.rules
   rules:
   - alert: PrometheusTargetMissing
     expr: up == 0
@@ -37,6 +38,33 @@ groups:
       summary: "Prometheus too many restarts (instance {{ $labels.instance }})"
       description: "Prometheus has restarted more than twice in the last 15 minutes. It might be crashlooping.\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
 
+  - alert: PrometheusAlertmanagerConfigurationReloadFailure
+    expr: alertmanager_config_last_reload_successful != 1
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Prometheus AlertManager configuration reload failure (instance {{ $labels.instance }})"
+      description: "AlertManager configuration reload error\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  - alert: PrometheusAlertmanagerConfigNotSynced
+    expr: count(count_values("config_hash", alertmanager_config_hash)) > 1
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Prometheus AlertManager config not synced (instance {{ $labels.instance }})"
+      description: "Configurations of AlertManager cluster instances are out of sync\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  - alert: PrometheusNotConnectedToAlertmanager
+    expr: prometheus_notifications_alertmanagers_discovered < 1
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Prometheus not connected to alertmanager (instance {{ $labels.instance }})"
+      description: "Prometheus cannot connect the alertmanager\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
   - alert: PrometheusRuleEvaluationFailures
     expr: increase(prometheus_rule_evaluation_failures_total[3m]) > 0
     for: 5m
@@ -72,6 +100,15 @@ groups:
     annotations:
       summary: "Prometheus notifications backlog (instance {{ $labels.instance }})"
       description: "The Prometheus notification queue has not been empty for 10 minutes\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  - alert: PrometheusAlertmanagerNotificationFailing
+    expr: rate(alertmanager_notifications_failed_total[1m]) > 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Prometheus AlertManager notification failing (instance {{ $labels.instance }})"
+      description: "Alertmanager is failing sending notifications\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
 
   - alert: PrometheusTargetEmpty
     expr: prometheus_sd_discovered_targets == 0
@@ -162,40 +199,3 @@ groups:
     annotations:
       summary: "Prometheus TSDB WAL truncations failed (instance {{ $labels.instance }})"
       description: "Prometheus encountered {{ $value }} TSDB WAL truncation failures\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
-
-# Optional - Alertmanager
-# - alert: PrometheusAlertmanagerConfigurationReloadFailure
-#   expr: alertmanager_config_last_reload_successful != 1
-#   for: 5m
-#   labels:
-#     severity: warning
-#   annotations:
-#     summary: "Prometheus AlertManager configuration reload failure (instance {{ $labels.instance }})"
-#     description: "AlertManager configuration reload error\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
-
-# - alert: PrometheusAlertmanagerConfigNotSynced
-#   expr: count(count_values("config_hash", alertmanager_config_hash)) > 1
-#   for: 5m
-#   labels:
-#     severity: warning
-#   annotations:
-#     summary: "Prometheus AlertManager config not synced (instance {{ $labels.instance }})"
-#     description: "Configurations of AlertManager cluster instances are out of sync\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
-
-# - alert: PrometheusNotConnectedToAlertmanager
-#   expr: prometheus_notifications_alertmanagers_discovered < 1
-#   for: 5m
-#   labels:
-#     severity: critical
-#   annotations:
-#     summary: "Prometheus not connected to alertmanager (instance {{ $labels.instance }})"
-#     description: "Prometheus cannot connect the alertmanager\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
-
-# - alert: PrometheusAlertmanagerNotificationFailing
-#   expr: rate(alertmanager_notifications_failed_total[1m]) > 0
-#   for: 5m
-#   labels:
-#     severity: critical
-#   annotations:
-#     summary: "Prometheus AlertManager notification failing (instance {{ $labels.instance }})"
-#     description: "Alertmanager is failing sending notifications\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"

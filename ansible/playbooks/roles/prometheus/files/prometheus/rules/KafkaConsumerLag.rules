@@ -1,0 +1,21 @@
+# Ansible managed
+groups:
+- name: KafkaConsumerLag
+  rules:
+  - alert:  Kafka consumers lagging 10 msgs for 15 min
+    labels:
+      severity: moderate
+    expr: (kafka_consumergroup_lag{consumergroup!~"de.*aiow"}) > 10  and (kafka_consumergroup_lag{consumergroup!~".*shift-instance-engine"}) > 10 and (kafka_consumergroup_lag{consumergroup!~".*as-.*"}) > 10
+    for: 15m
+    annotations:
+      summary: 'Consumer group lag is too big'
+      description: 'Consumer group {{ $labels.consumergroup}} lag is too big ({{ $value }}) on topic {{ $labels.topic }}/partition {{ $labels.partition }}'
+
+  - alert: Kafka consumers lagging 10 msgs for 30 min
+    labels:
+      severity: high
+    expr: (kafka_consumergroup_lag{consumergroup!~"de.*aiow"}) > 10  and (kafka_consumergroup_lag{consumergroup!~".*shift-instance-engine"}) > 10 and (kafka_consumergroup_lag{consumergroup!~".*as-.*"}) > 10
+    for: 30m
+    annotations:
+      summary: 'Consumer group lag is too big'
+      description: 'Consumer group {{ $labels.consumergroup}} lag is too big ({{ $value }}) on topic {{ $labels.topic }}/partition {{ $labels.partition }}'

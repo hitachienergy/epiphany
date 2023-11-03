@@ -1,5 +1,6 @@
+# Ansible managed
 groups:
-- name: container.rules
+- name: Container.rules
   rules:
   - alert: ContainerKilled
     expr: time() - container_last_seen > 60
@@ -28,21 +29,21 @@ groups:
       summary: "Container Volume IO usage (instance {{ $labels.instance }})"
       description: "Container Volume IO usage is above 80%\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
 
-# Added an AND because of: the sum BY(ip) was coming up with one value that was the sum of everything and throwing an alert.
-  - alert: ContainerCpuUsage
-    expr: (sum(rate(container_cpu_usage_seconds_total[3m])) BY (instance, name) * 100) > 80 AND (sum(rate(container_cpu_usage_seconds_total[3m])) BY (instance, name) * 100) < 101
+  - alert: ContainerCPUUsageHigh
+    expr: (sum(rate(container_cpu_usage_seconds_total{container!=""}[3m])) BY (namespace, pod, container) * 100) > 80
     for: 5m
     labels:
       severity: warning
     annotations:
-      summary: "Container CPU usage (instance {{ $labels.instance }})"
+      summary: "Container CPU usage (namespace: {{ $labels.namespace }}, pod: {{ $labels.pod }}, container: {{ $labels.container }})"
       description: "Container CPU usage is above 80%\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
 
-  - alert: ContainerMemoryUsage
-    expr: (sum(container_memory_usage_bytes) BY (instance) / sum(container_memory_max_usage_bytes) BY (instance) * 100) > 95 AND (sum(container_memory_usage_bytes) BY (instance) / sum(container_memory_max_usage_bytes) BY (instance) * 100) < 101
+  # OOMKiller tracks container_memory_working_set_bytes
+  - alert: ContainerMemoryUsageHigh
+    expr: (sum(container_memory_working_set_bytes{container!=""}) BY (container, pod, namespace) / (sum(container_spec_memory_limit_bytes{container!=""}) BY (container, pod, namespace) > 0) * 100) > 95
     for: 5m
     labels:
       severity: warning
     annotations:
-      summary: "Container Memory usage (instance {{ $labels.instance }})"
-      description: "Container Memory usage is above 80%\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+      summary: "Container Memory usage (namespace: {{ $labels.namespace }}, pod: {{ $labels.pod }}, container: {{ $labels.container }})"
+      description: "Container Memory usage is above 95% of the limit\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"

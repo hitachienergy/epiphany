@@ -1,73 +1,98 @@
-- name: Copy common alerting rules
+- name: Copy certificates alerting rules
   copy:
-    src: prometheus/rules/common.rules
+    src: prometheus/rules/Certificates.rules
     dest: /etc/prometheus/rules/
     validate: /usr/local/bin/promtool check rules %s
     owner: prometheus
     group: prometheus
     mode: u=rw,go=
-  when: specification.alertmanager.alert_rules.common | bool
-  notify: Reload Prometheus
-
-- name: Copy Prometheus alerting rules
-  copy:
-    src: prometheus/rules/prometheus.rules
-    dest: /etc/prometheus/rules/
-    validate: /usr/local/bin/promtool check rules %s
-    owner: prometheus
-    group: prometheus
-    mode: u=rw,go=
-  when: specification.alertmanager.alert_rules.prometheus | bool
-  notify: Reload Prometheus
-
-- name: Copy node alerting rules
-  copy:
-    src: prometheus/rules/node.rules
-    dest: /etc/prometheus/rules/
-    validate: /usr/local/bin/promtool check rules %s
-    owner: prometheus
-    group: prometheus
-    mode: u=rw,go=
-  when:
-  - groups.kubernetes_node[0] is defined
-  - specification.alertmanager.alert_rules.node | bool
+  when: specification.alertmanager.alert_rules.Certificates
   notify: Reload Prometheus
 
 - name: Copy container alerting rules
   copy:
-    src: prometheus/rules/container.rules
+    src: prometheus/rules/Container.rules
     dest: /etc/prometheus/rules/
     validate: /usr/local/bin/promtool check rules %s
     owner: prometheus
     group: prometheus
     mode: u=rw,go=
-  when:
-    - groups.kubernetes_node[0] is defined
-    - specification.alertmanager.alert_rules.container | bool
+  when: specification.alertmanager.alert_rules.Container
+  notify: Reload Prometheus
+
+- name: Copy disk space predictions alerting rules
+  copy:
+    src: prometheus/rules/DiskSpacePrediction.rules
+    dest: /etc/prometheus/rules/
+    validate: /usr/local/bin/promtool check rules %s
+    owner: prometheus
+    group: prometheus
+    mode: u=rw,go=
+  when: specification.alertmanager.alert_rules.DiskSpacePrediction
   notify: Reload Prometheus
 
 - name: Copy Kafka alerting rules
   copy:
-    src: prometheus/rules/kafka.rules
+    src: prometheus/rules/Kafka.rules
     dest: /etc/prometheus/rules/
     validate: /usr/local/bin/promtool check rules %s
     owner: prometheus
     group: prometheus
     mode: u=rw,go=
-  when:
-    - groups.kafka[0] is defined
-    - specification.alertmanager.alert_rules.kafka | bool
+  when: specification.alertmanager.alert_rules.Kafka
   notify: Reload Prometheus
 
-- name: Copy Postgresql alerting rules
+- name: Copy Kafka consumer lag alerting rules
   copy:
-    src: prometheus/rules/postgresql.rules
+    src: prometheus/rules/KafkaConsumerLag.rules
     dest: /etc/prometheus/rules/
     validate: /usr/local/bin/promtool check rules %s
     owner: prometheus
     group: prometheus
     mode: u=rw,go=
-  when:
-    - groups.postgresql[0] is defined
-    - specification.alertmanager.alert_rules.postgresql | bool
+  when: specification.alertmanager.alert_rules.KafkaConsumerLag
+  notify: Reload Prometheus
+
+- name: Copy node alerting rules
+  copy:
+    src: prometheus/rules/Node.rules
+    dest: /etc/prometheus/rules/
+    validate: /usr/local/bin/promtool check rules %s
+    owner: prometheus
+    group: prometheus
+    mode: u=rw,go=
+  when: specification.alertmanager.alert_rules.Node
+  notify: Reload Prometheus
+
+- name: Copy PostgreSQL alerting rules
+  copy:
+    src: prometheus/rules/PostgreSQL.rules
+    dest: /etc/prometheus/rules/
+    validate: /usr/local/bin/promtool check rules %s
+    owner: prometheus
+    group: prometheus
+    mode: u=rw,go=
+  when: specification.alertmanager.alert_rules.PostgreSQL
+  notify: Reload Prometheus
+
+- name: Copy probe alerting rules
+  copy:
+    src: prometheus/rules/Probe.rules
+    dest: /etc/prometheus/rules/
+    validate: /usr/local/bin/promtool check rules %s
+    owner: prometheus
+    group: prometheus
+    mode: u=rw,go=
+  when: specification.alertmanager.alert_rules.Probe
+  notify: Reload Prometheus
+
+- name: Copy Prometheus alerting rules
+  copy:
+    src: prometheus/rules/Prometheus.rules
+    dest: /etc/prometheus/rules/
+    validate: /usr/local/bin/promtool check rules %s
+    owner: prometheus
+    group: prometheus
+    mode: u=rw,go=
+  when: specification.alertmanager.alert_rules.Prometheus
   notify: Reload Prometheus

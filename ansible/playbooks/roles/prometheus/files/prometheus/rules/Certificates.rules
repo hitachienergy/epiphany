@@ -1,0 +1,49 @@
+# Ansible managed
+groups:
+- name: Certificates.rules
+  rules:
+  - alert: X509ExporterReadErrors
+    annotations:
+      description:
+        "Over the last 15 minutes, this x509-certificate-exporter instance
+        has experienced errors reading certificate files or querying the Kubernetes
+        API. This could be caused by a misconfiguration if triggered when the exporter
+        starts. \n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+      summary: Increasing read errors for x509-certificate-exporter
+    expr: delta(x509_read_errors[15m]) > 0
+    for: 5m
+    labels:
+      severity: warning
+
+  - alert: CertificateExpiration in less than 30 days
+    annotations:
+      description: "Certificate for \"{{ $labels.subject_CN }}\" expires in less than 30 days
+        {{if $labels.secret_name }}in Kubernets secret \"{{ $labels.secret_namespace
+        }}/{{ $labels.secret_name }}\"{{else}}at location \"{{ $labels.filepath }}\"{{end}}\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+      summary: Certificate should be renewed
+    expr: ((x509_cert_not_after - time()) / 86400) <= 30 and ((x509_cert_not_after - time()) / 86400) > 15
+    for: 15m
+    labels:
+      severity: warning
+
+  - alert: CertificateExpiration in less than 15 days
+    annotations:
+      description: "Certificate for \"{{ $labels.subject_CN }}\" expires in less than 15 days
+        {{if $labels.secret_name }}in Kubernets secret \"{{ $labels.secret_namespace
+        }}/{{ $labels.secret_name }}\"{{else}}at location \"{{ $labels.filepath }}\"{{end}}\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+      summary: Certificate should be renewed
+    expr: ((x509_cert_not_after - time()) / 86400) <= 15 and ((x509_cert_not_after - time()) / 86400) > 5
+    for: 15m
+    labels:
+      severity: high
+
+  - alert: CertificateExpiration in less than 5 days ** CRITICAL **
+    annotations:
+      description: "** CRITICAL **  Certificate for \"{{ $labels.subject_CN }}\" is about to expire
+        {{if $labels.secret_name }}in Kubernets secret \"{{ $labels.secret_namespace
+        }}/{{ $labels.secret_name }}\"{{else}}at location \"{{ $labels.filepath }}\"{{end}}\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+      summary: Certificate is about to expire
+    expr: ((x509_cert_not_after - time()) / 86400) <= 5
+    for: 15m
+    labels:
+      severity: critical

@@ -1,0 +1,9 @@
+# Ansible managed
+groups:
+- name: DiskSpacePrediction
+  rules:
+  - alert: Disk will run out of space in less than 48h
+    labels:
+      severity: warning
+    expr: predict_linear(node_filesystem_free_bytes{job="node"}[8h], 48 * 3600) < 0
+    for: 5m

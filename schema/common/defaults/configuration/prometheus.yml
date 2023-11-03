@@ -26,12 +26,15 @@ specification:
   alertmanager:
     enable: false # To make Alertmanager working, you have to enable it and define receivers and routes
     alert_rules:
-      common: true
-      container: false
-      kafka: false
-      node: false
-      postgresql: false
-      prometheus: false
+      Certificates: true
+      Container: true
+      DiskSpacePrediction: true
+      Kafka: true
+      KafkaConsumerLag: true
+      Node: true
+      PostgreSQL: true
+      Probe: true
+      Prometheus: true
     # config: # Configuration for Alertmanager, it will be passed to Alertmanager service.
     #   # Full list of configuration fields https://prometheus.io/docs/alerting/configuration/
     #   global:

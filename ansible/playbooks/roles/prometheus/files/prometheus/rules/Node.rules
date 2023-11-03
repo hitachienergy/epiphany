@@ -1,20 +1,33 @@
+# Ansible managed
 groups:
-- name: node.rules
+- name: Node.rules
   rules:
-  - alert: Node is down.
-    labels:
-      severity: critical
-    expr: up == 0
-    for: 1m
-
-  - alert: OutOfMemory
-    expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100 < 10
+  - alert: OutOfMemory 10 percent
+    expr: (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100 < 10 and (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100 > 5
     for: 5m
     labels:
       severity: warning
     annotations:
       summary: "Out of memory (instance {{ $labels.instance }})"
       description: "Node memory is filling up (< 10% left)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  - alert: OutOfMemory 5 percent
+    expr: (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100 <= 5 and (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100 > 1
+    for: 5m
+    labels:
+      severity: high
+    annotations:
+      summary: "Out of memory (instance {{ $labels.instance }})"
+      description: "Node memory is filling up (< 5% left)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  - alert: OutOfMemory 1 percent ** CRITICAL **
+    expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100 <= 1
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Out of memory (instance {{ $labels.instance }})"
+      description: "** CRITICAL ** Node memory is filling up (< 1% left)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
 
   - alert: UnusualNetworkThroughputOut
     expr: sum by (instance) (irate(node_network_transmit_bytes_total[2m])) / 1024 / 1024 > 100
@@ -43,17 +56,35 @@ groups:
       summary: "Unusual disk write rate (instance {{ $labels.instance }})"
       description: "Disk is probably writing too much data (> 50 MB/s)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
 
-  - alert: OutOfDiskSpace
-    expr: (node_filesystem_free_bytes / node_filesystem_size_bytes * 100 ) < 10 and (node_filesystem_free_bytes / 1024 / 1024 / 1024 < 1.5)
+  - alert: OutOfDiskSpace less than 20 percent
+    expr: ((node_filesystem_free_bytes  / node_filesystem_size_bytes * 100 ) < 20  ) and ((node_filesystem_free_bytes  / node_filesystem_size_bytes * 100 ) > 10 )
     for: 5m
     labels:
       severity: warning
     annotations:
       summary: "Out of disk space (instance {{ $labels.instance }})"
+      description: "Disk is almost full (< 20% left)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  - alert: OutOfDiskSpace less than 10 percent
+    expr: ((node_filesystem_free_bytes  / node_filesystem_size_bytes * 100 ) <= 10) and ((node_filesystem_free_bytes  / node_filesystem_size_bytes * 100 ) > 5)
+    for: 5m
+    labels:
+      severity: high
+    annotations:
+      summary: "Out of disk space (instance {{ $labels.instance }})"
       description: "Disk is almost full (< 10% left)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
 
-  - alert: OutOfInodes
-    expr: node_filesystem_files_free / node_filesystem_files * 100 < 10
+  - alert: OutOfDiskSpace less than 5 percent ** CRITICAL **
+    expr: (node_filesystem_free_bytes  / node_filesystem_size_bytes * 100 ) <= 5
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Out of disk space (instance {{ $labels.instance }})"
+      description: "** CRITICAL ** Disk is almost full (< 5% left)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  - alert: OutOfInodes less than 10 percent
+    expr: ( node_filesystem_files_free/ node_filesystem_files * 100 ) < 10 and ( node_filesystem_files_free/ node_filesystem_files * 100 ) > 5
     for: 5m
     labels:
       severity: warning
@@ -79,14 +110,14 @@ groups:
       summary: "Unusual disk write latency (instance {{ $labels.instance }})"
       description: "Disk latency is growing (write operations > 100ms)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
 
-  - alert: SwapIsFillingUp
-    expr: (1 - (node_memory_SwapFree_bytes / node_memory_SwapTotal_bytes)) * 100 > 80
-    for: 5m
+  - alert: HighCpuLoad above 95 percent
+    expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle",instance=~"de-.*"}[5m])) * 100) >= 95
+    for: 15m
     labels:
-      severity: warning
+      severity: critical
     annotations:
-      summary: "Swap is filling up (instance {{ $labels.instance }})"
-      description: "Swap is filling up (>80%)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+      summary: "High CPU load (instance {{ $labels.instance }})"
+      description: "CPU load is > 95%\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
 
   - alert: SystemdServiceCrashed
     expr: node_systemd_unit_state{state="failed"} == 1
@@ -96,39 +127,3 @@ groups:
     annotations:
       summary: "SystemD service crashed (instance {{ $labels.instance }})"
       description: "SystemD service crashed\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
-
-  - alert: SlowProbe
-    expr: avg_over_time(probe_duration_seconds[1m]) > 1
-    for: 5m
-    labels:
-      severity: warning
-    annotations:
-      summary: "Slow probe (instance {{ $labels.instance }})"
-      description: "Blackbox probe took more than 1s to complete\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
-
-  - alert: HttpStatusCode
-    expr: probe_http_status_code <= 199 OR probe_http_status_code >= 400
-    for: 5m
-    labels:
-      severity: error
-    annotations:
-      summary: "HTTP Status Code (instance {{ $labels.instance }})"
-      description: "HTTP status code is not 200-399\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
-
-  - alert: HttpSlowRequests
-    expr: avg_over_time(probe_http_duration_seconds[1m]) > 1
-    for: 5m
-    labels:
-      severity: warning
-    annotations:
-      summary: "HTTP slow requests (instance {{ $labels.instance }})"
-      description: "HTTP request took more than 1s\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
-
-  - alert: SlowPing
-    expr: avg_over_time(probe_icmp_duration_seconds[1m]) > 1
-    for: 5m
-    labels:
-      severity: warning
-    annotations:
-      summary: "Slow ping (instance {{ $labels.instance }})"
-      description: "Blackbox ping took more than 1s\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
