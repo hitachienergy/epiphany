@@ -21,6 +21,8 @@ specification:
   evaluation_interval: "10s"
   remote_write: []
   remote_read: []
+  blackbox_exporter_targets:
+    - <INPUT_PROMETHEUS_BLACKBOX_TARGET>
   alertmanager:
     enable: false # To make Alertmanager working, you have to enable it and define receivers and routes
     alert_rules:

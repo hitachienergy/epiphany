@@ -5,5 +5,5 @@ name: default
 specification:
   web_config:
     basic_auth:
-      user: prometheus
+      username: prometheus
       password: <INPUT_BLACKBOX_EXPORTER_PASSWORD>

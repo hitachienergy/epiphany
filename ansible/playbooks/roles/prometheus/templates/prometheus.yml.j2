@@ -27,35 +27,35 @@ alerting:
   alertmanagers:
   - static_configs:
     - targets:
-      - '127.0.0.1:9093'
+      - '{{ ansible_default_ipv4.address }}:9093'
 {% endif %}
 
 scrape_configs:
-{% if is_alertmanager_enabled == True %}
+  {% if is_alertmanager_enabled == True %}
   - job_name: alertmanager
     metrics_path: "{{ specification.metrics_path }}"
     static_configs:
-      - targets: ["{{ ansible_fqdn }}:9093"]
+      - targets: ['{{ ansible_default_ipv4.address }}:9093']
 
-{% endif %}
+  {% endif %}
   - job_name: prometheus
     metrics_path: "{{ specification.metrics_path }}"
     static_configs:
-      - targets: ["{{ ansible_fqdn }}:9090"]
+      - targets: ['{{ ansible_default_ipv4.address }}:9090']
 
   - job_name: file_service_discovery
     file_sd_configs:
       - files:
           - "{{ specification.config_directory }}/file_sd/*.yml"
 
-{% if k8s_as_cloud_service is defined and k8s_as_cloud_service %}
-{#
-Refs:
-- https://github.com/prometheus/prometheus/blob/release-2.31/documentation/examples/prometheus-kubernetes.yml
-- https://prometheus.io/docs/prometheus/2.37/configuration/configuration/#kubernetes_sd_config
-- https://github.com/techiescamp/kubernetes-prometheus/blob/master/config-map.yaml
-- https://devopscube.com/node-exporter-kubernetes/
-#}
+  {% if k8s_as_cloud_service is defined and k8s_as_cloud_service %}
+  {#
+  Refs:
+  - https://github.com/prometheus/prometheus/blob/release-2.31/documentation/examples/prometheus-kubernetes.yml
+  - https://prometheus.io/docs/prometheus/2.37/configuration/configuration/#kubernetes_sd_config
+  - https://github.com/techiescamp/kubernetes-prometheus/blob/master/config-map.yaml
+  - https://devopscube.com/node-exporter-kubernetes/
+  #}
 
   # Scrape config for API servers
 
@@ -213,9 +213,39 @@ Refs:
       - source_labels: [__meta_kubernetes_pod_name]
         action: replace
         target_label: kubernetes_pod_name
+  {% endif %}
 
-{#
-TODO: Install and configure Blackbox Exporter to probe services and ingresses,
-      see: https://www.infracloud.io/blogs/monitoring-endpoints-kubernetes-blackbox-exporter/
-#}
-{% endif %}
+  # Scrape config for Blackbox exporter
+
+  - job_name: blackbox
+    metrics_path: /probe
+    basic_auth:
+      username: '{{ blackbox_exporter_vars.specification.web_config.basic_auth.username }}'
+      password: '{{ blackbox_exporter_vars.specification.web_config.basic_auth.password }}'
+    params:
+      module: [http_2xx_tls_skip_verify]
+    static_configs:
+    {% if specification.blackbox_exporter_targets %}
+      - targets:
+      {% for target in specification.blackbox_exporter_targets %}
+        - {{ target }}
+      {% endfor %}
+    {% else %}
+      - targets: []
+    {% endif %}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: '{{ ansible_default_ipv4.address }}:9115'
+
+  # Scrape config for Blackbox exporter's metrics
+
+  - job_name: blackbox_exporter
+    basic_auth:
+      username: '{{ blackbox_exporter_vars.specification.web_config.basic_auth.username }}'
+      password: '{{ blackbox_exporter_vars.specification.web_config.basic_auth.password }}'
+    static_configs:
+      - targets: ['{{ ansible_default_ipv4.address }}:9115']

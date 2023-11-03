@@ -9,7 +9,7 @@ properties:
       basic_auth:
         type: object
         properties:
-          user:
+          username:
             type: string
           password:
             type: string

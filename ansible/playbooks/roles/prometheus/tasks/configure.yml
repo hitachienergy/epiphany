@@ -3,10 +3,15 @@
   set_fact:
     is_alertmanager_enabled: "{{ specification.alertmanager.enable | bool and (specification.alertmanager.config.receivers | length>0 ) }}"
 
+- name: Include Blackbox exporter configuration
+  include_vars:
+    file: roles/blackbox_exporter/vars/main.yml
+    name: blackbox_exporter_vars
+
 - name: Configure prometheus
   template:
     src: "prometheus.yml.j2"
-    dest: "{{ specification.config_directory  }}/prometheus.yml"
+    dest: "{{ specification.config_directory }}/prometheus.yml"
     force: true
     owner: prometheus
     group: prometheus
