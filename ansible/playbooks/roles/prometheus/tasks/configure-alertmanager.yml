@@ -1,11 +1,20 @@
 ---
+- name: Copy opsgenie.tmpl
+  copy:
+    src: opsgenie.tmpl
+    dest: "{{ specification.config_directory }}"
+    owner: root
+    group: prometheus
+    mode: u=rw,g=r,o=
+  notify:
+    - Restart Alertmanager
+
 - name: Configure Alertmanager
   template:
     src: "alertmanager.yml.j2"
     dest: "{{ specification.config_directory }}/alertmanager.yml"
-    force: true
-    owner: prometheus
+    owner: root
     group: prometheus
-    mode: u=rx,go=r
+    mode: u=rw,g=r,o=
   notify:
     - Restart Alertmanager

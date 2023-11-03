@@ -1,7 +1,7 @@
 ---
 - name: Check if Alertmanager is enabled
   set_fact:
-    is_alertmanager_enabled: "{{ specification.alertmanager.enable | bool and (specification.alertmanager.config.receivers | length>0 ) }}"
+    is_alertmanager_enabled: "{{ specification.alertmanager.enable }}"
 
 - name: Include Blackbox exporter configuration
   include_vars:

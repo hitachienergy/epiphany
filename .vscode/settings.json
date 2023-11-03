@@ -32,7 +32,7 @@
         // https://stackoverflow.com/questions/71765669/dont-use-json-schema-when-edition-yaml-file-in-visual-studio-code
         "https://json.schemastore.org/yamllint.json": [
             "epiphany-cluster.yml",
-            "**/schema/common/defaults/configuration/*.yml"
+            "**/schema/common/**/*.yml"
         ],
         "https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json": [
             "**/ansible/playbooks/roles/**/tasks/*.yml"

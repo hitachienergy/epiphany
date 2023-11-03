@@ -1,0 +1,58 @@
+{{ define "opsgenie.message" }}{{ .GroupLabels.cluster }} {{ .GroupLabels.alertname }}{{ end }}
+
+{{ define "opsgenie.description" }}
+{{ range .Alerts.Firing }}
+{{ range .Labels.SortedPairs }}{{ if eq .Name "subName" }}SubscriptionName: {{ .Value }}{{ end }}{{ end }}
+{{ range .Labels.SortedPairs }}{{ if eq .Name "subId" }}SubscriptionId: {{ .Value }}{{ end }}{{ end }}
+{{ range .Labels.SortedPairs }}{{ if eq .Name "cluster" }}ResourceGroup: {{ .Value }}{{ end }}{{ end }}
+{{ range .Labels.SortedPairs }}{{ if eq .Name "instance" }}Node: {{ .Value }}{{ end }}{{ end }}
+{{ range .Labels.SortedPairs }}{{ if eq .Name "job" }}Target: {{ .Value }}{{ end }}{{ end }}
+{{ range .Labels.SortedPairs }}{{ if eq .Name "consumergroup" }}ConsumerGroup: {{ .Value }}
+{{ end }}{{ end }}{{ range .Labels.SortedPairs }}{{ if eq .Name "container" }}Container: {{ .Value }}
+{{ end }}{{ end }}{{ range .Labels.SortedPairs }}{{ if eq .Name "topic" }}Topic: {{ .Value }}
+{{ end }}{{ end }}{{ range .Labels.SortedPairs }}{{ if eq .Name "pod" }}Pod: {{ .Value }}
+{{ end }}{{ end }}{{ range .Labels.SortedPairs }}{{ if eq .Name "namespace" }}Namespace: {{ .Value }}
+{{ end }}{{ end }}{{ range .Labels.SortedPairs }}{{ if eq .Name "mountpoint" }}Mountpoint: {{ .Value }}{{ end }}{{ end }}
+{{ range .Annotations.SortedPairs }}{{ if eq .Name "description" }}Detailed Description: {{ .Value }}{{ end }}{{ end }}
+{{ end }}
+{{ end }}
+
+{{ define "opsgenie.priority" }}
+{{- range .Alerts -}}
+{{- if eq .GroupLabels.severity "critical" -}}P1
+{{- else if eq .GroupLabels.severity "high" -}}P2
+{{- else if eq .GroupLabels.severity "moderate" -}}P3
+{{- else if eq .GroupLabels.severity "low" -}}P4
+{{- else if eq .GroupLabels.severity "informational" -}}P5
+{{- else -}}P5
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{ define "opsgenie.msgkeywithNode" }}{{ range .Alerts.Firing }}
+{{- range .Labels.SortedPairs -}}{{ if eq .Name "cluster" }}{{ .Value }}{{ end }}{{ end }}
+{{- range .Labels.SortedPairs -}}{{ if eq .Name "instance" }}{{ .Value }}{{ end }}{{ end }}
+{{- range .Labels.SortedPairs -}}{{ if eq .Name "job" }}{{ .Value }}{{ end }}{{ end }}
+{{- range .Labels.SortedPairs -}}{{ if eq .Name "consumergroup" }}{{ .Value }}{{ end }}{{ end }}
+{{- range .Labels.SortedPairs -}}{{ if eq .Name "container" }}{{ .Value }}{{ end }}{{ end }}
+{{- range .Labels.SortedPairs -}}{{ if eq .Name "topic" }}{{ .Value }}{{ end }}{{ end }}
+{{- range .Labels.SortedPairs -}}{{ if eq .Name "pod" }}{{ .Value }}{{ end }}{{ end }}
+{{- range .Labels.SortedPairs -}}{{ if eq .Name "namespace" }}{{ .Value }}{{ end }}{{ end }}
+{{- range .Labels.SortedPairs -}}{{ if eq .Name "mountpoint" }}{{ .Value }}{{ end }}{{ end }}
+{{- end -}}
+{{- end -}}
+
+{{ define "opsgenie.msgkeywithoutNode" }}{{ range .Alerts.Firing }}
+{{- range .Labels.SortedPairs -}}{{ if eq .Name "cluster" }}{{ .Value }}{{ end }}{{ end }}
+{{- range .Labels.SortedPairs -}}{{ if eq .Name "job" }}{{ .Value }}{{ end }}{{ end }}
+{{- range .Labels.SortedPairs -}}{{ if eq .Name "consumergroup" }}{{ .Value }}{{ end }}{{ end }}
+{{- range .Labels.SortedPairs -}}{{ if eq .Name "container" }}{{ .Value }}{{ end }}{{ end }}
+{{- range .Labels.SortedPairs -}}{{ if eq .Name "topic" }}{{ .Value }}{{ end }}{{ end }}
+{{- range .Labels.SortedPairs -}}{{ if eq .Name "pod" }}{{ .Value }}{{ end }}{{ end }}
+{{- range .Labels.SortedPairs -}}{{ if eq .Name "namespace" }}{{ .Value }}{{ end }}{{ end }}
+{{- range .Labels.SortedPairs -}}{{ if eq .Name "mountpoint" }}{{ .Value }}{{ end }}{{ end }}
+{{- end -}}
+{{- end -}}
+
+{{ define "opsgenie.source" }}Prometheus{{ end }}
+{{ define "opsgenie.reference" }}Nostradamus AI{{ end }}

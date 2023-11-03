@@ -12,6 +12,7 @@
 - Scrape Alertmanager's metrics
 - Blackbox exporter
 - Grafana Dashboard: Certificates Expiration (X509 Certificate Exporter)
+- Integration with Opsgenie
 
 ### Updated
 
