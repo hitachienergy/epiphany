@@ -1,4 +1,10 @@
 ---
+- name: Apply rolebinding to K8s for Prometheus
+  become: false
+  command: "kubectl apply -f {{ role_path }}/files/k8s-rolebinding.yml"
+  run_once: true
+  delegate_to: localhost
+
 - name: Copy kubeconfig to Prometheus host
   copy:
     src: "{{ kubeconfig.local }}"
@@ -7,27 +13,25 @@
     group: prometheus
     mode: u=r,go=
 
-- name: Load kubeconfig
-  include_vars:
-    file: "{{ kubeconfig.local }}"
-    name: kubeconfig_content
-  no_log: True
+- name: Get Kubernetes bearer token for Prometheus
+  become: false
+  shell: |-
+    kubectl get $(kubectl get secrets -n kube-system -o name | grep prometheus) \
+      -n kube-system \
+      -o jsonpath='{.data.token}'
+  register: kube_token
+  delegate_to: localhost
+  run_once: true
 
 - name: Create K8s token file
   copy:
-    content: "{{ kubeconfig_content.users[0].user.token }}"
+    content: "{{ kube_token.stdout | b64decode }}"
     dest: "{{ specification.config_directory }}/k8s-token"
     owner: prometheus
     group: prometheus
     mode: u=r,go=
-  no_log: True
+  no_log: true
 
-- name: Clear kubeconfig content in memory
+- name: Clear kube_token in memory
   set_fact:
-    kubeconfig_content: null
-
-- name: Apply rolebinding to K8s for Prometheus
-  become: false
-  command: "kubectl apply -f {{ role_path }}/files/k8s-rolebinding.yml"
-  run_once: true
-  delegate_to: localhost
+    kube_token: null

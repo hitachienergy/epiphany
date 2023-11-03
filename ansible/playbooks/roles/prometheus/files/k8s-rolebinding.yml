@@ -7,6 +7,15 @@ metadata:
     kubernetes.io/cluster-service: "true"
     addonmanager.kubernetes.io/mode: Reconcile
 ---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: prometheus
+  namespace: kube-system
+  annotations:
+    kubernetes.io/service-account.name: prometheus
+type: kubernetes.io/service-account-token
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
