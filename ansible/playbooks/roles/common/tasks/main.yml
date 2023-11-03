@@ -91,6 +91,30 @@
     owner: root
     group: root
 
+- name: Customize CoreDNS for AKS
+  when: k8s_as_cloud_service
+  run_once: true
+  delegate_to: localhost
+  become: false
+  environment:
+    KUBECONFIG: "{{ kubeconfig.local }}"
+  block:
+
+  - name: Render Epiphany hosts template
+    template:
+      src: coredns-epi.yml.j2
+      dest: "/tmp/coredns-epi.yml"
+      mode: u=rw,go=r
+
+  - name: Apply custom CoreDNS configmap
+    become: false
+    command: |
+      kubectl apply -f /tmp/coredns-epi.yml
+
+  - name: Restart CoreDNS
+    command: |
+      kubectl -n kube-system rollout restart deployment coredns
+
 - include_tasks: epiuser.yml
   tags:
     - epiuser
