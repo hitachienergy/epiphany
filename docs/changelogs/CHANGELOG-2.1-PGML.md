@@ -11,6 +11,7 @@
 - `use_device_code` option for `az login`
 - Scrape Alertmanager's metrics
 - Blackbox exporter
+- Grafana Dashboard: Certificates Expiration (X509 Certificate Exporter)
 
 ### Updated
 

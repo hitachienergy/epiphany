@@ -53,6 +53,14 @@ specification:
 
   # Get dashboards from https://grafana.com/dashboards. Only for online mode
   grafana_online_dashboards:
+    ## Certificate Exporter
+
+    # Certificates Expiration (X509 Certificate Exporter)
+    # https://grafana.com/grafana/dashboards/13922-certificates-expiration-x509-certificate-exporter/
+    - dashboard_id: 13922
+      revision_id: 3
+      datasource: Prometheus
+
     ## Kafka
 
     # Kafka Exporter Overview
