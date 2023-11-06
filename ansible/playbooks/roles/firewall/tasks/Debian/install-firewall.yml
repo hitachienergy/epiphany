@@ -14,6 +14,10 @@
     name: ufw
     state: absent
     purge: true
+  register: result
+  until: result is succeeded
+  retries: "{{ specification.retries }}"
+  delay: "{{ specification.delay }}"
 
 - name: Install firewalld package
   block:
@@ -22,6 +26,9 @@
         name: firewalld
         state: present
       register: install_firewalld
+      until: install_firewalld is succeeded
+      retries: "{{ specification.retries }}"
+      delay: "{{ specification.delay }}"
 
     - name: Stop and mask service for consistency with RHEL
       block:

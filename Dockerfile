@@ -48,6 +48,7 @@ RUN : INSTALL APT REQUIREMENTS \
     && aws --version \
 \
     && : INSTALL GEM REQUIREMENTS \
+    && gem install net-ssh -v 6.1.0 \
     && gem install \
         bcrypt_pbkdf ed25519 rake rspec_junit_formatter serverspec \
 \

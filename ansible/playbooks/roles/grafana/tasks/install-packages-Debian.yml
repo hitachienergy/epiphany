@@ -3,3 +3,7 @@
   apt:
     name: "{{ _package_name }}"
     state: present
+  register: result
+  until: result is succeeded
+  retries: "{{ specification.retries }}"
+  delay: "{{ specification.delay }}"
