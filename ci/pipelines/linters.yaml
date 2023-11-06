@@ -68,7 +68,7 @@ jobs:
           targetType: inline
           script: |
             # epicli deps: click
-            python3 -m pip install --upgrade pylint pylint-fail-under pylint-junit \
+            python3 -m pip install --upgrade pylint==2.* pylint-fail-under pylint-junit \
                                              click
 
       - task: Bash@3
