@@ -1,7 +1,20 @@
 <!-- markdownlint-disable-file no-duplicate-header -->
 # Changelog 2.0
 
-## [2.0.8] 2023-xx-xx
+## [2.0.10] YYYY-MM-DD
+
+### Added
+
+- [#3410](https://github.com/hitachienergy/epiphany/issues/3410) - AKS and Epiphany integration
+
+## [2.0.9] 2023-10-19
+
+### Updated
+
+- [#3302](https://github.com/hitachienergy/epiphany/issues/3302) - AlmaLinux OS 8.4 AMIs no longer available
+- [#3399](https://github.com/hitachienergy/epiphany/issues/3399) - Update cloud OS images to the latest
+
+## [2.0.8] 2023-08-24
 
 - [#3177](https://github.com/hitachienergy/epiphany/issues/3177) - Upgrade AzureCLI to 2.37+ to support Microsoft Graph migration
 - [#3383](https://github.com/hitachienergy/epiphany/issues/3383) - Update Python dependencies to include the latest patch versions
