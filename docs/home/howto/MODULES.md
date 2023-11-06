@@ -211,6 +211,10 @@ AWS:
                   value: 10
                   comment: maximum number of simultaneously running WAL sender processes
                   when: replication
+                - name: max_replication_slots
+                  value: 10
+                  comment: maximum number of replication slots that a server can support
+                  when: replication
                 - name: wal_keep_segments
                   value: 34
                   comment: number of WAL files held for standby servers

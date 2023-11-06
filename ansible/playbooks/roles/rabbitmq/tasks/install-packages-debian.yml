@@ -24,3 +24,7 @@
       - rabbitmq-server={{ versions.debian.rabbitmq }}
     update_cache: true
     state: present
+  register: result
+  until: result is succeeded
+  retries: "{{ specification.retries }}"
+  delay: "{{ specification.delay }}"

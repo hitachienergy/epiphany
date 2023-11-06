@@ -6,3 +6,7 @@
       - containerd.io={{ containerd_defaults.containerd_version }}-*  # provides "runc"
     state: present
     allow_downgrade: true
+  register: result
+  until: result is succeeded
+  retries: "{{ specification.retries }}"
+  delay: "{{ specification.delay }}"

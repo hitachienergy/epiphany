@@ -38,7 +38,7 @@ specification:
       # - '--spi-events-listener-jboss-logging-success-level=info'  # enable successful events in logs
 
     extraEnv: |-
-      {%- raw -%}
+      {%- raw %}
       - name: KEYCLOAK_ADMIN
         valueFrom:
           secretKeyRef:
@@ -63,7 +63,7 @@ specification:
 
     # Pod affinity
     affinity: |-
-      {%- raw -%}
+      {%- raw %}
       podAntiAffinity:
         preferredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
@@ -82,7 +82,7 @@ specification:
     # Probes configuration based on https://github.com/keycloak/keycloak/blob/19.0/operator/src/main/java/org/keycloak/operator/controllers/KeycloakDeployment.java
 
     livenessProbe: |-
-      {%- raw -%}
+      {%- raw %}
       exec:
         command:
           - curl
@@ -97,7 +97,7 @@ specification:
       failureThreshold: 15
 
     readinessProbe: |-
-      {%- raw -%}
+      {%- raw %}
       exec:
         command:
           - curl
@@ -112,7 +112,7 @@ specification:
       failureThreshold: 15
 
     startupProbe: |-
-      {%- raw -%}
+      {%- raw %}
       exec:
         command:
           - curl
@@ -156,7 +156,7 @@ specification:
         type: kubernetes.io/tls
         stringData:
           ca.crt: |-
-            {%- raw -%}
+            {%- raw %}
             {{- $ca := genCA "epiphany-keycloak-ca" 3650 }}
             {{- $_ := set $.Values "_shared" dict }}
             {{- $_ := set $.Values._shared "ca" $ca }}
@@ -168,7 +168,7 @@ specification:
             {{- $caCert -}}
             {%- endraw %}
           tls.crt: |-
-            {%- raw -%}
+            {%- raw %}
             {{- $altNames := list "keycloak-0.keycloak-headless.keycloak.svc.cluster.local" "keycloak-0.keycloak-headless.keycloak" "keycloak-0.keycloak-headless" "keycloak-0" "keycloak-1.keycloak-headless.keycloak.svc.cluster.local" "keycloak-1.keycloak-headless.keycloak" "keycloak-1.keycloak-headless" "keycloak-1" "keycloak-headless.keycloak.svc.cluster.local" "keycloak-headless.keycloak" "keycloak-headless" "keycloak-http.keycloak.svc.cluster.local" "keycloak-http.keycloak" "keycloak-http" }}
             {{- $crt := genSignedCert "keycloak-http.keycloak.svc.cluster.local" nil $altNames 3650 $.Values._shared.ca }}
             {{- $_ := set $.Values._shared "crt" $crt }}
@@ -180,7 +180,7 @@ specification:
             {{- $tlsCert -}}
             {%- endraw %}
           tls.key: |-
-            {%- raw -%}
+            {%- raw %}
             {{- $tlsKey := $.Values._shared.crt.Key }}
             {{- $secret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-%s" (include "keycloak.fullname" .) "tls-certs")) }}
             {{- if $secret }}

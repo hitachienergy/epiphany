@@ -58,6 +58,10 @@
         - name: Install all updates
           apt:
             upgrade: safe  # equivalent of 'apt upgrade'
+          register: result
+          until: result is succeeded
+          retries: "{{ specification.retries }}"
+          delay: "{{ specification.delay }}"
 
         # 4) Reboot the system (to use the latest kernel)
 
@@ -85,6 +89,10 @@
           apt:
             autoremove: true
             purge: true
+          register: result
+          until: result is succeeded
+          retries: "{{ specification.retries }}"
+          delay: "{{ specification.delay }}"
 
         # 6) Upgrade OS release
 
