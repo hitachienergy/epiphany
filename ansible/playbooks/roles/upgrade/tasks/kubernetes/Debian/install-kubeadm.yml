@@ -38,8 +38,8 @@
           {{ packages_to_install.items() | map('join', '=') | list }}
       register: result
       until: result is succeeded
-      retries: "{{ specification.retries }}"
-      delay: "{{ specification.delay }}"
+      retries: "{{ retries }}"
+      delay: "{{ delay }}"
 
     - name: K8s/install | Include hold packages task
       include_tasks: hold-packages.yml
