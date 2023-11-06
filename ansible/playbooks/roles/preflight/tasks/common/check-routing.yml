@@ -34,7 +34,6 @@
     file: roles/common/vars/main.yml
     name: common_vars
 
-
 - name: Validate if ansible_default_ipv4.address matches address from inventory
   when:
     - common_vars.provider == "any"
