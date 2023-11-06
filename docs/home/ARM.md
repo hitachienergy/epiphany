@@ -186,7 +186,7 @@ provider: any
 specification:
   extensions:
     pgaudit:
-      enabled: yes
+      enabled: false
 title: Postgresql
 ---        
 kind: configuration/rabbitmq
@@ -238,7 +238,7 @@ specification:
 ### ```AWS``` provider
 
 - Important is to specify the correct ```arm64``` machine type for component which can be found [here](https://aws.amazon.com/ec2/instance-types/a1/).
-- Important is to specify the correct ```arm64``` OS image which currently is only ```AlmaLinux OS 8.4.20211015 aarch64``` or newer.
+- Important is to specify the correct ```arm64``` OS image which currently is only ```AlmaLinux OS 8.6.20220901 aarch64``` or newer.
 
 ```yaml
 ---
@@ -315,7 +315,7 @@ title: "Virtual Machine Infra"
 provider: aws
 name: default
 specification:
-  os_full_name: AlmaLinux OS 8.4.20211015 aarch64
+  os_full_name: AlmaLinux OS 8.6.20220901 aarch64
 ---
 kind: infrastructure/virtual-machine
 name: kafka-machine-arm
@@ -393,7 +393,7 @@ provider: aws
 specification:
   extensions:
     pgaudit:
-      enabled: yes
+      enabled: false
     pgbouncer:
       enabled: no
     replication:

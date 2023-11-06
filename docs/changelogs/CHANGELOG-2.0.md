@@ -16,6 +16,8 @@
 
 ## [2.0.8] 2023-08-24
 
+### Updated
+
 - [#3177](https://github.com/hitachienergy/epiphany/issues/3177) - Upgrade AzureCLI to 2.37+ to support Microsoft Graph migration
 - [#3383](https://github.com/hitachienergy/epiphany/issues/3383) - Update Python dependencies to include the latest patch versions
 

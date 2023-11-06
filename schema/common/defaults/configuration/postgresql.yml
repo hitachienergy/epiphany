@@ -72,7 +72,7 @@ specification:
                 when: replication
   extensions:
     pgaudit:
-      enabled: false
+      enabled: false # DO NOT enable for aarch64 installations. More info: https://github.com/hitachienergy/epiphany/issues/3302
       shared_preload_libraries:
         - pgaudit
       config_file_parameters:
