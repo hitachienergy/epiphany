@@ -3,6 +3,7 @@ kind: configuration/postgresql
 title: PostgreSQL
 name: default
 specification:
+  custom_postgresql_config: ''  # leave it empty to use postgresql-epiphany.conf
   config_file:
     parameter_groups:
       - name: CONNECTIONS AND AUTHENTICATION
