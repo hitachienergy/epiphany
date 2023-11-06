@@ -7,7 +7,7 @@ Keep data structure in sync with Helm chart's values.
 ref: https://github.com/codecentric/helm-charts/blob/keycloakx-1.6.1/charts/keycloakx/values.yaml
 -#}
 
-{% if specification.image_registry.use_local %}
+{% if specification.image_registry.use_local and not k8s_as_cloud_service %}
 image:
   repository: {{ image_registry_address }}/{{ _chart_values.image.repository }}
 dbchecker:
