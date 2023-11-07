@@ -54,6 +54,7 @@ RUN : INSTALL HELM BINARY \
  && aws --version
 
 RUN : INSTALL GEM REQUIREMENTS \
+ && gem install net-ssh -v 6.1.0 \
  && gem install \
     bcrypt_pbkdf ed25519 rake rspec_junit_formatter rubocop rubocop-junit_formatter serverspec solargraph
 

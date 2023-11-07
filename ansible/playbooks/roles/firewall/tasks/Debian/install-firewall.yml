@@ -16,8 +16,8 @@
     purge: true
   register: result
   until: result is succeeded
-  retries: "{{ specification.retries }}"
-  delay: "{{ specification.delay }}"
+  retries: "{{ retries }}"
+  delay: "{{ delay }}"
 
 - name: Install firewalld package
   block:
@@ -27,8 +27,8 @@
         state: present
       register: install_firewalld
       until: install_firewalld is succeeded
-      retries: "{{ specification.retries }}"
-      delay: "{{ specification.delay }}"
+      retries: "{{ retries }}"
+      delay: "{{ delay }}"
 
     - name: Stop and mask service for consistency with RHEL
       block:

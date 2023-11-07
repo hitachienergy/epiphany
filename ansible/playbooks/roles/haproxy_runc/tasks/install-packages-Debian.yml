@@ -8,5 +8,5 @@
     allow_downgrade: true
   register: result
   until: result is succeeded
-  retries: "{{ specification.retries }}"
-  delay: "{{ specification.delay }}"
+  retries: "{{ retries }}"
+  delay: "{{ delay }}"
