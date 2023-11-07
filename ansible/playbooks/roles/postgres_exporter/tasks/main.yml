@@ -10,8 +10,8 @@
   when: ansible_os_family == 'Debian'
   register: result
   until: result is succeeded
-  retries: "{{ specification.retries }}"
-  delay: "{{ specification.delay }}"
+  retries: "{{ retries }}"
+  delay: "{{ delay }}"
 
 - name: Create postgres_exporter system group
   group:
