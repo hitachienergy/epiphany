@@ -7,6 +7,7 @@ ARG USER_GID=$USER_UID
 ARG AWS_CLI_VERSION=2.0.30
 ARG HELM_VERSION=3.3.1
 ARG KUBECTL_VERSION=1.22.4
+ARG KUBELOGIN_VERSION=0.0.33
 ARG TERRAFORM_VERSION=1.1.3
 
 ENV EPICLI_DOCKER_SHARED_DIR=/shared
@@ -28,6 +29,11 @@ RUN : INSTALL APT REQUIREMENTS \
     && chmod +x ./kubectl \
     && mv ./kubectl /usr/local/bin/kubectl \
     && kubectl version --client \
+    && : INSTALL KUBELOGIN BINARY \
+    && curl -fsSLO https://github.com/Azure/kubelogin/releases/download/v${KUBELOGIN_VERSION}/kubelogin-linux-amd64.zip \
+    && unzip -j kubelogin-linux-amd64.zip -d /usr/local/bin \
+    && rm kubelogin-linux-amd64.zip \
+    && kubelogin --version \
     && : INSTALL TERRAFORM BINARY \
     && curl -fsSLO https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
     && unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /usr/local/bin \

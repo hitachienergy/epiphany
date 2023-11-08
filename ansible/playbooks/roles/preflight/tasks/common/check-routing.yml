@@ -37,7 +37,7 @@
 - name: Validate if ansible_default_ipv4.address matches address from inventory
   when:
     - common_vars.provider == "any"
-    - common_vars.specification.cloud is undefined
+    - not k8s_as_cloud_service
   assert:
     that: ansible_default_ipv4.address == ansible_host
     fail_msg: >-
