@@ -48,7 +48,6 @@ TEST_CLUSTER_MODEL = {
         'cloud':
         {
             'subscription_name': 'Test-Dev',
-            'vnet_address_pool': '10.1.0.0/20',
             'use_public_ips': False,
             'use_service_principal': False,
             'region': 'West Europe',

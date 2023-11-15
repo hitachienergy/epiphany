@@ -80,7 +80,12 @@ def CLUSTER_MODEL(provider: str) -> ObjDict:
             'cloud': {
                 'k8s_as_cloud_service': False,
                 'subscription_name': 'Subscription Name',
-                'vnet_address_pool': '10.1.0.0/20',
+                'vnet': {
+                    'use_managed': True,
+                    'managed': {
+                        'address_pool': '10.1.0.0/20'
+                    }
+                },
                 'use_public_ips': True,
                 'use_service_principal': False,
                 'region': 'West Europe',
@@ -98,7 +103,7 @@ def CLUSTER_MODEL(provider: str) -> ObjDict:
                     'count': 5,
                     'machine': 'service-machine',
                     'configuration': 'default',
-                    'subnets': [{'address_pool': '10.1.8.0/24'}],
+                    'subnet': {'address_pool': '10.1.8.0/24'},
                     'machines': ['service-0',
                                  'service-1',
                                  'service-2',

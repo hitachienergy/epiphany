@@ -45,14 +45,26 @@ properties:
         examples:
         - subsciptionname
         pattern: "^(.*)$"
-      vnet_address_pool:
-        "$id": "#/properties/specification/properties/cloud/properties/vnet_address_pool"
-        type: string
-        title: The Vnet_address_pool Schema
-        default: ''
-        examples:
-        - 10.1.0.0/20
-        pattern: "^(.*)$"
+      vnet:
+        type: object
+        properties:
+          use_managed:
+            type: boolean
+          unmanaged:
+            type: object
+            properties:
+              name:
+                type: string
+              resource_group_name:
+                type: string
+          managed:
+            type: object
+            properties:
+              address_pool:
+                type: string
+                examples:
+                - 10.1.0.0/20
+                pattern: "^(.*)$"
       use_public_ips:
         "$id": "#/properties/specification/properties/cloud/properties/use_public_ips"
         type: boolean

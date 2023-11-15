@@ -9,7 +9,7 @@
 #####################################################
 # {{ specification.name }}
 #####################################################
-
+{% if specification.use_managed %}
 resource "azurerm_subnet" "{{ specification.name }}" {
   name                 = "{{ specification.name }}"
   address_prefixes     = ["{{ specification.address_prefix }}"]
@@ -17,3 +17,10 @@ resource "azurerm_subnet" "{{ specification.name }}" {
   virtual_network_name = azurerm_virtual_network.vnet.name
   service_endpoints    = [{% if specification.service_endpoints %}"{{ specification.service_endpoints | join('", "')}}"{% endif %}]
 }
+{% else %}
+data "azurerm_subnet" "{{ specification.name }}" {
+  name                 = "{{ specification.name }}"
+  virtual_network_name = data.azurerm_virtual_network.vnet.name
+  resource_group_name  = data.azurerm_resource_group.rg.name
+}
+{% endif %}

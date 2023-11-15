@@ -13,6 +13,7 @@ specification:
   availability_set_name: SET_BY_AUTOMATION  # Please don't change this default value, keep it "SET_BY_AUTOMATION"
   use_network_security_groups: SET_BY_AUTOMATION
   security_group_association_name: SET_BY_AUTOMATION
+  use_managed_resource_group: SET_BY_AUTOMATION
   tags: []
   os_type: linux
   size: Standard_DS1_v2

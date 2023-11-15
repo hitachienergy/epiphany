@@ -66,11 +66,7 @@ class InfrastructureBuilder(Step):
             # Set property that controls cloud-init.
             vm_config.specification['use_cloud_init_custom_data'] = cloud_init_custom_data.specification.enabled
 
-            # For now only one subnet per component.
-            if (len(component_value.subnets) > 1):
-                self.logger.warning('On Azure only one subnet per component is supported for now. Taking first and ignoring others.')
-
-            subnet_definition = component_value.subnets[0]
+            subnet_definition = component_value.subnet
             subnet = select_first(infrastructure, lambda item: item.kind == 'infrastructure/subnet' and
                                   item.specification.address_prefix == subnet_definition['address_pool'])
 
@@ -149,28 +145,38 @@ class InfrastructureBuilder(Step):
 
     def get_resource_group(self):
         resource_group = self.get_config_or_default(self.docs, 'infrastructure/resource-group')
-        resource_group.specification.name = self.resource_group_name
+        resource_group.specification.use_managed = self.cluster_model.specification.cloud.vnet.use_managed
+        if resource_group.specification.use_managed is True:
+            resource_group.specification.name = self.resource_group_name
+        else:
+            resource_group.specification.name = self.cluster_model.specification.cloud.vnet.unmanaged.resource_group_name
         resource_group.specification.region = self.cluster_model.specification.cloud.region
         return resource_group
 
     def get_virtual_network(self):
         vnet = self.get_config_or_default(self.docs, 'infrastructure/vnet')
-        vnet.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'vnet')
-        vnet.specification.address_space = self.cluster_model.specification.cloud.vnet_address_pool
+        if self.cluster_model.specification.cloud.vnet.use_managed is True:
+            vnet.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'vnet')
+        else:
+            vnet.specification.name = self.cluster_model.specification.cloud.vnet.unmanaged.name
+        vnet.specification.address_space = self.cluster_model.specification.cloud.vnet.managed.address_pool
+        vnet.specification.use_managed = self.cluster_model.specification.cloud.vnet.use_managed
         return vnet
 
     def get_network_security_group(self, component_key, security_rules):
         security_group = self.get_config_or_default(self.docs, 'infrastructure/network-security-group')
         security_group.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'nsg', component_key)
         security_group.specification.rules = security_rules
+        security_group.specification.use_managed_resource_group = self.cluster_model.specification.cloud.vnet.use_managed
         return security_group
 
     def get_subnet(self, subnet_definition, component_key):
         subnet = self.get_config_or_default(self.docs, 'infrastructure/subnet')
-        subnet.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'snet', component_key)
+        subnet.specification.name = f'{component_key}-snet'
         subnet.specification.address_prefix = subnet_definition['address_pool']
         subnet.specification.cluster_name = self.cluster_name
         subnet.specification.service_endpoints = subnet_definition['service_endpoints'] if 'service_endpoints' in subnet_definition else []
+        subnet.specification.use_managed = self.cluster_model.specification.cloud.vnet.use_managed
         return subnet
 
     def get_availability_set(self, availability_set_name):
@@ -180,6 +186,7 @@ class InfrastructureBuilder(Step):
         )
         if availability_set is not None:
             availability_set.specification.name = resource_name(self.cluster_prefix, self.cluster_name, availability_set_name + '-' + 'avail')
+            availability_set.specification.use_managed_resource_group = self.cluster_model.specification.cloud.vnet.use_managed
         return availability_set
 
     def get_subnet_network_security_group_association(self, subnet_name, security_group_name):
@@ -187,6 +194,7 @@ class InfrastructureBuilder(Step):
         ssga.specification.name = f'{subnet_name}-nsga'
         ssga.specification.subnet_name = subnet_name
         ssga.specification.security_group_name = security_group_name
+        ssga.specification.use_managed_subnet = self.cluster_model.specification.cloud.vnet.use_managed
         return ssga
 
     def get_network_interface_security_group_association(self, network_interface_name, security_group_name):
@@ -198,7 +206,7 @@ class InfrastructureBuilder(Step):
 
     def get_network_interface(self, vm_name, vm_config, subnet_name, public_ip_name, security_group_association_name):
         network_interface = self.get_config_or_default(self.docs, 'infrastructure/network-interface')
-        network_interface.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'nic', vm_name)
+        network_interface.specification.name = f'{vm_name}-nic'
         network_interface.specification.use_network_security_groups = self.use_network_security_groups
         network_interface.specification.security_group_association_name = security_group_association_name
         network_interface.specification.ip_configuration_name = network_interface.specification.name + '-ipconf-01'
@@ -206,6 +214,7 @@ class InfrastructureBuilder(Step):
         network_interface.specification.use_public_ip = self.cluster_model.specification.cloud.use_public_ips
         network_interface.specification.public_ip_name = public_ip_name
         network_interface.specification.enable_accelerated_networking = vm_config.specification.network_interface.enable_accelerated_networking
+        network_interface.specification.use_managed_resource_group = self.cluster_model.specification.cloud.vnet.use_managed
         return network_interface
 
     def get_public_ip(self, component_key, vm_config, index):
@@ -214,6 +223,7 @@ class InfrastructureBuilder(Step):
         public_ip.specification.allocation_method = vm_config.specification.network_interface.public_ip.allocation_method
         public_ip.specification.idle_timeout_in_minutes = vm_config.specification.network_interface.public_ip.idle_timeout_in_minutes
         public_ip.specification.sku = vm_config.specification.network_interface.public_ip.sku
+        public_ip.specification.use_managed_resource_group = self.cluster_model.specification.cloud.vnet.use_managed
         return public_ip
 
     def get_vm(self, component_key, alt_component_name, vm_config, availability_set, network_interface_name, security_group_association_name, index, vm_name):
@@ -241,6 +251,7 @@ class InfrastructureBuilder(Step):
             raise Exception(f'SSH key path "{pub_key_path}" is not valid. Ansible run will fail.')
         if availability_set is not None:
             vm.specification.availability_set_name = availability_set.specification.name
+        vm.specification.use_managed_resource_group = self.cluster_model.specification.cloud.vnet.use_managed
         return vm
 
     def get_cloud_init_custom_data(self):

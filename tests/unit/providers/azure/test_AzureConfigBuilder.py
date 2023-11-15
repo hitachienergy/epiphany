@@ -39,7 +39,7 @@ def test_get_subnet_should_set_proper_values_to_model():
     builder = InfrastructureBuilder([cluster_model])
     actual = builder.get_subnet(subnet_definition, 'component')
 
-    assert actual.specification.name == 'testcluster-component-snet'
+    assert actual.specification.name == 'component-snet'
     assert actual.specification.address_prefix == subnet_definition['address_pool']
     assert actual.specification.cluster_name == 'testcluster'
 
@@ -104,9 +104,9 @@ def test_get_network_interface_should_set_proper_values_to_model():
                                 'testcluster-repository-pubip-1',
                                 'testcluster-component-sga-1')
 
-    assert actual.specification.name == 'testcluster-repository-01-nic'
+    assert actual.specification.name == 'repository-01-nic'
     assert actual.specification.security_group_association_name == 'testcluster-component-sga-1'
-    assert actual.specification.ip_configuration_name == 'testcluster-repository-01-nic-ipconf-01'
+    assert actual.specification.ip_configuration_name == 'repository-01-nic-ipconf-01'
     assert actual.specification.subnet_name == 'testcluster-component-subnet-1'
     assert actual.specification.use_public_ip is True
     assert actual.specification.public_ip_name == 'testcluster-repository-pubip-1'
@@ -138,7 +138,12 @@ def get_cluster_model(address_pool='10.22.0.0/22', cluster_name='EpiphanyTestClu
             'name': cluster_name,
             'cloud': {
                 'region': 'West Europe',
-                'vnet_address_pool': address_pool,
+                'vnet': {
+                    'use_managed': True,
+                    'managed': {
+                        'address_pool': address_pool
+                    }
+                },
                 'use_public_ips': True,
                 'default_os_image': 'default',
                 'hostname_domain_extension': '',
