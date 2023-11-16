@@ -12,3 +12,4 @@ specification:
     use_public_ip: SET_BY_AUTOMATION
     public_ip_name: SET_BY_AUTOMATION
     enable_accelerated_networking: SET_BY_AUTOMATION
+    use_managed_resource_group: SET_BY_AUTOMATION

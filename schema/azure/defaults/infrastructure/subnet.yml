@@ -7,3 +7,4 @@ specification:
   name: SET_BY_AUTOMATION
   address_prefix: SET_BY_AUTOMATION
   service_endpoints: SET_BY_AUTOMATION
+  use_managed: SET_BY_AUTOMATION

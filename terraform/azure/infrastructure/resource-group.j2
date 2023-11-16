@@ -9,8 +9,13 @@
 #####################################################
 # {{ specification.name }}
 #####################################################
-
+{% if specification.use_managed %}
 resource "azurerm_resource_group" "rg" {
   name     = "{{ specification.name }}"
   location = "{{ specification.region }}"
 }
+{% else %}
+data "azurerm_resource_group" "rg" {
+  name     = "{{ specification.name }}"
+}
+{% endif %}

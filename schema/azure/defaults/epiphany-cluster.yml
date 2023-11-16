@@ -14,7 +14,13 @@ specification:
       tenant_id: <INPUT_TENANT_ID>
       use_device_code: False
     k8s_as_cloud_service: True # AKS
-    vnet_address_pool: 10.58.10.0/24
+    vnet:
+      use_managed: False
+      managed:
+        address_pool: 10.58.10.0/24
+      unmanaged:
+        name: <INPUT_UNMANAGED_VNET_NAME>
+        resource_group_name: <INPUT_UNMANAGED_RESOURCE_GROUP_NAME>
     use_public_ips: False # When not using public IPs you have to provide connectivity via private IPs (VPN)
     use_service_principal: False
     service_principal: # todo change it to get service principal credentials from vault
@@ -34,39 +40,39 @@ specification:
       alt_component_name: ''
       machine: kafka-machine
       configuration: default
-      subnets:
-        - address_pool: 10.58.10.32/27 # 10.58.x.33 - 10.58.x.62
-          service_endpoints: []
+      subnet:
+        address_pool: 10.58.10.32/27 # 10.58.x.33 - 10.58.x.62
+        service_endpoints: []
     logging:
       count: 3
       availability_set: logging
       alt_component_name: ''
       machine: logging-machine
       configuration: default
-      subnets:
-        - address_pool: 10.58.10.64/27 # 10.58.x.65 - 10.58.x.94
-          service_endpoints: []
+      subnet:
+        address_pool: 10.58.10.64/27 # 10.58.x.65 - 10.58.x.94
+        service_endpoints: []
     monitoring:
       count: 1
       alt_component_name: ''
       machine: monitoring-machine
       configuration: default
-      subnets:
-        - address_pool: 10.58.10.96/27 # 10.58.x.97 - 10.58.x.126
-          service_endpoints: []
+      subnet:
+        address_pool: 10.58.10.96/27 # 10.58.x.97 - 10.58.x.126
+        service_endpoints: []
     repository:
       count: 0 # by default the 'repository' role is mapped to the 'monitoring' component to reduce costs
       alt_component_name: ''
       machine: repository-machine
       configuration: default
-      subnets:
-        - address_pool: 10.58.10.128/27 # 10.58.x.129 - 10.58.x.158
-          service_endpoints: []
+      subnet:
+        address_pool: 10.58.10.128/27 # 10.58.x.129 - 10.58.x.158
+        service_endpoints: []
     single_machine:
       count: 0
       alt_component_name: ''
       machine: single-machine
       configuration: default
-      subnets:
-        - address_pool: 10.58.10.160/27
-          service_endpoints: []
+      subnet:
+        address_pool: 10.58.10.160/27
+        service_endpoints: []
