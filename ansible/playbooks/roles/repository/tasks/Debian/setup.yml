@@ -7,6 +7,10 @@
           - apache2
           - libdpkg-perl  # required by dpkg-scanpackages script
         cache_valid_time: 3600  # 1 h
+      register: result
+      until: result is succeeded
+      retries: "{{ retries }}"
+      delay: "{{ delay }}"
       when: not offline_mode
 
     - name: Create epirepo repository

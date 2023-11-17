@@ -4,3 +4,7 @@
     name: haproxy
     update_cache: true
     state: absent
+  register: result
+  until: result is succeeded
+  retries: "{{ retries }}"
+  delay: "{{ delay }}"

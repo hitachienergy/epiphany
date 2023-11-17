@@ -3,6 +3,7 @@ kind: configuration/postgresql
 title: PostgreSQL
 name: default
 specification:
+  custom_postgresql_config: ''  # leave it empty to use postgresql-epiphany.conf
   config_file:
     parameter_groups:
       - name: CONNECTIONS AND AUTHENTICATION
@@ -59,6 +60,10 @@ specification:
               - name: max_wal_senders
                 value: 10
                 comment: maximum number of simultaneously running WAL sender processes
+                when: replication
+              - name: max_replication_slots
+                value: 10
+                comment: maximum number of replication slots that a server can support
                 when: replication
               - name: wal_keep_size
                 value: 500

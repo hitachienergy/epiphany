@@ -1,6 +1,17 @@
 <!-- markdownlint-disable-file no-duplicate-header -->
 # Changelog 2.0
 
+## [2.0.10] YYYY-MM-DD
+
+### Fixed
+
+- [#3413](https://github.com/hitachienergy/epiphany/issues/3413) - [RHEL] Missing dependencies for `samba-client` package
+
+### Added
+
+- [#3408](https://github.com/hitachienergy/epiphany/issues/3408) - Apply changes made by the Lumada team
+- [#3410](https://github.com/hitachienergy/epiphany/issues/3410) - AKS and Epiphany integration
+
 ## [2.0.9] 2023-10-19
 
 ### Updated

@@ -146,15 +146,13 @@ def callRabbitMQDeploymentTests
     describe 'Checking node health using RabbitMQ API' do
       service_replicas.times do |i|
         describe command("curl -o /dev/null -s -w '%{http_code}' -u #{user}#{i}:#{pass} \
-        #{host_inventory['hostname']}:#{service_management_port}/api/healthchecks/node/rabbit@$(kubectl describe pods rabbitmq-cluster-#{i} \
-        --namespace=#{service_namespace} | awk '/^IP:/ {print $2}')") do
+        #{host_inventory['hostname']}:#{service_management_port}/api/healthchecks/node/rabbit@rabbitmq-cluster-#{i}.#{service_name}.#{service_namespace}.svc.cluster.local") do
           it 'is expected to be equal' do
             expect(subject.stdout.to_i).to eq 200
           end
         end
         describe command("curl -u #{user}#{i}:#{pass} \
-        #{host_inventory['hostname']}:#{service_management_port}/api/healthchecks/node/rabbit@$(kubectl describe pods rabbitmq-cluster-#{i} \
-        --namespace=#{service_namespace} | awk '/^IP:/ {print $2}')") do
+        #{host_inventory['hostname']}:#{service_management_port}/api/healthchecks/node/rabbit@rabbitmq-cluster-#{i}.#{service_name}.#{service_namespace}.svc.cluster.local") do
           its(:stdout_as_json) { should include('status' => /ok/) }
           its(:stdout_as_json) { should_not include('status' => /failed/) }
           its(:exit_status) { should eq 0 }
