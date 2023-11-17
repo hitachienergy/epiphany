@@ -43,6 +43,8 @@ packages:
     - 'fping'
     - 'fuse-overlayfs'  # for docker-ce-rootless-extras
     - 'fuse3'  # for docker-ce-rootless-extras
+    - 'glibc-common'  # for samba packages
+    - 'glibc-langpack-en'  # for samba packages
     - 'gnutls'  # for cifs-utils
     - 'gssproxy'  # for nfs-utils
     - 'htop'
