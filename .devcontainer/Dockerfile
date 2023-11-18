@@ -14,7 +14,6 @@ ARG USERNAME=vscode
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
-ARG AWS_CLI_VERSION=2.0.30
 ARG HELM_VERSION=3.3.1
 ARG KUBECTL_VERSION=1.22.4
 ARG TERRAFORM_VERSION=1.1.3
@@ -51,13 +50,7 @@ RUN : INSTALL HELM BINARY \
  && curl -fsSLO https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
  && unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /usr/local/bin \
  && rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
- && terraform version \
- && : INSTALL AWS CLI BINARY \
- && curl -fsSLO https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWS_CLI_VERSION}.zip \
- && unzip awscli-exe-linux-x86_64-${AWS_CLI_VERSION}.zip \
- && ./aws/install -i /usr/local/aws-cli -b /usr/local/bin \
- && rm -rf awscli-exe-linux-x86_64-${AWS_CLI_VERSION}.zip ./aws \
- && aws --version
+ && terraform version
 
 RUN : INSTALL GEM REQUIREMENTS \
  && gem install \
