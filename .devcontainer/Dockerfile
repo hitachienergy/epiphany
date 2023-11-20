@@ -51,6 +51,13 @@ RUN : INSTALL HELM BINARY \
  && unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /usr/local/bin \
  && rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
  && terraform version \
+ && : INSTALL YQ BINARY \
+ && curl -fsSL https://github.com/mikefarah/yq/releases/download/v4.40.2/yq_linux_amd64 > /tmp/yq \
+ && yq_checksum=00d48a5240ab575c3e82fb1e4fab768c33ce3e87e75b673a45d41a1c4ed1e86c \
+ && echo "${yq_checksum} */tmp/yq" | shasum -a 256 -c - \
+ && mv /tmp/yq /usr/local/bin/yq \
+ && chmod +x /usr/local/bin/yq \
+ && yq --version \
  && : INSTALL YTT BINARY \
  && curl -fsSL https://github.com/carvel-dev/ytt/releases/download/v0.46.0/ytt-linux-amd64 > /tmp/ytt \
  && ytt_checksum=348cb34965b64c07fd5118e69efd9a4fae7e22f57db4e91e2d9903c1ad19f041 \

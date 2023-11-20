@@ -14,7 +14,7 @@
 - Grafana Dashboard: Certificates Expiration (X509 Certificate Exporter)
 - Integration with Opsgenie
 - Support for externally managed VNets
-- ytt in Dockerfile
+- yq and ytt in Dockerfile
 
 ### Updated
 
