@@ -32,6 +32,13 @@ RUN : INSTALL APT REQUIREMENTS \
     && unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /usr/local/bin \
     && rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
     && terraform version \
+    && : INSTALL YTT BINARY \
+    && curl -fsSL https://github.com/carvel-dev/ytt/releases/download/v0.46.0/ytt-linux-amd64 > /tmp/ytt \
+    && ytt_checksum=348cb34965b64c07fd5118e69efd9a4fae7e22f57db4e91e2d9903c1ad19f041 \
+    && echo "${ytt_checksum} */tmp/ytt" | shasum -a 256 -c - \
+    && mv /tmp/ytt /usr/local/bin/ytt \
+    && chmod +x /usr/local/bin/ytt \
+    && ytt version \
 \
     && : INSTALL GEM REQUIREMENTS \
     && gem install \
