@@ -32,6 +32,7 @@
 - Use availability set for `kafka` and `logging` components in the default configuration
 - Change naming convention - VMs are numbered starting from 1 with a leading 0 (01, 02, ...)
 - Apply alerts provided by InfraOps
+- Protect Kafka from consuming all disk space
 
 ### Removed
 
