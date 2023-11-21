@@ -34,7 +34,7 @@ specification:
     # - storage_account_type: Premium_LRS
     #   disk_size_gb: 32
   network_interface:
-    enable_accelerated_networking: false
+    enable_accelerated_networking: true
     private_ip:
     public_ip:
       allocation_method: Static
@@ -78,7 +78,9 @@ title: "Virtual Machine Infra"
 provider: azure
 name: kafka-machine
 specification:
-  size: Standard_DS2_v2
+  size: Standard_D2as_v5
+  storage_os_disk:
+    disk_size_gb: 128
   security:
     rules:
       - _merge: true
@@ -178,7 +180,9 @@ title: "Virtual Machine Infra"
 provider: azure
 name: monitoring-machine
 specification:
-  size: Standard_DS1_v2
+  size: Standard_E2s_v5
+  storage_os_disk:
+    disk_size_gb: 512
   security:
     rules:
       - _merge: true
@@ -208,7 +212,9 @@ title: "Virtual Machine Infra"
 provider: azure
 name: logging-machine
 specification:
-  size: Standard_DS2_v2
+  size: Standard_D4as_v5
+  storage_os_disk:
+    disk_size_gb: 512
   security:
     rules:
       - _merge: true
