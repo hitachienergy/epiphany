@@ -1,0 +1,32 @@
+---
+# Close tunnel if exists and assert port is free
+- name: Include SSH tunnel teardown tasks
+  include_tasks: teardown.yml
+
+- name: Start SSH tunnel to {{ssh_tunnel_ip}}:{{ssh_tunnel_port}}
+  block:
+    - name: Start SSH tunnel to {{ssh_tunnel_ip}}:{{ssh_tunnel_port}}
+      shell: >-
+        autossh -M 0 -f
+        {{ admin_user.name }}@{{ ssh_tunnel_ip }} -L {{ ssh_tunnel_port }}:localhost:{{ ssh_tunnel_port }}
+        -i $(realpath -s {{ admin_user.key_path }}) -4 -N -T
+        -o BatchMode=yes -o ControlMaster=no -o ExitOnForwardFailure=yes -o ServerAliveInterval=30 -o ServerAliveCountMax=5
+        -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
+      args:
+        chdir: "{{ lookup('env', 'PWD') }}" # chdir + realpath to support relative path in admin_user.key_path
+      register: shell_autossh
+      environment: "{{ autossh_env }}"
+
+    - name: Assert port {{ ssh_tunnel_port }} is open
+      wait_for:
+        port: "{{ ssh_tunnel_port }}"
+        state: started
+        timeout: 15
+        msg: |-
+          Timeout waiting for port {{ ssh_tunnel_port }} to respond.
+          Command used to start the tunnel: '{{ shell_autossh.cmd }}'.
+          Environment: {{ autossh_env.items() | map('join', '=') | list }}
+  vars:
+    autossh_env:
+      AUTOSSH_LOGFILE: "{{ autossh_log_file_path }}"
+      AUTOSSH_PIDFILE: "{{ autossh_pid_file_path }}"

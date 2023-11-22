@@ -1,0 +1,19 @@
+# Ansible playbook to set up SSH tunnel for installing helm charts from epirepo
+
+- hosts: 127.0.0.1
+  connection: local
+  gather_facts: false
+  tasks:
+    - include_role:
+        name: sshtunnel
+        tasks_from: "{{ item }}.yml"
+      loop:
+        - set_facts_epirepo
+        - setup
+      when:
+        - groups.repository is defined
+        - groups.repository | length > 0
+        - not (custom_repository_url | default(false, true))
+  module_defaults:
+    shell:
+      executable: /bin/bash
