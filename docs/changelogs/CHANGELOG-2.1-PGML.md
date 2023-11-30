@@ -15,6 +15,7 @@
 - Integration with Opsgenie
 - Support for externally managed VNets
 - yq and ytt in Dockerfile
+- epicli format
 
 ### Updated
 
