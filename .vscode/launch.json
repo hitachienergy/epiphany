@@ -13,25 +13,28 @@
             "env": { "PYTHONPATH": "${workspaceFolder}" },
             "console": "integratedTerminal",
             // init
-            "args": ["init", "--provider", "azure", "--name", "nostai-dev1", "--full"]
+            "args": ["init", "--provider", "azure", "--name", "nostai-dev01", "--full"]
 
             // apply
-            // "args": ["--debug", "0", "apply", "-f", "${workspaceFolder}/clusters/nostai-dev1.yml", "--vault-password", "1IAtsoN"]
-            // "args": ["--debug", "0", "apply", "-f", "${workspaceFolder}/clusters/nostai-dev1.yml", "--no-infra", "--vault-password", "1IAtsoN"]
-            // "args": ["--debug", "0", "apply", "-f", "${workspaceFolder}/clusters/nostai-dev1.yml", "--skip-config"]
+            // "args": ["--debug", "0", "apply", "-f", "${workspaceFolder}/clusters/nostai-dev01.yml", "--vault-password", "1IAtsoN"]
+            // "args": ["--debug", "0", "apply", "-f", "${workspaceFolder}/clusters/nostai-dev01.yml", "--no-infra", "--vault-password", "1IAtsoN"]
+            // "args": ["--debug", "0", "apply", "-f", "${workspaceFolder}/clusters/nostai-dev01.yml", "--skip-config"]
 
             // test
-            // "args": ["--auto-approve", "test", "-b", "${workspaceFolder}/clusters/build/nostai-dev1"]
-            // "args": ["--auto-approve", "test", "-b", "${workspaceFolder}/clusters/build/nostai-dev1", "-i", "common,filebeat,grafana"]
-            // "args": ["--auto-approve", "test", "-b", "${workspaceFolder}/clusters/build/nostai-dev1", "-i", "jmx_exporter,kafka,kafka_exporter"]
-            // "args": ["--auto-approve", "test", "-b", "${workspaceFolder}/clusters/build/nostai-dev1", "-i", "node_exporter,opensearch,prometheus,zookeeper"]
+            // "args": ["--auto-approve", "test", "-b", "${workspaceFolder}/clusters/build/nostai-dev01"]
+            // "args": ["--auto-approve", "test", "-b", "${workspaceFolder}/clusters/build/nostai-dev01", "-i", "common,filebeat,grafana"]
+            // "args": ["--auto-approve", "test", "-b", "${workspaceFolder}/clusters/build/nostai-dev01", "-i", "jmx_exporter,kafka,kafka_exporter"]
+            // "args": ["--auto-approve", "test", "-b", "${workspaceFolder}/clusters/build/nostai-dev01", "-i", "node_exporter,opensearch,prometheus,zookeeper"]
 
             // delete
-            // "args": ["delete", "-b", "${workspaceFolder}/clusters/build/nostai-dev1"]
+            // "args": ["delete", "-b", "${workspaceFolder}/clusters/build/nostai-dev01"]
 
             // help
             // "args": ["--help"]
             // "args": ["apply", "--help"]
+
+            // format
+            // "args": ["format", "-f", "${workspaceFolder}/clusters/nostai-dev01.yml"]
         }
     ]
 }
