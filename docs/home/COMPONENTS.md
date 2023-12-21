@@ -55,8 +55,8 @@ Note that versions are default versions and can be changed in certain cases thro
 | Component | Version | Repo/Website | License |
 | --------- | ------- | ------------ | ------- |
 | adal | 1.2.7 | https://github.com/AzureAD/azure-activedirectory-library-for-python | MIT |
-| ansible-core | 2.13.13 | https://ansible.com/ | GPLv3+ |
-| ansible | 6.7.0 | https://ansible.com/ | GPL-3.0-or-later |
+| ansible-core | 2.16.2 | https://ansible.com/ | GPLv3+ |
+| ansible | 9.1.0 | https://ansible.com/ | GPL-3.0-or-later |
 | antlr4-python3-runtime | 4.13.1 | http://www.antlr.org | BSD |
 | anyio | 4.2.0 | https://github.com/agronholm/anyio | MIT |
 | applicationinsights | 0.11.10 | https://github.com/Microsoft/ApplicationInsights-Python | MIT |

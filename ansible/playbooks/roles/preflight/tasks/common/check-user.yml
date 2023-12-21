@@ -4,11 +4,6 @@
   changed_when: false
   failed_when: test_privileges.rc not in [0, 1]
   register: test_privileges
-  # Disable warning: "Consider using 'become', 'become_method', and 'become_user' rather than running sudo".
-  # sudo used by purpose, for 'become', 'failed_when' is ignored when sudo requires password and task fails
-  # with short message: "Missing sudo password".
-  args:
-    warn: false
 
 - name: Assert root privileges
   assert:
