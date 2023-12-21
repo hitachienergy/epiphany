@@ -1,6 +1,6 @@
 adal==1.2.7 ; python_full_version == "3.10.13"
-ansible-core==2.14.13 ; python_full_version == "3.10.13"
-ansible==7.7.0 ; python_full_version == "3.10.13"
+ansible-core==2.13.13 ; python_full_version == "3.10.13"
+ansible==6.7.0 ; python_full_version == "3.10.13"
 antlr4-python3-runtime==4.13.1 ; python_full_version == "3.10.13"
 anyio==4.2.0 ; python_full_version == "3.10.13"
 applicationinsights==0.11.10 ; python_full_version == "3.10.13"
