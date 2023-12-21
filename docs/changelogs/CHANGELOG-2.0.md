@@ -1,6 +1,12 @@
 <!-- markdownlint-disable-file no-duplicate-header -->
 # Changelog 2.0
 
+## [2.0.11] 20xx-xx-xx
+
+### Fixed
+
+- [#3421](https://github.com/hitachienergy/epiphany/issues/3421) - Bump Python dependencies to the latest to fix a number of CVE issues
+
 ## [2.0.10] 2023-11-17
 
 ### Fixed
