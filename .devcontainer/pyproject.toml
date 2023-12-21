@@ -13,7 +13,7 @@ jsonschema = "*"
 python-json-logger = "*"
 "ruamel.yaml" = "*"
 click = "*"
-ansible = "9.1.0"
+ansible = "8.7.0"
 azure-cli = "2.55.0"
 
 [build-system]
