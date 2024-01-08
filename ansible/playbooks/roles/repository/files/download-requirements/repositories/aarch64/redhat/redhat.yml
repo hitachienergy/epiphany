@@ -55,7 +55,7 @@ repositories:
       gpgcheck=1
       module_hotfixes=true
     gpg_keys:
-      - https://download.postgresql.org/pub/repos/yum/keys/PGDG-RPM-GPG-KEY-RHEL
+      - https://download.postgresql.org/pub/repos/yum/keys/PGDG-RPM-GPG-KEY-AARCH64-RHEL
 
   rabbitmq:
     id: rabbitmq-server
