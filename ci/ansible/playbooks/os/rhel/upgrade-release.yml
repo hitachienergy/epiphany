@@ -467,7 +467,7 @@
         file: pgdg{{ postgresql_version }}-rhel-{{ versions.target.full }}
         description: PostgreSQL {{ postgresql_version }} for RHEL/CentOS {{ versions.target.full }} - $basearch
         baseurl: https://download.postgresql.org/pub/repos/yum/{{ postgresql_version }}/redhat/rhel-{{ versions.target.full }}-$basearch
-        gpgkey: https://download.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG
+        gpgkey: https://download.postgresql.org/pub/repos/yum/keys/PGDG-RPM-GPG-KEY-RHEL
         enabled: false
         gpgcheck: true
         module_hotfixes: true
