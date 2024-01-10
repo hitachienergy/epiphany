@@ -1,7 +1,34 @@
 <!-- markdownlint-disable-file no-duplicate-header -->
 # Changelog 2.0
 
-## [2.0.8] 2023-xx-xx
+## [2.0.11] 2024-01-DD
+
+### Fixed
+
+- [#3424](https://github.com/hitachienergy/epiphany/issues/3424) - PostgreSQL yum repo GPG key not available
+- [#3421](https://github.com/hitachienergy/epiphany/issues/3421) - Bump Python dependencies to the latest to fix a number of CVE issues
+
+## [2.0.10] 2023-11-17
+
+### Fixed
+
+- [#3413](https://github.com/hitachienergy/epiphany/issues/3413) - [RHEL] Missing dependencies for `samba-client` package
+
+### Added
+
+- [#3408](https://github.com/hitachienergy/epiphany/issues/3408) - Apply changes made by the Lumada team
+- [#3410](https://github.com/hitachienergy/epiphany/issues/3410) - AKS and Epiphany integration
+
+## [2.0.9] 2023-10-19
+
+### Updated
+
+- [#3302](https://github.com/hitachienergy/epiphany/issues/3302) - AlmaLinux OS 8.4 AMIs no longer available
+- [#3399](https://github.com/hitachienergy/epiphany/issues/3399) - Update cloud OS images to the latest
+
+## [2.0.8] 2023-08-24
+
+### Updated
 
 - [#3177](https://github.com/hitachienergy/epiphany/issues/3177) - Upgrade AzureCLI to 2.37+ to support Microsoft Graph migration
 - [#3383](https://github.com/hitachienergy/epiphany/issues/3383) - Update Python dependencies to include the latest patch versions

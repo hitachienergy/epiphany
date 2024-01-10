@@ -1,4 +1,4 @@
-ARG BASE_IMAGE="python:3.10.12-slim"
+ARG BASE_IMAGE="python:3.10.13-slim"
 
 # --- Proxy certificate stage ---
 FROM $BASE_IMAGE as proxy_cert
