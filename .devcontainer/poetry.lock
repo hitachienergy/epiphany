@@ -19,27 +19,27 @@ requests = ">=2.0.0,<3"
 
 [[package]]
 name = "ansible"
-version = "6.7.0"
+version = "8.5.0"
 description = "Radically simple IT automation"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 files = [
-    {file = "ansible-6.7.0-py3-none-any.whl", hash = "sha256:3cda6e67b1d42516f64ce376bb94c5186ff33d215d155432be5b3c2ec60bf112"},
-    {file = "ansible-6.7.0.tar.gz", hash = "sha256:c188f3ac8a8583794aadcff0bea87895ead58c19d6f244cd0c342562706e176c"},
+    {file = "ansible-8.5.0-py3-none-any.whl", hash = "sha256:2749032e26b0dbc9a694528b85fd89e7f950b8c7b53606f17dd997f23ac7cc88"},
+    {file = "ansible-8.5.0.tar.gz", hash = "sha256:327c509bdaf5cdb2489d85c09d2c107e9432f9874c8bb5c0702a731160915f2d"},
 ]
 
 [package.dependencies]
-ansible-core = ">=2.13.7,<2.14.0"
+ansible-core = ">=2.15.5,<2.16.0"
 
 [[package]]
 name = "ansible-core"
-version = "2.13.13"
+version = "2.15.8"
 description = "Radically simple IT automation"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 files = [
-    {file = "ansible-core-2.13.13.tar.gz", hash = "sha256:7ad2d8c0a5fa4a59de1809a5f96d2dbf511189c834116f5c72aec9730b51074b"},
-    {file = "ansible_core-2.13.13-py3-none-any.whl", hash = "sha256:f50220254b8e13a79b68e68e759f5bf89f3f3584c907737985a017c699b1c3b6"},
+    {file = "ansible-core-2.15.8.tar.gz", hash = "sha256:8aa49cb1ddbf33d88c2bb4bf09ecd4b0dd8b788e174adca8b88dda6e6bdbf59b"},
+    {file = "ansible_core-2.15.8-py3-none-any.whl", hash = "sha256:55e6f4350fb98ac5441620ba981b1d9f7b90aa5f320885965af996e149bd3caa"},
 ]
 
 [package.dependencies]
@@ -47,7 +47,7 @@ cryptography = "*"
 jinja2 = ">=3.0.0"
 packaging = "*"
 PyYAML = ">=5.1"
-resolvelib = ">=0.5.3,<0.9.0"
+resolvelib = ">=0.5.3,<1.1.0"
 
 [[package]]
 name = "antlr4-python3-runtime"
@@ -3223,4 +3223,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "3.10.13"
-content-hash = "fedea689d144b093ece9605ac55d427b72dc6da0943c204d22dafdd0aa197849"
+content-hash = "9c23cd84237d9b3aca8e03832a35d4f28ecbb4cb34c4ecac54b65d4a2c9f4912"
