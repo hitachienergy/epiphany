@@ -13,6 +13,7 @@ from cli.licenses import LICENSES
 from cli.src.commands.Apply import Apply
 from cli.src.commands.Backup import Backup
 from cli.src.commands.Delete import Delete
+from cli.src.commands.FormatManifest import FormatManifest
 from cli.src.commands.Init import Init
 from cli.src.commands.Prepare import Prepare
 from cli.src.commands.Recovery import Recovery
@@ -96,6 +97,7 @@ Terraform : 1..4 map to the following Terraform verbosity levels:
     test_parser(subparsers)
     backup_parser(subparsers)
     recovery_parser(subparsers)
+    format_parser(subparsers)
 
     # check if there were any variables and display full help
     if len(sys.argv) < 2:
@@ -387,6 +389,31 @@ def recovery_parser(subparsers):
             return cmd.recovery()
 
     sub_parser.set_defaults(func=run_recovery)
+
+
+def format_parser(subparsers):
+    """Format YAML file."""
+
+    sub_parser = subparsers.add_parser('format',
+                                       description='Format manifest file.')
+    optional = sub_parser._action_groups.pop()
+    required = sub_parser.add_argument_group('required arguments')
+
+    #required
+    required.add_argument('-f', '--input-manifest', dest='input_manifest', type=str, required=True,
+                            help='Manifest file to format.')
+
+    #optional
+    optional.add_argument('--with-backup', dest='with_backup', required=False, action='store_true', default=False,
+                            help='When used a backup is made before overwriting the file.')
+    sub_parser._action_groups.append(optional)
+
+    def run_format(args):
+        adjust_paths_from_file(args)
+        with FormatManifest(args) as cmd:
+            return cmd.format()
+
+    sub_parser.set_defaults(func=run_format)
 
 
 def experimental_query():

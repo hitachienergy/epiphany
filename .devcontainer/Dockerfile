@@ -14,7 +14,6 @@ ARG USERNAME=vscode
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
-ARG AWS_CLI_VERSION=2.0.30
 ARG HELM_VERSION=3.3.1
 ARG KUBECTL_VERSION=1.22.4
 ARG TERRAFORM_VERSION=1.1.3
@@ -28,7 +27,7 @@ RUN : INSTALL APT REQUIREMENTS \
  && apt-get -q install -y --no-install-recommends \
     apt-utils dialog \
  && apt-get -q install -y --no-install-recommends \
-    ca-certificates curl gcc git git-lfs iputils-ping \
+    autossh ca-certificates curl gcc git git-lfs iputils-ping \
     jq libc6-dev libcap2-bin libffi-dev lsb-release \
     make musl-dev openssh-client procps \
     psmisc rsync ruby-full sudo tar \
@@ -52,12 +51,20 @@ RUN : INSTALL HELM BINARY \
  && unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /usr/local/bin \
  && rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
  && terraform version \
- && : INSTALL AWS CLI BINARY \
- && curl -fsSLO https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWS_CLI_VERSION}.zip \
- && unzip awscli-exe-linux-x86_64-${AWS_CLI_VERSION}.zip \
- && ./aws/install -i /usr/local/aws-cli -b /usr/local/bin \
- && rm -rf awscli-exe-linux-x86_64-${AWS_CLI_VERSION}.zip ./aws \
- && aws --version
+ && : INSTALL YQ BINARY \
+ && curl -fsSL https://github.com/mikefarah/yq/releases/download/v4.40.2/yq_linux_amd64 > /tmp/yq \
+ && yq_checksum=00d48a5240ab575c3e82fb1e4fab768c33ce3e87e75b673a45d41a1c4ed1e86c \
+ && echo "${yq_checksum} */tmp/yq" | shasum -a 256 -c - \
+ && mv /tmp/yq /usr/local/bin/yq \
+ && chmod +x /usr/local/bin/yq \
+ && yq --version \
+ && : INSTALL YTT BINARY \
+ && curl -fsSL https://github.com/carvel-dev/ytt/releases/download/v0.46.0/ytt-linux-amd64 > /tmp/ytt \
+ && ytt_checksum=348cb34965b64c07fd5118e69efd9a4fae7e22f57db4e91e2d9903c1ad19f041 \
+ && echo "${ytt_checksum} */tmp/ytt" | shasum -a 256 -c - \
+ && mv /tmp/ytt /usr/local/bin/ytt \
+ && chmod +x /usr/local/bin/ytt \
+ && ytt version
 
 RUN : INSTALL GEM REQUIREMENTS \
  && gem install \

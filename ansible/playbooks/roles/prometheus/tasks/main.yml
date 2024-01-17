@@ -8,14 +8,6 @@
   set_fact:
     does_k8s_exist: "{{ k8s_as_cloud_service }}"
 
-- name: Configure kubernetes monitoring
-  when: does_k8s_exist
-  include_tasks:
-    file: configure-k8s-apps-monitoring.yml
-    apply:
-      environment:
-        KUBECONFIG: "{{ kubeconfig.local }}"
-
 - name: Gather variables for each operating system
   include_vars: "{{ item }}"
   with_first_found:
@@ -24,6 +16,14 @@
 
 - name: Include install
   include_tasks: install.yml
+
+- name: Configure kubernetes monitoring
+  when: does_k8s_exist
+  include_tasks:
+    file: configure-k8s-apps-monitoring.yml
+    apply:
+      environment:
+        KUBECONFIG: "{{ kubeconfig.local }}"
 
 - name: Include configure
   include_tasks: configure.yml

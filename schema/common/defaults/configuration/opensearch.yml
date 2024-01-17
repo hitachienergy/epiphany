@@ -32,8 +32,8 @@ specification:
     delete_indices_cron_jobs:
       - description: Delete indices older than N days
         cron:
-          hour: 1
-          minute: 0
+          hour: '1'
+          minute: '0'
           enabled: True
         filter_list:
           - filtertype: age
@@ -47,11 +47,11 @@ specification:
             value: ^[.].+$
       - description: Delete the oldest indices to not consume more than N gigabytes of disk space
         cron:
-          minute: 30
+          minute: '*/10'
           enabled: True
         filter_list:
           - filtertype: space
-            disk_space: 128
+            disk_space: 448 # assuming there is 512 GiB disk
             use_age: True
             source: creation_date
           - filtertype: pattern

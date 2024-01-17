@@ -72,9 +72,9 @@ properties:
               type: object
               properties:
                 hour:
-                  type: integer
+                  type: string
                 minute:
-                  type: integer
+                  type: string
                 enabled:
                   type: boolean
             filter_list:
@@ -100,7 +100,7 @@ properties:
               type: object
               properties:
                 minute:
-                  type: integer
+                  type: string
                 enabled:
                   type: boolean
             filter_list:

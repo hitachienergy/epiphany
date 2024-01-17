@@ -43,9 +43,9 @@ specification:
   default_replication_factor: 3 # Recommended value for production is 3
   offsets_topic_replication_factor: 3 # Minimum number of offsets topic (3 for HA)
 
-  partitions: 8 # 100 x brokers x replicas for reasonable size cluster. Small clusters can be less
-  log_retention_hours: 168 # The minimum age of a log file to be eligible for deletion due to age
-  log_retention_bytes: -1 # -1 is no size limit only a time limit (log_retention_hours). This limit is enforced at the partition level, multiply it by the number of partitions to compute the topic retention in bytes.
+  partitions: 2 # 100 x brokers x replicas for reasonable size cluster. Small clusters can be less
+  log_retention_hours: 168 # (7 days) The minimum age of a log file to be eligible for deletion due to age
+  log_retention_bytes: 2147483648 # (2 GiB) -1 is no size limit only a time limit (log_retention_hours). This limit is enforced at the partition level, multiply it by the number of partitions to compute the topic retention in bytes.
   offset_retention_minutes: 10080 # Offsets older than this retention period will be discarded
   heap_opts: "-Xmx2G -Xms2G" # Values for VM with 8 GiB of RAM (based on https://bitnami.com/stack/kafka/cloud/azure)
   jmx_opts:

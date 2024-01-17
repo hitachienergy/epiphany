@@ -110,7 +110,7 @@ def test_get_network_interface_should_set_proper_values_to_model():
     assert actual.specification.subnet_name == 'testcluster-component-subnet-1'
     assert actual.specification.use_public_ip is True
     assert actual.specification.public_ip_name == 'testcluster-repository-pubip-1'
-    assert actual.specification.enable_accelerated_networking is False
+    assert actual.specification.enable_accelerated_networking is True
 
 
 def test_get_public_ip_should_set_proper_values_to_model():

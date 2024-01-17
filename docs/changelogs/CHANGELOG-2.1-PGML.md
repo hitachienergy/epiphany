@@ -14,13 +14,13 @@
 - Grafana Dashboard: Certificates Expiration (X509 Certificate Exporter)
 - Integration with Opsgenie
 - Support for externally managed VNets
+- yq and ytt in Dockerfile
+- epicli format
 
 ### Updated
 
 - Terraform Azure Provider 2.91.0 to 3.74.0
-- Keycloak to 20.0.5-0
 - Make YAML format of default configuration compatible with sops (it converts YAML block scalars to flow scalars)
-- Change default proxy mode for Keycloak from `reencrypt` to `edge` (HTTP is enabled)
 - Switch from `k8s.gcr.io` to `registry.k8s.io`
 - epicli base image `python:3.10.6-slim` to `python:3.10.11-slim`
 - Prometheus: Avoid false positives from brief spikes for alert "Disk will run out of space"
@@ -31,6 +31,10 @@
 - Use availability set for `kafka` and `logging` components in the default configuration
 - Change naming convention - VMs are numbered starting from 1 with a leading 0 (01, 02, ...)
 - Apply alerts provided by InfraOps
+- Protect Kafka from consuming all disk space
+- Run size based Curator cron job every 10 minutes
+- Accelerated networking is enabled in the default configuration
+- Default VM size and disk size for `kafka-machine`, `monitoring-machine` and `logging-machine`
 - Update rolebinding for Prometheus
 
 ### Removed
@@ -47,6 +51,6 @@
 - HAProxy
 - Support for RHEL and ARM
 - Keycloak
-- sshtunnel role
 - `prefix` setting from `epiphany-cluster` input manifest for Azure provider
 - Cloud storage for K8s
+- AWS CLI from Dockerfile
