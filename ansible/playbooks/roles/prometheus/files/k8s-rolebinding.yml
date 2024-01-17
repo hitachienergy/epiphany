@@ -1,11 +1,9 @@
+# ref: https://raw.githubusercontent.com/prometheus/prometheus/main/documentation/examples/rbac-setup.yml
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: prometheus
   namespace: kube-system
-  labels:
-    kubernetes.io/cluster-service: "true"
-    addonmanager.kubernetes.io/mode: Reconcile
 ---
 apiVersion: v1
 kind: Secret
@@ -20,40 +18,31 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: prometheus
-  labels:
-    kubernetes.io/cluster-service: "true"
-    addonmanager.kubernetes.io/mode: Reconcile
 rules:
-  - apiGroups:
-      - ""
+
+  - apiGroups: [""]
     resources:
       - nodes
       - nodes/metrics
       - services
       - endpoints
       - pods
-    verbs:
-      - get
-      - list
-      - watch
+    verbs: ["get", "list", "watch"]
+
   - apiGroups:
-      - ""
+      - extensions
+      - networking.k8s.io
     resources:
-      - configmaps
-    verbs:
-      - get
-  - nonResourceURLs:
-      - "/metrics"
-    verbs:
-      - get
+      - ingresses
+    verbs: ["get", "list", "watch"]
+
+  - nonResourceURLs: ["/metrics", "/metrics/cadvisor"]
+    verbs: ["get"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: prometheus
-  labels:
-    kubernetes.io/cluster-service: "true"
-    addonmanager.kubernetes.io/mode: Reconcile
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
