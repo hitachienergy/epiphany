@@ -35,6 +35,7 @@
 - Run size based Curator cron job every 10 minutes
 - Accelerated networking is enabled in the default configuration
 - Default VM size and disk size for `kafka-machine`, `monitoring-machine` and `logging-machine`
+- Update RBAC for Prometheus
 
 ### Removed
 
