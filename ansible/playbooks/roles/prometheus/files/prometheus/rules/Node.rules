@@ -111,7 +111,7 @@ groups:
       description: "Disk latency is growing (write operations > 100ms)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
 
   - alert: HighCpuLoad above 95 percent
-    expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle",instance=~"de-.*"}[5m])) * 100) >= 95
+    expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) >= 95
     for: 15m
     labels:
       severity: critical
