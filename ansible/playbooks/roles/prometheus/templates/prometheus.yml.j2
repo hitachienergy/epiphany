@@ -47,6 +47,7 @@ scrape_configs:
     file_sd_configs:
       - files:
           - "{{ specification.config_directory }}/file_sd/*.yml"
+    bearer_token_file: k8s-token
 
   {% if k8s_as_cloud_service is defined and k8s_as_cloud_service %}
   {#
@@ -66,8 +67,7 @@ scrape_configs:
         kubeconfig_file: kubeconfig
 
     scheme: https
-    authorization:
-      credentials_file: /etc/prometheus/k8s-token
+    bearer_token_file: k8s-token
     # Workaround for 'Get "https://10.58.4.4:443/metrics": x509: certificate is valid for 10.96.0.1, not 10.58.4.4':
     tls_config:
       insecure_skip_verify: true
@@ -89,6 +89,7 @@ scrape_configs:
   # Scrape config for nodes (node-exporter)
 
   - job_name: 'node-exporter'
+    bearer_token_file: k8s-token
 
     kubernetes_sd_configs:
       - role: endpoints
@@ -111,8 +112,7 @@ scrape_configs:
         kubeconfig_file: kubeconfig
 
     scheme: https
-    authorization:
-      credentials_file: /etc/prometheus/k8s-token
+    bearer_token_file: k8s-token
     tls_config:
       insecure_skip_verify: true
 
@@ -137,8 +137,7 @@ scrape_configs:
     scheme: https
     tls_config:
       insecure_skip_verify: true
-    authorization:
-      credentials_file: /etc/prometheus/k8s-token
+    bearer_token_file: k8s-token
 
     relabel_configs:
       - action: labelmap
@@ -153,6 +152,7 @@ scrape_configs:
   # Scrape config for service endpoints
 
   - job_name: 'kubernetes-service-endpoints'
+    bearer_token_file: k8s-token
 
     kubernetes_sd_configs:
       - role: endpoints
@@ -187,6 +187,7 @@ scrape_configs:
   # Scrape config for pods
 
   - job_name: 'kubernetes-pods'
+    bearer_token_file: k8s-token
 
     kubernetes_sd_configs:
       - role: pod
