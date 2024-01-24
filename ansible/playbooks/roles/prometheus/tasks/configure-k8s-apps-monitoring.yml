@@ -5,14 +5,6 @@
   run_once: true
   delegate_to: localhost
 
-- name: Copy kubeconfig to Prometheus host
-  copy:
-    src: "{{ kubeconfig.local }}"
-    dest: "{{ specification.config_directory }}/kubeconfig"
-    owner: prometheus
-    group: prometheus
-    mode: u=r,go=
-
 - name: Get Kubernetes bearer token for Prometheus
   become: false
   shell: |-
@@ -31,6 +23,27 @@
     group: prometheus
     mode: u=r,go=
   no_log: true
+
+- name: Load admin kubeconfig file into Ansible
+  delegate_to: localhost
+  slurp:
+    src: "{{ kubeconfig.local }}"
+  register: admin_kubeconfig_file
+
+- name: Get kubeconfig structure from file
+  set_fact:
+    admin_kubeconfig: "{{ admin_kubeconfig_file.content | b64decode | from_yaml }}"
+
+- name: Create kubeconfig from template
+  template:
+    src: kubeconfig.yml.j2
+    dest: "{{ specification.config_directory }}/kubeconfig"
+    mode: u=r,go=
+
+- name: Clear kubeconfig in memory
+  set_fact:
+    admin_kubeconfig_file: null
+    admin_kubeconfig: null
 
 - name: Clear kube_token in memory
   set_fact:
