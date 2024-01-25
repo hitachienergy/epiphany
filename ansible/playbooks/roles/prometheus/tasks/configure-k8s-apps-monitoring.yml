@@ -30,7 +30,7 @@
     src: "{{ kubeconfig.local }}"
   register: admin_kubeconfig_file
 
-- name: Get kubeconfig structure from file
+- name: Parse kubeconfig file
   set_fact:
     admin_kubeconfig: "{{ admin_kubeconfig_file.content | b64decode | from_yaml }}"
 
