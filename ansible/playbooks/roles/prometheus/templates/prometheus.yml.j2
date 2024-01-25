@@ -47,7 +47,6 @@ scrape_configs:
     file_sd_configs:
       - files:
           - "{{ specification.config_directory }}/file_sd/*.yml"
-    bearer_token_file: k8s-token
 
   {% if k8s_as_cloud_service is defined and k8s_as_cloud_service %}
   {#
@@ -89,7 +88,6 @@ scrape_configs:
   # Scrape config for nodes (node-exporter)
 
   - job_name: 'node-exporter'
-    bearer_token_file: k8s-token
 
     kubernetes_sd_configs:
       - role: endpoints
