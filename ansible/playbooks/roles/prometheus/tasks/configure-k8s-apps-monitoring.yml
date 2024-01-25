@@ -24,7 +24,7 @@
     mode: u=r,go=
   no_log: true
 
-- name: Load admin kubeconfig file into Ansible
+- name: Load admin kubeconfig file
   delegate_to: localhost
   slurp:
     src: "{{ kubeconfig.local }}"
