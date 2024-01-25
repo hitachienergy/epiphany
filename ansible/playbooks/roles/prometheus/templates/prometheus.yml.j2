@@ -60,13 +60,13 @@ scrape_configs:
   # Scrape config for API servers
 
   - job_name: 'kubernetes-apiservers'
+    bearer_token_file: k8s-token
 
     kubernetes_sd_configs:
       - role: endpoints
         kubeconfig_file: kubeconfig
 
     scheme: https
-    bearer_token_file: k8s-token
     # Workaround for 'Get "https://10.58.4.4:443/metrics": x509: certificate is valid for 10.96.0.1, not 10.58.4.4':
     tls_config:
       insecure_skip_verify: true
@@ -104,13 +104,13 @@ scrape_configs:
   # Scrape config for nodes (kubelet)
 
   - job_name: 'kubernetes-nodes'
+    bearer_token_file: k8s-token
 
     kubernetes_sd_configs:
       - role: node
         kubeconfig_file: kubeconfig
 
     scheme: https
-    bearer_token_file: k8s-token
     tls_config:
       insecure_skip_verify: true
 
@@ -125,6 +125,7 @@ scrape_configs:
   # Scrape config for Kubelet cAdvisor
 
   - job_name: 'kubernetes-cadvisor'
+    bearer_token_file: k8s-token
 
     metrics_path: /metrics/cadvisor
 
@@ -135,7 +136,6 @@ scrape_configs:
     scheme: https
     tls_config:
       insecure_skip_verify: true
-    bearer_token_file: k8s-token
 
     relabel_configs:
       - action: labelmap
