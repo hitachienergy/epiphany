@@ -30,13 +30,13 @@ groups:
       description: "Container Volume IO usage is above 80%\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
 
   - alert: ContainerCPUUsageHigh
-    expr: (sum(rate(container_cpu_usage_seconds_total{container!=""}[3m])) BY (namespace, pod, container) * 100) > 80
+    expr: (sum(rate(container_cpu_usage_seconds_total{container!=""}[3m])) BY (namespace, pod, container) * 100) > 95
     for: 5m
     labels:
       severity: warning
     annotations:
       summary: "Container CPU usage (namespace: {{ $labels.namespace }}, pod: {{ $labels.pod }}, container: {{ $labels.container }})"
-      description: "Container CPU usage is above 80%\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+      description: "Container CPU usage is above 95%\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
 
   # OOMKiller tracks container_memory_working_set_bytes
   - alert: ContainerMemoryUsageHigh
