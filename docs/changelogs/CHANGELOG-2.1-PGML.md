@@ -36,6 +36,7 @@
 - Accelerated networking is enabled in the default configuration
 - Default VM size and disk size for `kafka-machine`, `monitoring-machine` and `logging-machine`
 - Update RBAC for Prometheus
+- Update Prometheus configuration and kubeconfig for Prometheus
 
 ### Removed
 
