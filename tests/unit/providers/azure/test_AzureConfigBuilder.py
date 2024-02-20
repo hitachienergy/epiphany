@@ -161,7 +161,8 @@ def get_cluster_model(address_pool='10.22.0.0/22', cluster_name='EpiphanyTestClu
                 'hostname_domain_extension': '',
                 'network': {
                     'use_network_security_groups': True
-                }
+                },
+                'tags': []
             }
         }
     })
