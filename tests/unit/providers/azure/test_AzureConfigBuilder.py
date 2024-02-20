@@ -51,9 +51,9 @@ def test_get_availability_set_should_set_proper_values_to_model():
         'provider': 'azure',
         'name': 'availability-set',
         'specification': {
-            'name': 'availability-set'
-        },
-        'tags': []
+            'name': 'availability-set',
+            'tags': []
+        }
     })
 
     builder = InfrastructureBuilder([cluster_model, availability_set])
