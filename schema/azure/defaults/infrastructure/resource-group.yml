@@ -6,3 +6,4 @@ name: default
 specification:
   name: SET_BY_AUTOMATION
   region: SET_BY_AUTOMATION
+  tags: []

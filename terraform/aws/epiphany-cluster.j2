@@ -26,4 +26,13 @@ provider "aws" {
   token = "{{ specification.cloud.credentials.session_token }}"
 {% endif %}
   region     = "{{ specification.cloud.region }}"
+  default_tags {
+    tags = {
+    {%- for tag in specification.cloud.tags %}
+      {%- for tag_key, tag_value in tag.items() %}
+      {{ tag_key }} = "{{ tag_value }}"
+      {%- endfor %}
+    {%- endfor %}
+    }
+  }
 }

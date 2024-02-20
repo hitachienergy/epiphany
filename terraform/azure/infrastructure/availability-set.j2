@@ -17,4 +17,12 @@ resource "azurerm_availability_set" "{{ specification.name }}" {
   platform_fault_domain_count  = {{ specification.platform_fault_domain_count }}
   platform_update_domain_count = {{ specification.platform_update_domain_count }}
   managed                      = {{ specification.managed | string | lower }}
+
+  tags = {
+  {%- for tag in specification.tags %}
+    {%- for tag_key, tag_value in tag.items() %}
+    {{ tag_key }} = "{{ tag_value }}"
+    {%- endfor %}
+  {%- endfor %}
+  }
 }

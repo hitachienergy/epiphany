@@ -8,3 +8,7 @@ properties:
     type: string
   address_space:
     type: string
+  tags:
+    type: array
+    items:
+      items: {}

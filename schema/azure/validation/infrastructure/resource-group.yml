@@ -8,3 +8,7 @@ properties:
     type: string
   region:
     type: string
+  tags:
+    type: array
+    items:
+      items: {}
