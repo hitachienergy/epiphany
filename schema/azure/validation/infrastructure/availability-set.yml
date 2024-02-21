@@ -19,3 +19,7 @@ properties:
   managed:
     "$id": "#/properties/specification/properties/managed"
     type: boolean
+  tags:
+    type: array
+    items:
+      items: {}

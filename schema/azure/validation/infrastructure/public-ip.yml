@@ -12,3 +12,7 @@ properties:
     type: integer
   sku:
     type: string
+  tags:
+    type: array
+    items:
+      items: {}

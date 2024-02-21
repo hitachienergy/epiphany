@@ -125,7 +125,8 @@ def get_cluster_model(address_pool='10.22.0.0/22', cluster_name='EpiphanyTestClu
                     'use_network_security_groups': True
                 },
                 'default_os_image': 'default',
-                'use_public_ips': True
+                'use_public_ips': True,
+                'tags': []
             }
         }
     })

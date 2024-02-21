@@ -10,3 +10,7 @@ properties:
     type: string
   quota:
     type: integer
+  tags:
+    type: array
+    items:
+      items: {}

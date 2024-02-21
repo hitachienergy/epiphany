@@ -31,4 +31,12 @@ resource "azurerm_network_interface" "{{ specification.name }}" {
   {%- if specification.use_network_security_groups == true %}
   depends_on = [azurerm_subnet_network_security_group_association.{{ specification.security_group_association_name }}]
   {%- endif %}
+
+  tags = {
+  {%- for tag in specification.tags %}
+    {%- for tag_key, tag_value in tag.items() %}
+    {{ tag_key }} = "{{ tag_value }}"
+    {%- endfor %}
+  {%- endfor %}
+  }
 }

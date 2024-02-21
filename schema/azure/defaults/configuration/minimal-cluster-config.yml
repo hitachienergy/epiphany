@@ -20,6 +20,7 @@ specification:
       subscriptionId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"
     use_public_ips: False # When not using public IPs you have to provide connectivity via private IPs (VPN)
     default_os_image: default
+    tags: [] # Tags that will be added to every resource
   components:
     repository:
       count: 1

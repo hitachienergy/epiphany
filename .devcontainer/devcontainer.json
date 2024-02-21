@@ -16,6 +16,7 @@
                 "davidanson.vscode-markdownlint",
                 // Python
                 "ms-python.python",
+                "ms-python.pylint",
                 // Ruby
                 "rebornix.Ruby",
                 "castwide.solargraph",
@@ -34,11 +35,9 @@
                 ],
 
                 // Python
-                "python.linting.enabled": true,
-                "python.linting.pylintEnabled": true,
-                "python.linting.pylintArgs": [
-                    "--rcfile",
-                    "${workspaceFolder}/.pylintrc"
+                "pylint.enabled": true,
+                "pylint.args": [
+                    "--rcfile=${workspaceFolder}/.pylintrc"
                 ],
                 "python.testing.pytestEnabled": true,
                 "python.testing.unittestEnabled": false,
@@ -56,7 +55,7 @@
         }
     },
     "mounts": [
-        "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,type=bind",
+        "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,type=bind"
     ],
-    "remoteUser": "vscode",
+    "remoteUser": "vscode"
 }

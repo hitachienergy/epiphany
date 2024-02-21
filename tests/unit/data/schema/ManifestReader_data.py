@@ -16,6 +16,7 @@ specification:
     k8s_as_cloud_service: false
     use_public_ips: true
     default_os_image: default
+    tags: []
   components:
     repository:
       count: 1
@@ -149,7 +150,8 @@ EXPECTED_PARSED_MANIFEST_DOCS: List[Dict] = [
              'subscription_name': 'PGGA-Epiphany-Dev',
              'k8s_as_cloud_service': False,
              'use_public_ips': True,
-             'default_os_image': 'default'
+             'default_os_image': 'default',
+             'tags': []
          },
          'components': {
              'repository':        { 'count': 1 },
@@ -291,7 +293,8 @@ INPUT_DOC_TO_UPDATE_BASE = [
              'subscription_name': 'PGGA-Epiphany-Dev',
              'k8s_as_cloud_service': False,
              'use_public_ips': True,
-             'default_os_image': 'default'
+             'default_os_image': 'default',
+             'tags': []
          },
          'components': {
              'repository':        { 'count': 1 },
@@ -363,7 +366,8 @@ EXPECTED_UPDATED_DOC_BASE = [
              'subscription_name': 'PGGA-Epiphany-Dev',
              'k8s_as_cloud_service': False,
              'use_public_ips': True,
-             'default_os_image': 'default'
+             'default_os_image': 'default',
+             'tags': []
          },
          'components': {
              'repository':        { 'count': 1 },
