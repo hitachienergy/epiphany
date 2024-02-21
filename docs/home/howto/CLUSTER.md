@@ -1143,6 +1143,16 @@ specification:
   ...
 ```
 
+A few tags should not be used as these are used by Epiphany internally. 
+
+For Azure:
+- `cluster` as key with cluster name as value
+- `<component-name>` as key with empty value
+
+For AWS:
+- `cluster_name` as key with cluster name as value
+- `component-key` as key with componenent name as value
+
 Currently there are some open issues with both the `AWS` and `Azure` providers which prevent updating/changes of tags on certain VM attached storages:
 
 - [Azure](https://github.com/hashicorp/terraform-provider-azurerm/issues/2568)
