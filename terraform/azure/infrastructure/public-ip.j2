@@ -17,4 +17,11 @@ resource "azurerm_public_ip" "{{ specification.name }}" {
   allocation_method       = "{{ specification.allocation_method }}"
   idle_timeout_in_minutes = "{{ specification.idle_timeout_in_minutes }}"
   sku                     = "{{ specification.sku }}"
+  tags = {
+  {%- for tag in specification.tags %}
+    {%- for tag_key, tag_value in tag.items() %}
+    {{ tag_key }} = "{{ tag_value }}"
+    {%- endfor %}
+  {%- endfor %}
+  }
 }

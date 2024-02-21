@@ -97,6 +97,14 @@ resource "azurerm_managed_disk" "{{ specification.name }}-data-disk-{{ loop.inde
   storage_account_type = "{{ disk.storage_account_type }}"
   create_option        = "Empty"
   disk_size_gb         = "{{ disk.disk_size_gb }}"
+
+  tags = {
+  {%- for tag in specification.tags %}
+    {%- for tag_key, tag_value in tag.items() %}
+    {{ tag_key }} = "{{ tag_value }}"
+    {%- endfor %}
+  {%- endfor %}
+  }
 }
 
 resource "azurerm_virtual_machine_data_disk_attachment" "{{ specification.name }}-disk-attachment-{{ loop.index0 }}" {

@@ -51,7 +51,8 @@ def test_get_availability_set_should_set_proper_values_to_model():
         'provider': 'azure',
         'name': 'availability-set',
         'specification': {
-            'name': 'availability-set'
+            'name': 'availability-set',
+            'tags': []
         }
     })
 
@@ -161,7 +162,8 @@ def get_cluster_model(address_pool='10.22.0.0/22', cluster_name='EpiphanyTestClu
                 'hostname_domain_extension': '',
                 'network': {
                     'use_network_security_groups': True
-                }
+                },
+                'tags': []
             }
         }
     })

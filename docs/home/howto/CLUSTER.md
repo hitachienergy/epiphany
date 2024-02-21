@@ -1120,3 +1120,32 @@ And will be placed in the following folder:
 When Epicli is run/re-run any Terraform scripts which will start with the ```xxx_*.tf``` filter  will be removed and regenerated. The user can make custom Terraform scripts and place them allongside the Epicli generated ones and these will be applied/re-applied during the Epicli run.
 
 If you need to define any additional security rules for component subnets for custom infrastructure you can check the documentation [here](./SECURITY_GROUPS.md).
+
+## How to add cluster-wide tagging
+
+Epiphany supports the use of cluster-wide tagging of all resources that are beeing created in `AWS` and `Azure`. These can used to keep track of resources, billing and cost managment or other automation that involves tags.
+
+Cluster-wide tags can be added to the `cloud` section of the main Epiphany cluster document like so:
+
+```yaml
+---
+kind: epiphany-cluster
+title: Epiphany cluster Config
+name: default
+specification:
+  ...
+  cloud:
+    tags:
+      tag1: 'First-tag'
+      tag2: 'Second-tag'
+      tag3: 'Third-tag'
+      ...
+  ...
+```
+
+Currently there are some open issues with both the `AWS` and `Azure` providers which prevent updating/changes of tags on certain VM attached storages:
+
+- [Azure](https://github.com/hashicorp/terraform-provider-azurerm/issues/2568)
+- [AWS](https://github.com/hashicorp/terraform-provider-aws/issues/19406)
+
+*Note: Duplicate tags are overwritten with the latest one defined in the configuration*

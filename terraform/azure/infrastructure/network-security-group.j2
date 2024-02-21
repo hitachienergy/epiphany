@@ -29,5 +29,11 @@ resource "azurerm_network_security_group" "{{ specification.name }}" {
     destination_address_prefix = "{{ rule.destination_address_prefix }}"
   }
   {% endfor -%}
-
+  tags = {
+  {%- for tag in specification.tags %}
+    {%- for tag_key, tag_value in tag.items() %}
+    {{ tag_key }} = "{{ tag_value }}"
+    {%- endfor %}
+  {%- endfor %}
+  }
 }

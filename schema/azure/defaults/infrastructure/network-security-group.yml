@@ -6,3 +6,4 @@ name: default
 specification:
   name: SET_BY_AUTOMATION
   rules: []
+  tags: []

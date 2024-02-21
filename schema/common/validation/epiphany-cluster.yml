@@ -159,6 +159,12 @@ properties:
         examples:
         - extension
         pattern: "^[a-zA-Z0-9.-]*$"
+      tags:
+        type: array
+        title: List of tags that will be applied to all resources
+        items:
+          items:
+            items: {}
   components:
     "$id": "#/properties/components"
     type: object

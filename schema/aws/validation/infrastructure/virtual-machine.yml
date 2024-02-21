@@ -38,6 +38,10 @@ properties:
     type: string
   ebs_optimized:
     type: boolean
+  tags:
+    type: array
+    items:
+      items: {}
   disks:
     type: object
     properties:

@@ -1,6 +1,12 @@
 <!-- markdownlint-disable-file no-duplicate-header -->
 # Changelog 2.0
 
+## [2.0.12] 2024-xx-xx
+
+### Added
+
+- [#3437](https://github.com/hitachienergy/epiphany/issues/3437) - Cluster-wide tagging for all cloud resources
+
 ## [2.0.11] 2024-01-11
 
 ### Fixed

@@ -27,6 +27,7 @@
   - [How to use Azure availability sets](./howto/CLUSTER.md#how-to-use-azure-availability-sets)
   - [Downloading offline requirements with a Docker container](./howto/CLUSTER.md#downloading-offline-requirements-with-a-docker-container)
   - [How to additional custom Terraform templates](./howto/CLUSTER.md#how-to-additional-custom-terraform-templates)
+  - [How to add cluster-wide tagging](./howto/CLUSTER.md#how-to-add-cluster-wide-tagging)
 
 - [Monitoring](./howto/MONITORING.md)
   - [How to enable provided Prometheus rules](./howto/MONITORING.md#how-to-enable-provided-prometheus-rules)

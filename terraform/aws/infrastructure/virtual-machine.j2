@@ -32,6 +32,12 @@ resource "aws_instance" "{{ specification.name }}" {
       cluster_name        = "{{ specification.cluster_name }}"
       cluster_version     = "{{ version }}"
       Name                = "{{ specification.name }}-os-disk"
+
+      {%- for tag in specification.tags %}
+        {%- for tag_key, tag_value in tag.items() %}
+        {{ tag_key }} = "{{ tag_value }}"
+        {%- endfor %}
+      {%- endfor %}
     }
   }
 
@@ -47,6 +53,12 @@ resource "aws_instance" "{{ specification.name }}" {
       cluster_name        = "{{ specification.cluster_name }}"
       cluster_version     = "{{ version }}"
       Name                = "{{ specification.name }}-data-disk-{{ loop.index0 }}"
+
+      {%- for tag in specification.tags %}
+        {%- for tag_key, tag_value in tag.items() %}
+        {{ tag_key }} = "{{ tag_value }}"
+        {%- endfor %}
+      {%- endfor %}
     }
   }
 {%- endfor %}
