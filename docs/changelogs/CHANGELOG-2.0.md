@@ -5,7 +5,7 @@
 
 ### Added
 
-- [#3437](https://github.com/hitachienergy/epiphany/issues/3437) - Global tagging for all cloud resources
+- [#3437](https://github.com/hitachienergy/epiphany/issues/3437) - Cluster-wide tagging for all cloud resources
 
 ## [2.0.11] 2024-01-11
 
