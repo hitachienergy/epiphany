@@ -1143,4 +1143,9 @@ specification:
   ...
 ```
 
+Currently there are some open issues with both the `AWS` and `Azure` providers which prevent updating/changes of tags on certain VM attached storages:
+
+- https://github.com/hashicorp/terraform-provider-azurerm/issues/2568
+- https://github.com/hashicorp/terraform-provider-aws/issues/19406
+
 *Note: Duplicate tags are overwritten with the latest one defined in the configuration*
