@@ -12,6 +12,7 @@ specification:
     subscription_name: <INPUT_SUBSCRIPTION_NAME>
     azure_login:
       tenant_id: <INPUT_TENANT_ID>
+    tags: [] # Tags that will be added to every resource
   components:
     kafka:
       count: 3

@@ -12,9 +12,9 @@
     ],
 
     // Python
+    "pylint.enabled": true,
     "pylint.args": [
-        "--rcfile",
-        "${workspaceFolder}/.pylintrc"
+        "--rcfile=${workspaceFolder}/.pylintrc"
     ],
     "python.testing.pytestEnabled": true,
     "python.testing.unittestEnabled": false,

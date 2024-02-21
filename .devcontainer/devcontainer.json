@@ -20,6 +20,7 @@
                 "davidanson.vscode-markdownlint",
                 // Python
                 "ms-python.python",
+                "ms-python.pylint",
                 // Ruby
                 "rebornix.Ruby",
                 "castwide.solargraph",

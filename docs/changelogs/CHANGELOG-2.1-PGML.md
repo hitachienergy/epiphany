@@ -7,6 +7,7 @@
 
 - kubelogin
 - Customize AKS CoreDNS hosts plugin
+- [#3437](https://github.com/hitachienergy/epiphany/issues/3437) - Cluster-wide tagging for all cloud resources
 
 ### Updated
 

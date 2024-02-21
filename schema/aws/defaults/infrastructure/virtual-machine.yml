@@ -19,6 +19,7 @@ specification:
   os_full_name: ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20221010
   os_type: linux
   ebs_optimized: false
+  tags: []
   disks:
     root: # Updating this section on existing machine will cause resource replacement
       volume_type: gp2

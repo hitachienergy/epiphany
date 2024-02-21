@@ -13,6 +13,14 @@
 resource "azurerm_resource_group" "rg" {
   name     = "{{ specification.name }}"
   location = "{{ specification.region }}"
+
+  tags = {
+  {%- for tag in specification.tags %}
+    {%- for tag_key, tag_value in tag.items() %}
+    {{ tag_key }} = "{{ tag_value }}"
+    {%- endfor %}
+  {%- endfor %}
+  }
 }
 {% else %}
 data "azurerm_resource_group" "rg" {

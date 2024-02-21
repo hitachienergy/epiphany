@@ -20,3 +20,7 @@ properties:
     type: string
   enable_accelerated_networking:
     type: boolean
+  tags:
+    type: array
+    items:
+      items: {}

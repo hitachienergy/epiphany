@@ -7,3 +7,4 @@ specification:
   name: SET_BY_AUTOMATION
   region: SET_BY_AUTOMATION
   use_managed: SET_BY_AUTOMATION
+  tags: []

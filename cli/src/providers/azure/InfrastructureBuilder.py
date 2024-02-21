@@ -24,6 +24,7 @@ class InfrastructureBuilder(Step):
         self.region = self.cluster_model.specification.cloud.region
         self.use_network_security_groups = self.cluster_model.specification.cloud.network.use_network_security_groups
         self.use_public_ips = self.cluster_model.specification.cloud.use_public_ips
+        self.global_tags = self.cluster_model.specification.cloud.tags
         self.docs = docs
         self.manifest_docs = manifest_docs
 
@@ -151,6 +152,7 @@ class InfrastructureBuilder(Step):
         else:
             resource_group.specification.name = self.cluster_model.specification.cloud.vnet.unmanaged.resource_group_name
         resource_group.specification.region = self.cluster_model.specification.cloud.region
+        resource_group.specification.tags.extend(self.global_tags)
         return resource_group
 
     def get_virtual_network(self):
@@ -161,6 +163,7 @@ class InfrastructureBuilder(Step):
             vnet.specification.name = self.cluster_model.specification.cloud.vnet.unmanaged.name
         vnet.specification.address_space = self.cluster_model.specification.cloud.vnet.managed.address_pool
         vnet.specification.use_managed = self.cluster_model.specification.cloud.vnet.use_managed
+        vnet.specification.tags.extend(self.global_tags)
         return vnet
 
     def get_network_security_group(self, component_key, security_rules):
@@ -168,6 +171,7 @@ class InfrastructureBuilder(Step):
         security_group.specification.name = resource_name(self.cluster_prefix, self.cluster_name, 'nsg', component_key)
         security_group.specification.rules = security_rules
         security_group.specification.use_managed_resource_group = self.cluster_model.specification.cloud.vnet.use_managed
+        security_group.specification.tags.extend(self.global_tags)
         return security_group
 
     def get_subnet(self, subnet_definition, component_key):
@@ -187,6 +191,7 @@ class InfrastructureBuilder(Step):
         if availability_set is not None:
             availability_set.specification.name = resource_name(self.cluster_prefix, self.cluster_name, availability_set_name + '-' + 'avail')
             availability_set.specification.use_managed_resource_group = self.cluster_model.specification.cloud.vnet.use_managed
+            availability_set.specification.tags.extend(self.global_tags)
         return availability_set
 
     def get_subnet_network_security_group_association(self, subnet_name, security_group_name):
@@ -215,6 +220,7 @@ class InfrastructureBuilder(Step):
         network_interface.specification.public_ip_name = public_ip_name
         network_interface.specification.enable_accelerated_networking = vm_config.specification.network_interface.enable_accelerated_networking
         network_interface.specification.use_managed_resource_group = self.cluster_model.specification.cloud.vnet.use_managed
+        network_interface.specification.tags.extend(self.global_tags)
         return network_interface
 
     def get_public_ip(self, component_key, vm_config, index):
@@ -224,6 +230,7 @@ class InfrastructureBuilder(Step):
         public_ip.specification.idle_timeout_in_minutes = vm_config.specification.network_interface.public_ip.idle_timeout_in_minutes
         public_ip.specification.sku = vm_config.specification.network_interface.public_ip.sku
         public_ip.specification.use_managed_resource_group = self.cluster_model.specification.cloud.vnet.use_managed
+        public_ip.specification.tags.extend(self.global_tags)
         return public_ip
 
     def get_vm(self, component_key, alt_component_name, vm_config, availability_set, network_interface_name, security_group_association_name, index, vm_name):
@@ -242,6 +249,7 @@ class InfrastructureBuilder(Step):
         vm.specification.security_group_association_name = security_group_association_name
         vm.specification.tags.append({'cluster': cluster_tag(self.cluster_prefix, self.cluster_name)})
         vm.specification.tags.append({component_key: ''})
+        vm.specification.tags.extend(self.global_tags)
         if vm_config.specification.os_type == 'windows':
             raise NotImplementedError('Windows VMs not supported jet.')
         pub_key_path = self.cluster_model.specification.admin_user.key_path + '.pub'

@@ -16,6 +16,7 @@ specification:
       access_key_id: XXXX-XXXX-XXXX
       secret_access_key: XXXXXXXXXXXXXXXX
     default_os_image: default
+    tags: []
   components:
     repository:
       count: 1

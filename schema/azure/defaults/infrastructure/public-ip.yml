@@ -9,3 +9,4 @@ specification:
   idle_timeout_in_minutes: SET_BY_AUTOMATION
   sku: SET_BY_AUTOMATION
   use_managed_resource_group: SET_BY_AUTOMATION
+  tags: []

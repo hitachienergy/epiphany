@@ -15,3 +15,7 @@ properties:
     "$id": "#/properties/specification/properties/platform_update_domain_count"
     type: integer
     minimum: 2
+  tags:
+    type: array
+    items:
+      items: {}
