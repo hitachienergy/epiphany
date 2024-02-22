@@ -23,6 +23,7 @@ class InfrastructureBuilder(Step):
         self.cluster_prefix = self.cluster_model.specification.prefix.lower()
         self.use_network_security_groups = self.cluster_model.specification.cloud.network.use_network_security_groups
         self.use_public_ips = self.cluster_model.specification.cloud.use_public_ips
+        self.global_tags = self.cluster_model.specification.cloud.tags
         self.docs = docs
         self.manifest_docs = manifest_docs
 
@@ -143,6 +144,7 @@ class InfrastructureBuilder(Step):
         vm.specification.key_name = public_key_config.specification.key_name
         vm.specification.use_network_security_groups = self.use_network_security_groups
         vm.specification.availability_zone = subnet.specification.availability_zone
+        vm.specification.tags.extend(self.global_tags)
         if self.use_network_security_groups:
             vm.specification.security_groups = [security_group.specification.name]
         vm.specification.associate_public_ip = self.cluster_model.specification.cloud.use_public_ips

@@ -15,4 +15,12 @@ resource "azurerm_virtual_network" "vnet" {
   address_space       = ["{{ specification.address_space }}"]
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
+
+  tags = {
+  {%- for tag in specification.tags %}
+    {%- for tag_key, tag_value in tag.items() %}
+    {{ tag_key }} = "{{ tag_value }}"
+    {%- endfor %}
+  {%- endfor %}
+  }
 }

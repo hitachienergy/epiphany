@@ -56,7 +56,8 @@ TEST_CLUSTER_MODEL = {
                 'access_key_id': '1111-1111-1111',
                 'secret_access_key': 'XXXXXXXXXXXXXXX'
             },
-            'default_os_image': 'default'
+            'default_os_image': 'default',
+            'tags': []
         },
     }
 }

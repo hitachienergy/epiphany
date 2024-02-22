@@ -31,3 +31,7 @@ properties:
           type: string
         destination_address_prefix:
           type: string
+  tags:
+    type: array
+    items:
+      items: {}

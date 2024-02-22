@@ -21,6 +21,7 @@ specification:
     network:
       use_network_security_groups: True
     default_os_image: default
+    tags: []
   components:
     kubernetes_master:
       count: 1

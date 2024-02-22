@@ -34,7 +34,8 @@ TEST_MINIMAL_CLUSTER_CONFIG = {
                 'access_key_id': 'XXXX-XXXX-XXXX',
                 'secret_access_key': 'XXXXXXXXXXXXXXXX'
             },
-            'default_os_image': 'default'
+            'default_os_image': 'default',
+            'tags': []
         },
         'components':
         {

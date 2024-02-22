@@ -17,6 +17,14 @@ resource "azurerm_storage_account" "{{ specification.storage_account_name }}" {
   location                 = azurerm_resource_group.rg.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
+
+  tags = {
+  {%- for tag in specification.tags %}
+    {%- for tag_key, tag_value in tag.items() %}
+    {{ tag_key }} = "{{ tag_value }}"
+    {%- endfor %}
+  {%- endfor %}
+  }
 }
 
 resource "azurerm_storage_share" "{{ specification.name }}" {
