@@ -1,7 +1,7 @@
 <!-- markdownlint-disable-file no-duplicate-header -->
 # Changelog 2.0
 
-## [2.0.12] 2024-xx-xx
+## [2.0.12] 2024-02-22
 
 ### Added
 
