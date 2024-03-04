@@ -29,7 +29,7 @@
         - kubectl={{ specification.version }}-00
         - kubeadm={{ specification.version }}-00
         - kubernetes-cni={{ specification.cni_version }}-00
-        - cri-tools={{ specification.cri_tools_version }}-00
+        - cri-tools={{ specification.cri_tools_version }}-*
       RedHat:
         - kubelet-{{ specification.version }}-0
         - kubectl-{{ specification.version }}-0
