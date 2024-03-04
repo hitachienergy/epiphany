@@ -34,17 +34,17 @@ repositories:
     gpg_keys:
       - https://packages.elastic.co/GPG-KEY-elasticsearch
 
-  # kubernetes:
-  #   id: kubernetes
-  #   data: |
-  #     name=Kubernetes
-  #     baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-$basearch
-  #     enabled=1
-  #     gpgcheck=1
-  #     repo_gpgcheck=1
-  #   gpg_keys:
-  #     - https://packages.cloud.google.com/yum/doc/yum-key.gpg
-  #     - https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+  kubernetes:
+    id: kubernetes
+    data: |
+      name=Kubernetes
+      baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-$basearch
+      enabled=1
+      gpgcheck=1
+      repo_gpgcheck=1
+    gpg_keys:
+      - https://packages.cloud.google.com/yum/doc/yum-key.gpg
+      - https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 
   postgresql-13:
     id: pgdg13
