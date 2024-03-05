@@ -28,7 +28,6 @@ packages:
     - 'containerd.io-1.5.11'
     - 'container-selinux'
     - 'copy-jdk-configs'  # for java-1.8.0-openjdk-headless
-    - 'cri-tools-1.25.0'
     - 'cups-libs'  # for java-1.8.0-openjdk-headless
     - 'curl'
     - 'dejavu-sans-fonts'  # for grafana
@@ -146,6 +145,7 @@ packages:
     - 'gtk3'
     - 'harfbuzz'
     - 'hicolor-icon-theme'
+    - 'iproute' # for kubelet
     - 'jasper-libs'
     - 'jbigkit-libs'
     - 'lcms2'
@@ -187,19 +187,13 @@ packages:
     - 'pango'
     - 'pixman'
     - 'rest'
+    - 'socat' # for kubelet
     - 'unixODBC'
     - 'wxBase3'
     - 'wxGTK3'
     - 'wxGTK3-gl'
 
-  multiple_versioned:
-    # K8s v1.22.4
-    - 'kubeadm-1.22.4'
-    - 'kubectl-1.22.4'
-    - 'kubelet-1.22.4'
-
-    # Kubernetes Generic
-    - 'kubernetes-cni-0.8.7-0'  # since K8s v1.22.4
+  multiple_versioned: []
 
   from_url:
     # Github repository for erlang rpm is used since packagecloud repository is limited to a certain number of versions and erlang package from erlang-solutions repository is much more complex and bigger
@@ -208,3 +202,14 @@ packages:
     # Grafana package is not downloaded from repository since it was not reliable (issue #2449)
     'https://dl.grafana.com/oss/release/grafana-8.3.2-1.aarch64.rpm':
       sha256: a05354a9363decc3a2b036a58f827e0a4d086791ba73d7cc4b9f05afb592f4d1
+    # Switched to an alternate repository as K8s legacy repositories have been shut down
+    'https://github.com/hitachienergy/alternative-repo/raw/d07e4d83f513b9281cf664eaf38c94f69b581d6f/2.0.x/aarch64/redhat/packages/47cf692245b988569f2043a64d388c79c37b17986e803610f1be23855440ac9d-kubeadm-1.22.4-0.aarch64.rpm':
+      sha256: 47cf692245b988569f2043a64d388c79c37b17986e803610f1be23855440ac9d
+    'https://github.com/hitachienergy/alternative-repo/raw/d07e4d83f513b9281cf664eaf38c94f69b581d6f/2.0.x/aarch64/redhat/packages/6328e0a2e088a63ab105a8db5c44c0bb904448bd07253fe6b0938c6a831c8987-kubectl-1.22.4-0.aarch64.rpm':
+      sha256: 6328e0a2e088a63ab105a8db5c44c0bb904448bd07253fe6b0938c6a831c8987
+    'https://github.com/hitachienergy/alternative-repo/raw/d07e4d83f513b9281cf664eaf38c94f69b581d6f/2.0.x/aarch64/redhat/packages/6878752359e91dfe6b46f7c3142f38812829fb10b70628df54ab8a3ec7a0fb2c-kubernetes-cni-0.8.7-0.aarch64.rpm':
+      sha256: 6878752359e91dfe6b46f7c3142f38812829fb10b70628df54ab8a3ec7a0fb2c
+    'https://github.com/hitachienergy/alternative-repo/raw/d07e4d83f513b9281cf664eaf38c94f69b581d6f/2.0.x/aarch64/redhat/packages/c465474f754abd410046f4dd641aa6550a488af98d95df6009d9d3ef0a8f4575-kubelet-1.22.4-0.aarch64.rpm':
+      sha256: c465474f754abd410046f4dd641aa6550a488af98d95df6009d9d3ef0a8f4575
+    'https://github.com/hitachienergy/alternative-repo/raw/d07e4d83f513b9281cf664eaf38c94f69b581d6f/2.0.x/aarch64/redhat/packages/d090f9539485669bc116337e5c666f744b9e862821236fac804285368cab5622-cri-tools-1.25.0-0.aarch64.rpm':
+      sha256: d090f9539485669bc116337e5c666f744b9e862821236fac804285368cab5622
