@@ -225,8 +225,9 @@ class RedHatFamilyMode(BaseMode):
     def _download_packages(self):
         self.__download_prereq_packages()
         self.__download_redhat_packages(sorted(set(self._requirements['packages']['from_repo'])))
-        self.__download_redhat_packages(sorted(set(self._requirements['packages']['multiple_versioned'])),
-                                        False)
+        if self._requirements['packages']['multiple_versioned']:
+            self.__download_redhat_packages(sorted(set(self._requirements['packages']['multiple_versioned'])),
+                                            False)
 
     def _download_file(self, url: str, dest: Path):
         self._tools.wget.download(url, output_document=dest, additional_params=False)

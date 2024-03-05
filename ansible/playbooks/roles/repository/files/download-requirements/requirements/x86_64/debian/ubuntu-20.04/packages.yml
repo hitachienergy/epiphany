@@ -7,8 +7,8 @@ packages:
     - 'bash-completion'
     - 'ca-certificates'
     - 'cifs-utils'
+    - 'conntrack' # for kubelet
     - 'containerd.io=1.5.11*'
-    - 'cri-tools=1.25.0*'
     - 'curl'
     - 'docker-ce=5:20.10.8*'
     - 'docker-ce-cli=5:20.10.8*'
@@ -46,6 +46,7 @@ packages:
     - 'gnupg2'
     - 'htop'
     - 'iftop'
+    - 'iproute2' # for kubelet
     - 'jq'
 
     # for dpkg-scanpackages
@@ -138,38 +139,6 @@ packages:
     # for python3-cryptography
     - 'python3-cffi-backend'
 
-    # K8s v1.18.6 (Epiphany >= v0.7.1)
-    - 'kubeadm=1.18.6*'
-    - 'kubectl=1.18.6*'
-    - 'kubelet=1.18.6*'
-
-    # K8s v1.19.15 (Epiphany >= v1.3, transitional version)
-    - 'kubeadm=1.19.15*'
-    - 'kubectl=1.19.15*'
-    - 'kubelet=1.19.15*'
-
-    # K8s v1.20.12 (Epiphany >= v1.3, transitional version)
-    - 'kubeadm=1.20.12*'
-    - 'kubectl=1.20.12*'
-    - 'kubelet=1.20.12*'
-
-    # K8s v1.21.7 (Epiphany >= v1.3, transitional version)
-    - 'kubeadm=1.21.7*'
-    - 'kubectl=1.21.7*'
-    - 'kubelet=1.21.7*'
-
-    # K8s v1.22.4
-    - 'kubeadm=1.22.4*'
-    - 'kubectl=1.22.4*'
-    - 'kubelet=1.22.4*'
-
-    # Kubernetes Generic
-    # kubernetes-cni-0.8.6 since K8s v1.18.6
-    - 'kubernetes-cni=0.8.6-00*'
-
-    # kubernetes-cni-0.8.7 since K8s v1.19.15
-    - 'kubernetes-cni=0.8.7-00*'
-
   from_url:
     # Switched from APT repo because there was only one (the latest) version available (issue #2262)
     'https://packages.elastic.co/curator/5/debian9/pool/main/e/elasticsearch-curator/elasticsearch-curator_5.8.3_amd64.deb':
@@ -177,3 +146,14 @@ packages:
     # Grafana package is not downloaded from repository since it was not reliable (issue #2449)
     'https://dl.grafana.com/oss/release/grafana_8.3.2_amd64.deb':
       sha256: 3f5ecf5726223314aa3147a24c732cc9ccede86b7d703d4835a6fc69d0fffff8
+    # Switched to an alternate repository as K8s legacy repositories have been shut down
+    'https://github.com/hitachienergy/alternative-repo/raw/main/2.0.x/x86_64/debian/packages/cri-tools_1.25.0-00_amd64.deb':
+      sha256: 189468b949c777e07ca098365cbde0bcbe0c1fdbf8c406501f64bdbb447ae6f8
+    'https://github.com/hitachienergy/alternative-repo/raw/main/2.0.x/x86_64/debian/packages/kubeadm_1.22.4-00_amd64.deb':
+      sha256: 27ecaa5eba0ee0f4b9adb9460fdb571b414ad85f0ec1d6060009ea6fdeb3447d
+    'https://github.com/hitachienergy/alternative-repo/raw/main/2.0.x/x86_64/debian/packages/kubectl_1.22.4-00_amd64.deb':
+      sha256: 637b120b480b3ede53b93a140bc9d40df648e0ae1415da4a4d2584e1989fee92
+    'https://github.com/hitachienergy/alternative-repo/raw/main/2.0.x/x86_64/debian/packages/kubelet_1.22.4-00_amd64.deb':
+      sha256: 947ff062f2ba903fdd0ef77749219e8b27ca9c56821f503ae58a18a253fef5e1
+    'https://github.com/hitachienergy/alternative-repo/raw/main/2.0.x/x86_64/debian/packages/kubernetes-cni_0.8.7-00_amd64.deb':
+      sha256: ca2303ea0eecadf379c65bad855f9ad7c95c16502c0e7b3d50edcb53403c500f

@@ -39,97 +39,6 @@ images:
       sha1: d8f4b9b55353f2570188782846b9f16823620a74
 
     # K8s
-    # v1.18.6
-    'k8s.gcr.io/kube-apiserver:v1.18.6':
-      sha1: 554a36b7a5db7b24bf0378b3622b93c51087a7d4
-
-    'k8s.gcr.io/kube-controller-manager:v1.18.6':
-      sha1: c5cd6963049e538f641b655261d2750e207f327f
-
-    'k8s.gcr.io/kube-scheduler:v1.18.6':
-      sha1: 9eed1197820be9e1c95594a4be174e28d7e5a33b
-
-    'k8s.gcr.io/kube-proxy:v1.18.6':
-      sha1: 86fc7b8d2ea226cc463574071d982b924d27cb3e
-
-    'k8s.gcr.io/coredns:1.6.7':
-      sha1: 3baae909aaa8dbb6c2b4a824817700f2e9aa4803
-
-    'k8s.gcr.io/etcd:3.4.3-0':
-      sha1: 61a04f2819693a35874ac284dfff756b07173352
-
-    'quay.io/coreos/flannel:v0.12.0-amd64':
-      sha1: 2eaa0d8d7014c5f5718f26e658f257bf62751ae0
-
-    'quay.io/coreos/flannel:v0.12.0':
-      sha1: 723485a775e6e1abb9ca2da87a48281a248442f3
-
-    'calico/cni:v3.15.0':
-      sha1: c98210c8a91da8717ccce487c0bd88dc01412a14
-
-    'calico/kube-controllers:v3.15.0':
-      sha1: 2057a587ac8992e68eee163e00e50fe55c9b15a8
-
-    'calico/node:v3.15.0':
-      sha1: 3e65c280ba9c0f47c7e1166fb8e154fda22e15d7
-
-    'calico/pod2daemon-flexvol:v3.15.0':
-      sha1: eb2c7d88f22bcb1a26aea227e0bdcc95fca7801e
-
-    # v1.19.15
-    'k8s.gcr.io/kube-apiserver:v1.19.15':
-      sha1: 8f2e76036cc48419dc7f77f60ee2c4b1edfbc0d3
-
-    'k8s.gcr.io/kube-controller-manager:v1.19.15':
-      sha1: 0efe4e022198d43ab80e98a11c29a72e33722028
-
-    'k8s.gcr.io/kube-scheduler:v1.19.15':
-      sha1: e1c793d55bd440c270694f560854267271de9fe7
-
-    'k8s.gcr.io/kube-proxy:v1.19.15':
-      sha1: 15d8fb70c7673f4745ea3c586b8b1849be71b5c7
-
-    # v1.20.12
-    'k8s.gcr.io/kube-apiserver:v1.20.12':
-      sha1: 34c9bad2e9da91be5285bfa083272b447235a63c
-
-    'k8s.gcr.io/kube-controller-manager:v1.20.12':
-      sha1: 570997ff4e53b3766a08f2aeeebc1c327c0970d4
-
-    'k8s.gcr.io/kube-scheduler:v1.20.12':
-      sha1: 44813174e670f7bbb8de285543fd4f0330396692
-
-    'k8s.gcr.io/kube-proxy:v1.20.12':
-      sha1: cc5120cbfa0a7957560b410f1a1b4a1a2fe2ac52
-
-    'k8s.gcr.io/coredns:1.7.0':
-      sha1: 7a11a88502cce4912e6306091273855f14f43c72
-
-    'k8s.gcr.io/pause:3.2':
-      sha1: ee84b4ad5b50edf61fce49be0faf83de77f3ce21
-
-    # v1.21.7
-    'k8s.gcr.io/kube-apiserver:v1.21.7':
-      sha1: 7643a70e9c40c7f62aaa3d600aae621bb39c991b
-
-    'k8s.gcr.io/kube-controller-manager:v1.21.7':
-      sha1: fc7f64ee8f7e6cb5c4f13d3760cb99404d9fc18c
-
-    'k8s.gcr.io/kube-scheduler:v1.21.7':
-      sha1: c6ccd2624dece1dde2d9730335f67162e5ef85da
-
-    'k8s.gcr.io/kube-proxy:v1.21.7':
-      sha1: 9ac75d087e0d684082ff9dbe5a80f530a915a3d1
-
-    'k8s.gcr.io/coredns/coredns:v1.8.0':
-      sha1: 30122c5575d639f6b978fe34786190652cfe3537
-
-    'k8s.gcr.io/etcd:3.4.13-0':
-      sha1: 234e6239dcff760da397fb06b3dda1dde226c760
-
-    'k8s.gcr.io/pause:3.4.1':
-      sha1: c203a33f0fcf5225c9cf5925571c80c4c2d8020b
-
     # v1.22.4
     'k8s.gcr.io/kube-apiserver:v1.22.4':
       sha1: 3c83ee79ae018a583f2d4642b8829570fd4f1d9f
@@ -152,23 +61,8 @@ images:
     'k8s.gcr.io/pause:3.5':
       sha1: d0359d4eec7d50783612e9cd59a54a5e517c774e
 
-    'quay.io/coreos/flannel:v0.14.0-amd64':
-      sha1: 378e06b6b5ab1c712c961ac73543a59f1ee1c3ac
-
     'quay.io/coreos/flannel:v0.14.0':
       sha1: 092a48b4eebb7a2328124a89fb7f2b9b4bcb3991
-
-    'calico/cni:v3.20.3':
-      sha1: 9b91b1b9e5c685b90c1c42cc902a2e9a8b1d877a
-
-    'calico/kube-controllers:v3.20.3':
-      sha1: 36d0ed61ed2c486904a059e52cea8cfcf0ae8264
-
-    'calico/node:v3.20.3':
-      sha1: 24771a6c1633b4b148f96564aa5b4d7d5e3cd91d
-
-    'calico/pod2daemon-flexvol:v3.20.3':
-      sha1: 39eec64bb679b43aec4ee0ce71c7c9544212a8e1
 
     'quay.io/coreos/flannel:v0.15.1':
       sha1: 6ed416d5c4cfb8a13d77368f44fb585d03753888
