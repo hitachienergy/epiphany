@@ -147,13 +147,13 @@ packages:
     'https://dl.grafana.com/oss/release/grafana_8.3.2_amd64.deb':
       sha256: 3f5ecf5726223314aa3147a24c732cc9ccede86b7d703d4835a6fc69d0fffff8
     # Switched to an alternate repository as K8s legacy repositories have been shut down
-    'https://github.com/hitachienergy/alternative-repo/raw/89e5ef7a09f358ad7a027b46a78138b86f88d0cf/2.0.x/x86_64/debian/packages/cri-tools_1.25.0-00_amd64.deb':
+    'https://github.com/hitachienergy/alternative-repo/raw/main/2.0.x/x86_64/debian/packages/cri-tools_1.25.0-00_amd64.deb':
       sha256: 189468b949c777e07ca098365cbde0bcbe0c1fdbf8c406501f64bdbb447ae6f8
-    'https://github.com/hitachienergy/alternative-repo/raw/89e5ef7a09f358ad7a027b46a78138b86f88d0cf/2.0.x/x86_64/debian/packages/kubeadm_1.22.4-00_amd64.deb':
+    'https://github.com/hitachienergy/alternative-repo/raw/main/2.0.x/x86_64/debian/packages/kubeadm_1.22.4-00_amd64.deb':
       sha256: 27ecaa5eba0ee0f4b9adb9460fdb571b414ad85f0ec1d6060009ea6fdeb3447d
-    'https://github.com/hitachienergy/alternative-repo/raw/89e5ef7a09f358ad7a027b46a78138b86f88d0cf/2.0.x/x86_64/debian/packages/kubectl_1.22.4-00_amd64.deb':
+    'https://github.com/hitachienergy/alternative-repo/raw/main/2.0.x/x86_64/debian/packages/kubectl_1.22.4-00_amd64.deb':
       sha256: 637b120b480b3ede53b93a140bc9d40df648e0ae1415da4a4d2584e1989fee92
-    'https://github.com/hitachienergy/alternative-repo/raw/89e5ef7a09f358ad7a027b46a78138b86f88d0cf/2.0.x/x86_64/debian/packages/kubelet_1.22.4-00_amd64.deb':
+    'https://github.com/hitachienergy/alternative-repo/raw/main/2.0.x/x86_64/debian/packages/kubelet_1.22.4-00_amd64.deb':
       sha256: 947ff062f2ba903fdd0ef77749219e8b27ca9c56821f503ae58a18a253fef5e1
-    'https://github.com/hitachienergy/alternative-repo/raw/89e5ef7a09f358ad7a027b46a78138b86f88d0cf/2.0.x/x86_64/debian/packages/kubernetes-cni_0.8.7-00_amd64.deb':
+    'https://github.com/hitachienergy/alternative-repo/raw/main/2.0.x/x86_64/debian/packages/kubernetes-cni_0.8.7-00_amd64.deb':
       sha256: ca2303ea0eecadf379c65bad855f9ad7c95c16502c0e7b3d50edcb53403c500f

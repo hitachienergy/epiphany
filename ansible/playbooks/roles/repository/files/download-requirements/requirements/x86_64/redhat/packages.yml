@@ -140,13 +140,13 @@ packages:
     'https://dl.grafana.com/oss/release/grafana-8.3.2-1.x86_64.rpm':
       sha256: 5ad3cc7137bb8599f21eca40d08d671f3c508d856aea01b5a29576fda7f3c827
     # Switched to an alternate repository as K8s legacy repositories have been shut down
-    'https://github.com/hitachienergy/alternative-repo/raw/89e5ef7a09f358ad7a027b46a78138b86f88d0cf/2.0.x/x86_64/redhat/packages/94772a15db527c2f5541a80690535b0d973d82e3ab34999b57a551d38505d35c-kubelet-1.22.4-0.x86_64.rpm':
+    'https://github.com/hitachienergy/alternative-repo/raw/main/2.0.x/x86_64/redhat/packages/94772a15db527c2f5541a80690535b0d973d82e3ab34999b57a551d38505d35c-kubelet-1.22.4-0.x86_64.rpm':
       sha256: 94772a15db527c2f5541a80690535b0d973d82e3ab34999b57a551d38505d35c
-    'https://github.com/hitachienergy/alternative-repo/raw/89e5ef7a09f358ad7a027b46a78138b86f88d0cf/2.0.x/x86_64/redhat/packages/a29b8cda9b0efeca5c1aaaaa295938ade6ac6ae4d960d03faf1d6594f5daff18-kubeadm-1.22.4-0.x86_64.rpm':
+    'https://github.com/hitachienergy/alternative-repo/raw/main/2.0.x/x86_64/redhat/packages/a29b8cda9b0efeca5c1aaaaa295938ade6ac6ae4d960d03faf1d6594f5daff18-kubeadm-1.22.4-0.x86_64.rpm':
       sha256: a29b8cda9b0efeca5c1aaaaa295938ade6ac6ae4d960d03faf1d6594f5daff18
-    'https://github.com/hitachienergy/alternative-repo/raw/89e5ef7a09f358ad7a027b46a78138b86f88d0cf/2.0.x/x86_64/redhat/packages/bc7a9f8e7c6844cfeab2066a84b8fecf8cf608581e56f6f96f80211250f9a5e7-kubectl-1.22.4-0.x86_64.rpm':
+    'https://github.com/hitachienergy/alternative-repo/raw/main/2.0.x/x86_64/redhat/packages/bc7a9f8e7c6844cfeab2066a84b8fecf8cf608581e56f6f96f80211250f9a5e7-kubectl-1.22.4-0.x86_64.rpm':
       sha256: bc7a9f8e7c6844cfeab2066a84b8fecf8cf608581e56f6f96f80211250f9a5e7
-    'https://github.com/hitachienergy/alternative-repo/raw/89e5ef7a09f358ad7a027b46a78138b86f88d0cf/2.0.x/x86_64/redhat/packages/db7cb5cb0b3f6875f54d10f02e625573988e3e91fd4fc5eef0b1876bb18604ad-kubernetes-cni-0.8.7-0.x86_64.rpm':
+    'https://github.com/hitachienergy/alternative-repo/raw/main/2.0.x/x86_64/redhat/packages/db7cb5cb0b3f6875f54d10f02e625573988e3e91fd4fc5eef0b1876bb18604ad-kubernetes-cni-0.8.7-0.x86_64.rpm':
       sha256: db7cb5cb0b3f6875f54d10f02e625573988e3e91fd4fc5eef0b1876bb18604ad
-    'https://github.com/hitachienergy/alternative-repo/raw/89e5ef7a09f358ad7a027b46a78138b86f88d0cf/2.0.x/x86_64/redhat/packages/e382ead81273ab8ebcddf14cc15bf977e44e1fd541a2cfda6ebe5741c255e59f-cri-tools-1.25.0-0.x86_64.rpm':
+    'https://github.com/hitachienergy/alternative-repo/raw/main/2.0.x/x86_64/redhat/packages/e382ead81273ab8ebcddf14cc15bf977e44e1fd541a2cfda6ebe5741c255e59f-cri-tools-1.25.0-0.x86_64.rpm':
       sha256: e382ead81273ab8ebcddf14cc15bf977e44e1fd541a2cfda6ebe5741c255e59f
