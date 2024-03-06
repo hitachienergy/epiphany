@@ -1,6 +1,12 @@
 <!-- markdownlint-disable-file no-duplicate-header -->
 # Changelog 2.0
 
+## [2.0.13] 2024-03-05
+
+### Fixed
+
+- [#3443](https://github.com/hitachienergy/epiphany/issues/3443) - K8s legacy repositories shut down
+
 ## [2.0.12] 2024-02-22
 
 ### Added
