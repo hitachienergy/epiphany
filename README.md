@@ -1,3 +1,6 @@
+# ⚠️UNSUPPORTED AS OF 1 March 2024⚠️
+For up-to-date Epiphany version lifecycle information check [here.](https://github.com/epiphany-platform/epiphany/blob/develop/docs/home/LIFECYCLE.md)
+
 # Epiphany Platform
 [![GitHub release](https://img.shields.io/github/v/release/hitachienergy/epiphany.svg)](https://github.com/hitachienergy/epiphany/releases)
 [![Github license](https://img.shields.io/github/license/hitachienergy/epiphany)](https://github.com/hitachienergy/epiphany/releases)
