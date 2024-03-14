@@ -54,7 +54,7 @@ For more information, refer to [AWS Systems Manager User Guide](https://docs.aws
 
 For Epiphany >= v2.0 we recommend the following image (urn):
 
-- Ubuntu: `Canonical:0001-com-ubuntu-server-focal:20_04-lts-gen2:20.04.202307010` (kernel 5.15.0-1021-azure).
+- Ubuntu: `Canonical:0001-com-ubuntu-server-focal:20_04-lts-gen2:20.04.202402290` (kernel 5.15.0-1057-azure).
 
 Note: For different supported OS versions this guide may be useful as well.
 

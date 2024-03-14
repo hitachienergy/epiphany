@@ -1,5 +1,11 @@
-<!-- markdownlint-disable-file no-duplicate-header -->
+<!-- markdownlint-disable-file no-duplicate-heading -->
 # Changelog 2.1-PGML
+
+## [2.1.1+PGML]
+
+### Updated
+
+- Ubuntu image to 20.04.202402290
 
 ## [2.1.0+PGML]
 
