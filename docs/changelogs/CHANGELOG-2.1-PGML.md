@@ -16,6 +16,7 @@
 - Support for externally managed VNets
 - yq and ytt in Dockerfile
 - epicli format
+- Apply `os-users` tag in `common` role to included subtasks
 
 ### Updated
 

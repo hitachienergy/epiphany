@@ -93,7 +93,10 @@
   tags:
     - epiuser
 
-- include_tasks: os-users.yml
+- include_tasks:
+    file: os-users.yml
+    apply:
+      tags: os-users
   when:
     - specification.users is defined and specification.users | list | length > 0
   tags:
