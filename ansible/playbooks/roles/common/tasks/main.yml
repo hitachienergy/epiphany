@@ -125,7 +125,10 @@
   tags:
     - os-users
 
-- include_tasks: security.yml
+- include_tasks:
+    file: security.yml
+    apply:
+      tags: security
   tags:
     - security
 

@@ -1,5 +1,10 @@
 ---
-- name: Restart ssh
+- name: Reload sshd
+  systemd:
+    name: sshd
+    state: reloaded
+
+- name: Restart sshd
   systemd:
     name: sshd
     state: restarted

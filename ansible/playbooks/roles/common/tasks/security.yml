@@ -16,6 +16,7 @@
     group: root
     mode: u=rw,o=r
     backup: true
+  notify: Reload sshd
 
 # Ansible's replace module hangs without an error,
 # so shell is used
@@ -31,4 +32,4 @@
     src: /etc/ssh/moduli.tmp
     remote_src: true
     mode: preserve
-  notify: Restart ssh
+  notify: Restart sshd

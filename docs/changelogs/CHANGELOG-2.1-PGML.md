@@ -12,6 +12,10 @@
 
 - Ubuntu image to 20.04.202402290
 
+### Removed
+
+- chacha20-poly1305@openssh.com cipher
+
 ## [2.1.0+PGML]
 
 ### Added
