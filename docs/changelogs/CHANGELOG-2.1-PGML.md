@@ -6,6 +6,7 @@
 ### Added
 
 - kubelogin
+- Customize AKS CoreDNS hosts plugin
 
 ### Updated
 
