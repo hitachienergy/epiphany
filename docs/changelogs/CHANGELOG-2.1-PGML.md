@@ -3,6 +3,10 @@
 
 ## [2.1.1+PGML]
 
+### Added
+
+- kubelogin
+
 ### Updated
 
 - Ubuntu image to 20.04.202402290
