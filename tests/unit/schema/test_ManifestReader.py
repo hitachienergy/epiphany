@@ -4,7 +4,7 @@ from pytest_mock import MockerFixture
 
 from cli.src.helpers.yaml_helpers import safe_load_all
 from cli.src.schema.ManifestHandler import ManifestHandler
-from tests.unit.data.schema.ManifestReader_data import (
+from cli.testing.schema.ManifestReader_data import (
     EXPECTED_PARSED_MANIFEST_DOCS,
     EXPECTED_UPDATED_DOC_WITH_NEW_DOC_ADDED,
     EXPECTED_UPDATED_DOC_WITH_TWO_INFRA_DOCS,
@@ -12,7 +12,7 @@ from tests.unit.data.schema.ManifestReader_data import (
     INPUT_DOC_TO_UPDATE_TWO_INFRA_DOCS,
     INPUT_MANIFEST_DOCS
 )
-from tests.unit.mocks.StreamMock import StreamMock
+from cli.testing.mocks.StreamMock import StreamMock
 
 
 def test_read_manifest(mocker: MockerFixture):

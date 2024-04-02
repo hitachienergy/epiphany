@@ -16,7 +16,7 @@ from cli.src.helpers.build_io import (ANSIBLE_CFG_FILE, ANSIBLE_INVENTORY_FILE,
                                       get_terraform_path,
                                       save_ansible_config_file, save_inventory)
 from cli.src.helpers.objdict_helpers import dict_to_objdict
-from tests.unit.helpers.constants import (CLUSTER_NAME_SAVE,
+from cli.testing.helpers.constants import (CLUSTER_NAME_SAVE,
                                           OUTPUT_PATH,
                                           TEST_CLUSTER_MODEL,
                                           TEST_INVENTORY)

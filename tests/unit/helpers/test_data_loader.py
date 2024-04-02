@@ -6,7 +6,7 @@ from cli.src.helpers.data_loader import (SCHEMA_DIR, load_all_schema_objs,
                                          load_json_obj, load_schema_obj,
                                          load_template_file, schema_types,
                                          template_types)
-from tests.unit.helpers.constants import (OUTPUT_PATH, TEST_CLUSTER_MODEL,
+from cli.testing.helpers.constants import (OUTPUT_PATH, TEST_CLUSTER_MODEL,
                                           TEST_INVENTORY, TEST_JSON,
                                           TEST_JSON_NAME)
 
