@@ -37,7 +37,7 @@ specification:
     - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|run)($|/)'
     - '--collector.netdev.device-exclude="^$"'
     - '--collector.textfile.directory=/var/lib/prometheus/node-exporter'
-    - '--collector.systemd.unit-include=(kafka.service|zookeeper.service)'
+    - '--collector.systemd.unit-include=.+\.service$'
 
   web_listen_port: "9100"
   web_listen_address: ""

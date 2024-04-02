@@ -13,6 +13,7 @@
 
 - Ubuntu image to 20.04.202402290
 - [#3421](https://github.com/hitachienergy/epiphany/issues/3421) - Bump Python dependencies to the latest to fix a number of CVE issues
+- Collect node_exporter metrics for all systemd services
 
 ### Removed
 
