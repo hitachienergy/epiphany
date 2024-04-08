@@ -15,6 +15,9 @@ python-json-logger = "*"
 click = "*"
 ansible = "6.7.0"
 azure-cli = "2.55.0"
+# https://github.com/ansible/ansible/issues/77808
+# https://github.com/pyca/bcrypt/issues/684
+passlib = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

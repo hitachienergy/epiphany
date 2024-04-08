@@ -167,6 +167,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | oauthlib | 3.2.2 | https://github.com/oauthlib/oauthlib | BSD |
 | packaging | 23.2 | https://github.com/pypa/packaging | [Other](https://api.github.com/repos/pypa/packaging/license) |
 | paramiko | 3.4.0 | https://paramiko.org | LGPL |
+| passlib | 1.7.4 | https://passlib.readthedocs.io | BSD |
 | pathlib2 | 2.3.7.post1 | https://github.com/jazzband/pathlib2 | MIT |
 | pkginfo | 1.9.6 | https://code.launchpad.net/~tseaver/pkginfo/trunk | MIT |
 | portalocker | 2.8.2 | https://github.com/WoLpH/portalocker  | BSD-3-Clause |

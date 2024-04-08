@@ -1,6 +1,12 @@
 <!-- markdownlint-disable-file no-duplicate-heading -->
 # Changelog 2.1-PGML
 
+## [2.1.2+PGML]
+
+### Fixed
+
+- Add passlib to fix `password_hash` filter in the `blackbox_exporter` role
+
 ## [2.1.1+PGML]
 
 ### Added
