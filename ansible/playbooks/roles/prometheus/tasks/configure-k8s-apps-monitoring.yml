@@ -38,6 +38,8 @@
   template:
     src: kubeconfig.yml.j2
     dest: "{{ specification.config_directory }}/kubeconfig"
+    owner: prometheus
+    group: prometheus
     mode: u=r,go=
 
 - name: Clear kubeconfig in memory

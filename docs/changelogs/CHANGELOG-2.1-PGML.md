@@ -6,6 +6,7 @@
 ### Fixed
 
 - Add passlib to fix `password_hash` filter in the `blackbox_exporter` role
+- Error when loading kubeconfig file by prometheus.service
 
 ## [2.1.1+PGML]
 
