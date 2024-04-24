@@ -4,6 +4,27 @@
 # Subscriptions with certs: subscription-manager repos --enable "rhel-*-optional-rpms" --enable "rhel-*-extras-rpms"
 # w/o subscription https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
+# Update AlmaLinux 8 GPG key
+# https://almalinux.org/blog/2023-12-20-almalinux-8-key-update/
+- block:
+    - name: Install the latest version of almalinux-release package
+      dnf:
+        name:
+          - almalinux-release
+        update_cache: true
+        state: latest
+      register: result
+      retries: 3
+      delay: 1
+      until: result is succeeded
+
+    - name: Import the new AlmaLinux 8 GPG key
+      rpm_key:
+        key: /etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux
+  when:
+    - ansible_distribution == 'AlmaLinux'
+    - ansible_distribution_major_version == '8'
+
 - name: Install the latest version of ca-certificates package
   dnf:
     name:
