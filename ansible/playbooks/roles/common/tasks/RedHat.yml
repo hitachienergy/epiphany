@@ -18,9 +18,15 @@
       delay: 1
       until: result is succeeded
 
+    - name: Remove expired AlmaLinux 8 GPG key
+      rpm_key:
+        key: /etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux
+        state: absent
+
     - name: Import the new AlmaLinux 8 GPG key
       rpm_key:
         key: /etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux
+        state: present
   when:
     - ansible_distribution == 'AlmaLinux'
     - ansible_distribution_major_version == '8'
