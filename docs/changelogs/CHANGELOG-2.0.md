@@ -1,6 +1,13 @@
 <!-- markdownlint-disable-file no-duplicate-header -->
 # Changelog 2.0
 
+## [2.0.14] 2024-MM-DD
+
+### Fixed
+
+- [#3450](https://github.com/hitachienergy/epiphany/issues/3450) - Erlang 23 packages not available for Ubuntu focal distro
+- [#3452](https://github.com/hitachienergy/epiphany/issues/3452) - AlmaLinux 8 GPG key changed
+
 ## [2.0.13] 2024-03-05
 
 ### Fixed

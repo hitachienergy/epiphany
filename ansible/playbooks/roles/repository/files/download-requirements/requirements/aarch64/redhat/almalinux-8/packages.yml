@@ -6,6 +6,9 @@ prereq-packages:
   - almalinux-logos-httpd  # for httpd
 
 packages:
-  from_repo: []
+  from_repo:
+    # Update AlmaLinux 8 GPG key
+    # https://almalinux.org/blog/2023-12-20-almalinux-8-key-update/
+    - 'almalinux-release'
   multiple_versioned: []
   from_url: {}

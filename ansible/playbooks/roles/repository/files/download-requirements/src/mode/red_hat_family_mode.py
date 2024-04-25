@@ -7,6 +7,7 @@ from typing import Any, Dict, List, Set
 from src.command.command import Command
 from src.config.config import Config
 from src.config.os_type import OSArch
+from src.config.os_type import OSType
 from src.mode.base_mode import BaseMode, load_yaml_file
 
 
@@ -50,6 +51,12 @@ class RedHatFamilyMode(BaseMode):
             logging.debug('Done.')
 
     def _install_base_packages(self):
+        # Update AlmaLinux 8 GPG key
+        # https://almalinux.org/blog/2023-12-20-almalinux-8-key-update/
+        if self._cfg.os_type == OSType.Almalinux:
+            self._tools.dnf.install('almalinux-release', ignore_already_installed_error=True)
+            self._tools.rpm.import_key('/etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux')
+
         # Ensure `dnf config-manager` command
         if not self._tools.rpm.is_package_installed('dnf-plugins-core'):
             self._tools.dnf.install('dnf-plugins-core')
