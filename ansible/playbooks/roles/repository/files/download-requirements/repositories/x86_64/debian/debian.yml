@@ -4,10 +4,6 @@ repositories:
     content: 'deb https://artifacts.elastic.co/packages/oss-6.x/apt stable main'
     key: 'https://artifacts.elastic.co/GPG-KEY-elasticsearch'
 
-  erlang-23.x:
-    content: 'deb https://packages.erlang-solutions.com/ubuntu focal contrib'
-    key: 'https://packages.erlang-solutions.com/ubuntu/erlang_solutions.asc'
-
   rabbitmq:
     content: 'deb https://packagecloud.io/rabbitmq/rabbitmq-server/ubuntu bionic main'
     key: 'https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey'
