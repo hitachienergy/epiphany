@@ -54,8 +54,8 @@ class RedHatFamilyMode(BaseMode):
         # Update AlmaLinux 8 GPG key
         # https://almalinux.org/blog/2023-12-20-almalinux-8-key-update/
         if self._cfg.os_type == OSType.Almalinux:
+            self._tools.rpm.import_key('https://repo.almalinux.org/almalinux/RPM-GPG-KEY-AlmaLinux')
             self._tools.dnf.install('almalinux-release', ignore_already_installed_error=True)
-            self._tools.rpm.import_key('/etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux')
 
         # Ensure `dnf config-manager` command
         if not self._tools.rpm.is_package_installed('dnf-plugins-core'):
