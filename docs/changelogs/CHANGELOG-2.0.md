@@ -1,6 +1,12 @@
 <!-- markdownlint-disable-file no-duplicate-header -->
 # Changelog 2.0
 
+## [2.0.15] YYYY-MM-DD
+
+### Fixed
+
+- [#3452](https://github.com/hitachienergy/epiphany/issues/3452) - Import new AlmaLinux 8 GPG key
+
 ## [2.0.14] 2024-04-25
 
 ### Fixed
