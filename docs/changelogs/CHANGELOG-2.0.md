@@ -6,6 +6,8 @@
 ### Fixed
 
 - [#3452](https://github.com/hitachienergy/epiphany/issues/3452) - Import new AlmaLinux 8 GPG key
+- [#3464](https://github.com/hitachienergy/epiphany/issues/3464) - Update Python dependencies to fix security issues
+
 
 ## [2.0.14] 2024-04-25
 
