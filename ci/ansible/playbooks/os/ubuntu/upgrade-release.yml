@@ -44,8 +44,6 @@
           until: result is succeeded
           register: result
           changed_when: false
-          args:
-            warn: false  # do not suggest apt module
 
         # 3) Fully update the system
 
