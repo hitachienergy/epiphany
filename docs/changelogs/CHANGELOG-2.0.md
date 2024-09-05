@@ -1,5 +1,13 @@
-<!-- markdownlint-disable-file no-duplicate-header -->
+<!-- markdownlint-disable-file no-duplicate-heading -->
 # Changelog 2.0
+
+## [2.0.16] 2024-09-09
+
+### Updated
+
+- [#3436](https://github.com/hitachienergy/epiphany/issues/3436) - Upgrade Ansible
+- [AWS] AlmaLinux image from 8.6.20220901 to 8.7.20221110
+- Increase the default Ansible timeout for connection plugins to use (from 10 to 30)
 
 ## [2.0.15] 2024-08-29
 
@@ -7,7 +15,6 @@
 
 - [#3452](https://github.com/hitachienergy/epiphany/issues/3452) - Import new AlmaLinux 8 GPG key
 - [#3464](https://github.com/hitachienergy/epiphany/issues/3464) - Update Python dependencies to fix security issues
-
 
 ## [2.0.14] 2024-04-25
 
