@@ -8,6 +8,7 @@
 - [#3436](https://github.com/hitachienergy/epiphany/issues/3436) - Upgrade Ansible
 - [AWS] AlmaLinux image from 8.6.20220901 to 8.7.20221110
 - Increase the default Ansible timeout for connection plugins to use (from 10 to 30)
+- Increase `retries-count` from 3 to 10 for `download-requirements.py`
 
 ## [2.0.15] 2024-08-29
 
