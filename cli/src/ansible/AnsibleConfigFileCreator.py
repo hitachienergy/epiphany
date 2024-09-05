@@ -53,6 +53,7 @@ class AnsibleConfigFileCreator(Step):
         self.add_setting('defaults', 'interpreter_python', 'auto')
         if not Config().no_color:
             self.add_setting('defaults', 'force_color', 'true')
+        self.add_setting('defaults', 'timeout', 30)
 
     def create(self):
         self.logger.info('Creating ansible.cfg')
