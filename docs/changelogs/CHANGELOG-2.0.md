@@ -13,6 +13,7 @@
 ### Fixed
 
 - [Azure] Sometimes `epicli - list index out of range` occurs when creating Ansible inventory
+- pytest tests in VS Code
 
 ## [2.0.15] 2024-08-29
 
