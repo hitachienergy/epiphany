@@ -10,6 +10,10 @@
 - Increase the default Ansible timeout for connection plugins to use (from 10 to 30)
 - Increase `retries-count` from 3 to 10 for `download-requirements.py`
 
+### Fixed
+
+- [Azure] Sometimes `epicli - list index out of range` occurs when creating Ansible inventory
+
 ## [2.0.15] 2024-08-29
 
 ### Fixed
