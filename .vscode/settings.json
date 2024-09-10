@@ -1,4 +1,6 @@
 {
+    // Ansible
+    "ansible.python.interpreterPath": "/usr/local/bin/python3",
     // Common
     "trailing-spaces.highlightCurrentLine": false, // highlighting currently edited line can be annoying
     "trailing-spaces.syntaxIgnore": [
@@ -6,7 +8,6 @@
     ],
 
     // Python
-    "pylint.enabled": true,
     "pylint.args": [
         "--rcfile=${workspaceFolder}/.pylintrc"
     ],

@@ -19,10 +19,10 @@ from cli.src.helpers.build_io import (ANSIBLE_CFG_FILE, ANSIBLE_INVENTORY_FILE,
                                       save_ansible_config_file, save_inventory)
 from cli.src.helpers.objdict_helpers import dict_to_objdict
 from cli.src.helpers.yaml_helpers import safe_load
-from tests.unit.helpers.constants import (CLUSTER_NAME_SAVE,
-                                          OUTPUT_PATH,
-                                          TEST_CLUSTER_MODEL,
-                                          TEST_INVENTORY)
+from cli.testing.helpers.constants import (CLUSTER_NAME_SAVE,
+                                           OUTPUT_PATH,
+                                           TEST_CLUSTER_MODEL,
+                                           TEST_INVENTORY)
 
 ANSIBLE_CONFIG_FILE_SETTINGS = [('defaults', {
                                  'interpreter_python': 'auto_legacy_silent',

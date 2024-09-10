@@ -66,8 +66,8 @@
       admin: "{{ certificates.files.admin.cert.subject }}"
       node: "{{ certificates.files.node.cert.subject }}"
     _epiphany_dn_attributes:
-      admin: "{{ certificates.dn_attributes_order | intersect(_epiphany_subjects.admin.keys()) }}"
-      node: "{{ certificates.dn_attributes_order | intersect(_epiphany_subjects.node.keys()) }}"
+      admin: "{{ certificates.dn_attributes_order | select('in', _epiphany_subjects.admin.keys()) }}"
+      node: "{{ certificates.dn_attributes_order | select('in', _epiphany_subjects.node.keys()) }}"
     _epiphany_dns:
       admin: >-
         {{ _epiphany_dn_attributes.admin | zip(_epiphany_dn_attributes.admin | map('extract', _epiphany_subjects.admin))
