@@ -55,8 +55,9 @@ Note that versions are default versions and can be changed in certain cases thro
 | Component | Version | Repo/Website | License |
 | --------- | ------- | ------------ | ------- |
 | adal | 1.2.7 | https://github.com/AzureAD/azure-activedirectory-library-for-python | [Other](https://api.github.com/repos/azuread/azure-activedirectory-library-for-python/license) |
-| ansible-core | 2.17.3 | https://ansible.com/ | GPLv3+ |
-| antlr4-python3-runtime | 4.13.1 | http://www.antlr.org | BSD |
+| ansible-core | 2.16.10 | https://ansible.com/ | GPLv3+ |
+| ansible | 9.9.0 | https://ansible.com/ | GPL-3.0-or-later |
+| antlr4-python3-runtime | 4.13.2 | http://www.antlr.org | BSD |
 | applicationinsights | 0.11.10 | https://github.com/Microsoft/ApplicationInsights-Python | [MIT License](https://api.github.com/repos/microsoft/applicationinsights-python/license) |
 | argcomplete | 3.3.0 | https://github.com/kislyuk/argcomplete | [Apache License 2.0](https://api.github.com/repos/kislyuk/argcomplete/license) |
 | attrs | 24.2.0 | https://www.attrs.org/ | MIT |
@@ -145,15 +146,15 @@ Note that versions are default versions and can be changed in certain cases thro
 | azure-synapse-managedprivateendpoints | 0.4.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | azure-synapse-spark | 0.2.0 | https://github.com/Azure/azure-sdk-for-python | [MIT License](https://api.github.com/repos/azure/azure-sdk-for-python/license) |
 | bcrypt | 4.2.0 | https://github.com/pyca/bcrypt/ | Apache-2.0 |
-| boto3 | 1.35.6 | https://github.com/boto/boto3 | [Apache License 2.0](https://api.github.com/repos/boto/boto3/license) |
-| botocore | 1.35.6 | https://github.com/boto/botocore | [Apache License 2.0](https://api.github.com/repos/boto/botocore/license) |
-| certifi | 2024.7.4 | https://github.com/certifi/python-certifi | [Other](https://api.github.com/repos/certifi/python-certifi/license) |
-| cffi | 1.17.0 | http://cffi.readthedocs.org | MIT |
+| boto3 | 1.35.12 | https://github.com/boto/boto3 | [Apache License 2.0](https://api.github.com/repos/boto/boto3/license) |
+| botocore | 1.35.12 | https://github.com/boto/botocore | [Apache License 2.0](https://api.github.com/repos/boto/botocore/license) |
+| certifi | 2024.8.30 | https://github.com/certifi/python-certifi | [Other](https://api.github.com/repos/certifi/python-certifi/license) |
+| cffi | 1.17.1 | http://cffi.readthedocs.org | MIT |
 | chardet | 5.2.0 | https://github.com/chardet/chardet | [GNU Lesser General Public License v2.1](https://api.github.com/repos/chardet/chardet/license) |
 | charset-normalizer | 3.3.2 | https://github.com/Ousret/charset_normalizer | [MIT License](https://api.github.com/repos/ousret/charset_normalizer/license) |
 | click | 8.1.7 | https://palletsprojects.com/p/click/ | BSD-3-Clause |
 | colorama | 0.4.6 | https://github.com/tartley/colorama | BSD 3-Clause "New" or "Revised" License |
-| cryptography | 43.0.0 | https://github.com/pyca/cryptography | Apache-2.0 OR BSD-3-Clause |
+| cryptography | 43.0.1 | https://github.com/pyca/cryptography | Apache-2.0 OR BSD-3-Clause |
 | decorator | 5.1.1 | https://github.com/micheles/decorator | [BSD 2-Clause "Simplified" License](https://api.github.com/repos/micheles/decorator/license) |
 | Deprecated | 1.2.14 | https://github.com/tantale/deprecated | [MIT License](https://api.github.com/repos/tantale/deprecated/license) |
 | Antergos Linux | 2015.10 (ISO-Rolling) | https://github.com/python-distro/distro | [Apache License 2.0](https://api.github.com/repos/python-distro/distro/license) |
@@ -170,22 +171,21 @@ Note that versions are default versions and can be changed in certain cases thro
 | jsonschema | 4.23.0 | https://json-schema.org/ | MIT |
 | knack | 0.11.0 | https://github.com/microsoft/knack | [MIT License](https://api.github.com/repos/microsoft/knack/license) |
 | MarkupSafe | 2.1.5 | https://palletsprojects.com/p/markupsafe/ | BSD-3-Clause |
-| msal-extensions | https://github.com/AzureAD/microsoft-authentication-extensions-for-python | MIT |
+| msal-extensions | 1.2.0 | https://github.com/AzureAD/microsoft-authentication-extensions-for-python | MIT License |
 | msal | 1.30.0 | https://github.com/AzureAD/microsoft-authentication-library-for-python | [Other](https://api.github.com/repos/azuread/microsoft-authentication-library-for-python/license) |
 | msal | 1.30.0 | https://github.com/AzureAD/microsoft-authentication-library-for-python | [Other](https://api.github.com/repos/azuread/microsoft-authentication-library-for-python/license) |
 | msrest | 0.7.1 | https://github.com/Azure/msrest-for-python | [MIT License](https://api.github.com/repos/azure/msrest-for-python/license) |
 | msrestazure | 0.6.4.post1 | https://github.com/Azure/msrestazure-for-python | [MIT License](https://api.github.com/repos/azure/msrestazure-for-python/license) |
 | oauthlib | 3.2.2 | https://github.com/oauthlib/oauthlib | [BSD 3-Clause "New" or "Revised" License](https://api.github.com/repos/oauthlib/oauthlib/license) |
-| packaging | 24.1 | [Other](https://api.github.com/repos/pypa/packaging/license) |
+| packaging | 24.1 | https://github.com/pypa/packaging | [Other](https://api.github.com/repos/pypa/packaging/license) |
 | paramiko | 3.4.1 | https://paramiko.org | LGPL |
 | pkginfo | 1.10.0 | https://code.launchpad.net/~tseaver/pkginfo/trunk | MIT |
-| portalocker | 2.10.1 | https://github.com/WoLpH/portalocker  | BSD-3-Clause |
+| portalocker | 2.10.1 | https://github.com/WoLpH/portalocker | BSD-3-Clause |
 | psutil | 6.0.0 | https://github.com/giampaolo/psutil | [BSD 3-Clause "New" or "Revised" License](https://api.github.com/repos/giampaolo/psutil/license) |
 | pycomposefile | 0.0.31 | https://github.com/smurawski/pycomposefile | [MIT License](https://api.github.com/repos/smurawski/pycomposefile/license) |
 | pycparser | 2.22 | https://github.com/eliben/pycparser | [Other](https://api.github.com/repos/eliben/pycparser/license) |
 | PyGithub | 1.59.1 | https://github.com/pygithub/pygithub | [GNU Lesser General Public License v3.0](https://api.github.com/repos/pygithub/pygithub/license) |
 | Pygments | 2.18.0 | https://pygments.org/ | BSD-2-Clause |
-| PyJWT | 2.9.0 | https://github.com/jpadilla/pyjwt | [MIT License](https://api.github.com/repos/jpadilla/pyjwt/license) |
 | PyJWT | 2.9.0 | https://github.com/jpadilla/pyjwt | [MIT License](https://api.github.com/repos/jpadilla/pyjwt/license) |
 | PyNaCl | 1.5.0 | https://github.com/pyca/pynacl/ | [Apache License 2.0](https://api.github.com/repos/pyca/pynacl/license) |
 | pyOpenSSL | 24.2.1 | https://pyopenssl.org/ | Apache License, Version 2.0 |
@@ -197,7 +197,7 @@ Note that versions are default versions and can be changed in certain cases thro
 | requests-oauthlib | 2.0.0 | https://github.com/requests/requests-oauthlib | [ISC License](https://api.github.com/repos/requests/requests-oauthlib/license) |
 | requests | 2.32.3 | https://requests.readthedocs.io | Apache-2.0 |
 | requests | 2.32.3 | https://requests.readthedocs.io | Apache-2.0 |
-| resolvelib | 0.8.1 | https://github.com/sarugaku/resolvelib | [ISC License](https://api.github.com/repos/sarugaku/resolvelib/license) |
+| resolvelib | 1.0.1 | https://github.com/sarugaku/resolvelib | [ISC License](https://api.github.com/repos/sarugaku/resolvelib/license) |
 | rpds-py | 0.20.0 | https://github.com/crate-py/rpds | MIT |
 | ruamel.yaml.clib | 0.2.8 | https://sourceforge.net/p/ruamel-yaml-clib/code/ci/default/tree | MIT |
 | ruamel.yaml | 0.17.40 | https://sourceforge.net/p/ruamel-yaml/code/ci/default/tree | MIT license |

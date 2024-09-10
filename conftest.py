@@ -4,7 +4,7 @@ import shutil
 
 from cli.src.Config import Config
 from cli.src.schema.ManifestHandler import ManifestHandler
-from tests.unit.helpers.constants import TEST_DOCS, CLUSTER_NAME_SAVE, CLUSTER_NAME_LOAD, NON_EXISTING_CLUSTER,\
+from cli.testing.helpers.constants import TEST_DOCS, CLUSTER_NAME_SAVE, CLUSTER_NAME_LOAD, NON_EXISTING_CLUSTER,\
     TEST_JSON, TEST_JSON_NAME
 
 

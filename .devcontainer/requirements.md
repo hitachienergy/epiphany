@@ -46,7 +46,7 @@ The main reasons for this 2-way approach:
 2. Run the following to update the `license.py` and generate the `DEPENDENCIES.md` file:
 
     ```shell
-    python gen-dependency-info.py YOUR-GITHUB-PAT
+    python3 gen-dependency-info.py YOUR-GITHUB-PAT
     ```
 
     For obtaining a GitHub Personal Access Token, check [here](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line).

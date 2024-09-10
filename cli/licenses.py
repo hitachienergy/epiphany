@@ -14,11 +14,19 @@ LICENSES = [
     },
     {
         "Name": "ansible-core",
-        "Version": "2.17.3",
+        "Version": "2.16.10",
         "Summary": "Radically simple IT automation",
         "Home-page": "https://ansible.com/",
         "Author": "Ansible, Inc.",
         "License": "GPLv3+"
+    },
+    {
+        "Name": "ansible",
+        "Version": "9.9.0",
+        "Summary": "Radically simple IT automation",
+        "Home-page": "https://ansible.com/",
+        "Author": "Ansible, Inc.",
+        "License": "GPL-3.0-or-later"
     },
     {
         "Name": "antlr4-python3-runtime",
@@ -85,8 +93,7 @@ LICENSES = [
         "Author": "Microsoft Corporation",
         "License": "MIT License",
         "License URL": "https://api.github.com/repos/azure/azure-cli/license",
-        "License repo": "MIT License\n\nCopyright (c) 2016 Microsoft Corporation\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
-        "License text": "MIT License\n\nCopyright (c) [year] [fullname]\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n"
+        "License repo": "MIT License\n\nCopyright (c) 2016 Microsoft Corporation\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n"
     },
     {
         "Name": "azure-cli-telemetry",
@@ -968,7 +975,7 @@ LICENSES = [
     },
     {
         "Name": "boto3",
-        "Version": "1.35.6",
+        "Version": "1.35.12",
         "Summary": "The AWS SDK for Python",
         "Home-page": "https://github.com/boto/boto3",
         "Author": "Amazon Web Services",
@@ -979,7 +986,7 @@ LICENSES = [
     },
     {
         "Name": "botocore",
-        "Version": "1.35.6",
+        "Version": "1.35.12",
         "Summary": "Low-level, data-driven core of boto 3.",
         "Home-page": "https://github.com/boto/botocore",
         "Author": "Amazon Web Services",
@@ -990,7 +997,7 @@ LICENSES = [
     },
     {
         "Name": "certifi",
-        "Version": "2024.7.4",
+        "Version": "2024.8.30",
         "Summary": "Python package for providing Mozilla's CA Bundle.",
         "Home-page": "https://github.com/certifi/python-certifi",
         "Author": "Kenneth Reitz",
@@ -1000,7 +1007,7 @@ LICENSES = [
     },
     {
         "Name": "cffi",
-        "Version": "1.17.0",
+        "Version": "1.17.1",
         "Summary": "Foreign Function Interface for Python calling C code.",
         "Home-page": "http://cffi.readthedocs.org",
         "Author": "Armin Rigo, Maciej Fijalkowski",
@@ -1046,7 +1053,7 @@ LICENSES = [
     },
     {
         "Name": "cryptography",
-        "Version": "43.0.0",
+        "Version": "43.0.1",
         "Summary": "cryptography is a package which provides cryptographic recipes and primitives to Python developers.",
         "Home-page": "",
         "Author": "The cryptography developers <cryptography-dev@python.org>",
@@ -1465,7 +1472,7 @@ LICENSES = [
     },
     {
         "Name": "resolvelib",
-        "Version": "0.8.1",
+        "Version": "1.0.1",
         "Summary": "Resolve abstract dependencies into concrete ones",
         "Home-page": "https://github.com/sarugaku/resolvelib",
         "Author": "Tzu-ping Chung",
