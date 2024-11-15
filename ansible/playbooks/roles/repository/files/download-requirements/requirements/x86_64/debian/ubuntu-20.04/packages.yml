@@ -92,6 +92,7 @@ packages:
 
     # postgres related packages
     # if version is not specified, it's not related to postgres version and the latest is used
+    - 'libipc-run-perl' # for postgresql-client-common
     - 'pgdg-keyring'
     - 'postgresql-13-pgaudit=1.5.0*'
     - 'postgresql-10-repmgr=5.2.1*'

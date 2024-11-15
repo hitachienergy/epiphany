@@ -1,6 +1,13 @@
 <!-- markdownlint-disable-file no-duplicate-heading -->
 # Changelog 2.0
 
+## [2.0.17] 2024-11-15
+
+### Fixed
+
+- [#3473](https://github.com/hitachienergy/epiphany/issues/3473) - Missing dependency for postgresql-client-common package
+- [#3474](https://github.com/hitachienergy/epiphany/issues/3474) - Missing AWS AlmaLinux OS 8.7 image
+
 ## [2.0.16] 2024-09-10
 
 ### Updated
