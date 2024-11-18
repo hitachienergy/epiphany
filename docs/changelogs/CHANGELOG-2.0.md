@@ -1,5 +1,26 @@
-<!-- markdownlint-disable-file no-duplicate-header -->
+<!-- markdownlint-disable-file no-duplicate-heading -->
 # Changelog 2.0
+
+## [2.0.17] 2024-11-15
+
+### Fixed
+
+- [#3473](https://github.com/hitachienergy/epiphany/issues/3473) - Missing dependency for postgresql-client-common package
+- [#3474](https://github.com/hitachienergy/epiphany/issues/3474) - Missing AWS AlmaLinux OS 8.7 image
+
+## [2.0.16] 2024-09-10
+
+### Updated
+
+- [#3436](https://github.com/hitachienergy/epiphany/issues/3436) - Upgrade Ansible
+- [AWS] AlmaLinux image from 8.6.20220901 to 8.7.20221110
+- Increase the default Ansible timeout for connection plugins to use (from 10 to 30)
+- Increase `retries-count` from 3 to 10 for `download-requirements.py`
+
+### Fixed
+
+- [Azure] Sometimes `epicli - list index out of range` occurs when creating Ansible inventory
+- pytest tests in VS Code
 
 ## [2.0.15] 2024-08-29
 
@@ -7,7 +28,6 @@
 
 - [#3452](https://github.com/hitachienergy/epiphany/issues/3452) - Import new AlmaLinux 8 GPG key
 - [#3464](https://github.com/hitachienergy/epiphany/issues/3464) - Update Python dependencies to fix security issues
-
 
 ## [2.0.14] 2024-04-25
 
@@ -70,7 +90,7 @@
 
 ### Updated
 
-- [#3347](https://github.com/hitachienergy/epiphany/issues/3347) - Switch from `k8s.gcr.io` to `registry.k8s.io`
+- [#3347](https://github.com/hitachienergy/epiphany/issues/3347) - Switch from `registry.k8s.io` to `registry.k8s.io`
 
 ## [2.0.5] 2023-03-01
 

@@ -13,8 +13,6 @@
   command: >-
     {{ 'dnf check-update docker-ce' if ansible_os_family == 'RedHat' else
        'apt list --upgradable docker-ce' if ansible_os_family == 'Debian' else None }}
-  args:
-    warn: no
   register: check_docker_update
   failed_when: check_docker_update.rc not in [0, 100] # dnf check-update returns code 100 if there are packages available for update
   changed_when: false

@@ -6,7 +6,7 @@
   "tasks": [
     {
       "label": "Ensure test_results directory",
-      "command": "mkdir -p ${workspaceFolder}/test_results",
+      "command": "mkdir -p test_results",
       "presentation": {
         "echo": false,
         "reveal": "silent",
@@ -15,28 +15,29 @@
     },
     {
       "label": "Pytest",
-      "command": "pytest --junitxml=${workspaceFolder}/test_results/pytest_results.xml",
+      "command": "pytest --junitxml=test_results/pytest_results.xml",
       "dependsOn": ["Ensure test_results directory"],
       "group": "test",
     },
     {
       "label": "Pylint epicli [junit]",
-      "command": "pylint --rcfile .pylintrc ./cli ./tests --output ${workspaceFolder}/test_results/pylint_results.xml",
+      "command": "pylint --rcfile .pylintrc ./cli ./tests/unit --output test_results/pylint_results.xml --recursive y",
       "dependsOn": ["Ensure test_results directory"],
       "group": "test",
     },
     {
       "label": "Pylint epicli [terminal]",
-      "command": "pylint --rcfile .pylintrc ./cli ./tests --output-format text",
+      "command": "pylint --rcfile .pylintrc ./cli ./tests/unit --output-format text --recursive y",
       "group": "test",
     },
     {
-      "label": "Pylint repository modules",
+      "label": "Pylint repository role plugins",
       "command": "pylint",
       "args": [
         "--rcfile", ".pylintrc",
         "--output-format", "text",
-        "./ansible/playbooks/roles/repository/library/tests",
+        "--recursive", "y",
+        "ansible/playbooks/roles/repository/library",
       ],
       "group": "test",
     },
@@ -54,13 +55,13 @@
     },
     {
       "label": "Ansible-lint [junit]",
-      "command": "ansible-lint --nocolor -q -c .ansible-lint -p ${workspaceFolder}/ansible > ${workspaceFolder}/test_results/ansiblelint_results.txt ; ansible-lint-to-junit-xml ${workspaceFolder}/test_results/ansiblelint_results.txt > ${workspaceFolder}/test_results/ansiblelint_results.xml",
+      "command": "ansible-lint --nocolor -q -c .ansible-lint -p ansible > test_results/ansible-lint_results.txt ; ansible-lint-junit test_results/ansible-lint_results.txt -o test_results/ansible-lint_results.xml",
       "dependsOn": ["Ensure test_results directory"],
       "group": "test",
     },
     {
       "label": "Ansible-lint [terminal]",
-      "command": "ansible-lint -q -c .ansible-lint -p ${workspaceFolder}/ansible",
+      "command": "ansible-lint -q -c .ansible-lint -p ansible",
       "group": "test",
     },
     {

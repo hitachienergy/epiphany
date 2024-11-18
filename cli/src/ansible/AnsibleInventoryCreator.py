@@ -1,4 +1,5 @@
 from collections import defaultdict
+from time import sleep
 
 from cli.src.helpers.build_io import save_inventory
 from cli.src.helpers.doc_list_helpers import select_single
@@ -14,6 +15,7 @@ class AnsibleInventoryCreator(Step):
         self.cluster_model = cluster_model
         self.config_docs = config_docs
         self.proxy = self.get_proxy()
+        self.retries = 0
 
     def __enter__(self):
         super().__enter__()
@@ -28,12 +30,29 @@ class AnsibleInventoryCreator(Step):
         inventory = self.get_inventory()
         save_inventory(inventory, self.cluster_model)
 
+    def get_ips_for_feature(self, component_key):
+        # Retries to avoid `list index out of range` on Azure
+        try:
+            ips = self.proxy.get_ips_for_feature(component_key)
+        except IndexError as ie:
+            if self.retries < 5:
+                self.retries += 1
+                sleep(1)
+                self.logger.info(f'Retry: {self.retries}')
+                ips = self.get_ips_for_feature(component_key)
+            else:
+                self.logger.error('All attempts failed')
+                raise RuntimeError(ie) from ie
+
+        self.retries = 0
+        return ips
+
     def get_inventory(self):
         inventory = []
         for component_key, component_value in self.cluster_model.specification.components.items():
             if component_value.count < 1:
                 continue
-            ips = self.proxy.get_ips_for_feature(component_key)
+            ips = self.get_ips_for_feature(component_key)
             if len(ips) > 0:
                 roles = self.get_roles_for_feature(component_key)
                 for role in roles:

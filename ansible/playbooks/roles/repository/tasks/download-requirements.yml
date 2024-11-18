@@ -13,6 +13,7 @@
         --manifest "{{ download_requirements_manifest }}" \
         --no-logfile \
         --repos-backup-file /var/tmp/enabled-system-repos.tar \
+        --retries-count 10 \
         --verbose |&
     tee >(systemd-cat --identifier=download-requirements.py)
   args:
@@ -31,6 +32,7 @@
         "{{ download_requirements_os_name }}" \
         --no-logfile \
         --repos-backup-file /var/tmp/enabled-system-repos.tar \
+        --retries-count 10 \
         --verbose |&
     tee >(systemd-cat --identifier=download-requirements.py)
   args:

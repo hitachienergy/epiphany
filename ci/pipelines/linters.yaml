@@ -13,10 +13,10 @@ pool:
   name: $(agentPoolName)
 
 variables:
-  ansible_lint_error_threshold: 338
-  pylint_score_cli_threshold: 9.41
-  pylint_score_tests_threshold: 9.78
-  rubocop_linter_threshold: 183
+  ansible_lint_error_threshold: 1009
+  pylint_score_cli_threshold: 9.52
+  pylint_score_tests_threshold: 9.54
+  rubocop_linter_threshold: 169
 
 jobs:
   - job: Run_linters
@@ -30,11 +30,11 @@ jobs:
 
       - task: Bash@3
         displayName: Install Ansible Lint and its dependencies
-        # Installing Ansible 5.2.0 to be compatible with the epicli image.
+        # Installing Ansible 9.9.0 to be compatible with the epicli image.
         inputs:
           targetType: inline
           script: |
-            python3 -m pip install --upgrade ansible==6.2.0 ansible-compat==3.* ansible-lint==6.5.0 ansible-lint-junit==0.16 lxml pip setuptools
+            python3 -m pip install --upgrade ansible==9.9.0 ansible-lint==24.7.0 ansible-lint-junit==0.17.8 lxml pip setuptools
 
       - task: Bash@3
         displayName: Run Ansible Lint
@@ -79,6 +79,7 @@ jobs:
             python3 -m pylint ./cli \
             --rcfile .pylintrc \
             --fail-under=$(pylint_score_cli_threshold) \
+            --recursive y \
             --output cli_code_results.xml
 
       - task: PublishTestResults@2
@@ -96,8 +97,8 @@ jobs:
             python3 -m pylint ./tests \
             --rcfile .pylintrc \
             --fail-under=$(pylint_score_tests_threshold) \
-            --output test_code_results.xml \
-            --disable=F0401 # Disable import-error checking
+            --recursive y \
+            --output test_code_results.xml
 
       - task: PublishTestResults@2
         displayName: Publish Pylint test results for test code

@@ -127,3 +127,4 @@ clusters
 #.vscode
 #.devcontainer
 *.dump
+sandbox/
