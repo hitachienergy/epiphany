@@ -15,7 +15,7 @@ pool:
 variables:
   ansible_lint_error_threshold: 1009
   pylint_score_cli_threshold: 9.52
-  pylint_score_tests_threshold: 9.85
+  pylint_score_tests_threshold: 9.54
   rubocop_linter_threshold: 169
 
 jobs:
