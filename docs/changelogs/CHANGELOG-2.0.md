@@ -70,7 +70,7 @@
 
 ### Updated
 
-- [#3347](https://github.com/hitachienergy/epiphany/issues/3347) - Switch from `k8s.gcr.io` to `registry.k8s.io`
+- [#3347](https://github.com/hitachienergy/epiphany/issues/3347) - Switch from `registry.k8s.io` to `registry.k8s.io`
 
 ## [2.0.5] 2023-03-01
 

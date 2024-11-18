@@ -19,15 +19,15 @@ specification:
       cephcsi:
         image: quay.io/cephcsi/cephcsi:v3.5.1
       registrar:
-        image: k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.5.0
+        image: registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.5.0
       provisioner:
-        image: k8s.gcr.io/sig-storage/csi-provisioner:v3.1.0
+        image: registry.k8s.io/sig-storage/csi-provisioner:v3.1.0
       snapshotter:
-        image: k8s.gcr.io/sig-storage/csi-snapshotter:v5.0.1
+        image: registry.k8s.io/sig-storage/csi-snapshotter:v5.0.1
       attacher:
-        image: k8s.gcr.io/sig-storage/csi-attacher:v3.4.0
+        image: registry.k8s.io/sig-storage/csi-attacher:v3.4.0
       resizer:
-        image: k8s.gcr.io/sig-storage/csi-resizer:v1.4.0
+        image: registry.k8s.io/sig-storage/csi-resizer:v1.4.0
   cluster_chart_values:
     toolbox:
       enabled: false
