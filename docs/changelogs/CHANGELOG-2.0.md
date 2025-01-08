@@ -1,6 +1,12 @@
 <!-- markdownlint-disable-file no-duplicate-heading -->
 # Changelog 2.0
 
+## [2.0.18] 2025-01-07
+
+### Fixed
+
+- [#3478](https://github.com/hitachienergy/epiphany/issues/3478) - AlmaLinux 8.5 OS image no longer available in Azure
+
 ## [2.0.17] 2024-11-15
 
 ### Fixed
