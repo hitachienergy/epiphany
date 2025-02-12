@@ -5,13 +5,9 @@ name: default
 specification:
   almalinux-8-x86_64:
     publisher: almalinux
-    offer: almalinux
-    sku: 8_5-gen2
-    version: '8.5.20220311'  # offer with PlanId: 8_4 was removed from the marketplace for new purchase
-    plan:
-      name: 8_5-gen2
-      product: almalinux
-      publisher: almalinux
+    offer: almalinux-x86_64
+    sku: 8-gen2
+    version: '8.8.2023072701'  # offers with plan ids: 8_4 and 8_5-gen2 have been removed from the marketplace for new purchases
   rhel-8-x86_64:
     publisher: RedHat
     offer: rhel-raw
