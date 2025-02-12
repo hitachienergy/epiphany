@@ -25,8 +25,3 @@ repositories:
   pgdg-archive:
     content: 'deb http://apt-archive.postgresql.org/pub/repos/apt focal-pgdg-archive main'
     key: 'https://www.postgresql.org/media/keys/ACCC4CF8.asc'
-
-  # Provides repmgr
-  2ndquadrant-dl-default-release:
-    content: 'deb https://dl.2ndquadrant.com/default/release/apt focal-2ndquadrant main'
-    key: 'https://dl.2ndquadrant.com/gpg-key.asc'
