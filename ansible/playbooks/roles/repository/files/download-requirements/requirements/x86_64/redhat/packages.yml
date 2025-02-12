@@ -101,8 +101,7 @@ packages:
     - 'rabbitmq-server-3.8.9'
     - 'rsync'
     - 'postgresql13-server'
-    - 'repmgr10-5.2.1'  # used to upgrade repmgr first
-    - 'repmgr13-5.2.1'
+    - 'repmgr_13-5.2.1'
     - 'samba-client'
     - 'samba-client-libs'  # for samba-client
     - 'samba-common'
