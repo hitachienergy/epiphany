@@ -1,11 +1,12 @@
 <!-- markdownlint-disable-file no-duplicate-heading -->
 # Changelog 2.0
 
-## [2.0.19] 2025-02-13
+## [2.0.19] 2025-02-14
 
 ### Fixed
 
 - [#3455](https://github.com/hitachienergy/epiphany/issues/3455) - Switch from 2ndQuadrant repository
+- [#3483](https://github.com/hitachienergy/epiphany/issues/3483) - Missing dependencies for postgresql-common-dev package
 
 ## [2.0.18] 2025-01-07
 
