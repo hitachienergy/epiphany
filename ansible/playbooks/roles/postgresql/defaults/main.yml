@@ -51,7 +51,7 @@ repmgr:
     RedHat: /etc/repmgr/13
   package_name:
     Debian: postgresql-13-repmgr
-    RedHat: repmgr13
+    RedHat: repmgr_13
   service_name:
     Debian: repmgrd
     RedHat: repmgr13
