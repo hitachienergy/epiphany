@@ -17,4 +17,13 @@ specification:
     publisher: Canonical
     offer: 0001-com-ubuntu-server-focal
     sku: 20_04-lts-gen2
-    version: "20.04.202308310"
+    version: "20.04.202504250"
+  ubuntu-pro-20.04-x86_64:
+    publisher: Canonical
+    offer: 0001-com-ubuntu-pro-focal
+    sku: pro-20_04-lts-gen2
+    version: "20.04.202504240"
+    plan:
+      name: pro-20_04-lts-gen2
+      publisher: canonical
+      product: 0001-com-ubuntu-pro-focal

@@ -150,7 +150,8 @@ properties:
         - almalinux-8-x86_64
         - rhel-8-x86_64
         - ubuntu-20.04-x86_64
-        pattern: ^(default|almalinux-8-arm64|almalinux-8-x86_64|rhel-8-x86_64|ubuntu-20.04-x86_64)$
+        - ubuntu-pro-20.04-x86_64
+        pattern: ^(default|almalinux-8-arm64|almalinux-8-x86_64|rhel-8-x86_64|ubuntu-20.04-x86_64|ubuntu-pro-20.04-x86_64)$
       hostname_domain_extension:
         "$id": "#/properties/specification/properties/cloud/properties/hostname_domain_extension"
         type: string
