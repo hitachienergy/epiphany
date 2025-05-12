@@ -1,3 +1,13 @@
+## ⚠️Epiphany Sunset Notice⚠️ 
+
+**This project is no longer actively maintained as if 9 May 2025*
+
+This repository has been archived and is now read-only. While the code remains available for reference and forking, we are no longer:
+- Accepting new feature requests
+- Addressing bug reports
+- Reviewing or accepting pull requests
+- Releasing new versions
+
 # Epiphany Platform
 [![GitHub release](https://img.shields.io/github/v/release/hitachienergy/epiphany.svg)](https://github.com/hitachienergy/epiphany/releases)
 [![Github license](https://img.shields.io/github/license/hitachienergy/epiphany)](https://github.com/hitachienergy/epiphany/releases)
