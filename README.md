@@ -1,6 +1,6 @@
 ## ⚠️Epiphany Sunset Notice⚠️ 
 
-**This project is no longer actively maintained as of 9 May 2025*
+**This project is no longer actively maintained as of 9 May 2025**
 
 The repository has been archived and is now read-only. While the code remains available for reference and forking, we are no longer:
 - Accepting new feature requests
