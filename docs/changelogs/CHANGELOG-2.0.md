@@ -1,6 +1,12 @@
 <!-- markdownlint-disable-file no-duplicate-heading -->
 # Changelog 2.0
 
+## [2.0.20] 2025-05-06
+
+### Added
+
+- [#3488](https://github.com/hitachienergy/epiphany/issues/3488) - Add support for Ubuntu Pro 20.04 LTS
+
 ## [2.0.19] 2025-02-14
 
 ### Fixed
